@@ -1,2 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.readrops.readropslibrary" />
+    package="com.readrops.readropslibrary">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+</manifest>
