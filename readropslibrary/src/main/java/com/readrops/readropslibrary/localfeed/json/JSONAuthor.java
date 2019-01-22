@@ -34,4 +34,6 @@ public class JSONAuthor {
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
     }
+
+
 }

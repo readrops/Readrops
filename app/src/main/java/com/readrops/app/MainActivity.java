@@ -1,5 +1,6 @@
 package com.readrops.app;
 
+import android.arch.lifecycle.ViewModelProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -7,9 +8,15 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
+import com.readrops.app.database.entities.Item;
 import com.readrops.readropslibrary.PageParser;
+import com.readrops.readropslibrary.QueryCallback;
 import com.readrops.readropslibrary.Utils.Utils;
+import com.readrops.readropslibrary.localfeed.AItem;
 import com.readrops.readropslibrary.localfeed.RSSNetwork;
+import com.readrops.readropslibrary.localfeed.atom.ATOMEntry;
+import com.readrops.readropslibrary.localfeed.json.JSONFeed;
+import com.readrops.readropslibrary.localfeed.json.JSONItem;
 import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
 import com.readrops.readropslibrary.localfeed.rss.RSSItem;
 
@@ -31,8 +38,9 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private MainAdapter adapter;
 
-    private List<RSSItem> itemList;
+    private List<Item> itemList;
 
+    private MainViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,42 +58,14 @@ public class MainActivity extends AppCompatActivity {
 
         thread.start();*/
 
-        getItems();
+        viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(this.getApplication()).create(MainViewModel.class);
 
-    }
-
-    private void getItems() {
-        RSSNetwork request = new RSSNetwork();
-
-        request.request("https://www.numerama.com/feed/", new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    InputStream stream = response.body().byteStream();
-                    String xml = Utils.inputStreamToString(stream);
-
-                    Serializer serializer = new Persister();
-
-                    try {
-                        RSSFeed rssFeed = serializer.read(RSSFeed.class, xml);
-                        itemList = rssFeed.getChannel().getItems();
-
-                        runOnUiThread(() -> {
-                            initRecyclerView();
-                        });
-
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+        viewModel.getItems().observe(this, (List<Item> items) -> {
+            this.itemList = items;
+            initRecyclerView();
         });
+
+        viewModel.sync();
     }
 
     private void initRecyclerView() {
@@ -99,6 +79,4 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView.setAdapter(adapter);
     }
-
-
 }

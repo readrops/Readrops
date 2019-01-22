@@ -1,8 +1,9 @@
 package com.readrops.readropslibrary.localfeed.json;
 
 import com.google.gson.annotations.SerializedName;
+import com.readrops.readropslibrary.localfeed.AItem;
 
-public class JSONItem {
+public class JSONItem extends AItem {
 
     private String id;
 
@@ -102,6 +103,14 @@ public class JSONItem {
 
     public void setAuthor(JSONAuthor author) {
         this.author = author;
+    }
+
+    public String getContent() {
+        if (contentHtml == null)
+            return contentText;
+        else
+            return contentHtml;
+
     }
 
     @SerializedName("date_modified")

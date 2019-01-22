@@ -12,4 +12,6 @@ public class ATOMLink {
     public String getHref() {
         return href;
     }
+
+
 }

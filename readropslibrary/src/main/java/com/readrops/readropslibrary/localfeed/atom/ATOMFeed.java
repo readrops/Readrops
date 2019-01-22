@@ -27,4 +27,51 @@ public class ATOMFeed {
     @ElementList(inline = true, required = false)
     private List<ATOMEntry> entries;
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
+    public String getSubtitle() {
+        return subtitle;
+    }
+
+    public void setSubtitle(String subtitle) {
+        this.subtitle = subtitle;
+    }
+
+    public String getUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(String updated) {
+        this.updated = updated;
+    }
+
+    public ATOMAuthor getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(ATOMAuthor author) {
+        this.author = author;
+    }
+
+    public List<ATOMEntry> getEntries() {
+        return entries;
+    }
+
+    public void setEntries(List<ATOMEntry> entries) {
+        this.entries = entries;
+    }
 }

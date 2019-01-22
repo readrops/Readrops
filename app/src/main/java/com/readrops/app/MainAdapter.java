@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.readrops.app.database.entities.Item;
 import com.readrops.readropslibrary.PageParser;
 import com.readrops.readropslibrary.localfeed.rss.RSSItem;
 
@@ -19,10 +20,10 @@ import java.util.List;
 
 public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
 
-    List<RSSItem> items;
+    List<Item> items;
     private Context context;
 
-    public MainAdapter(Context context, List<RSSItem> items) {
+    public MainAdapter(Context context, List<Item> items) {
         this.context = context;
         this.items = items;
     }
@@ -38,13 +39,13 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        RSSItem item = items.get(i);
+        Item item = items.get(i);
         viewHolder.bind(item);
 
-        Thread thread = new Thread(() -> {
+        /*Thread thread = new Thread(() -> {
             String imageUrl = PageParser.getOGImageLink(item.getLink());
             Glide.with(context).load(imageUrl).into(viewHolder.itemImage);
-        });
+        });*/
 
 
     }
@@ -66,7 +67,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
             itemImage = itemView.findViewById(R.id.item_image);
         }
 
-        private void bind(RSSItem item) {
+        private void bind(Item item) {
             itemTitle.setText(item.getTitle());
         }
     }

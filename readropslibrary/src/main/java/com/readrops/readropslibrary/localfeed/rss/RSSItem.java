@@ -1,11 +1,13 @@
 package com.readrops.readropslibrary.localfeed.rss;
 
+import com.readrops.readropslibrary.localfeed.AItem;
+
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Namespace;
 import org.simpleframework.xml.Root;
 
 @Root(name = "item", strict = false)
-public class RSSItem {
+public class RSSItem extends AItem {
 
     @Element(name = "title", required = false)
     private String title;
