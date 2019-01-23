@@ -1,5 +1,7 @@
 package com.readrops.readropslibrary.localfeed;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.readrops.readropslibrary.QueryCallback;
 import com.readrops.readropslibrary.Utils.Utils;
@@ -19,6 +21,8 @@ import okhttp3.Response;
 
 public class RSSNetwork {
 
+    public static final String TAG = RSSNetwork.class.getName();
+
     /**
      * Request the url given in parameter.
      * This method is synchronous, <b>it has to be called from another thread than the main one</b>.
@@ -29,6 +33,7 @@ public class RSSNetwork {
     public void request(String url, final QueryCallback callback) throws Exception {
         OkHttpClient okHttpClient = new OkHttpClient();
 
+        Log.d(TAG, "starting request");
         Request request = new Request.Builder().url(url).build();
         Response response = okHttpClient.newCall(request).execute();
 

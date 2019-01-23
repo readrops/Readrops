@@ -2,14 +2,16 @@ package com.readrops.app;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
+import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.support.annotation.NonNull;
 
 import com.readrops.app.database.entities.Item;
 
 import java.util.List;
 
-public class MainViewModel extends AndroidViewModel implements SimpleCallback {
+public class MainViewModel extends AndroidViewModel {
 
     private LiveData<List<Item>> items;
     private LocalFeedRepository repository;
@@ -18,7 +20,7 @@ public class MainViewModel extends AndroidViewModel implements SimpleCallback {
         super(application);
 
         repository = new LocalFeedRepository(application);
-        repository.setCallback(this);
+
         items = repository.getItems();
     }
 
@@ -26,18 +28,11 @@ public class MainViewModel extends AndroidViewModel implements SimpleCallback {
         return items;
     }
 
+    public void setSimpleCallback(SimpleCallback simpleCallback) {
+        repository.setCallback(simpleCallback);
+    }
+
     public void sync() {
         repository.sync();
-    }
-
-
-    @Override
-    public void onSuccess() {
-
-    }
-
-    @Override
-    public void onFailure(Exception ex) {
-
     }
 }

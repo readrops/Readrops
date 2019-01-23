@@ -3,6 +3,8 @@ package com.readrops.app;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 
 import com.readrops.app.database.Database;
 import com.readrops.app.database.entities.Feed;
@@ -22,6 +24,8 @@ import static com.readrops.readropslibrary.localfeed.RSSNetwork.RSSType.RSS_JSON
 
 public class LocalFeedRepository extends ARepository implements QueryCallback {
 
+    public static final String TAG = LocalFeedRepository.class.getSimpleName();
+
     private LiveData<List<Item>> items;
 
     public LocalFeedRepository(Application application) {
@@ -37,19 +41,24 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
     @Override
     public void sync() {
         executor.execute(() -> {
+            Log.d(TAG, "starting background thread");
             RSSNetwork request = new RSSNetwork();
 
+            Log.d(TAG, "getting feed list");
             List<Feed> feeds = database.feedDao().getAllFeeds();
 
             for (Feed feed : feeds) {
                 try {
+                    Log.d(TAG, "entering RSSNetwork");
                     request.request(feed.getUrl(), this);
                 } catch (Exception e) {
                     failureCallBackInMainThread(e);
                 }
             }
 
-            callback.onSuccess();
+            // we go back to the main thread
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(() -> callback.onSuccess());
         });
     }
 
@@ -100,8 +109,10 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
         List<Item> dbItems = Item.itemsFromRSS(items, feed);
 
         for (Item dbItem : dbItems) {
-            if (!Boolean.valueOf(database.itemDao().guidExist(dbItem.getGuid())))
+            if (!Boolean.valueOf(database.itemDao().guidExist(dbItem.getGuid()))) {
                 database.itemDao().insert(dbItem);
+                Log.d(TAG, "adding " + dbItem.getTitle());
+            }
         }
     }
 

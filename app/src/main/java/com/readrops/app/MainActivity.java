@@ -1,42 +1,25 @@
 package com.readrops.app;
 
 import android.arch.lifecycle.ViewModelProvider;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
 import com.readrops.app.database.entities.Item;
-import com.readrops.readropslibrary.PageParser;
-import com.readrops.readropslibrary.QueryCallback;
-import com.readrops.readropslibrary.Utils.Utils;
-import com.readrops.readropslibrary.localfeed.AItem;
-import com.readrops.readropslibrary.localfeed.RSSNetwork;
-import com.readrops.readropslibrary.localfeed.atom.ATOMEntry;
-import com.readrops.readropslibrary.localfeed.json.JSONFeed;
-import com.readrops.readropslibrary.localfeed.json.JSONItem;
-import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
-import com.readrops.readropslibrary.localfeed.rss.RSSItem;
 
-import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.core.Persister;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
+public class MainActivity extends AppCompatActivity implements SimpleCallback, SwipeRefreshLayout.OnRefreshListener {
 
-public class MainActivity extends AppCompatActivity {
-
-    String url = "https://framablog.org/";
+    public static final String TAG = MainActivity.class.getSimpleName();
 
     private RecyclerView recyclerView;
     private MainAdapter adapter;
+    private SwipeRefreshLayout refreshLayout;
 
     private List<Item> itemList;
 
@@ -47,25 +30,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /*Thread thread = new Thread(() -> {
-            String imageUrl = PageParser.getOGImageLink("https://usbeketrica.com/galerie/dennis-osadebe-portrait-of-a-bright-generation");
-            Log.d("", "");
-
-            runOnUiThread(() -> {
-                getItems();
-            });
-        });
-
-        thread.start();*/
-
         viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(this.getApplication()).create(MainViewModel.class);
+        viewModel.setSimpleCallback(this);
 
         viewModel.getItems().observe(this, (List<Item> items) -> {
             this.itemList = items;
             initRecyclerView();
         });
 
-        viewModel.sync();
+        refreshLayout = findViewById(R.id.swipe_refresh_layout);
+        refreshLayout.setOnRefreshListener(this);
     }
 
     private void initRecyclerView() {
@@ -78,5 +52,21 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(decoration);
 
         recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onSuccess() {
+        refreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void onFailure(Exception ex) {
+
+    }
+
+    @Override
+    public void onRefresh() {
+        Log.d(TAG, "syncing started");
+        viewModel.sync();
     }
 }
