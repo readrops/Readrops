@@ -11,7 +11,15 @@ import android.util.Log;
 
 import com.readrops.app.database.entities.Item;
 
+
+import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
+
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class MainActivity extends AppCompatActivity implements SimpleCallback, SwipeRefreshLayout.OnRefreshListener {
 
@@ -22,6 +30,8 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
     private SwipeRefreshLayout refreshLayout;
 
     private List<Item> itemList;
+
+    private TreeMap<LocalDateTime, Item> itemsMap;
 
     private MainViewModel viewModel;
 
@@ -34,12 +44,14 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
         viewModel.setSimpleCallback(this);
 
         viewModel.getItems().observe(this, (List<Item> items) -> {
-            this.itemList = items;
+            itemList = items;
             initRecyclerView();
         });
 
         refreshLayout = findViewById(R.id.swipe_refresh_layout);
         refreshLayout.setOnRefreshListener(this);
+
+        itemsMap = new TreeMap<>(LocalDateTime::compareTo);
     }
 
     private void initRecyclerView() {

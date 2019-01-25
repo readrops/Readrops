@@ -3,6 +3,7 @@ package com.readrops.app.database;
 import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
+import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
@@ -13,6 +14,7 @@ import com.readrops.app.database.entities.Item;
 
 
 @android.arch.persistence.room.Database(entities = {Feed.class, Item.class}, version = 1)
+@TypeConverters(Converters.class)
 public abstract class Database extends RoomDatabase {
 
     public abstract FeedDao feedDao();

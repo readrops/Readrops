@@ -2,11 +2,15 @@ package com.readrops.app.database.entities;
 
 import android.arch.persistence.room.*;
 
+import com.readrops.app.DateUtils;
 import com.readrops.readropslibrary.localfeed.atom.ATOMEntry;
 import com.readrops.readropslibrary.localfeed.json.JSONItem;
 import com.readrops.readropslibrary.localfeed.rss.RSSChannel;
 import com.readrops.readropslibrary.localfeed.rss.RSSItem;
 
+import org.joda.time.LocalDateTime;
+
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +36,8 @@ public class Item {
 
     @ColumnInfo(name = "pub_date")
     private String pubDate;
+
+    private LocalDateTime formatedDate;
 
     private String content;
 
@@ -97,6 +103,14 @@ public class Item {
         this.pubDate = pubDate;
     }
 
+    public LocalDateTime getFormatedDate() {
+        return formatedDate;
+    }
+
+    public void setFormatedDate(LocalDateTime formatedDate) {
+        this.formatedDate = formatedDate;
+    }
+
     public String getContent() {
         return content;
     }
@@ -121,7 +135,7 @@ public class Item {
         this.feedId = feedId;
     }
 
-    public static List<Item> itemsFromRSS(List<RSSItem> items, Feed feed) {
+    public static List<Item> itemsFromRSS(List<RSSItem> items, Feed feed) throws ParseException {
         List<Item> dbItems = new ArrayList<>();
 
         for(RSSItem item : items) {
@@ -133,9 +147,11 @@ public class Item {
             newItem.setGuid(item.getGuid());
             newItem.setTitle(item.getTitle());
             newItem.setImageLink(item.getImageLink());
-            newItem.setPubDate(item.getPubDate());
-            newItem.setLink(item.getLink());
 
+            newItem.setPubDate(item.getPubDate());
+            newItem.setFormatedDate(DateUtils.stringToDateTime(item.getPubDate(), DateUtils.RSS_DATE_FORMAT));
+
+            newItem.setLink(item.getLink());
             newItem.setFeedId(feed.getId());
 
             dbItems.add(newItem);

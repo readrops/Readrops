@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.readrops.app.database.entities.Item;
 import com.readrops.readropslibrary.PageParser;
 import com.readrops.readropslibrary.localfeed.rss.RSSItem;

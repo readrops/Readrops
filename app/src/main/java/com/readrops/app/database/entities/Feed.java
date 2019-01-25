@@ -21,6 +21,7 @@ public class Feed {
 
     }
 
+    @Ignore
     public Feed(String name, String description, String url) {
         this.name = name;
         this.description = description;
