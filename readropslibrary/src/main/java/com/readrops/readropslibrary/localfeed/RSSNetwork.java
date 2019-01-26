@@ -42,6 +42,14 @@ public class RSSNetwork {
             callback.onSyncFailure(new Exception("Error " + response.code() + " when requesting url " + url));
     }
 
+    /**
+     * Parse input feed
+     * @param stream inputStream to parse
+     * @param type rss type, important to know the format
+     * @param callback success callback
+     * @param url feed url
+     * @throws Exception
+     */
     private void parseFeed(InputStream stream, RSSType type, QueryCallback callback, String url) throws Exception {
         //String xml = Utils.inputStreamToString(stream);
         Serializer serializer = new Persister();
@@ -63,6 +71,11 @@ public class RSSNetwork {
         }
     }
 
+    /**
+     * Get the rss type according to the content-type header
+     * @param contentType content-type header
+     * @return rss type according to the content-type header
+     */
     private RSSType getRSSType(String contentType) {
         if (contentType.contains(RSSType.RSS_2.value))
             return  RSSType.RSS_2;

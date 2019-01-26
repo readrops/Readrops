@@ -15,6 +15,11 @@ import java.util.List;
 
 public final class PageParser {
 
+    /**
+     * Parse the html page to get the first rss url
+     * @param url url to request
+     * @return the first rss url found
+     */
     public static String getFeedLink(String url) {
         String feedUrl = null;
 
@@ -39,11 +44,17 @@ public final class PageParser {
 
         return null;
     }
-
+    
     private static boolean isTypeRssFeed(String type) {
         return type.equals("application/rss+xml") || type.equals("application/atom+xml") || type.equals("application/json");
     }
 
+    /**
+     * get the feed item image based on open graph metadata.
+     * Warning, This method is slow.
+     * @param url url to request
+     * @return the item image
+     */
     public static String getOGImageLink(String url) {
         String imageUrl = null;
 
