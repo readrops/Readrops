@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Readrops</string>
     <string name="to_read">A lire</string>
     <string name="non_read_articles">Articles non lus</string>
     <string name="open_nav_drawer">Ouvrir le menu</string>
     <string name="close_nav_drawer">Fermer le menu</string>
+    <string name="add_feed_item">Ajouter un flux</string>
+    <string name="add_folder_item">Ajouter un dossier</string>
+    <string name="settings">Paramètres</string>
+    <string name="about_item">A propos</string>
 
 </resources>

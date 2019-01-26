@@ -21,7 +21,7 @@ import okhttp3.Response;
 
 public class RSSNetwork {
 
-    public static final String TAG = RSSNetwork.class.getName();
+    public static final String TAG = RSSNetwork.class.getSimpleName();
 
     /**
      * Request the url given in parameter.
@@ -33,7 +33,6 @@ public class RSSNetwork {
     public void request(String url, final QueryCallback callback) throws Exception {
         OkHttpClient okHttpClient = new OkHttpClient();
 
-        Log.d(TAG, "starting request");
         Request request = new Request.Builder().url(url).build();
         Response response = okHttpClient.newCall(request).execute();
 

@@ -45,12 +45,12 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
     @Override
     public void sync() {
         executor.execute(() -> {
-            RSSNetwork request = new RSSNetwork();
+            RSSNetwork rssNet = new RSSNetwork();
             List<Feed> feedList = database.feedDao().getAllFeeds();
 
             for (Feed feed : feedList) {
                 try {
-                    request.request(feed.getUrl(), this);
+                    rssNet.request(feed.getUrl(), this);
                 } catch (Exception e) {
                     failureCallBackInMainThread(e);
                 }
@@ -71,7 +71,9 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
 
     @Override
     public void deleteFeed(Item item) {
+        executor.execute(() -> {
 
+        });
     }
 
     @Override

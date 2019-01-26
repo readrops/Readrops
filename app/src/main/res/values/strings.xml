@@ -5,4 +5,8 @@
     <string name="non_read_articles">Non read articles</string>
     <string name="open_nav_drawer">Open menu</string>
     <string name="close_nav_drawer">Close menu</string>
+    <string name="add_feed_item">Add feed</string>
+    <string name="add_folder_item">Add folder</string>
+    <string name="settings">Settings</string>
+    <string name="about_item">About</string>
 </resources>

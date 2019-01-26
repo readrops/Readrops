@@ -1,15 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
 
-    <item
-        android:id="@+id/non_read_articles"
-        android:title="@string/non_read_articles"
-        android:icon="@drawable/ic_rss_feed"
-        />
+    <group android:id="@+id/first_group">
+        <item
+            android:id="@+id/non_read_articles"
+            android:title="@string/non_read_articles"
+            android:icon="@drawable/ic_rss_feed"
+            />
+        <item
+            android:id="@+id/to_read"
+            android:title="@string/to_read"
+            android:icon="@drawable/ic_read_later"/>
+    </group>
 
-    <item
-        android:id="@+id/to_read"
-        android:title="@string/to_read"
-        android:icon="@drawable/ic_read_later"/>
+    <group android:id="@+id/second_group">
+        <item
+            android:id="@+id/add_feed_item"
+            android:title="@string/add_feed_item"
+            android:icon="@drawable/ic_add"/>
+        <item
+            android:id="@+id/add_folder_item"
+            android:title="@string/add_folder_item"
+            android:icon="@drawable/ic_folder"/>
+    </group>
+
+    <group
+        android:id="@+id/third_group">
+        <item
+            android:id="@+id/settings_item"
+            android:title="@string/settings"
+            android:icon="@drawable/ic_settings"/>
+        <item
+            android:id="@+id/about_item"
+            android:title="@string/about_item"
+            android:icon="@drawable/ic_about"/>
+    </group>
+
+
+
+
 
 </menu>
