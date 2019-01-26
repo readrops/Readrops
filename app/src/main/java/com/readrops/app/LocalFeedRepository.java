@@ -28,11 +28,13 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
     public static final String TAG = LocalFeedRepository.class.getSimpleName();
 
     private LiveData<List<Item>> items;
+    private List<Feed> feeds;
 
     public LocalFeedRepository(Application application) {
         super(application);
 
         items = database.itemDao().getAll();
+        //feeds = database.feedDao().getAllFeeds();
     }
 
     public LiveData<List<Item>> getItems() {
@@ -42,15 +44,11 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
     @Override
     public void sync() {
         executor.execute(() -> {
-            Log.d(TAG, "starting background thread");
             RSSNetwork request = new RSSNetwork();
+            List<Feed> feedList = database.feedDao().getAllFeeds();
 
-            Log.d(TAG, "getting feed list");
-            List<Feed> feeds = database.feedDao().getAllFeeds();
-
-            for (Feed feed : feeds) {
+            for (Feed feed : feedList) {
                 try {
-                    Log.d(TAG, "entering RSSNetwork");
                     request.request(feed.getUrl(), this);
                 } catch (Exception e) {
                     failureCallBackInMainThread(e);

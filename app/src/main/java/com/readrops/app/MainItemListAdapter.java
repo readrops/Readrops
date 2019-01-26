@@ -1,10 +1,9 @@
 package com.readrops.app;
 
-import android.content.Context;
-import android.media.Image;
 import android.support.annotation.NonNull;
+import android.support.v7.recyclerview.extensions.ListAdapter;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,20 +11,26 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.readrops.app.database.entities.Item;
-import com.readrops.readropslibrary.PageParser;
-import com.readrops.readropslibrary.localfeed.rss.RSSItem;
 
-import java.util.List;
+public class MainItemListAdapter extends ListAdapter<Item, MainItemListAdapter.ViewHolder> {
 
-public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
 
-    List<Item> items;
-    private Context context;
-
-    public MainAdapter(Context context, List<Item> items) {
-        this.context = context;
-        this.items = items;
+    public MainItemListAdapter() {
+        super(DIFF_CALLBACK);
     }
+
+    private static final DiffUtil.ItemCallback<Item> DIFF_CALLBACK = new DiffUtil.ItemCallback<Item>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull Item item, @NonNull Item t1) {
+            return item.getId() == t1.getId();
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull Item item, @NonNull Item t1) {
+            return item.getTitle().equals(t1.getTitle()) &&
+                    item.getContent().equals(t1.getContent());
+        }
+    };
 
     @NonNull
     @Override
@@ -38,7 +43,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        Item item = items.get(i);
+        Item item = getItem(i);
         viewHolder.bind(item);
 
         /*Thread thread = new Thread(() -> {
@@ -46,12 +51,6 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
             Glide.with(context).load(imageUrl).into(viewHolder.itemImage);
         });*/
 
-
-    }
-
-    @Override
-    public int getItemCount() {
-        return items.size();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
