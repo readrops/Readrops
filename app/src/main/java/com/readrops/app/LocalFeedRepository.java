@@ -17,6 +17,7 @@ import com.readrops.readropslibrary.localfeed.json.JSONItem;
 import com.readrops.readropslibrary.localfeed.rss.RSSItem;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.readrops.readropslibrary.localfeed.RSSNetwork.RSSType.RSS_2;
@@ -105,7 +106,7 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
     private void parseRSSItems(List<RSSItem> items, String feedUrl) {
         Feed feed = database.feedDao().getFeedByUrl(feedUrl);
 
-        List<Item> dbItems = null;
+        List<Item> dbItems = new ArrayList<>();
         try {
             dbItems = Item.itemsFromRSS(items, feed);
         } catch (ParseException e) {
@@ -123,7 +124,12 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
     private void parseATOMItems(List<ATOMEntry> items, String feedUrl) {
         Feed feed = database.feedDao().getFeedByUrl(feedUrl);
 
-        List<Item> dbItems = Item.itemsFromATOM(items, feed);
+        List<Item> dbItems = new ArrayList<>();
+        try {
+            dbItems = Item.itemsFromATOM(items, feed);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         for (Item dbItem : dbItems) {
             if (!Boolean.valueOf(database.itemDao().guidExist(dbItem.getGuid())))
@@ -134,7 +140,12 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
     private void parseJSONItems(List<JSONItem> items, String feedUrl) {
         Feed feed = database.feedDao().getFeedByUrl(feedUrl);
 
-        List<Item> dbItems = Item.itemsFromJSON(items, feed);
+        List<Item> dbItems = new ArrayList<>();
+        try {
+            dbItems = Item.itemsFromJSON(items, feed);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         for (Item dbItem : dbItems) {
             if (!Boolean.valueOf(database.itemDao().guidExist(dbItem.getGuid())))

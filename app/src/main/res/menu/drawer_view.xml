@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/non_read_articles"
+        android:title="@string/non_read_articles"
+        android:icon="@drawable/ic_rss_feed"
+        />
+
+    <item
+        android:id="@+id/to_read"
+        android:title="@string/to_read"
+        android:icon="@drawable/ic_read_later"/>
+
+</menu>

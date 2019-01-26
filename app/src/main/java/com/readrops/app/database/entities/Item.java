@@ -12,6 +12,7 @@ import org.joda.time.LocalDateTime;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -160,7 +161,7 @@ public class Item {
         return dbItems;
     }
 
-    public static List<Item> itemsFromATOM(List<ATOMEntry> items, Feed feed) {
+    public static List<Item> itemsFromATOM(List<ATOMEntry> items, Feed feed) throws ParseException {
         List<Item> dbItems = new ArrayList<>();
 
         for (ATOMEntry item : items) {
@@ -170,7 +171,10 @@ public class Item {
             dbItem.setDescription(item.getSummary());
             dbItem.setGuid(item.getId());
             dbItem.setTitle(item.getTitle());
+
             dbItem.setPubDate(item.getUpdated());
+            dbItem.setFormatedDate(DateUtils.stringToDateTime(item.getUpdated(), DateUtils.ATOM_JSON_DATE_FORMAT));
+
             dbItem.setLink(item.getLink().getHref());
 
             dbItem.setFeedId(feed.getId());
@@ -179,7 +183,7 @@ public class Item {
         return dbItems;
     }
 
-    public static List<Item> itemsFromJSON(List<JSONItem> items, Feed feed) {
+    public static List<Item> itemsFromJSON(List<JSONItem> items, Feed feed) throws ParseException {
         List<Item> dbItems = new ArrayList<>();
 
         for (JSONItem item : items) {
@@ -190,7 +194,10 @@ public class Item {
             dbItem.setDescription(item.getSummary());
             dbItem.setGuid(item.getId());
             dbItem.setTitle(item.getTitle());
+
             dbItem.setPubDate(item.getPubDate());
+            dbItem.setFormatedDate(DateUtils.stringToDateTime(item.getPubDate(), DateUtils.ATOM_JSON_DATE_FORMAT));
+
             dbItem.setLink(item.getUrl());
 
             dbItem.setFeedId(feed.getId());

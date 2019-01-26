@@ -3,13 +3,20 @@ package com.readrops.app;
 import android.arch.lifecycle.ViewModelProvider;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.view.MenuItem;
 
 import com.readrops.app.database.entities.Item;
 
@@ -28,6 +35,9 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
     private MainItemListAdapter adapter;
     private SwipeRefreshLayout refreshLayout;
 
+    private NavigationView navigationView;
+    private DrawerLayout drawerLayout;
+
     private List<Item> itemList;
 
     private TreeMap<LocalDateTime, Item> itemsMap;
@@ -38,6 +48,29 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Toolbar toolbar = findViewById(R.id.toolbar_main);
+        setSupportActionBar(toolbar);
+
+        drawerLayout = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_nav_drawer, R.string.close_nav_drawer);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
+        navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener((menuItem) -> {
+            menuItem.setChecked(true);
+            drawerLayout.closeDrawers();
+
+            switch (menuItem.getItemId()) {
+                case R.id.to_read:
+                    break;
+                case R.id.non_read_articles:
+                    break;
+            }
+
+            return true;
+        });
 
         viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(this.getApplication()).create(MainViewModel.class);
         viewModel.setSimpleCallback(this);
@@ -57,6 +90,38 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
         refreshLayout.setOnRefreshListener(this);
 
         initRecyclerView();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                drawerLayout.openDrawer(GravityCompat.START);
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START))
+            drawerLayout.closeDrawers();
+        else
+            super.onBackPressed();
+    }
+
+    private void initRecyclerView() {
+        recyclerView = findViewById(R.id.items_recycler_view);
+
+        adapter = new MainItemListAdapter();
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+
+        DividerItemDecoration decoration = new DividerItemDecoration(this, ((LinearLayoutManager) layoutManager).getOrientation());
+        recyclerView.addItemDecoration(decoration);
+
+        recyclerView.setAdapter(adapter);
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
@@ -73,11 +138,11 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-               if (i == ItemTouchHelper.LEFT)
+                if (i == ItemTouchHelper.LEFT)
                     adapter.notifyItemRemoved(viewHolder.getAdapterPosition());
                 else {
-                   Log.d("", "");
-               }
+                    Log.d("", "");
+                }
             }
 
             @Override
@@ -85,19 +150,6 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
                 return true;
             }
         }).attachToRecyclerView(recyclerView);
-    }
-
-    private void initRecyclerView() {
-        recyclerView = findViewById(R.id.items_recycler_view);
-
-        adapter = new MainItemListAdapter();
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-
-        DividerItemDecoration decoration = new DividerItemDecoration(this, ((LinearLayoutManager) layoutManager).getOrientation());
-        recyclerView.addItemDecoration(decoration);
-
-        recyclerView.setAdapter(adapter);
     }
 
     private void updateList() {
