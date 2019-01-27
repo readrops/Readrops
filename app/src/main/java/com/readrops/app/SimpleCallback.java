@@ -4,5 +4,5 @@ public interface SimpleCallback {
 
     void onSuccess();
 
-    void onFailure(Exception ex);
+    void onFailure(Exception e);
 }

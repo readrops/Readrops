@@ -17,7 +17,10 @@ import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.readrops.app.database.entities.Item;
 
 
@@ -114,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
     private void initRecyclerView() {
         recyclerView = findViewById(R.id.items_recycler_view);
 
-        adapter = new MainItemListAdapter();
+        adapter = new MainItemListAdapter(Glide.with(this));
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
@@ -162,8 +165,8 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
     }
 
     @Override
-    public void onFailure(Exception ex) {
-
+    public void onFailure(Exception e) {
+        Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
     }
 
     @Override

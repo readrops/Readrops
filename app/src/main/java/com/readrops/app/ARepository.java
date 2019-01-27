@@ -37,8 +37,6 @@ public abstract class ARepository {
     protected void failureCallBackInMainThread(Exception ex) {
         Handler handler = new Handler(Looper.getMainLooper());
 
-        handler.post(() -> {
-            callback.onFailure(ex);
-        });
+        handler.post(() -> callback.onFailure(ex));
     }
 }

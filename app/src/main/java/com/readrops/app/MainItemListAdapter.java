@@ -10,13 +10,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.readrops.app.database.entities.Item;
 
 public class MainItemListAdapter extends ListAdapter<Item, MainItemListAdapter.ViewHolder> {
 
+    private RequestManager manager;
 
-    public MainItemListAdapter() {
+    public MainItemListAdapter(RequestManager manager) {
         super(DIFF_CALLBACK);
+        this.manager = manager;
     }
 
     private static final DiffUtil.ItemCallback<Item> DIFF_CALLBACK = new DiffUtil.ItemCallback<Item>() {
@@ -46,11 +50,8 @@ public class MainItemListAdapter extends ListAdapter<Item, MainItemListAdapter.V
         Item item = getItem(i);
         viewHolder.bind(item);
 
-        /*Thread thread = new Thread(() -> {
-            String imageUrl = PageParser.getOGImageLink(item.getLink());
-            Glide.with(context).load(imageUrl).into(viewHolder.itemImage);
-        });*/
-
+        if (item.getImageLink() != null)
+            manager.load(item.getImageLink()).into(viewHolder.itemImage);
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

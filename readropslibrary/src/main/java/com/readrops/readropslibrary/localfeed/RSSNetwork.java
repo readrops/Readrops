@@ -51,12 +51,12 @@ public class RSSNetwork {
      * @throws Exception
      */
     private void parseFeed(InputStream stream, RSSType type, QueryCallback callback, String url) throws Exception {
-        //String xml = Utils.inputStreamToString(stream);
+        String xml = Utils.inputStreamToString(stream);
         Serializer serializer = new Persister();
 
         switch (type) {
             case RSS_2:
-                RSSFeed rssFeed = serializer.read(RSSFeed.class, stream);
+                RSSFeed rssFeed = serializer.read(RSSFeed.class, xml);
                 callback.onSyncSuccess(rssFeed.getChannel().getItems(), type, url);
                 break;
             case RSS_ATOM:

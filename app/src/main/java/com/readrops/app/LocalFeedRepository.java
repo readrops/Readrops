@@ -9,6 +9,7 @@ import android.util.Log;
 import com.readrops.app.database.Database;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Item;
+import com.readrops.readropslibrary.HtmlParser;
 import com.readrops.readropslibrary.QueryCallback;
 import com.readrops.readropslibrary.localfeed.AItem;
 import com.readrops.readropslibrary.localfeed.RSSNetwork;
@@ -117,6 +118,8 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
 
         for (Item dbItem : dbItems) {
             if (!Boolean.valueOf(database.itemDao().guidExist(dbItem.getGuid()))) {
+                dbItem.setImageLink(HtmlParser.getDescImageLink(dbItem.getDescription()));
+
                 database.itemDao().insert(dbItem);
                 Log.d(TAG, "adding " + dbItem.getTitle());
             }

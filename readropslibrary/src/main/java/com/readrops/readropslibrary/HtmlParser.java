@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class PageParser {
+public final class HtmlParser {
 
     /**
      * Parse the html page to get the first rss url
@@ -44,7 +44,7 @@ public final class PageParser {
 
         return null;
     }
-    
+
     private static boolean isTypeRssFeed(String type) {
         return type.equals("application/rss+xml") || type.equals("application/atom+xml") || type.equals("application/json");
     }
@@ -83,5 +83,11 @@ public final class PageParser {
         }
 
         return null;
+    }
+
+    public static String getDescImageLink(String description) {
+        Document document = Jsoup.parse(description);
+
+        return document.select("img").first().attr("src");
     }
 }

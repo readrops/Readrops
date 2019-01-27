@@ -12,7 +12,7 @@ public class RSSItem extends AItem {
     @Element(name = "title", required = false)
     private String title;
 
-    @Element(name = "description", required = false)
+    @Element(name = "description", required = false, data = true)
     private String description;
 
     @Element(name = "link", required = false)
@@ -27,7 +27,7 @@ public class RSSItem extends AItem {
     @Element(name = "pubDate", required = false)
     private String pubDate;
 
-    @Element(name = "encoded",required = false)
+    @Element(name = "encoded",required = false, data = true)
     @Namespace(prefix = "content")
     private String content;
 
