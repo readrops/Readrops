@@ -18,4 +18,10 @@ public final class DateUtils {
 
         return new LocalDateTime(formatter.parse(value));
     }
+
+    public static String formatedDateByLocal(LocalDateTime dateTime) {
+        DateFormat df = DateFormat.getDateInstance(DateFormat.LONG, Locale.getDefault());
+
+        return df.format(dateTime.toDate());
+    }
 }

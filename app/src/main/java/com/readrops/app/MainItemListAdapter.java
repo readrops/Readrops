@@ -10,8 +10,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.readrops.app.database.entities.Item;
 
 public class MainItemListAdapter extends ListAdapter<Item, MainItemListAdapter.ViewHolder> {
@@ -40,7 +42,7 @@ public class MainItemListAdapter extends ListAdapter<Item, MainItemListAdapter.V
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-        View view = inflater.inflate(R.layout.compact_list_element, viewGroup, false);
+        View view = inflater.inflate(R.layout.image_list_item, viewGroup, false);
 
         return new ViewHolder(view);
     }
@@ -50,24 +52,31 @@ public class MainItemListAdapter extends ListAdapter<Item, MainItemListAdapter.V
         Item item = getItem(i);
         viewHolder.bind(item);
 
+        // displaying image with some round corners
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
+
         if (item.getImageLink() != null)
-            manager.load(item.getImageLink()).into(viewHolder.itemImage);
+            manager.load(item.getImageLink()).apply(requestOptions).into(viewHolder.itemImage);
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView itemTitle;
         private ImageView itemImage;
+        private TextView date;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             itemTitle = itemView.findViewById(R.id.item_title);
             itemImage = itemView.findViewById(R.id.item_image);
+            date = itemView.findViewById(R.id.item_date);
         }
 
         private void bind(Item item) {
             itemTitle.setText(item.getTitle());
+            date.setText(DateUtils.formatedDateByLocal(item.getFormatedDate()));
         }
     }
 }
