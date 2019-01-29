@@ -20,8 +20,7 @@
         android:layout_alignParentStart="true"
         android:layout_toLeftOf="@id/item_image"
         android:layout_toStartOf="@id/item_image"
-        android:ellipsize="end"
-        />
+        android:ellipsize="end" />
 
     <ImageView
         android:id="@+id/item_image"

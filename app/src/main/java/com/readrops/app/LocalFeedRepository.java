@@ -6,10 +6,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import com.readrops.app.database.Database;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Item;
 import com.readrops.readropslibrary.HtmlParser;
+import com.readrops.readropslibrary.ParsingResult;
 import com.readrops.readropslibrary.QueryCallback;
 import com.readrops.readropslibrary.localfeed.AItem;
 import com.readrops.readropslibrary.localfeed.RSSNetwork;
@@ -20,10 +20,6 @@ import com.readrops.readropslibrary.localfeed.rss.RSSItem;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.readrops.readropslibrary.localfeed.RSSNetwork.RSSType.RSS_2;
-import static com.readrops.readropslibrary.localfeed.RSSNetwork.RSSType.RSS_ATOM;
-import static com.readrops.readropslibrary.localfeed.RSSNetwork.RSSType.RSS_JSON;
 
 public class LocalFeedRepository extends ARepository implements QueryCallback {
 
@@ -64,7 +60,7 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
     }
 
     @Override
-    public void addFeed(Item item) {
+    public void addFeed(ParsingResult result) {
         executor.execute(() -> {
 
         });

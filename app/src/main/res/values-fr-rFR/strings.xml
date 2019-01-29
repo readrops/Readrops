@@ -8,5 +8,8 @@
     <string name="add_folder_item">Ajouter un dossier</string>
     <string name="settings">Paramètres</string>
     <string name="about_item">A propos</string>
+    <string name="add_feed_title">Ajouter un flux</string>
+    <string name="add_feed_url">Adresse du flux</string>
+    <string name="add_feed_validate">Valider</string>
 
 </resources>

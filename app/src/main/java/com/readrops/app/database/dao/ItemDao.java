@@ -16,7 +16,7 @@ public interface ItemDao {
     @Query("Select * from Item Where feed_id = :feedId")
     LiveData<List<Item>> getAllByFeed(int feedId);
 
-    @Query("Select * from Item Order By formatedDate ASC")
+    @Query("Select * from Item Order By formatedDate DESC")
     LiveData<List<Item>> getAll();
 
     @Query("Select case When :guid In (Select guid from Item) Then 'true' else 'false' end")

@@ -16,13 +16,12 @@ import java.util.List;
 public final class HtmlParser {
 
     /**
-     * Parse the html page to get the first rss url
+     * Parse the html page to get all rss urls
      * @param url url to request
-     * @return the first rss url found
+     * @return a list of rss urls with their title
      */
-    public static String getFeedLink(String url) {
-        String feedUrl = null;
-
+    public static List<ParsingResult> getFeedLink(String url) {
+        List<ParsingResult> results = new ArrayList<>();
         try {
             Document document = Jsoup.connect(url).get();
 
@@ -32,12 +31,14 @@ public final class HtmlParser {
                 String type = element.attributes().get("type");
 
                 if (isTypeRssFeed(type)) {
-                    feedUrl = element.attributes().get("href");
-                    break;
+                    String feedUrl = element.attributes().get("href");
+                    String label = element.attributes().get("title");
+
+                    results.add(new ParsingResult(feedUrl, label));
                 }
             }
 
-            return feedUrl;
+            return results;
         } catch (Exception e) {
             e.printStackTrace();
         }

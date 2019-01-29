@@ -12,7 +12,7 @@ import java.util.List;
 @Dao
 public interface FeedDao {
 
-    @Query("Select * from Feed")
+    @Query("Select * from Feed order by name ASC")
     List<Feed> getAllFeeds();
 
     @Insert

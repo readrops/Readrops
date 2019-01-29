@@ -6,6 +6,7 @@ import android.os.Looper;
 
 import com.readrops.app.database.Database;
 import com.readrops.app.database.entities.Item;
+import com.readrops.readropslibrary.ParsingResult;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -28,7 +29,7 @@ public abstract class ARepository {
 
     public abstract void sync();
 
-    public abstract void addFeed(Item item);
+    public abstract void addFeed(ParsingResult result);
 
     public abstract void deleteFeed(Item item);
 

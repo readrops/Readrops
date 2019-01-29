@@ -8,6 +8,7 @@ import android.arch.lifecycle.Observer;
 import android.support.annotation.NonNull;
 
 import com.readrops.app.database.entities.Item;
+import com.readrops.readropslibrary.ParsingResult;
 
 import java.util.List;
 
@@ -34,5 +35,9 @@ public class MainViewModel extends AndroidViewModel {
 
     public void sync() {
         repository.sync();
+    }
+
+    public void addFeed(ParsingResult parsingResult) {
+        repository.addFeed(parsingResult);
     }
 }
