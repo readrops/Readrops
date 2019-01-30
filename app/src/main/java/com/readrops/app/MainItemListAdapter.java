@@ -19,6 +19,7 @@ import com.readrops.app.database.entities.Item;
 public class MainItemListAdapter extends ListAdapter<Item, MainItemListAdapter.ViewHolder> {
 
     private RequestManager manager;
+    private OnItemClickListener listener;
 
     public MainItemListAdapter(RequestManager manager) {
         super(DIFF_CALLBACK);
@@ -34,7 +35,7 @@ public class MainItemListAdapter extends ListAdapter<Item, MainItemListAdapter.V
         @Override
         public boolean areContentsTheSame(@NonNull Item item, @NonNull Item t1) {
             return item.getTitle().equals(t1.getTitle()) &&
-                    item.getContent().equals(t1.getContent());
+                    item.getDescription().equals(t1.getDescription());
         }
     };
 
@@ -60,7 +61,15 @@ public class MainItemListAdapter extends ListAdapter<Item, MainItemListAdapter.V
             manager.load(item.getImageLink()).apply(requestOptions).into(viewHolder.itemImage);
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    public interface OnItemClickListener {
+        void onItemClick(Item item);
+    }
+
+    public void setOnItemClickListener() {
+
+    }
+
+    class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView itemTitle;
         private ImageView itemImage;
@@ -68,6 +77,13 @@ public class MainItemListAdapter extends ListAdapter<Item, MainItemListAdapter.V
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
+
+            itemView.setOnClickListener((view -> {
+                int position = getAdapterPosition();
+
+                if (listener != null && position != RecyclerView.NO_POSITION)
+                    listener.onItemClick(getItem(position));
+            }));
 
             itemTitle = itemView.findViewById(R.id.item_title);
             itemImage = itemView.findViewById(R.id.item_image);
