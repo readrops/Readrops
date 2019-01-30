@@ -1,10 +1,12 @@
 package com.readrops.readropslibrary.localfeed.rss;
 
+import com.readrops.readropslibrary.localfeed.AFeed;
+
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
 @Root(name = "rss", strict = false)
-public class RSSFeed {
+public class RSSFeed extends AFeed {
 
     @Element(name = "channel", required = false)
     private RSSChannel channel;

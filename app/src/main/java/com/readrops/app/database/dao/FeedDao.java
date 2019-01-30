@@ -24,4 +24,7 @@ public interface FeedDao {
     @Query("Select * from Feed Where url = :feedUrl")
     Feed getFeedByUrl(String feedUrl);
 
+    @Query("Select id from Feed Where url = :feedUrl")
+    int getFeedIdByUrl(String feedUrl);
+
 }

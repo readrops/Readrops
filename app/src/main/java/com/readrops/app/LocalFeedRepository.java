@@ -11,10 +11,13 @@ import com.readrops.app.database.entities.Item;
 import com.readrops.readropslibrary.HtmlParser;
 import com.readrops.readropslibrary.ParsingResult;
 import com.readrops.readropslibrary.QueryCallback;
-import com.readrops.readropslibrary.localfeed.AItem;
+import com.readrops.readropslibrary.localfeed.AFeed;
 import com.readrops.readropslibrary.localfeed.RSSNetwork;
 import com.readrops.readropslibrary.localfeed.atom.ATOMEntry;
+import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
+import com.readrops.readropslibrary.localfeed.json.JSONFeed;
 import com.readrops.readropslibrary.localfeed.json.JSONItem;
+import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
 import com.readrops.readropslibrary.localfeed.rss.RSSItem;
 
 import java.text.ParseException;
@@ -23,7 +26,7 @@ import java.util.List;
 
 public class LocalFeedRepository extends ARepository implements QueryCallback {
 
-    public static final String TAG = LocalFeedRepository.class.getSimpleName();
+    private static final String TAG = LocalFeedRepository.class.getSimpleName();
 
     private LiveData<List<Item>> items;
     private List<Feed> feeds;
@@ -53,16 +56,21 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
                 }
             }
 
-            // we go back to the main thread
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.post(() -> callback.onSuccess());
+            postCallBackSuccess();
         });
     }
 
     @Override
     public void addFeed(ParsingResult result) {
         executor.execute(() -> {
+            try {
+                RSSNetwork rssNet = new RSSNetwork();
+                rssNet.request(result.getUrl(), this);
 
+                postCallBackSuccess();
+            } catch (Exception e) {
+                failureCallBackInMainThread(e);
+            }
         });
     }
 
@@ -80,77 +88,90 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
 
 
     @Override
-    public void onSyncSuccess(List<? extends AItem> items, RSSNetwork.RSSType type, String feedUrl) {
+    public void onSyncSuccess(AFeed feed, RSSNetwork.RSSType type) {
         switch (type) {
             case RSS_2:
-                List<RSSItem> rssItems = (List<RSSItem>)items;
-                parseRSSItems(rssItems, feedUrl);
+                parseRSSItems(((RSSFeed) feed));
                 break;
             case RSS_ATOM:
-                List<ATOMEntry> atomItems = (List<ATOMEntry>)items;
-                parseATOMItems(atomItems, feedUrl);
+                parseATOMItems(((ATOMFeed) feed));
                 break;
             case RSS_JSON:
-                List<JSONItem> jsonItems =  (List<JSONItem>)items;
-                parseJSONItems(jsonItems, feedUrl);
+                parseJSONItems(((JSONFeed) feed));
                 break;
         }
     }
 
     @Override
-    public void onSyncFailure(Exception ex) {
-        failureCallBackInMainThread(ex);
+    public void onSyncFailure(Exception e) {
+        failureCallBackInMainThread(e);
     }
 
-    private void parseRSSItems(List<RSSItem> items, String feedUrl) {
-        Feed feed = database.feedDao().getFeedByUrl(feedUrl);
+    private void parseRSSItems(RSSFeed rssFeed) {
+        Feed dbFeed = database.feedDao().getFeedByUrl(rssFeed.getChannel().getFeedUrl());
+        if (dbFeed == null) {
+            dbFeed = Feed.feedFromRSS(rssFeed.getChannel());
+            database.feedDao().insert(dbFeed);
+
+            dbFeed.setId(database.feedDao().getFeedIdByUrl(rssFeed.getChannel().getFeedUrl()));
+        }
 
         List<Item> dbItems = new ArrayList<>();
         try {
-            dbItems = Item.itemsFromRSS(items, feed);
+            dbItems = Item.itemsFromRSS(rssFeed.getChannel().getItems(), dbFeed);
         } catch (ParseException e) {
-            e.printStackTrace();
+            failureCallBackInMainThread(e);
         }
 
-        for (Item dbItem : dbItems) {
+        insertItems(dbItems);
+    }
+
+    private void parseATOMItems(ATOMFeed feed) {
+        Feed dbFeed = database.feedDao().getFeedByUrl(feed.getLink());
+        if (dbFeed == null) {
+            dbFeed = Feed.feedFromATOM(feed);
+            database.feedDao().insert(dbFeed);
+
+            dbFeed.setId(database.feedDao().getFeedIdByUrl(feed.getLink()));
+        }
+
+        List<Item> dbItems = new ArrayList<>();
+        try {
+            dbItems = Item.itemsFromATOM(feed.getEntries(), dbFeed);
+        } catch (ParseException e) {
+            failureCallBackInMainThread(e);
+        }
+
+        insertItems(dbItems);
+    }
+
+    private void parseJSONItems(JSONFeed feed) {
+        Feed dbFeed = database.feedDao().getFeedByUrl(feed.getFeedUrl());
+        if (dbFeed == null) {
+            dbFeed = Feed.feedFromJSON(feed);
+            database.feedDao().insert(dbFeed);
+
+            dbFeed.setId(database.feedDao().getFeedIdByUrl(feed.getFeedUrl()));
+        }
+
+        List<Item> dbItems = new ArrayList<>();
+        try {
+            dbItems = Item.itemsFromJSON(feed.getItems(), dbFeed);
+        } catch (ParseException e) {
+            failureCallBackInMainThread(e);
+        }
+
+        insertItems(dbItems);
+    }
+
+    private void insertItems(List<Item> items) {
+        for (Item dbItem : items) {
             if (!Boolean.valueOf(database.itemDao().guidExist(dbItem.getGuid()))) {
                 dbItem.setImageLink(HtmlParser.getDescImageLink(dbItem.getDescription()));
 
                 database.itemDao().insert(dbItem);
                 Log.d(TAG, "adding " + dbItem.getTitle());
             }
-        }
-    }
-
-    private void parseATOMItems(List<ATOMEntry> items, String feedUrl) {
-        Feed feed = database.feedDao().getFeedByUrl(feedUrl);
-
-        List<Item> dbItems = new ArrayList<>();
-        try {
-            dbItems = Item.itemsFromATOM(items, feed);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        for (Item dbItem : dbItems) {
-            if (!Boolean.valueOf(database.itemDao().guidExist(dbItem.getGuid())))
-                database.itemDao().insert(dbItem);
-        }
-    }
-
-    private void parseJSONItems(List<JSONItem> items, String feedUrl) {
-        Feed feed = database.feedDao().getFeedByUrl(feedUrl);
-
-        List<Item> dbItems = new ArrayList<>();
-        try {
-            dbItems = Item.itemsFromJSON(items, feed);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        for (Item dbItem : dbItems) {
-            if (!Boolean.valueOf(database.itemDao().guidExist(dbItem.getGuid())))
-                database.itemDao().insert(dbItem);
         }
     }
 

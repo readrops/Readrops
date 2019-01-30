@@ -7,6 +7,7 @@ import android.os.Looper;
 import com.readrops.app.database.Database;
 import com.readrops.app.database.entities.Item;
 import com.readrops.readropslibrary.ParsingResult;
+import com.readrops.readropslibrary.localfeed.RSSNetwork;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -35,9 +36,15 @@ public abstract class ARepository {
 
     public abstract void moveFeed(Item item);
 
-    protected void failureCallBackInMainThread(Exception ex) {
+    protected void failureCallBackInMainThread(Exception e) {
         Handler handler = new Handler(Looper.getMainLooper());
 
-        handler.post(() -> callback.onFailure(ex));
+        handler.post(() -> callback.onFailure(e));
+    }
+
+    protected void postCallBackSuccess() {
+        // we go back to the main thread
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(() -> callback.onSuccess());
     }
 }

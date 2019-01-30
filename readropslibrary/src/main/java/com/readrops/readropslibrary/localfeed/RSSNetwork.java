@@ -1,7 +1,5 @@
 package com.readrops.readropslibrary.localfeed;
 
-import android.util.Log;
-
 import com.google.gson.Gson;
 import com.readrops.readropslibrary.QueryCallback;
 import com.readrops.readropslibrary.Utils.Utils;
@@ -13,7 +11,6 @@ import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
 import java.io.InputStream;
-import java.util.List;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -57,16 +54,16 @@ public class RSSNetwork {
         switch (type) {
             case RSS_2:
                 RSSFeed rssFeed = serializer.read(RSSFeed.class, xml);
-                callback.onSyncSuccess(rssFeed.getChannel().getItems(), type, url);
+                callback.onSyncSuccess(rssFeed, type);
                 break;
             case RSS_ATOM:
                 ATOMFeed atomFeed = serializer.read(ATOMFeed.class, stream);
-                callback.onSyncSuccess(atomFeed.getEntries(), type, url);
+                callback.onSyncSuccess(atomFeed, type);
                 break;
             case RSS_JSON:
                 Gson gson = new Gson();
                 JSONFeed feed = gson.fromJson(Utils.inputStreamToString(stream), JSONFeed.class);
-                callback.onSyncSuccess(feed.getItems(), type, url);
+                callback.onSyncSuccess(feed, type);
                 break;
         }
     }

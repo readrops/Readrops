@@ -15,15 +15,18 @@ public class RSSChannel {
     @Element(name = "description", required = false)
     private String description;
 
-    @Element(name = "link", required = false)
-    private String link;
+    // workaround to get the two links (feed and regular)
+    @ElementList(name = "link", inline = true, required = false)
+    private List<RSSLink> links;
+
+    @Element(name = "lastBuildDate", required = false)
+    private String lastUpdated;
 
     @Element(required = false)
     private RSSImage image;
 
     @ElementList(inline = true, required = false)
     private List<RSSItem> items;
-
 
     public String getTitle() {
         return title;
@@ -41,12 +44,12 @@ public class RSSChannel {
         this.description = description;
     }
 
-    public String getLink() {
-        return link;
+    public List<RSSLink> getLinks() {
+        return links;
     }
 
-    public void setLink(String link) {
-        this.link = link;
+    public void setLinks(List<RSSLink> links) {
+        this.links = links;
     }
 
     public List<RSSItem> getItems() {
@@ -55,5 +58,35 @@ public class RSSChannel {
 
     public void setItems(List<RSSItem> items) {
         this.items = items;
+    }
+
+    public String getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(String lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+    public RSSImage getImage() {
+        return image;
+    }
+
+    public void setImage(RSSImage image) {
+        this.image = image;
+    }
+
+    public String getFeedUrl() {
+        if (links.size() > 0)
+            return links.get(0).getHref();
+        else
+            return null;
+    }
+
+    public String getUrl() {
+        if (links.size() > 1)
+            return links.get(1).getText();
+        else
+            return null;
     }
 }

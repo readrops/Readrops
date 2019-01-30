@@ -3,6 +3,8 @@ package com.readrops.app.database.entities;
 
 import android.arch.persistence.room.*;
 
+import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
+import com.readrops.readropslibrary.localfeed.json.JSONFeed;
 import com.readrops.readropslibrary.localfeed.rss.RSSChannel;
 
 @Entity
@@ -16,6 +18,10 @@ public class Feed {
     private String description;
 
     private String url;
+
+    private String siteUrl;
+
+    private String lastUpdated;
 
     public Feed() {
 
@@ -52,6 +58,14 @@ public class Feed {
         this.url = url;
     }
 
+    public String getSiteUrl() {
+        return siteUrl;
+    }
+
+    public void setSiteUrl(String siteUrl) {
+        this.siteUrl = siteUrl;
+    }
+
     public String getName() {
         return name;
     }
@@ -60,11 +74,44 @@ public class Feed {
         this.name = name;
     }
 
+    public String getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(String lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
     public static Feed feedFromRSS(RSSChannel channel) {
         Feed feed = new Feed();
 
-        feed.setUrl(channel.getLink());
+        feed.setName(channel.getTitle());
+        feed.setUrl(channel.getFeedUrl());
+        feed.setSiteUrl(channel.getUrl());
         feed.setDescription(channel.getDescription());
+        feed.setLastUpdated(channel.getLastUpdated());
+
+        return feed;
+    }
+
+    public static Feed feedFromATOM(ATOMFeed atomFeed) {
+        Feed feed = new Feed();
+
+        feed.setName(atomFeed.getTitle());
+        feed.setDescription(atomFeed.getSubtitle());
+        feed.setUrl(atomFeed.getLink());
+        feed.setLastUpdated(atomFeed.getUpdated());
+
+        return feed;
+    }
+
+    public static Feed feedFromJSON(JSONFeed jsonFeed) {
+        Feed feed = new Feed();
+
+        feed.setName(jsonFeed.getTitle());
+        feed.setUrl(jsonFeed.getFeedUrl());
+        feed.setDescription(jsonFeed.getDescription());
+        //feed.setLastUpdated(jsonFeed.); maybe later ?
 
         return feed;
     }

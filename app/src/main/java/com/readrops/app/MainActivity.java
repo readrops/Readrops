@@ -186,6 +186,7 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
     }
 
     public void insertNewFeed(ParsingResult result) {
+        refreshLayout.setRefreshing(true);
         viewModel.addFeed(result);
     }
 }

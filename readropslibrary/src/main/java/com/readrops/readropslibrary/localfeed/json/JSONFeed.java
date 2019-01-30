@@ -1,10 +1,11 @@
 package com.readrops.readropslibrary.localfeed.json;
 
 import com.google.gson.annotations.SerializedName;
+import com.readrops.readropslibrary.localfeed.AFeed;
 
 import java.util.List;
 
-public class JSONFeed {
+public class JSONFeed extends AFeed {
 
     private String title;
 

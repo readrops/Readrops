@@ -1,5 +1,7 @@
 package com.readrops.readropslibrary.localfeed.atom;
 
+import com.readrops.readropslibrary.localfeed.AFeed;
+
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
@@ -7,7 +9,7 @@ import org.simpleframework.xml.Root;
 import java.util.List;
 
 @Root(name = "feed", strict = false)
-public class ATOMFeed {
+public class ATOMFeed extends AFeed {
 
     @Element(required = false)
     private String title;
