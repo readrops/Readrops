@@ -20,30 +20,26 @@ public final class HtmlParser {
      * @param url url to request
      * @return a list of rss urls with their title
      */
-    public static List<ParsingResult> getFeedLink(String url) {
+    public static List<ParsingResult> getFeedLink(String url) throws Exception {
         List<ParsingResult> results = new ArrayList<>();
-        try {
-            Document document = Jsoup.connect(url).get();
 
-            Elements elements = document.select("link");
+        Document document = Jsoup.connect(url).get();
 
-            for (Element element : elements) {
-                String type = element.attributes().get("type");
+        Elements elements = document.select("link");
 
-                if (isTypeRssFeed(type)) {
-                    String feedUrl = element.attributes().get("href");
-                    String label = element.attributes().get("title");
+        for (Element element : elements) {
+            String type = element.attributes().get("type");
 
-                    results.add(new ParsingResult(feedUrl, label));
-                }
+            if (isTypeRssFeed(type)) {
+                String feedUrl = element.attributes().get("href");
+                String label = element.attributes().get("title");
+
+                results.add(new ParsingResult(feedUrl, label));
             }
-
-            return results;
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
-        return null;
+        return results;
+
     }
 
     private static boolean isTypeRssFeed(String type) {

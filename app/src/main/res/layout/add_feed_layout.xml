@@ -15,6 +15,9 @@
         android:layout_marginEnd="10dp"
         android:text="@string/add_feed_title"
         android:textAlignment="center"
+        android:textSize="22sp"
+        android:textColor="#FF3D3A3A"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

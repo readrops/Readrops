@@ -12,4 +12,6 @@
     <string name="add_feed_title">Add feed</string>
     <string name="add_feed_url">Feed url</string>
     <string name="add_feed_validate">Validate</string>
+    <string name="add_feed_empty_field">Field can\'t be empty</string>
+    <string name="add_feed_wrong_url">Input is not a valid URL</string>
 </resources>
