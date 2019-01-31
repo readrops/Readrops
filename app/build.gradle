@@ -36,6 +36,10 @@ dependencies {
 
     implementation 'com.github.bumptech.glide:glide:4.8.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
+    implementation ("com.github.bumptech.glide:recyclerview-integration:4.8.0") {
+        // Excludes the support library because it's already included by Glide.
+        transitive = false
+    }
 
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
@@ -49,4 +53,7 @@ dependencies {
     implementation "joda-time:joda-time:2.9.9"
 
     implementation 'com.android.support:cardview-v7:28.0.0'
+
+
+
 }

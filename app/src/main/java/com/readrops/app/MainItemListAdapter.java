@@ -1,29 +1,44 @@
 package com.readrops.app;
 
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.recyclerview.extensions.ListAdapter;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.ListPreloader;
+import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
+import com.bumptech.glide.util.ViewPreloadSizeProvider;
 import com.readrops.app.database.entities.Item;
 
-public class MainItemListAdapter extends ListAdapter<Item, MainItemListAdapter.ViewHolder> {
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+public class MainItemListAdapter extends ListAdapter<Item, MainItemListAdapter.ViewHolder> implements ListPreloader.PreloadModelProvider<String> {
 
     private RequestManager manager;
     private OnItemClickListener listener;
+    private ViewPreloadSizeProvider preloadSizeProvider;
 
-    public MainItemListAdapter(RequestManager manager) {
+    public MainItemListAdapter(RequestManager manager, ViewPreloadSizeProvider preloadSizeProvider) {
         super(DIFF_CALLBACK);
+
         this.manager = manager;
+        this.preloadSizeProvider = preloadSizeProvider;
     }
 
     private static final DiffUtil.ItemCallback<Item> DIFF_CALLBACK = new DiffUtil.ItemCallback<Item>() {
@@ -39,6 +54,8 @@ public class MainItemListAdapter extends ListAdapter<Item, MainItemListAdapter.V
         }
     };
 
+    private static final DrawableCrossFadeFactory fadeFactory = new DrawableCrossFadeFactory.Builder().setCrossFadeEnabled(true).build();
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -53,20 +70,39 @@ public class MainItemListAdapter extends ListAdapter<Item, MainItemListAdapter.V
         Item item = getItem(i);
         viewHolder.bind(item);
 
+        preloadSizeProvider.setView(viewHolder.itemImage);
+
         // displaying image with some round corners
         RequestOptions requestOptions = new RequestOptions();
         requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
 
         if (item.getImageLink() != null)
-            manager.load(item.getImageLink()).apply(requestOptions).into(viewHolder.itemImage);
+            manager.load(item.getImageLink())
+                    .apply(requestOptions)
+                    .transition(DrawableTransitionOptions.withCrossFade(fadeFactory))
+                    .into(viewHolder.itemImage);
+    }
+
+    @NonNull
+    @Override
+    public List<String> getPreloadItems(int position) {
+        String url = getItem(position).getImageLink();
+
+        return Collections.singletonList(url);
+    }
+
+    @Nullable
+    @Override
+    public RequestBuilder<Drawable> getPreloadRequestBuilder(@NonNull String url) {
+        return manager.load(url);
     }
 
     public interface OnItemClickListener {
         void onItemClick(Item item);
     }
 
-    public void setOnItemClickListener() {
-
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

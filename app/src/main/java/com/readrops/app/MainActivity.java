@@ -4,13 +4,11 @@ import android.app.Dialog;
 import android.arch.lifecycle.ViewModelProvider;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,11 +18,11 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
+import com.bumptech.glide.util.ViewPreloadSizeProvider;
 import com.readrops.app.database.entities.Item;
 import com.readrops.readropslibrary.ParsingResult;
 
@@ -46,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
 
-    private List<Item> itemList;
+    private List<Item> newItems;
 
     private TreeMap<LocalDateTime, Item> itemsMap;
 
@@ -84,14 +82,16 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
         viewModel.setSimpleCallback(this);
 
         itemsMap = new TreeMap<>(LocalDateTime::compareTo);
-        itemList = new ArrayList<>();
+        newItems = new ArrayList<>();
 
         viewModel.getItems().observe(this, (List<Item> items) -> {
-            for (Item item : items) {
+            /*for (Item item : items) {
                 itemsMap.put(item.getFormatedDate(), item);
-            }
+            }*/
 
-            adapter.submitList(items);
+            newItems = items;
+            if (!refreshLayout.isRefreshing())
+                adapter.submitList(newItems);
         });
 
         refreshLayout = findViewById(R.id.swipe_refresh_layout);
@@ -122,7 +122,12 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
     private void initRecyclerView() {
         recyclerView = findViewById(R.id.items_recycler_view);
 
-        adapter = new MainItemListAdapter(Glide.with(this));
+        ViewPreloadSizeProvider preloadSizeProvider = new ViewPreloadSizeProvider();
+        adapter = new MainItemListAdapter(Glide.with(this), preloadSizeProvider);
+
+        RecyclerViewPreloader<String> preloader = new RecyclerViewPreloader<String>(Glide.with(this), adapter, preloadSizeProvider, 10);
+        recyclerView.addOnScrollListener(preloader);
+
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
@@ -158,6 +163,10 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
                 return true;
             }
         }).attachToRecyclerView(recyclerView);
+
+
+
+
     }
 
     private void updateList() {
@@ -167,6 +176,8 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
     @Override
     public void onSuccess() {
         refreshLayout.setRefreshing(false);
+        adapter.submitList(newItems);
+        //newItems.clear();
     }
 
     @Override
