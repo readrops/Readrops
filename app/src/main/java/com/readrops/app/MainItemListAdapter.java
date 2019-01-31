@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.recyclerview.extensions.ListAdapter;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
-import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,13 +21,13 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
 import com.bumptech.glide.util.ViewPreloadSizeProvider;
+import com.readrops.app.database.ItemWithFeed;
 import com.readrops.app.database.entities.Item;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class MainItemListAdapter extends ListAdapter<Item, MainItemListAdapter.ViewHolder> implements ListPreloader.PreloadModelProvider<String> {
+public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListAdapter.ViewHolder> implements ListPreloader.PreloadModelProvider<String> {
 
     private RequestManager manager;
     private OnItemClickListener listener;
@@ -41,16 +40,19 @@ public class MainItemListAdapter extends ListAdapter<Item, MainItemListAdapter.V
         this.preloadSizeProvider = preloadSizeProvider;
     }
 
-    private static final DiffUtil.ItemCallback<Item> DIFF_CALLBACK = new DiffUtil.ItemCallback<Item>() {
+    private static final DiffUtil.ItemCallback<ItemWithFeed> DIFF_CALLBACK = new DiffUtil.ItemCallback<ItemWithFeed>() {
         @Override
-        public boolean areItemsTheSame(@NonNull Item item, @NonNull Item t1) {
-            return item.getId() == t1.getId();
+        public boolean areItemsTheSame(@NonNull ItemWithFeed item, @NonNull ItemWithFeed t1) {
+            return item.getItem().getId() == t1.getItem().getId();
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull Item item, @NonNull Item t1) {
-            return item.getTitle().equals(t1.getTitle()) &&
-                    item.getDescription().equals(t1.getDescription());
+        public boolean areContentsTheSame(@NonNull ItemWithFeed itemWithFeed, @NonNull ItemWithFeed t1) {
+            Item item = itemWithFeed.getItem();
+            Item item1 = t1.getItem();
+
+            return item.getTitle().equals(item1.getTitle()) &&
+                    item.getDescription().equals(item1.getDescription());
         }
     };
 
@@ -67,8 +69,8 @@ public class MainItemListAdapter extends ListAdapter<Item, MainItemListAdapter.V
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        Item item = getItem(i);
-        viewHolder.bind(item);
+        ItemWithFeed itemWithFeed = getItem(i);
+        viewHolder.bind(itemWithFeed);
 
         preloadSizeProvider.setView(viewHolder.itemImage);
 
@@ -76,8 +78,8 @@ public class MainItemListAdapter extends ListAdapter<Item, MainItemListAdapter.V
         RequestOptions requestOptions = new RequestOptions();
         requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
 
-        if (item.getImageLink() != null)
-            manager.load(item.getImageLink())
+        if (itemWithFeed.getItem().getImageLink() != null)
+            manager.load(itemWithFeed.getItem().getImageLink())
                     .apply(requestOptions)
                     .transition(DrawableTransitionOptions.withCrossFade(fadeFactory))
                     .into(viewHolder.itemImage);
@@ -86,7 +88,7 @@ public class MainItemListAdapter extends ListAdapter<Item, MainItemListAdapter.V
     @NonNull
     @Override
     public List<String> getPreloadItems(int position) {
-        String url = getItem(position).getImageLink();
+        String url = getItem(position).getItem().getImageLink();
 
         return Collections.singletonList(url);
     }
@@ -98,7 +100,7 @@ public class MainItemListAdapter extends ListAdapter<Item, MainItemListAdapter.V
     }
 
     public interface OnItemClickListener {
-        void onItemClick(Item item);
+        void onItemClick(ItemWithFeed itemWithFeed);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -110,6 +112,7 @@ public class MainItemListAdapter extends ListAdapter<Item, MainItemListAdapter.V
         private TextView itemTitle;
         private ImageView itemImage;
         private TextView date;
+        private TextView feedName;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -124,11 +127,14 @@ public class MainItemListAdapter extends ListAdapter<Item, MainItemListAdapter.V
             itemTitle = itemView.findViewById(R.id.item_title);
             itemImage = itemView.findViewById(R.id.item_image);
             date = itemView.findViewById(R.id.item_date);
+            feedName = itemView.findViewById(R.id.item_feed_title);
         }
 
-        private void bind(Item item) {
+        private void bind(ItemWithFeed itemWithFeed) {
+            Item item = itemWithFeed.getItem();
             itemTitle.setText(item.getTitle());
-            date.setText(DateUtils.formatedDateByLocal(item.getFormatedDate()));
+            date.setText(DateUtils.formatedDateByLocal(item.getPubDate()));
+            feedName.setText(itemWithFeed.getFeedName());
         }
     }
 }

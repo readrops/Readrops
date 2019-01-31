@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import com.readrops.app.database.ItemWithFeed;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Item;
 import com.readrops.readropslibrary.HtmlParser;
@@ -28,18 +29,16 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
 
     private static final String TAG = LocalFeedRepository.class.getSimpleName();
 
-    private LiveData<List<Item>> items;
-    private List<Feed> feeds;
+    private LiveData<List<ItemWithFeed>> itemsWhithFeed;
 
     public LocalFeedRepository(Application application) {
         super(application);
 
-        items = database.itemDao().getAll();
-        //feeds = database.feedDao().getAllFeeds();
+        itemsWhithFeed = database.itemDao().getAllItemWithFeeds();
     }
 
-    public LiveData<List<Item>> getItems() {
-        return items;
+    public LiveData<List<ItemWithFeed>> getItemsWhithFeed() {
+        return itemsWhithFeed;
     }
 
     @Override

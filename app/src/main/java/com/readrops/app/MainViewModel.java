@@ -7,6 +7,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.support.annotation.NonNull;
 
+import com.readrops.app.database.ItemWithFeed;
 import com.readrops.app.database.entities.Item;
 import com.readrops.readropslibrary.ParsingResult;
 
@@ -14,7 +15,7 @@ import java.util.List;
 
 public class MainViewModel extends AndroidViewModel {
 
-    private LiveData<List<Item>> items;
+    private LiveData<List<ItemWithFeed>> itemsWithFeed;
     private LocalFeedRepository repository;
 
     public MainViewModel(@NonNull Application application) {
@@ -22,11 +23,11 @@ public class MainViewModel extends AndroidViewModel {
 
         repository = new LocalFeedRepository(application);
 
-        items = repository.getItems();
+        itemsWithFeed = repository.getItemsWhithFeed();
     }
 
-    public LiveData<List<Item>> getItems() {
-        return items;
+    public LiveData<List<ItemWithFeed>> getItemsWithFeed() {
+        return itemsWithFeed;
     }
 
     public void setSimpleCallback(SimpleCallback simpleCallback) {

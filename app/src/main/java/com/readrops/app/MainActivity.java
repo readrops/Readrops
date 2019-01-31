@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
 import com.bumptech.glide.util.ViewPreloadSizeProvider;
+import com.readrops.app.database.ItemWithFeed;
 import com.readrops.app.database.entities.Item;
 import com.readrops.readropslibrary.ParsingResult;
 
@@ -44,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
 
-    private List<Item> newItems;
+    private List<ItemWithFeed> newItems;
 
     private TreeMap<LocalDateTime, Item> itemsMap;
 
@@ -84,15 +85,11 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
         itemsMap = new TreeMap<>(LocalDateTime::compareTo);
         newItems = new ArrayList<>();
 
-        viewModel.getItems().observe(this, (List<Item> items) -> {
-            /*for (Item item : items) {
-                itemsMap.put(item.getFormatedDate(), item);
-            }*/
-
-            newItems = items;
+        viewModel.getItemsWithFeed().observe(this, (itemWithFeeds -> {
+            newItems = itemWithFeeds;
             if (!refreshLayout.isRefreshing())
                 adapter.submitList(newItems);
-        });
+        }));
 
         refreshLayout = findViewById(R.id.swipe_refresh_layout);
         refreshLayout.setOnRefreshListener(this);
