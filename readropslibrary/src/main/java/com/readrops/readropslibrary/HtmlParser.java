@@ -25,7 +25,7 @@ public final class HtmlParser {
     public static List<ParsingResult> getFeedLink(String url) throws Exception {
         List<ParsingResult> results = new ArrayList<>();
 
-        Document document = Jsoup.connect(url).get();
+        Document document = Jsoup.parse(getHTMLHeadFromUrl(url));
 
         Elements elements = document.select("link");
 
