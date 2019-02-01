@@ -13,6 +13,8 @@ public class ItemWithFeed {
     @ColumnInfo(name = "name")
     private String feedName;
 
+    private int color;
+
     public Item getItem() {
         return item;
     }
@@ -27,5 +29,13 @@ public class ItemWithFeed {
 
     public void setFeedName(String feedName) {
         this.feedName = feedName;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
     }
 }

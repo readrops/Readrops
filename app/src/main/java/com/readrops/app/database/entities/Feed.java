@@ -2,6 +2,7 @@ package com.readrops.app.database.entities;
 
 
 import android.arch.persistence.room.*;
+import android.support.annotation.ColorInt;
 
 import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
 import com.readrops.readropslibrary.localfeed.json.JSONFeed;
@@ -22,6 +23,8 @@ public class Feed {
     private String siteUrl;
 
     private String lastUpdated;
+
+    private @ColorInt int color;
 
     public Feed() {
 
@@ -80,6 +83,14 @@ public class Feed {
 
     public void setLastUpdated(String lastUpdated) {
         this.lastUpdated = lastUpdated;
+    }
+
+    public @ColorInt int getColor() {
+        return color;
+    }
+
+    public void setColor(@ColorInt int color) {
+        this.color = color;
     }
 
     public static Feed feedFromRSS(RSSChannel channel) {

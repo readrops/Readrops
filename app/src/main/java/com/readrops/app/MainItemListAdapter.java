@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.ListPreloader;
 import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.RequestManager;
@@ -132,9 +133,13 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
 
         private void bind(ItemWithFeed itemWithFeed) {
             Item item = itemWithFeed.getItem();
+
             itemTitle.setText(item.getTitle());
             date.setText(DateUtils.formatedDateByLocal(item.getPubDate()));
             feedName.setText(itemWithFeed.getFeedName());
+
+            if (itemWithFeed.getColor() != 0)
+                feedName.setTextColor(itemWithFeed.getColor());
         }
     }
 }

@@ -2,8 +2,13 @@ package com.readrops.app;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.ColorInt;
+import android.support.v7.graphics.Palette;
 import android.util.Log;
 
 import com.readrops.app.database.ItemWithFeed;
@@ -21,9 +26,15 @@ import com.readrops.readropslibrary.localfeed.json.JSONItem;
 import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
 import com.readrops.readropslibrary.localfeed.rss.RSSItem;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class LocalFeedRepository extends ARepository implements QueryCallback {
 
@@ -107,60 +118,66 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
     }
 
     private void parseRSSItems(RSSFeed rssFeed) {
-        Feed dbFeed = database.feedDao().getFeedByUrl(rssFeed.getChannel().getFeedUrl());
-        if (dbFeed == null) {
-            dbFeed = Feed.feedFromRSS(rssFeed.getChannel());
-            database.feedDao().insert(dbFeed);
-
-            dbFeed.setId(database.feedDao().getFeedIdByUrl(rssFeed.getChannel().getFeedUrl()));
-        }
-
-        List<Item> dbItems = new ArrayList<>();
         try {
-            dbItems = Item.itemsFromRSS(rssFeed.getChannel().getItems(), dbFeed);
-        } catch (ParseException e) {
+            Feed dbFeed = database.feedDao().getFeedByUrl(rssFeed.getChannel().getFeedUrl());
+            if (dbFeed == null) {
+                dbFeed = Feed.feedFromRSS(rssFeed.getChannel());
+
+                dbFeed.setColor(getFaviconColor(dbFeed.getSiteUrl()));
+
+                database.feedDao().insert(dbFeed);
+                dbFeed.setId(database.feedDao().getFeedIdByUrl(rssFeed.getChannel().getFeedUrl()));
+            }
+
+            List<Item> dbItems = Item.itemsFromRSS(rssFeed.getChannel().getItems(), dbFeed);
+            insertItems(dbItems);
+
+        } catch (Exception e) {
             failureCallBackInMainThread(e);
         }
 
-        insertItems(dbItems);
     }
 
     private void parseATOMItems(ATOMFeed feed) {
-        Feed dbFeed = database.feedDao().getFeedByUrl(feed.getLink());
-        if (dbFeed == null) {
-            dbFeed = Feed.feedFromATOM(feed);
-            database.feedDao().insert(dbFeed);
-
-            dbFeed.setId(database.feedDao().getFeedIdByUrl(feed.getLink()));
-        }
-
-        List<Item> dbItems = new ArrayList<>();
         try {
-            dbItems = Item.itemsFromATOM(feed.getEntries(), dbFeed);
-        } catch (ParseException e) {
+            Feed dbFeed = database.feedDao().getFeedByUrl(feed.getLink());
+            if (dbFeed == null) {
+                dbFeed = Feed.feedFromATOM(feed);
+                database.feedDao().insert(dbFeed);
+
+                dbFeed.setColor(getFaviconColor(dbFeed.getSiteUrl()));
+
+                dbFeed.setId(database.feedDao().getFeedIdByUrl(feed.getLink()));
+            }
+
+            List<Item> dbItems = Item.itemsFromATOM(feed.getEntries(), dbFeed);
+            insertItems(dbItems);
+
+        } catch (Exception e) {
             failureCallBackInMainThread(e);
         }
 
-        insertItems(dbItems);
+
     }
 
     private void parseJSONItems(JSONFeed feed) {
-        Feed dbFeed = database.feedDao().getFeedByUrl(feed.getFeedUrl());
-        if (dbFeed == null) {
-            dbFeed = Feed.feedFromJSON(feed);
-            database.feedDao().insert(dbFeed);
-
-            dbFeed.setId(database.feedDao().getFeedIdByUrl(feed.getFeedUrl()));
-        }
-
-        List<Item> dbItems = new ArrayList<>();
         try {
-            dbItems = Item.itemsFromJSON(feed.getItems(), dbFeed);
-        } catch (ParseException e) {
+            Feed dbFeed = database.feedDao().getFeedByUrl(feed.getFeedUrl());
+            if (dbFeed == null) {
+                dbFeed = Feed.feedFromJSON(feed);
+                database.feedDao().insert(dbFeed);
+
+                dbFeed.setColor(getFaviconColor(dbFeed.getSiteUrl()));
+
+                dbFeed.setId(database.feedDao().getFeedIdByUrl(feed.getFeedUrl()));
+            }
+
+            List<Item> dbItems = Item.itemsFromJSON(feed.getItems(), dbFeed);
+            insertItems(dbItems);
+
+        } catch (Exception e) {
             failureCallBackInMainThread(e);
         }
-
-        insertItems(dbItems);
     }
 
     private void insertItems(List<Item> items) {
@@ -172,6 +189,23 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
                 Log.d(TAG, "adding " + dbItem.getTitle());
             }
         }
+    }
+
+    private @ColorInt int getFaviconColor(String url) throws IOException {
+        String favUrl = HtmlParser.getFaviconLink(url);
+        Bitmap favicon = getFaviconFromUrl(favUrl);
+        Palette palette = Palette.from(favicon).generate();
+
+        return palette.getDominantSwatch().getRgb();
+    }
+
+    private Bitmap getFaviconFromUrl(String url) throws IOException {
+        OkHttpClient okHttpClient = new OkHttpClient();
+        Request request = new Request.Builder().url(url).build();
+
+        Response response = okHttpClient.newCall(request).execute();
+        InputStream inputStream = response.body().byteStream();
+        return BitmapFactory.decodeStream(inputStream);
     }
 
 }

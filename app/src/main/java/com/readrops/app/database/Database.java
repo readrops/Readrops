@@ -35,9 +35,9 @@ public abstract class Database extends RoomDatabase {
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
 
-            Feed feed1 = new Feed("Le Media", "this is a description", "https://lemediapresse.fr/feed/");
+            /*Feed feed1 = new Feed("Le Media", "this is a description", "https://lemediapresse.fr/feed/");
 
-            new Thread(() -> database.feedDao().insert(feed1)).start();
+            new Thread(() -> database.feedDao().insert(feed1)).start();*/
         }
 
         @Override

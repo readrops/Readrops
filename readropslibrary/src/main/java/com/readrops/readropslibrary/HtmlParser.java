@@ -15,6 +15,8 @@ import java.util.List;
 
 public final class HtmlParser {
 
+    private static final String TAG = HtmlParser.class.getSimpleName();
+
     /**
      * Parse the html page to get all rss urls
      * @param url url to request
@@ -52,34 +54,48 @@ public final class HtmlParser {
      * @param url url to request
      * @return the item image
      */
-    public static String getOGImageLink(String url) {
+    public static String getOGImageLink(String url) throws IOException {
         String imageUrl = null;
 
-        try {
+        String head = getHTMLHeadFromUrl(url);
 
-            long start = System.currentTimeMillis();
-            Connection.Response response = Jsoup.connect(url).execute();
+        Document document = Jsoup.parse(head);
+        Element element = document.select("meta[property=og:image]").first();
 
-            String body = response.body();
-            String head = body.substring(body.indexOf("<head>"), body.indexOf("</head>"));
+        if (element != null)
+            imageUrl = element.attributes().get("content");
 
-            Document document = Jsoup.parse(head);
-            Element element = document.select("meta[property=og:image]").first();
+        return imageUrl;
+    }
 
-            if (element != null)
-                imageUrl = element.attributes().get("content");
+    public static String getFaviconLink(String url) throws IOException {
+        String favUrl = null;
+        String head = getHTMLHeadFromUrl(url);
 
-            long end = System.currentTimeMillis();
+        Document document = Jsoup.parse(head);
+        Elements elements = document.select("link");
 
-            Log.d("temps de parsing", String.valueOf(end - start));
-
-            return imageUrl;
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        for (Element element : elements) {
+            if (element.attributes().get("rel").contains("icon")) {
+                favUrl = element.attributes().get("href");
+                break;
+            }
         }
 
-        return null;
+        return favUrl;
+    }
+
+    private static String getHTMLHeadFromUrl(String url) throws IOException {
+        long start = System.currentTimeMillis();
+        Connection.Response response = Jsoup.connect(url).execute();
+
+        String body = response.body();
+        String head = body.substring(body.indexOf("<head>"), body.indexOf("</head>"));
+
+        long end = System.currentTimeMillis();
+        Log.d(TAG, "parsing time : " + String.valueOf(end - start));
+
+        return head;
     }
 
     public static String getDescImageLink(String description) {
