@@ -16,7 +16,7 @@ public interface FeedDao {
     List<Feed> getAllFeeds();
 
     @Insert
-    void insert(Feed feed);
+    long insert(Feed feed);
 
     @Query("Select count(*) from Feed")
     int getFeedCount();

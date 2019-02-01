@@ -27,7 +27,7 @@ public interface ItemDao {
     String guidExist(String guid);
 
     @Insert
-    void insert(Item item);
+    long insert(Item item);
 
     @Insert
     void insertAll(List<Item> items);

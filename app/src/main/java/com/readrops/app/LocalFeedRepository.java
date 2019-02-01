@@ -122,11 +122,9 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
             Feed dbFeed = database.feedDao().getFeedByUrl(rssFeed.getChannel().getFeedUrl());
             if (dbFeed == null) {
                 dbFeed = Feed.feedFromRSS(rssFeed.getChannel());
-
                 dbFeed.setColor(getFaviconColor(dbFeed.getSiteUrl()));
 
-                database.feedDao().insert(dbFeed);
-                dbFeed.setId(database.feedDao().getFeedIdByUrl(rssFeed.getChannel().getFeedUrl()));
+                dbFeed.setId((int)(database.feedDao().insert(dbFeed)));
             }
 
             List<Item> dbItems = Item.itemsFromRSS(rssFeed.getChannel().getItems(), dbFeed);
@@ -143,11 +141,9 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
             Feed dbFeed = database.feedDao().getFeedByUrl(feed.getLink());
             if (dbFeed == null) {
                 dbFeed = Feed.feedFromATOM(feed);
-                database.feedDao().insert(dbFeed);
-
                 dbFeed.setColor(getFaviconColor(dbFeed.getSiteUrl()));
 
-                dbFeed.setId(database.feedDao().getFeedIdByUrl(feed.getLink()));
+                dbFeed.setId((int)(database.feedDao().insert(dbFeed)));
             }
 
             List<Item> dbItems = Item.itemsFromATOM(feed.getEntries(), dbFeed);
@@ -165,11 +161,9 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
             Feed dbFeed = database.feedDao().getFeedByUrl(feed.getFeedUrl());
             if (dbFeed == null) {
                 dbFeed = Feed.feedFromJSON(feed);
-                database.feedDao().insert(dbFeed);
-
                 dbFeed.setColor(getFaviconColor(dbFeed.getSiteUrl()));
 
-                dbFeed.setId(database.feedDao().getFeedIdByUrl(feed.getFeedUrl()));
+                dbFeed.setId((int)(database.feedDao().insert(dbFeed)));
             }
 
             List<Item> dbItems = Item.itemsFromJSON(feed.getItems(), dbFeed);
@@ -205,6 +199,7 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
 
         Response response = okHttpClient.newCall(request).execute();
         InputStream inputStream = response.body().byteStream();
+
         return BitmapFactory.decodeStream(inputStream);
     }
 
