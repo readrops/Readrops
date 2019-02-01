@@ -26,6 +26,8 @@ import com.readrops.readropslibrary.localfeed.json.JSONItem;
 import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
 import com.readrops.readropslibrary.localfeed.rss.RSSItem;
 
+import org.jsoup.Jsoup;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
@@ -122,7 +124,10 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
             Feed dbFeed = database.feedDao().getFeedByUrl(rssFeed.getChannel().getFeedUrl());
             if (dbFeed == null) {
                 dbFeed = Feed.feedFromRSS(rssFeed.getChannel());
-                dbFeed.setColor(getFaviconColor(dbFeed.getSiteUrl()));
+
+                String favUrl = HtmlParser.getFaviconLink(dbFeed.getSiteUrl());
+                dbFeed.setIconUrl(favUrl);
+                dbFeed.setColor(getFaviconColor(favUrl));
 
                 dbFeed.setId((int)(database.feedDao().insert(dbFeed)));
             }
@@ -141,7 +146,10 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
             Feed dbFeed = database.feedDao().getFeedByUrl(feed.getLink());
             if (dbFeed == null) {
                 dbFeed = Feed.feedFromATOM(feed);
-                dbFeed.setColor(getFaviconColor(dbFeed.getSiteUrl()));
+
+                String favUrl = HtmlParser.getFaviconLink(dbFeed.getSiteUrl());
+                dbFeed.setIconUrl(favUrl);
+                dbFeed.setColor(getFaviconColor(favUrl));
 
                 dbFeed.setId((int)(database.feedDao().insert(dbFeed)));
             }
@@ -161,7 +169,10 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
             Feed dbFeed = database.feedDao().getFeedByUrl(feed.getFeedUrl());
             if (dbFeed == null) {
                 dbFeed = Feed.feedFromJSON(feed);
-                dbFeed.setColor(getFaviconColor(dbFeed.getSiteUrl()));
+
+                String favUrl = HtmlParser.getFaviconLink(dbFeed.getSiteUrl());
+                dbFeed.setIconUrl(favUrl);
+                dbFeed.setColor(getFaviconColor(favUrl));
 
                 dbFeed.setId((int)(database.feedDao().insert(dbFeed)));
             }
@@ -178,6 +189,7 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
         for (Item dbItem : items) {
             if (!Boolean.valueOf(database.itemDao().guidExist(dbItem.getGuid()))) {
                 dbItem.setImageLink(HtmlParser.getDescImageLink(dbItem.getDescription()));
+                dbItem.setDescription(Jsoup.parse(dbItem.getDescription()).text());
 
                 database.itemDao().insert(dbItem);
                 Log.d(TAG, "adding " + dbItem.getTitle());
@@ -185,8 +197,7 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
         }
     }
 
-    private @ColorInt int getFaviconColor(String url) throws IOException {
-        String favUrl = HtmlParser.getFaviconLink(url);
+    private @ColorInt int getFaviconColor(String favUrl) throws IOException {
         Bitmap favicon = getFaviconFromUrl(favUrl);
         Palette palette = Palette.from(favicon).generate();
 

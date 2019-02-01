@@ -8,6 +8,7 @@ import com.readrops.readropslibrary.localfeed.json.JSONItem;
 import com.readrops.readropslibrary.localfeed.rss.RSSItem;
 
 import org.joda.time.LocalDateTime;
+import org.jsoup.Jsoup;
 
 import java.text.ParseException;
 import java.util.ArrayList;

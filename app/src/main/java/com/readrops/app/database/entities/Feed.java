@@ -26,6 +26,9 @@ public class Feed {
 
     private @ColorInt int color;
 
+    @ColumnInfo(name = "icon_url")
+    private String iconUrl;
+
     public Feed() {
 
     }
@@ -91,6 +94,14 @@ public class Feed {
 
     public void setColor(@ColorInt int color) {
         this.color = color;
+    }
+
+    public String getIconUrl() {
+        return iconUrl;
+    }
+
+    public void setIconUrl(String iconUrl) {
+        this.iconUrl = iconUrl;
     }
 
     public static Feed feedFromRSS(RSSChannel channel) {

@@ -15,6 +15,9 @@ public class ItemWithFeed {
 
     private int color;
 
+    @ColumnInfo(name = "icon_url")
+    private String feedIconUrl;
+
     public Item getItem() {
         return item;
     }
@@ -37,5 +40,13 @@ public class ItemWithFeed {
 
     public void setColor(int color) {
         this.color = color;
+    }
+
+    public String getFeedIconUrl() {
+        return feedIconUrl;
+    }
+
+    public void setFeedIconUrl(String feedIconUrl) {
+        this.feedIconUrl = feedIconUrl;
     }
 }

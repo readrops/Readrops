@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.ListPreloader;
 import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.RequestManager;
@@ -57,7 +56,7 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
         }
     };
 
-    private static final DrawableCrossFadeFactory fadeFactory = new DrawableCrossFadeFactory.Builder().setCrossFadeEnabled(true).build();
+    private static final DrawableCrossFadeFactory FADE_FACTORY = new DrawableCrossFadeFactory.Builder().setCrossFadeEnabled(true).build();
 
     @NonNull
     @Override
@@ -79,11 +78,18 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
         RequestOptions requestOptions = new RequestOptions();
         requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
 
-        if (itemWithFeed.getItem().getImageLink() != null)
+        if (itemWithFeed.getItem().getImageLink() != null) {
             manager.load(itemWithFeed.getItem().getImageLink())
                     .apply(requestOptions)
-                    .transition(DrawableTransitionOptions.withCrossFade(fadeFactory))
+                    .transition(DrawableTransitionOptions.withCrossFade(FADE_FACTORY))
                     .into(viewHolder.itemImage);
+        }
+
+        if (itemWithFeed.getFeedIconUrl() != null) {
+            manager.load(itemWithFeed.getFeedIconUrl())
+                    .into(viewHolder.feedIcon);
+        }
+
     }
 
     @NonNull
@@ -114,6 +120,8 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
         private ImageView itemImage;
         private TextView date;
         private TextView feedName;
+        private TextView itemDescription;
+        private ImageView feedIcon;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -129,6 +137,8 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
             itemImage = itemView.findViewById(R.id.item_image);
             date = itemView.findViewById(R.id.item_date);
             feedName = itemView.findViewById(R.id.item_feed_title);
+            itemDescription = itemView.findViewById(R.id.item_description);
+            feedIcon = itemView.findViewById(R.id.item_feed_icon);
         }
 
         private void bind(ItemWithFeed itemWithFeed) {
@@ -137,6 +147,7 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
             itemTitle.setText(item.getTitle());
             date.setText(DateUtils.formatedDateByLocal(item.getPubDate()));
             feedName.setText(itemWithFeed.getFeedName());
+            itemDescription.setText(item.getDescription());
 
             if (itemWithFeed.getColor() != 0)
                 feedName.setTextColor(itemWithFeed.getColor());
