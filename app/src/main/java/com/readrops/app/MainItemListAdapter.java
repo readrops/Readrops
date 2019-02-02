@@ -27,7 +27,7 @@ import com.readrops.app.database.entities.Item;
 import java.util.Collections;
 import java.util.List;
 
-public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListAdapter.ViewHolder> implements ListPreloader.PreloadModelProvider<String> {
+public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListAdapter.ItemViewHolder> implements ListPreloader.PreloadModelProvider<String> {
 
     private RequestManager manager;
     private OnItemClickListener listener;
@@ -60,15 +60,15 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-        View view = inflater.inflate(R.layout.image_list_item, viewGroup, false);
+        View view = inflater.inflate(R.layout.image_item, viewGroup, false);
 
-        return new ViewHolder(view);
+        return new ItemViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull ItemViewHolder viewHolder, int i) {
         ItemWithFeed itemWithFeed = getItem(i);
         viewHolder.bind(itemWithFeed);
 
@@ -79,6 +79,7 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
         requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
 
         if (itemWithFeed.getItem().getImageLink() != null) {
+            viewHolder.itemImage.setVisibility(View.VISIBLE);
             manager.load(itemWithFeed.getItem().getImageLink())
                     .apply(requestOptions)
                     .transition(DrawableTransitionOptions.withCrossFade(FADE_FACTORY))
@@ -114,16 +115,16 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
         this.listener = listener;
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class ItemViewHolder extends RecyclerView.ViewHolder {
 
         private TextView itemTitle;
-        private ImageView itemImage;
         private TextView date;
         private TextView feedName;
         private TextView itemDescription;
         private ImageView feedIcon;
+        private ImageView itemImage;
 
-        ViewHolder(@NonNull View itemView) {
+        ItemViewHolder(@NonNull View itemView) {
             super(itemView);
 
             itemView.setOnClickListener((view -> {
@@ -134,11 +135,11 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
             }));
 
             itemTitle = itemView.findViewById(R.id.item_title);
-            itemImage = itemView.findViewById(R.id.item_image);
             date = itemView.findViewById(R.id.item_date);
             feedName = itemView.findViewById(R.id.item_feed_title);
             itemDescription = itemView.findViewById(R.id.item_description);
             feedIcon = itemView.findViewById(R.id.item_feed_icon);
+            itemImage = itemView.findViewById(R.id.item_image);
         }
 
         private void bind(ItemWithFeed itemWithFeed) {

@@ -125,6 +125,10 @@ public class Item {
         this.feedId = feedId;
     }
 
+    public boolean hasImage() {
+        return getImageLink() != null;
+    }
+
     public static List<Item> itemsFromRSS(List<RSSItem> items, Feed feed) throws ParseException {
         List<Item> dbItems = new ArrayList<>();
 

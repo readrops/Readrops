@@ -100,7 +100,11 @@ public final class HtmlParser {
 
     public static String getDescImageLink(String description) {
         Document document = Jsoup.parse(description);
+        Elements elements = document.select("img");
 
-        return document.select("img").first().attr("src");
+        if (!elements.isEmpty())
+            return elements.first().attr("src");
+        else
+            return null;
     }
 }

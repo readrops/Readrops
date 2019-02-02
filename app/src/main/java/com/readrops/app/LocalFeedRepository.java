@@ -125,10 +125,7 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
             if (dbFeed == null) {
                 dbFeed = Feed.feedFromRSS(rssFeed.getChannel());
 
-                String favUrl = HtmlParser.getFaviconLink(dbFeed.getSiteUrl());
-                dbFeed.setIconUrl(favUrl);
-                dbFeed.setColor(getFaviconColor(favUrl));
-
+                setFavIconUtils(dbFeed);
                 dbFeed.setId((int)(database.feedDao().insert(dbFeed)));
             }
 
@@ -147,10 +144,7 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
             if (dbFeed == null) {
                 dbFeed = Feed.feedFromATOM(feed);
 
-                String favUrl = HtmlParser.getFaviconLink(dbFeed.getSiteUrl());
-                dbFeed.setIconUrl(favUrl);
-                dbFeed.setColor(getFaviconColor(favUrl));
-
+                setFavIconUtils(dbFeed);
                 dbFeed.setId((int)(database.feedDao().insert(dbFeed)));
             }
 
@@ -170,10 +164,7 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
             if (dbFeed == null) {
                 dbFeed = Feed.feedFromJSON(feed);
 
-                String favUrl = HtmlParser.getFaviconLink(dbFeed.getSiteUrl());
-                dbFeed.setIconUrl(favUrl);
-                dbFeed.setColor(getFaviconColor(favUrl));
-
+                setFavIconUtils(dbFeed);
                 dbFeed.setId((int)(database.feedDao().insert(dbFeed)));
             }
 
@@ -197,6 +188,14 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
         }
     }
 
+    private void setFavIconUtils(Feed feed) throws IOException {
+        String favUrl = HtmlParser.getFaviconLink(feed.getSiteUrl());
+        if (favUrl != null) {
+            feed.setIconUrl(favUrl);
+            feed.setColor(getFaviconColor(favUrl));
+        }
+    }
+
     private @ColorInt int getFaviconColor(String favUrl) throws IOException {
         Bitmap favicon = getFaviconFromUrl(favUrl);
         Palette palette = Palette.from(favicon).generate();
@@ -209,9 +208,12 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
         Request request = new Request.Builder().url(url).build();
 
         Response response = okHttpClient.newCall(request).execute();
-        InputStream inputStream = response.body().byteStream();
 
-        return BitmapFactory.decodeStream(inputStream);
+        if (response.isSuccessful()) {
+            InputStream inputStream = response.body().byteStream();
+            return BitmapFactory.decodeStream(inputStream);
+        } else
+            return null;
     }
 
 }
