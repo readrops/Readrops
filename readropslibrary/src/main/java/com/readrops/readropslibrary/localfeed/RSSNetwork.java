@@ -1,5 +1,7 @@
 package com.readrops.readropslibrary.localfeed;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.readrops.readropslibrary.QueryCallback;
 import com.readrops.readropslibrary.Utils.Utils;
@@ -11,6 +13,8 @@ import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
 import java.io.InputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -18,7 +22,9 @@ import okhttp3.Response;
 
 public class RSSNetwork {
 
-    public static final String TAG = RSSNetwork.class.getSimpleName();
+    private static final String TAG = RSSNetwork.class.getSimpleName();
+
+    public static final String RSS_CONTENT_TYPE_REGEX = "([^;]+)";
 
     /**
      * Request the url given in parameter.
@@ -33,9 +39,24 @@ public class RSSNetwork {
         Request request = new Request.Builder().url(url).build();
         Response response = okHttpClient.newCall(request).execute();
 
-        if (response.isSuccessful())
-            parseFeed(response.body().byteStream(), getRSSType(response.header("content-type")), callback, url);
+        Pattern pattern = Pattern.compile(RSS_CONTENT_TYPE_REGEX);
+        Matcher matcher = pattern.matcher(response.header("content-type"));
+
+        String header;
+        if (matcher.find())
+            header = matcher.group(0);
         else
+            header = response.header("content-type");
+
+        if (response.isSuccessful()) {
+            RSSType type = getRSSType(header);
+            if (type == null) {
+                callback.onSyncFailure(new IllegalArgumentException("bad content type"));
+                return;
+            }
+
+            parseFeed(response.body().byteStream(), type, callback, url);
+        } else
             callback.onSyncFailure(new Exception("Error " + response.code() + " when requesting url " + url));
     }
 
@@ -74,12 +95,20 @@ public class RSSNetwork {
      * @return rss type according to the content-type header
      */
     private RSSType getRSSType(String contentType) {
-        if (contentType.contains(RSSType.RSS_2.value))
-            return  RSSType.RSS_2;
-        else if (contentType.contains(RSSType.RSS_ATOM.value))
-            return RSSType.RSS_ATOM;
-        else
-            return RSSType.RSS_JSON;
+        switch (contentType) {
+            case Utils.RSS_CONTENT_TYPE:
+                return  RSSType.RSS_2;
+            case Utils.RSS_TEXT_CONTENT_TYPE:
+                return RSSType.RSS_2;
+            case Utils.ATOM_CONTENT_TYPE:
+                return RSSType.RSS_ATOM;
+            case Utils.JSON_CONTENT_TYPE:
+                return RSSType.RSS_JSON;
+            default:
+                Log.d(TAG, "bad content type : " + contentType);
+                return null;
+
+        }
     }
 
     public enum RSSType {
