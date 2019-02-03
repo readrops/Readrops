@@ -179,11 +179,11 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
     public void onSuccess() {
         refreshLayout.setRefreshing(false);
         adapter.submitList(newItems);
-        //newItems.clear();
     }
 
     @Override
     public void onFailure(Exception e) {
+        refreshLayout.setRefreshing(false);
         Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
     }
 
