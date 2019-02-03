@@ -21,6 +21,10 @@ public class RSSItem extends AItem {
     @Element(name = "imageLink", required = false)
     private String imageLink;
 
+    @Element(name = "content", required = false)
+    @Namespace(prefix = "media")
+    private RSSMediaContent mediaContent;
+
     @Element(name = "author", required = false)
     private String author;
 
@@ -98,5 +102,11 @@ public class RSSItem extends AItem {
         this.guid = guid;
     }
 
+    public RSSMediaContent getMediaContent() {
+        return mediaContent;
+    }
 
+    public void setMediaContent(RSSMediaContent mediaContent) {
+        this.mediaContent = mediaContent;
+    }
 }

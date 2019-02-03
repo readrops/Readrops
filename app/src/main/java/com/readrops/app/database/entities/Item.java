@@ -139,12 +139,15 @@ public class Item {
             newItem.setDescription(item.getDescription());
             newItem.setGuid(item.getGuid());
             newItem.setTitle(item.getTitle());
-            newItem.setImageLink(item.getImageLink());
+
 
             newItem.setPubDate(DateUtils.stringToDateTime(item.getPubDate(), DateUtils.RSS_DATE_FORMAT));
 
             newItem.setLink(item.getLink());
             newItem.setFeedId(feed.getId());
+
+            if (item.getMediaContent() != null && item.getMediaContent().isContentAnImage())
+                newItem.setImageLink(item.getMediaContent().getUrl());
 
             dbItems.add(newItem);
         }

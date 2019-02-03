@@ -182,7 +182,9 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
         for (Item dbItem : items) {
             if (!Boolean.valueOf(database.itemDao().guidExist(dbItem.getGuid()))) {
                 if (dbItem.getDescription() != null) {
-                    dbItem.setImageLink(HtmlParser.getDescImageLink(dbItem.getDescription()));
+                    if (dbItem.getImageLink() == null)
+                        dbItem.setImageLink(HtmlParser.getDescImageLink(dbItem.getDescription()));
+
                     dbItem.setDescription(Jsoup.parse(dbItem.getDescription()).text());
                 }
 
