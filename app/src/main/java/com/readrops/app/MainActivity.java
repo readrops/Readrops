@@ -20,11 +20,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
 import com.bumptech.glide.util.ViewPreloadSizeProvider;
 import com.readrops.app.database.ItemWithFeed;
 import com.readrops.app.database.entities.Item;
+import com.readrops.app.utils.GlideApp;
 import com.readrops.readropslibrary.ParsingResult;
 
 
@@ -120,10 +122,15 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
         recyclerView = findViewById(R.id.items_recycler_view);
 
         ViewPreloadSizeProvider preloadSizeProvider = new ViewPreloadSizeProvider();
-        adapter = new MainItemListAdapter(Glide.with(this), preloadSizeProvider);
+        adapter = new MainItemListAdapter(GlideApp.with(this), preloadSizeProvider);
 
         RecyclerViewPreloader<String> preloader = new RecyclerViewPreloader<String>(Glide.with(this), adapter, preloadSizeProvider, 10);
         recyclerView.addOnScrollListener(preloader);
+
+        recyclerView.setRecyclerListener(viewHolder -> {
+            MainItemListAdapter.ItemViewHolder vh = (MainItemListAdapter.ItemViewHolder) viewHolder;
+            GlideApp.with(this).clear(vh.getItemImage());
+        });
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -160,8 +167,6 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
                 return true;
             }
         }).attachToRecyclerView(recyclerView);
-
-
 
 
     }

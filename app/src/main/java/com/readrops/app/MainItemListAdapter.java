@@ -1,5 +1,6 @@
 package com.readrops.app;
 
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,7 +15,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.ListPreloader;
 import com.bumptech.glide.RequestBuilder;
-import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
@@ -23,20 +24,24 @@ import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
 import com.bumptech.glide.util.ViewPreloadSizeProvider;
 import com.readrops.app.database.ItemWithFeed;
 import com.readrops.app.database.entities.Item;
+import com.readrops.app.utils.DateUtils;
+import com.readrops.app.utils.GlideRequests;
 
 import java.util.Collections;
 import java.util.List;
 
+import static com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions.withCrossFade;
+
 public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListAdapter.ItemViewHolder> implements ListPreloader.PreloadModelProvider<String> {
 
-    private RequestManager manager;
+    private GlideRequests glideRequests;
     private OnItemClickListener listener;
     private ViewPreloadSizeProvider preloadSizeProvider;
 
-    public MainItemListAdapter(RequestManager manager, ViewPreloadSizeProvider preloadSizeProvider) {
+    public MainItemListAdapter(GlideRequests glideRequests, ViewPreloadSizeProvider preloadSizeProvider) {
         super(DIFF_CALLBACK);
 
-        this.manager = manager;
+        this.glideRequests = glideRequests;
         this.preloadSizeProvider = preloadSizeProvider;
     }
 
@@ -58,13 +63,18 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
 
     private static final DrawableCrossFadeFactory FADE_FACTORY = new DrawableCrossFadeFactory.Builder().setCrossFadeEnabled(true).build();
 
+    private static final RequestOptions requestOptions = new RequestOptions().transforms(new CenterCrop(), new RoundedCorners(16));
+
     @NonNull
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
         View view = inflater.inflate(R.layout.image_item, viewGroup, false);
 
-        return new ItemViewHolder(view);
+        ItemViewHolder viewHolder = new ItemViewHolder(view);
+        preloadSizeProvider.setView(viewHolder.itemImage);
+
+        return viewHolder;
     }
 
     @Override
@@ -72,39 +82,55 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
         ItemWithFeed itemWithFeed = getItem(i);
         viewHolder.bind(itemWithFeed);
 
-        preloadSizeProvider.setView(viewHolder.itemImage);
-
-        // displaying image with some round corners
-        RequestOptions requestOptions = new RequestOptions();
-        requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
-
-        if (itemWithFeed.getItem().getImageLink() != null) {
+        if (itemWithFeed.getItem().hasImage()) {
             viewHolder.itemImage.setVisibility(View.VISIBLE);
-            manager.load(itemWithFeed.getItem().getImageLink())
+
+            glideRequests
+                    .load(itemWithFeed.getItem().getImageLink())
                     .apply(requestOptions)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .transition(DrawableTransitionOptions.withCrossFade(FADE_FACTORY))
                     .into(viewHolder.itemImage);
-        }
+        } else
+            viewHolder.itemImage.setVisibility(View.GONE);
 
         if (itemWithFeed.getFeedIconUrl() != null) {
-            manager.load(itemWithFeed.getFeedIconUrl())
+            glideRequests.load(itemWithFeed.getFeedIconUrl())
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .placeholder(R.drawable.ic_rss_feed)
                     .into(viewHolder.feedIcon);
-        }
+        } else
+            viewHolder.feedIcon.setImageResource(R.drawable.ic_rss_feed);
 
+        if (itemWithFeed.getColor() != 0)
+            viewHolder.feedName.setTextColor(itemWithFeed.getColor());
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return getItem(position).getItem().getId();
     }
 
     @NonNull
     @Override
     public List<String> getPreloadItems(int position) {
-        String url = getItem(position).getItem().getImageLink();
+        if (getItem(position).getItem().hasImage()) {
+            String url = getItem(position).getItem().getImageLink();
+            return Collections.singletonList(url);
+        } else {
+            return Collections.emptyList();
+        }
 
-        return Collections.singletonList(url);
     }
 
     @Nullable
     @Override
     public RequestBuilder<Drawable> getPreloadRequestBuilder(@NonNull String url) {
-        return manager.load(url);
+        return glideRequests
+                .load(url)
+                .apply(requestOptions)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .transition(DrawableTransitionOptions.withCrossFade(FADE_FACTORY));
     }
 
     public interface OnItemClickListener {
@@ -149,9 +175,10 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
             date.setText(DateUtils.formatedDateByLocal(item.getPubDate()));
             feedName.setText(itemWithFeed.getFeedName());
             itemDescription.setText(item.getDescription());
+        }
 
-            if (itemWithFeed.getColor() != 0)
-                feedName.setTextColor(itemWithFeed.getColor());
+        public ImageView getItemImage() {
+            return itemImage;
         }
     }
 }
