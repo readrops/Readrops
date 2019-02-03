@@ -77,12 +77,12 @@ public final class HtmlParser {
         String favUrl = null;
         String head = getHTMLHeadFromUrl(url);
 
-        Document document = Jsoup.parse(head);
+        Document document = Jsoup.parse(head, url);
         Elements elements = document.select("link");
 
         for (Element element : elements) {
             if (element.attributes().get("rel").contains("icon")) {
-                favUrl = element.attributes().get("href");
+                favUrl = element.absUrl("href");
                 break;
             }
         }

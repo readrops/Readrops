@@ -10,6 +10,7 @@ import android.os.Looper;
 import android.support.annotation.ColorInt;
 import android.support.v7.graphics.Palette;
 import android.util.Log;
+import android.util.Patterns;
 
 import com.readrops.app.database.ItemWithFeed;
 import com.readrops.app.database.entities.Feed;
@@ -33,6 +34,7 @@ import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -140,7 +142,7 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
 
     private void parseATOMItems(ATOMFeed feed) {
         try {
-            Feed dbFeed = database.feedDao().getFeedByUrl(feed.getLink());
+            Feed dbFeed = database.feedDao().getFeedByUrl(feed.getLink().getHref());
             if (dbFeed == null) {
                 dbFeed = Feed.feedFromATOM(feed);
 
@@ -179,8 +181,10 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
     private void insertItems(List<Item> items) {
         for (Item dbItem : items) {
             if (!Boolean.valueOf(database.itemDao().guidExist(dbItem.getGuid()))) {
-                dbItem.setImageLink(HtmlParser.getDescImageLink(dbItem.getDescription()));
-                dbItem.setDescription(Jsoup.parse(dbItem.getDescription()).text());
+                if (dbItem.getDescription() != null) {
+                    dbItem.setImageLink(HtmlParser.getDescImageLink(dbItem.getDescription()));
+                    dbItem.setDescription(Jsoup.parse(dbItem.getDescription()).text());
+                }
 
                 database.itemDao().insert(dbItem);
                 Log.d(TAG, "adding " + dbItem.getTitle());
@@ -190,7 +194,7 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
 
     private void setFavIconUtils(Feed feed) throws IOException {
         String favUrl = HtmlParser.getFaviconLink(feed.getSiteUrl());
-        if (favUrl != null) {
+        if (favUrl != null && Patterns.WEB_URL.matcher(favUrl).matches()) {
             feed.setIconUrl(favUrl);
             feed.setColor(getFaviconColor(favUrl));
         }

@@ -77,16 +77,22 @@ public class RSSChannel {
     }
 
     public String getFeedUrl() {
-        if (links.size() > 0)
-            return links.get(0).getHref();
-        else
+        if (links.size() > 1) {
+            if (links.get(0).getHref() != null)
+                return links.get(0).getHref();
+            else
+                return links.get(1).getHref();
+        } else
             return null;
     }
 
     public String getUrl() {
-        if (links.size() > 1)
-            return links.get(1).getText();
-        else
+        if (links.size() > 1) {
+            if (links.get(1).getText() != null)
+                return links.get(1).getText();
+            else
+                return links.get(0).getText();
+        } else
             return null;
     }
 }

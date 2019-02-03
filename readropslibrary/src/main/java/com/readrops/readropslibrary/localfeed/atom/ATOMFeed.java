@@ -14,8 +14,11 @@ public class ATOMFeed extends AFeed {
     @Element(required = false)
     private String title;
 
-    @Element(name = "href", required = false)
-    private String link;
+    @Element(name = "link", required = false)
+    private ATOMLink link;
+
+    @Element(required = false)
+    private String id;
 
     @Element(required = false)
     private String subtitle;
@@ -37,11 +40,11 @@ public class ATOMFeed extends AFeed {
         this.title = title;
     }
 
-    public String getLink() {
+    public ATOMLink getLink() {
         return link;
     }
 
-    public void setLink(String link) {
+    public void setLink(ATOMLink link) {
         this.link = link;
     }
 
@@ -75,5 +78,17 @@ public class ATOMFeed extends AFeed {
 
     public void setEntries(List<ATOMEntry> entries) {
         this.entries = entries;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getWebSiteUrl() {
+        return id;
     }
 }

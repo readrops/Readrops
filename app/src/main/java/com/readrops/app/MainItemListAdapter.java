@@ -56,8 +56,7 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
             Item item = itemWithFeed.getItem();
             Item item1 = t1.getItem();
 
-            return item.getTitle().equals(item1.getTitle()) &&
-                    item.getDescription().equals(item1.getDescription());
+            return item.getTitle().equals(item1.getTitle());
         }
     };
 
@@ -174,7 +173,12 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
             itemTitle.setText(item.getTitle());
             date.setText(DateUtils.formatedDateByLocal(item.getPubDate()));
             feedName.setText(itemWithFeed.getFeedName());
-            itemDescription.setText(item.getDescription());
+
+            if (item.getDescription() != null) {
+                itemDescription.setVisibility(View.VISIBLE);
+                itemDescription.setText(item.getDescription());
+            } else
+                itemDescription.setVisibility(View.GONE);
         }
 
         public ImageView getItemImage() {

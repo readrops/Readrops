@@ -168,6 +168,8 @@ public class Item {
             dbItem.setLink(item.getLink().getHref());
 
             dbItem.setFeedId(feed.getId());
+
+            dbItems.add(dbItem);
         }
 
         return dbItems;
@@ -190,6 +192,8 @@ public class Item {
             dbItem.setLink(item.getUrl());
 
             dbItem.setFeedId(feed.getId());
+
+            dbItems.add(dbItem);
         }
 
         return dbItems;

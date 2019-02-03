@@ -78,12 +78,12 @@ public class RSSNetwork {
                 callback.onSyncSuccess(rssFeed, type);
                 break;
             case RSS_ATOM:
-                ATOMFeed atomFeed = serializer.read(ATOMFeed.class, stream);
+                ATOMFeed atomFeed = serializer.read(ATOMFeed.class, xml);
                 callback.onSyncSuccess(atomFeed, type);
                 break;
             case RSS_JSON:
                 Gson gson = new Gson();
-                JSONFeed feed = gson.fromJson(Utils.inputStreamToString(stream), JSONFeed.class);
+                JSONFeed feed = gson.fromJson(xml, JSONFeed.class);
                 callback.onSyncSuccess(feed, type);
                 break;
         }

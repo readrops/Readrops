@@ -3,7 +3,7 @@ package com.readrops.readropslibrary.localfeed.atom;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Root;
 
-@Root(name = "href", strict = false)
+@Root(name = "link", strict = false)
 public class ATOMLink {
 
     @Attribute(name = "href", required = false)
