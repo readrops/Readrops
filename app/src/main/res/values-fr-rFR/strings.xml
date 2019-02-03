@@ -13,5 +13,8 @@
     <string name="add_feed_validate">Valider</string>
     <string name="add_feed_empty_field">Le champ ne peut pas être vide</string>
     <string name="add_feed_wrong_url">La valeur n\'est pas une adresse web valide</string>
+    <string name="add_feed_no_result">Aucune adresse de flux trouvée</string>
+    <string name="add_feed_connexion_error">Erreur de connexion au site</string>
+    <string name="add_feed_unknownhost_error">Site inconnu</string>
 
 </resources>

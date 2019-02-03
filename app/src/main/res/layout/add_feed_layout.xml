@@ -64,6 +64,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/add_feed_validate"
-        tools:visibility="visible" />
+        tools:visibility="gone" />
+
+    <TextView
+        android:id="@+id/add_feed_error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/add_feed_validate"
+        tools:text="This the error textView" />
 
 </android.support.constraint.ConstraintLayout>

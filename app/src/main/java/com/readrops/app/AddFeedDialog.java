@@ -6,7 +6,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,11 +17,16 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.readrops.readropslibrary.HtmlParser;
 import com.readrops.readropslibrary.ParsingResult;
 
+import org.jsoup.HttpStatusException;
+
 import java.io.IOException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.nio.charset.MalformedInputException;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +38,7 @@ public class AddFeedDialog extends Dialog implements View.OnClickListener {
     private Button button;
     private TextInputEditText textInputEditText;
     private ProgressBar progressBar;
+    private TextView errorTextView;
 
     private RecyclerView recyclerView;
     private AddFeedListAdapter adapter;
@@ -51,6 +59,7 @@ public class AddFeedDialog extends Dialog implements View.OnClickListener {
         button.setOnClickListener(this);
         textInputEditText = findViewById(R.id.add_feed_edit_text);
         progressBar = findViewById(R.id.add_feed_progressbar);
+        errorTextView = findViewById(R.id.add_feed_error);
     }
 
 
@@ -59,8 +68,10 @@ public class AddFeedDialog extends Dialog implements View.OnClickListener {
         if (isValidUrl()) {
             if (recyclerView != null && recyclerView.getVisibility() == View.VISIBLE)
                 recyclerView.setVisibility(View.GONE);
-            progressBar.setVisibility(View.VISIBLE);
+            if (errorTextView.getVisibility() == View.VISIBLE)
+                errorTextView.setVisibility(View.GONE);
 
+            progressBar.setVisibility(View.VISIBLE);
             parseUrl();
         }
     }
@@ -87,15 +98,21 @@ public class AddFeedDialog extends Dialog implements View.OnClickListener {
         else
             finalUrl = url;
 
+        Handler handler = new Handler(Looper.getMainLooper());
 
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
                 List<ParsingResult> results = HtmlParser.getFeedLink(finalUrl);
 
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.post(() -> displayResults(results));
+                if (results.size() > 0)
+                    handler.post(() -> displayResults(results));
+                else
+                    handler.post(() -> displayError(R.string.add_feed_no_result)) ;
             } catch (Exception e) {
-                e.printStackTrace();
+                if (e instanceof UnknownHostException)
+                    handler.post(() -> displayError(R.string.add_feed_unknownhost_error));
+                else
+                    handler.post(() -> displayError(R.string.add_feed_connexion_error));
             }
 
 
@@ -119,5 +136,11 @@ public class AddFeedDialog extends Dialog implements View.OnClickListener {
         recyclerView.setAdapter(adapter);
         progressBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
+    }
+
+    private void displayError(@StringRes int stringId) {
+        progressBar.setVisibility(View.GONE);
+        errorTextView.setVisibility(View.VISIBLE);
+        errorTextView.setText(stringId);
     }
 }

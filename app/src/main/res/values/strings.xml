@@ -14,4 +14,7 @@
     <string name="add_feed_validate">Validate</string>
     <string name="add_feed_empty_field">Field can\'t be empty</string>
     <string name="add_feed_wrong_url">Input is not a valid URL</string>
+    <string name="add_feed_no_result">No feed url found</string>
+    <string name="add_feed_connexion_error">Connection error</string>
+    <string name="add_feed_unknownhost_error">Unknown host</string>
 </resources>
