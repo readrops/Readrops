@@ -8,6 +8,7 @@ import com.readrops.readropslibrary.Utils.Utils;
 import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
 import com.readrops.readropslibrary.localfeed.json.JSONFeed;
 import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
+import com.readrops.readropslibrary.localfeed.rss.RSSLink;
 
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
@@ -75,6 +76,9 @@ public class RSSNetwork {
         switch (type) {
             case RSS_2:
                 RSSFeed rssFeed = serializer.read(RSSFeed.class, xml);
+                if (rssFeed.getChannel().getFeedUrl() == null) // workaround si the channel does not have any atom:link tag
+                    rssFeed.getChannel().getLinks().add(new RSSLink(null, url));
+
                 callback.onSyncSuccess(rssFeed, type);
                 break;
             case RSS_ATOM:

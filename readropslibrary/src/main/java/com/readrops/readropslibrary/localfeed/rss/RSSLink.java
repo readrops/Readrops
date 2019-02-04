@@ -14,6 +14,15 @@ public class RSSLink {
     @Attribute(name = "href", required = false)
     private String href;
 
+    public RSSLink() {
+
+    }
+
+    public RSSLink(String text, String href) {
+        this.text = text;
+        this.href = href;
+    }
+
     public String getHref() {
         return href;
     }
