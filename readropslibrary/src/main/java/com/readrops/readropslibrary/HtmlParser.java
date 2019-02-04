@@ -27,7 +27,7 @@ public final class HtmlParser {
     public static List<ParsingResult> getFeedLink(String url) throws Exception {
         List<ParsingResult> results = new ArrayList<>();
 
-        Document document = Jsoup.parse(getHTMLHeadFromUrl(url));
+        Document document = Jsoup.parse(getHTMLHeadFromUrl(url), url);
 
         Elements elements = document.select("link");
 
@@ -35,7 +35,7 @@ public final class HtmlParser {
             String type = element.attributes().get("type");
 
             if (isTypeRssFeed(type)) {
-                String feedUrl = element.attributes().get("href");
+                String feedUrl = element.absUrl("href");
                 String label = element.attributes().get("title");
 
                 results.add(new ParsingResult(feedUrl, label));
@@ -43,7 +43,6 @@ public final class HtmlParser {
         }
 
         return results;
-
     }
 
     private static boolean isTypeRssFeed(String type) {
