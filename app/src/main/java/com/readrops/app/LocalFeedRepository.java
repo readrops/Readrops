@@ -4,9 +4,6 @@ import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.ColorInt;
 import android.support.v7.graphics.Palette;
 import android.util.Log;
@@ -20,21 +17,15 @@ import com.readrops.readropslibrary.ParsingResult;
 import com.readrops.readropslibrary.QueryCallback;
 import com.readrops.readropslibrary.localfeed.AFeed;
 import com.readrops.readropslibrary.localfeed.RSSNetwork;
-import com.readrops.readropslibrary.localfeed.atom.ATOMEntry;
 import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
 import com.readrops.readropslibrary.localfeed.json.JSONFeed;
-import com.readrops.readropslibrary.localfeed.json.JSONItem;
 import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
-import com.readrops.readropslibrary.localfeed.rss.RSSItem;
 
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -142,7 +133,7 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
 
     private void parseATOMItems(ATOMFeed feed) {
         try {
-            Feed dbFeed = database.feedDao().getFeedByUrl(feed.getLink().getHref());
+            Feed dbFeed = database.feedDao().getFeedByUrl(feed.getUrl());
             if (dbFeed == null) {
                 dbFeed = Feed.feedFromATOM(feed);
 
@@ -156,8 +147,6 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
         } catch (Exception e) {
             failureCallBackInMainThread(e);
         }
-
-
     }
 
     private void parseJSONItems(JSONFeed feed) {

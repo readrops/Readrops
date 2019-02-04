@@ -73,6 +73,17 @@ public class RSSNetwork {
         String xml = Utils.inputStreamToString(stream);
         Serializer serializer = new Persister();
 
+        if (type == RSSType.RSS_UNKNOWN) {
+            if (xml.contains("rss version=\"2.0\""))
+                type = RSSType.RSS_2;
+            else if (xml.contains("<feed xmlns=\"http://www.w3.org/2005/Atom\">"))
+                type = RSSType.RSS_ATOM;
+            else {
+                callback.onSyncFailure(new Exception("Unknown xml format"));
+                return;
+            }
+        }
+
         switch (type) {
             case RSS_2:
                 RSSFeed rssFeed = serializer.read(RSSFeed.class, xml);
@@ -103,9 +114,9 @@ public class RSSNetwork {
             case Utils.RSS_DEFAULT_CONTENT_TYPE:
                 return  RSSType.RSS_2;
             case Utils.RSS_TEXT_CONTENT_TYPE:
-                return RSSType.RSS_2;
+                return RSSType.RSS_UNKNOWN;
             case Utils.RSS_APPLICATION_CONTENT_TYPE:
-                return RSSType.RSS_2;
+                return RSSType.RSS_UNKNOWN;
             case Utils.ATOM_CONTENT_TYPE:
                 return RSSType.RSS_ATOM;
             case Utils.JSON_CONTENT_TYPE:
@@ -120,7 +131,8 @@ public class RSSNetwork {
     public enum RSSType {
         RSS_2("rss"),
         RSS_ATOM("atom"),
-        RSS_JSON("json");
+        RSS_JSON("json"),
+        RSS_UNKNOWN("");
 
         private String value;
 
