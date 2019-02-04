@@ -86,6 +86,7 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
 
             glideRequests
                     .load(itemWithFeed.getItem().getImageLink())
+                    .centerCrop()
                     .apply(requestOptions)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .transition(DrawableTransitionOptions.withCrossFade(FADE_FACTORY))

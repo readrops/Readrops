@@ -1,6 +1,5 @@
 package com.readrops.readropslibrary;
 
-import android.text.LoginFilter;
 import android.util.Log;
 
 import com.readrops.readropslibrary.Utils.Utils;
@@ -46,10 +45,11 @@ public final class HtmlParser {
     }
 
     private static boolean isTypeRssFeed(String type) {
-        return type.equals(Utils.RSS_CONTENT_TYPE) ||
+        return type.equals(Utils.RSS_DEFAULT_CONTENT_TYPE) ||
                 type.equals(Utils.ATOM_CONTENT_TYPE) ||
                 type.equals(Utils.JSON_CONTENT_TYPE) ||
-                type.equals(Utils.RSS_TEXT_CONTENT_TYPE);
+                type.equals(Utils.RSS_TEXT_CONTENT_TYPE) ||
+                type.equals(Utils.RSS_APPLICATION_CONTENT_TYPE);
     }
 
     /**
@@ -102,12 +102,12 @@ public final class HtmlParser {
         return head;
     }
 
-    public static String getDescImageLink(String description) {
-        Document document = Jsoup.parse(description);
+    public static String getDescImageLink(String description, String url) {
+        Document document = Jsoup.parse(description, url);
         Elements elements = document.select("img");
 
         if (!elements.isEmpty())
-            return elements.first().attr("src");
+            return elements.first().absUrl("src");
         else
             return null;
     }

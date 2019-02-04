@@ -100,9 +100,11 @@ public class RSSNetwork {
      */
     private RSSType getRSSType(String contentType) {
         switch (contentType) {
-            case Utils.RSS_CONTENT_TYPE:
+            case Utils.RSS_DEFAULT_CONTENT_TYPE:
                 return  RSSType.RSS_2;
             case Utils.RSS_TEXT_CONTENT_TYPE:
+                return RSSType.RSS_2;
+            case Utils.RSS_APPLICATION_CONTENT_TYPE:
                 return RSSType.RSS_2;
             case Utils.ATOM_CONTENT_TYPE:
                 return RSSType.RSS_ATOM;

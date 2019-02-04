@@ -5,8 +5,9 @@ import java.util.Scanner;
 
 public final class Utils {
 
-    public static final String RSS_CONTENT_TYPE = "application/rss+xml";
+    public static final String RSS_DEFAULT_CONTENT_TYPE = "application/rss+xml";
     public static final String RSS_TEXT_CONTENT_TYPE = "text/xml";
+    public static final String RSS_APPLICATION_CONTENT_TYPE = "application/xml";
     public static final String ATOM_CONTENT_TYPE = "application/atom+xml";
     public static final String JSON_CONTENT_TYPE = "application/json";
 

@@ -132,7 +132,7 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
             }
 
             List<Item> dbItems = Item.itemsFromRSS(rssFeed.getChannel().getItems(), dbFeed);
-            insertItems(dbItems);
+            insertItems(dbItems, dbFeed);
 
         } catch (Exception e) {
             failureCallBackInMainThread(e);
@@ -151,7 +151,7 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
             }
 
             List<Item> dbItems = Item.itemsFromATOM(feed.getEntries(), dbFeed);
-            insertItems(dbItems);
+            insertItems(dbItems, dbFeed);
 
         } catch (Exception e) {
             failureCallBackInMainThread(e);
@@ -171,19 +171,19 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
             }
 
             List<Item> dbItems = Item.itemsFromJSON(feed.getItems(), dbFeed);
-            insertItems(dbItems);
+            insertItems(dbItems, dbFeed);
 
         } catch (Exception e) {
             failureCallBackInMainThread(e);
         }
     }
 
-    private void insertItems(List<Item> items) {
+    private void insertItems(List<Item> items, Feed feed) {
         for (Item dbItem : items) {
             if (!Boolean.valueOf(database.itemDao().guidExist(dbItem.getGuid()))) {
                 if (dbItem.getDescription() != null) {
                     if (dbItem.getImageLink() == null)
-                        dbItem.setImageLink(HtmlParser.getDescImageLink(dbItem.getDescription()));
+                        dbItem.setImageLink(HtmlParser.getDescImageLink(dbItem.getDescription(), feed.getSiteUrl()));
 
                     dbItem.setDescription(Jsoup.parse(dbItem.getDescription()).text());
                 }
