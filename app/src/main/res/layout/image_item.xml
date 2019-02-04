@@ -25,6 +25,8 @@
             android:maxLines="2"
             android:minLines="1"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:textSize="16sp"
+            android:textStyle="bold"
             tools:text="This is an item title with sufficient length" />
 
         <TextView
