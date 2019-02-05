@@ -168,7 +168,12 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
             }
         }).attachToRecyclerView(recyclerView);
 
-
+        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                recyclerView.scrollToPosition(0);
+            }
+        });
     }
 
     private void updateList() {
