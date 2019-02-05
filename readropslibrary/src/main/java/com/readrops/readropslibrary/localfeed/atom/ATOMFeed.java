@@ -93,11 +93,15 @@ public class ATOMFeed extends AFeed {
     }
 
     public String getUrl() {
-        if (links.size() > 1) {
+        if (links.size() > 0) {
             if (links.get(0).getRel() != null)
                 return links.get(0).getHref();
-            else
-                return links.get(1).getHref();
+            else {
+                if (links.size() > 1)
+                    return links.get(1).getHref();
+                else
+                    return null;
+            }
         } else
             return null;
     }
