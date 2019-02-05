@@ -167,8 +167,7 @@ public class Item {
             dbItem.setTitle(item.getTitle());
 
             dbItem.setPubDate(DateUtils.stringToDateTime(item.getUpdated(), DateUtils.ATOM_JSON_DATE_FORMAT));
-
-            dbItem.setLink(item.getLink().getHref());
+            dbItem.setLink(item.getUrl());
 
             dbItem.setFeedId(feed.getId());
 

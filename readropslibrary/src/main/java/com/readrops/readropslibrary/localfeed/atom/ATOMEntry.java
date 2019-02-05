@@ -4,7 +4,10 @@ import com.readrops.readropslibrary.localfeed.AItem;
 
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
+
+import java.util.List;
 
 @Root(name = "entry", strict = false)
 public class ATOMEntry extends AItem  {
@@ -12,8 +15,8 @@ public class ATOMEntry extends AItem  {
     @Element(required = false)
     private String title;
 
-    @Element(required = false)
-    private ATOMLink link;
+    @ElementList(name = "link", inline = true, required = false)
+    private List<ATOMLink> links;
 
     @Element(required = false)
     private String updated;
@@ -38,12 +41,12 @@ public class ATOMEntry extends AItem  {
         this.title = title;
     }
 
-    public ATOMLink getLink() {
-        return link;
+    public List<ATOMLink> getLinks() {
+        return links;
     }
 
-    public void setLink(ATOMLink link) {
-        this.link = link;
+    public void setLinks(List<ATOMLink> links) {
+        this.links = links;
     }
 
     public String getUpdated() {
@@ -84,5 +87,22 @@ public class ATOMEntry extends AItem  {
 
     public void setContentType(String contentType) {
         this.contentType = contentType;
+    }
+
+    public String getUrl() {
+        if (links.size() > 0) {
+            if (links.get(0).getRel() == null)
+                return links.get(0).getHref();
+            else {
+                if (links.size() > 1) {
+                    if (links.get(1).getRel() == null)
+                        return links.get(1).getHref();
+                    else
+                        return null;
+                } else
+                    return null;
+            }
+        } else
+            return null;
     }
 }

@@ -25,7 +25,9 @@ public class RSSNetwork {
 
     private static final String TAG = RSSNetwork.class.getSimpleName();
 
-    public static final String RSS_CONTENT_TYPE_REGEX = "([^;]+)";
+    private static final String RSS_CONTENT_TYPE_REGEX = "([^;]+)";
+
+    private static final String RSS_2_REGEX = "rss.*version=\"2.0\"";
 
     /**
      * Request the url given in parameter.
@@ -74,7 +76,7 @@ public class RSSNetwork {
         Serializer serializer = new Persister();
 
         if (type == RSSType.RSS_UNKNOWN) {
-            if (xml.contains("rss version=\"2.0\""))
+            if (Pattern.compile(RSS_2_REGEX).matcher(xml).find())
                 type = RSSType.RSS_2;
             else if (xml.contains("<feed xmlns=\"http://www.w3.org/2005/Atom\">"))
                 type = RSSType.RSS_ATOM;
