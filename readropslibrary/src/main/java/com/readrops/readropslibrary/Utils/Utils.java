@@ -10,6 +10,7 @@ public final class Utils {
     public static final String RSS_APPLICATION_CONTENT_TYPE = "application/xml";
     public static final String ATOM_CONTENT_TYPE = "application/atom+xml";
     public static final String JSON_CONTENT_TYPE = "application/json";
+    public static final String HTML_CONTENT_TYPE = "text/html";
 
     public static String inputStreamToString(InputStream input) {
         Scanner scanner = new Scanner(input).useDelimiter("\\A");

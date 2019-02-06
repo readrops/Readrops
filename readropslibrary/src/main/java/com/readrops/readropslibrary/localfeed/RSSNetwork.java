@@ -54,7 +54,7 @@ public class RSSNetwork {
         if (response.isSuccessful()) {
             RSSType type = getRSSType(header);
             if (type == null) {
-                callback.onSyncFailure(new IllegalArgumentException("bad content type"));
+                callback.onSyncFailure(new IllegalArgumentException("bad content type : " + header + "for " + url));
                 return;
             }
 
@@ -123,6 +123,8 @@ public class RSSNetwork {
                 return RSSType.RSS_ATOM;
             case Utils.JSON_CONTENT_TYPE:
                 return RSSType.RSS_JSON;
+            case Utils.HTML_CONTENT_TYPE:
+                return RSSType.RSS_UNKNOWN;
             default:
                 Log.d(TAG, "bad content type : " + contentType);
                 return null;
