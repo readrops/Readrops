@@ -4,6 +4,7 @@ package com.readrops.app.database.dao;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Update;
 
 import com.readrops.app.database.entities.Feed;
 
@@ -26,5 +27,8 @@ public interface FeedDao {
 
     @Query("Select id from Feed Where url = :feedUrl")
     int getFeedIdByUrl(String feedUrl);
+
+    @Query("Update Feed set etag = :etag, last_modified = :lastModified Where id = :feedId")
+    void updateHeaders(String etag, String lastModified, int feedId);
 
 }

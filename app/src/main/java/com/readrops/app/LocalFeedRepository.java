@@ -15,6 +15,7 @@ import com.readrops.app.database.entities.Item;
 import com.readrops.readropslibrary.HtmlParser;
 import com.readrops.readropslibrary.ParsingResult;
 import com.readrops.readropslibrary.QueryCallback;
+import com.readrops.readropslibrary.Utils.LibUtils;
 import com.readrops.readropslibrary.localfeed.AFeed;
 import com.readrops.readropslibrary.localfeed.RSSNetwork;
 import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
@@ -25,6 +26,7 @@ import org.jsoup.Jsoup;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 
 import okhttp3.OkHttpClient;
@@ -51,11 +53,18 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
     public void sync() {
         executor.execute(() -> {
             RSSNetwork rssNet = new RSSNetwork();
+            rssNet.setCallback(this);
             List<Feed> feedList = database.feedDao().getAllFeeds();
 
             for (Feed feed : feedList) {
                 try {
-                    rssNet.request(feed.getUrl(), this);
+                    HashMap<String, String> headers = new HashMap<>();
+                    if (feed.getEtag() != null)
+                        headers.put(LibUtils.IF_NONE_MATCH_HEADER, feed.getEtag());
+                    if (feed.getLastModified() != null)
+                        headers.put(LibUtils.IF_MODIFIED_HEADER, feed.getLastModified());
+
+                    rssNet.request(feed.getUrl(), headers);
                 } catch (Exception e) {
                     failureCallBackInMainThread(e);
                 }
@@ -70,7 +79,8 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
         executor.execute(() -> {
             try {
                 RSSNetwork rssNet = new RSSNetwork();
-                rssNet.request(result.getUrl(), this);
+                rssNet.setCallback(this);
+                rssNet.request(result.getUrl(), new HashMap<>());
 
                 postCallBackSuccess();
             } catch (Exception e) {
@@ -116,11 +126,12 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
         try {
             Feed dbFeed = database.feedDao().getFeedByUrl(rssFeed.getChannel().getFeedUrl());
             if (dbFeed == null) {
-                dbFeed = Feed.feedFromRSS(rssFeed.getChannel());
+                dbFeed = Feed.feedFromRSS(rssFeed);
 
                 setFavIconUtils(dbFeed);
                 dbFeed.setId((int)(database.feedDao().insert(dbFeed)));
-            }
+            } else
+                database.feedDao().updateHeaders(rssFeed.getEtag(), rssFeed.getLastModified(), dbFeed.getId());
 
             List<Item> dbItems = Item.itemsFromRSS(rssFeed.getChannel().getItems(), dbFeed);
             insertItems(dbItems, dbFeed);
@@ -139,7 +150,8 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
 
                 setFavIconUtils(dbFeed);
                 dbFeed.setId((int)(database.feedDao().insert(dbFeed)));
-            }
+            } else
+                database.feedDao().updateHeaders(feed.getEtag(), feed.getLastModified(), dbFeed.getId());
 
             List<Item> dbItems = Item.itemsFromATOM(feed.getEntries(), dbFeed);
             insertItems(dbItems, dbFeed);
@@ -157,7 +169,8 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
 
                 setFavIconUtils(dbFeed);
                 dbFeed.setId((int)(database.feedDao().insert(dbFeed)));
-            }
+            } else
+                database.feedDao().updateHeaders(feed.getEtag(), feed.getLastModified(), dbFeed.getId());
 
             List<Item> dbItems = Item.itemsFromJSON(feed.getItems(), dbFeed);
             insertItems(dbItems, dbFeed);

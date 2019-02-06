@@ -4,7 +4,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.readrops.readropslibrary.QueryCallback;
-import com.readrops.readropslibrary.Utils.Utils;
+import com.readrops.readropslibrary.Utils.LibUtils;
 import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
 import com.readrops.readropslibrary.localfeed.json.JSONFeed;
 import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
@@ -14,6 +14,7 @@ import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
 import java.io.InputStream;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,37 +30,48 @@ public class RSSNetwork {
 
     private static final String RSS_2_REGEX = "rss.*version=\"2.0\"";
 
+    private QueryCallback callback;
+
     /**
      * Request the url given in parameter.
      * This method is synchronous, <b>it has to be called from another thread than the main one</b>.
      * @param url url to request
-     * @param callback result callback if success or error
      * @throws Exception
      */
-    public void request(String url, final QueryCallback callback) throws Exception {
+    public void request(String url, Map<String, String> headers) throws Exception {
+        if (callback == null)
+            throw new NullPointerException("Callback can't be null");
+
         OkHttpClient okHttpClient = new OkHttpClient();
 
-        Request request = new Request.Builder().url(url).build();
+        Request.Builder builder = new Request.Builder().url(url);
+        for (String header : headers.keySet()) {
+            String value = headers.get(header);
+            builder.addHeader(header, value);
+        }
+
+        Request request = builder.build();
         Response response = okHttpClient.newCall(request).execute();
 
-        Pattern pattern = Pattern.compile(RSS_CONTENT_TYPE_REGEX);
-        Matcher matcher = pattern.matcher(response.header("content-type"));
-
-        String header;
-        if (matcher.find())
-            header = matcher.group(0);
-        else
-            header = response.header("content-type");
-
         if (response.isSuccessful()) {
+            Pattern pattern = Pattern.compile(RSS_CONTENT_TYPE_REGEX);
+            Matcher matcher = pattern.matcher(response.header(LibUtils.CONTENT_TYPE_HEADER));
+
+            String header;
+            if (matcher.find())
+                header = matcher.group(0);
+            else
+                header = response.header(LibUtils.CONTENT_TYPE_HEADER);
+
             RSSType type = getRSSType(header);
             if (type == null) {
                 callback.onSyncFailure(new IllegalArgumentException("bad content type : " + header + "for " + url));
                 return;
             }
-
-            parseFeed(response.body().byteStream(), type, callback, url);
-        } else
+            parseFeed(response.body().byteStream(), type, response);
+        } else if (response.code() == 304)
+            return;
+        else
             callback.onSyncFailure(new Exception("Error " + response.code() + " when requesting url " + url));
     }
 
@@ -67,12 +79,11 @@ public class RSSNetwork {
      * Parse input feed
      * @param stream inputStream to parse
      * @param type rss type, important to know the format
-     * @param callback success callback
-     * @param url feed url
+     * @param response query response
      * @throws Exception
      */
-    private void parseFeed(InputStream stream, RSSType type, QueryCallback callback, String url) throws Exception {
-        String xml = Utils.inputStreamToString(stream);
+    private void parseFeed(InputStream stream, RSSType type, Response response) throws Exception {
+        String xml = LibUtils.inputStreamToString(stream);
         Serializer serializer = new Persister();
 
         if (type == RSSType.RSS_UNKNOWN) {
@@ -86,21 +97,33 @@ public class RSSNetwork {
             }
         }
 
+        String etag = response.header(LibUtils.ETAG_HEADER);
+        String lastModified = response.header(LibUtils.LAST_MODIFIED_HEADER);
+
         switch (type) {
             case RSS_2:
                 RSSFeed rssFeed = serializer.read(RSSFeed.class, xml);
                 if (rssFeed.getChannel().getFeedUrl() == null) // workaround si the channel does not have any atom:link tag
-                    rssFeed.getChannel().getLinks().add(new RSSLink(null, url));
+                    rssFeed.getChannel().getLinks().add(new RSSLink(null, response.request().url().toString()));
+                rssFeed.setEtag(etag);
+                rssFeed.setLastModified(lastModified);
 
                 callback.onSyncSuccess(rssFeed, type);
                 break;
             case RSS_ATOM:
                 ATOMFeed atomFeed = serializer.read(ATOMFeed.class, xml);
+                atomFeed.setEtag(etag);
+                atomFeed.setLastModified(etag);
+
                 callback.onSyncSuccess(atomFeed, type);
                 break;
             case RSS_JSON:
                 Gson gson = new Gson();
                 JSONFeed feed = gson.fromJson(xml, JSONFeed.class);
+
+                feed.setEtag(etag);
+                feed.setLastModified(lastModified);
+
                 callback.onSyncSuccess(feed, type);
                 break;
         }
@@ -113,23 +136,27 @@ public class RSSNetwork {
      */
     private RSSType getRSSType(String contentType) {
         switch (contentType) {
-            case Utils.RSS_DEFAULT_CONTENT_TYPE:
+            case LibUtils.RSS_DEFAULT_CONTENT_TYPE:
                 return  RSSType.RSS_2;
-            case Utils.RSS_TEXT_CONTENT_TYPE:
+            case LibUtils.RSS_TEXT_CONTENT_TYPE:
                 return RSSType.RSS_UNKNOWN;
-            case Utils.RSS_APPLICATION_CONTENT_TYPE:
+            case LibUtils.RSS_APPLICATION_CONTENT_TYPE:
                 return RSSType.RSS_UNKNOWN;
-            case Utils.ATOM_CONTENT_TYPE:
+            case LibUtils.ATOM_CONTENT_TYPE:
                 return RSSType.RSS_ATOM;
-            case Utils.JSON_CONTENT_TYPE:
+            case LibUtils.JSON_CONTENT_TYPE:
                 return RSSType.RSS_JSON;
-            case Utils.HTML_CONTENT_TYPE:
+            case LibUtils.HTML_CONTENT_TYPE:
                 return RSSType.RSS_UNKNOWN;
             default:
                 Log.d(TAG, "bad content type : " + contentType);
                 return null;
 
         }
+    }
+
+    public void setCallback(QueryCallback callback) {
+        this.callback = callback;
     }
 
     public enum RSSType {

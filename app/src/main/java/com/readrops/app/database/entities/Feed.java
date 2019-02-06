@@ -7,6 +7,9 @@ import android.support.annotation.ColorInt;
 import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
 import com.readrops.readropslibrary.localfeed.json.JSONFeed;
 import com.readrops.readropslibrary.localfeed.rss.RSSChannel;
+import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
+
+import java.nio.channels.Channel;
 
 @Entity
 public class Feed {
@@ -28,6 +31,11 @@ public class Feed {
 
     @ColumnInfo(name = "icon_url")
     private String iconUrl;
+
+    private String etag;
+
+    @ColumnInfo(name = "last_modified")
+    private String lastModified;
 
     public Feed() {
 
@@ -104,14 +112,34 @@ public class Feed {
         this.iconUrl = iconUrl;
     }
 
-    public static Feed feedFromRSS(RSSChannel channel) {
+    public String getEtag() {
+        return etag;
+    }
+
+    public void setEtag(String etag) {
+        this.etag = etag;
+    }
+
+    public String getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(String lastModified) {
+        this.lastModified = lastModified;
+    }
+
+    public static Feed feedFromRSS(RSSFeed rssFeed) {
         Feed feed = new Feed();
+        RSSChannel channel = rssFeed.getChannel();
 
         feed.setName(channel.getTitle());
         feed.setUrl(channel.getFeedUrl());
         feed.setSiteUrl(channel.getUrl());
         feed.setDescription(channel.getDescription());
         feed.setLastUpdated(channel.getLastUpdated());
+
+        feed.setEtag(rssFeed.getEtag());
+        feed.setLastModified(rssFeed.getLastModified());
 
         return feed;
     }
@@ -126,6 +154,9 @@ public class Feed {
         feed.setDescription(atomFeed.getSubtitle());
         feed.setLastUpdated(atomFeed.getUpdated());
 
+        feed.setEtag(atomFeed.getEtag());
+        feed.setLastModified(atomFeed.getLastModified());
+
         return feed;
     }
 
@@ -136,6 +167,9 @@ public class Feed {
         feed.setUrl(jsonFeed.getFeedUrl());
         feed.setDescription(jsonFeed.getDescription());
         //feed.setLastUpdated(jsonFeed.); maybe later ?
+
+        feed.setEtag(jsonFeed.getEtag());
+        feed.setLastModified(jsonFeed.getLastModified());
 
         return feed;
     }

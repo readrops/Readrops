@@ -2,7 +2,7 @@ package com.readrops.readropslibrary;
 
 import android.util.Log;
 
-import com.readrops.readropslibrary.Utils.Utils;
+import com.readrops.readropslibrary.Utils.LibUtils;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -45,11 +45,11 @@ public final class HtmlParser {
     }
 
     private static boolean isTypeRssFeed(String type) {
-        return type.equals(Utils.RSS_DEFAULT_CONTENT_TYPE) ||
-                type.equals(Utils.ATOM_CONTENT_TYPE) ||
-                type.equals(Utils.JSON_CONTENT_TYPE) ||
-                type.equals(Utils.RSS_TEXT_CONTENT_TYPE) ||
-                type.equals(Utils.RSS_APPLICATION_CONTENT_TYPE);
+        return type.equals(LibUtils.RSS_DEFAULT_CONTENT_TYPE) ||
+                type.equals(LibUtils.ATOM_CONTENT_TYPE) ||
+                type.equals(LibUtils.JSON_CONTENT_TYPE) ||
+                type.equals(LibUtils.RSS_TEXT_CONTENT_TYPE) ||
+                type.equals(LibUtils.RSS_APPLICATION_CONTENT_TYPE);
     }
 
     /**
