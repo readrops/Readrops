@@ -22,12 +22,16 @@ import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
 import com.readrops.readropslibrary.localfeed.json.JSONFeed;
 import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
 
+import org.joda.time.LocalDateTime;
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -134,7 +138,12 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
                 database.feedDao().updateHeaders(rssFeed.getEtag(), rssFeed.getLastModified(), dbFeed.getId());
 
             List<Item> dbItems = Item.itemsFromRSS(rssFeed.getChannel().getItems(), dbFeed);
-            insertItems(dbItems, dbFeed);
+            TreeMap<LocalDateTime, Item> sortedItems = new TreeMap<>(LocalDateTime::compareTo);
+            for (Item item : dbItems) {
+                sortedItems.put(item.getPubDate(), item);
+            }
+
+            insertItems(sortedItems.values(), dbFeed);
 
         } catch (Exception e) {
             failureCallBackInMainThread(e);
@@ -154,7 +163,12 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
                 database.feedDao().updateHeaders(feed.getEtag(), feed.getLastModified(), dbFeed.getId());
 
             List<Item> dbItems = Item.itemsFromATOM(feed.getEntries(), dbFeed);
-            insertItems(dbItems, dbFeed);
+            TreeMap<LocalDateTime, Item> sortedItems = new TreeMap<>(LocalDateTime::compareTo);
+            for (Item item : dbItems) {
+                sortedItems.put(item.getPubDate(), item);
+            }
+
+            insertItems(sortedItems.values(), dbFeed);
 
         } catch (Exception e) {
             failureCallBackInMainThread(e);
@@ -173,14 +187,19 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
                 database.feedDao().updateHeaders(feed.getEtag(), feed.getLastModified(), dbFeed.getId());
 
             List<Item> dbItems = Item.itemsFromJSON(feed.getItems(), dbFeed);
-            insertItems(dbItems, dbFeed);
+            TreeMap<LocalDateTime, Item> sortedItems = new TreeMap<>(LocalDateTime::compareTo);
+            for (Item item : dbItems) {
+                sortedItems.put(item.getPubDate(), item);
+            }
+
+            insertItems(sortedItems.values(), dbFeed);
 
         } catch (Exception e) {
             failureCallBackInMainThread(e);
         }
     }
 
-    private void insertItems(List<Item> items, Feed feed) {
+    private void insertItems(Collection<Item> items, Feed feed) {
         for (Item dbItem : items) {
             if (!Boolean.valueOf(database.itemDao().guidExist(dbItem.getGuid()))) {
                 if (dbItem.getDescription() != null) {

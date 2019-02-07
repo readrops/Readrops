@@ -1,4 +1,4 @@
-package com.readrops.app;
+package com.readrops.app.utils;
 
 import android.content.Context;
 import android.os.Handler;
