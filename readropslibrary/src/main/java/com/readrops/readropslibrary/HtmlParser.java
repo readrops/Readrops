@@ -111,4 +111,14 @@ public final class HtmlParser {
         else
             return null;
     }
+
+    public static String deleteCoverImage(String content) {
+        Document document = Jsoup.parse(content);
+        Elements elements = document.select("img");
+
+        if (!elements.isEmpty())
+            elements.first().remove();
+
+        return document.toString();
+    }
 }

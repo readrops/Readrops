@@ -31,4 +31,7 @@ public interface ItemDao {
 
     @Insert
     void insertAll(List<Item> items);
+
+    @Query("Select * from Item Where id = :id")
+    LiveData<Item> getItemById(int id);
 }

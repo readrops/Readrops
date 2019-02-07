@@ -2,6 +2,7 @@ package com.readrops.app;
 
 import android.app.Dialog;
 import android.arch.lifecycle.ViewModelProvider;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -123,6 +124,13 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
 
         ViewPreloadSizeProvider preloadSizeProvider = new ViewPreloadSizeProvider();
         adapter = new MainItemListAdapter(GlideApp.with(this), preloadSizeProvider);
+        adapter.setOnItemClickListener(itemWithFeed -> {
+            Intent intent = new Intent(this, ItemActivity.class);
+            intent.putExtra("itemId", itemWithFeed.getItem().getId());
+            intent.putExtra("imageUrl", itemWithFeed.getItem().getImageLink());
+
+            startActivity(intent);
+        });
 
         RecyclerViewPreloader<String> preloader = new RecyclerViewPreloader<String>(Glide.with(this), adapter, preloadSizeProvider, 10);
         recyclerView.addOnScrollListener(preloader);

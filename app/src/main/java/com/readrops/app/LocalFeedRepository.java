@@ -12,6 +12,7 @@ import android.util.Patterns;
 import com.readrops.app.database.ItemWithFeed;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Item;
+import com.readrops.app.utils.Utils;
 import com.readrops.readropslibrary.HtmlParser;
 import com.readrops.readropslibrary.ParsingResult;
 import com.readrops.readropslibrary.QueryCallback;
@@ -28,7 +29,6 @@ import org.jsoup.Jsoup;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
@@ -203,8 +203,16 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
         for (Item dbItem : items) {
             if (!Boolean.valueOf(database.itemDao().guidExist(dbItem.getGuid()))) {
                 if (dbItem.getDescription() != null) {
-                    if (dbItem.getImageLink() == null)
-                        dbItem.setImageLink(HtmlParser.getDescImageLink(dbItem.getDescription(), feed.getSiteUrl()));
+
+                    if (dbItem.getImageLink() == null) {
+                        String imageUrl = HtmlParser.getDescImageLink(dbItem.getDescription(), feed.getSiteUrl());
+                        if (imageUrl != null) {
+                            dbItem.setImageLink(imageUrl);
+
+                            if (dbItem.getContent() != null) // removing cover image in content if found in description
+                                dbItem.setContent(HtmlParser.deleteCoverImage(dbItem.getContent()));
+                        }
+                    }
 
                     dbItem.setDescription(Jsoup.parse(dbItem.getDescription()).text());
                 }
@@ -224,23 +232,11 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
     }
 
     private @ColorInt int getFaviconColor(String favUrl) throws IOException {
-        Bitmap favicon = getFaviconFromUrl(favUrl);
+        Bitmap favicon = Utils.getImageFromUrl(favUrl);
         Palette palette = Palette.from(favicon).generate();
 
         return palette.getDominantSwatch().getRgb();
     }
 
-    private Bitmap getFaviconFromUrl(String url) throws IOException {
-        OkHttpClient okHttpClient = new OkHttpClient();
-        Request request = new Request.Builder().url(url).build();
-
-        Response response = okHttpClient.newCall(request).execute();
-
-        if (response.isSuccessful()) {
-            InputStream inputStream = response.body().byteStream();
-            return BitmapFactory.decodeStream(inputStream);
-        } else
-            return null;
-    }
 
 }

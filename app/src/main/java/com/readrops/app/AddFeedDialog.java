@@ -6,7 +6,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.design.widget.TextInputEditText;
@@ -19,16 +18,11 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.readrops.app.utils.Utils;
 import com.readrops.readropslibrary.HtmlParser;
 import com.readrops.readropslibrary.ParsingResult;
 
-import org.jsoup.HttpStatusException;
-
-import java.io.IOException;
-import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.nio.charset.MalformedInputException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 
