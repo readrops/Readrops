@@ -1,6 +1,7 @@
 package com.readrops.app;
 
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -104,6 +105,15 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
 
         if (itemWithFeed.getColor() != 0)
             viewHolder.feedName.setTextColor(itemWithFeed.getColor());
+
+        Resources resources = viewHolder.itemView.getResources();
+        int minutes = (int)Math.round(itemWithFeed.getItem().getReadTime());
+        if (minutes < 1)
+            viewHolder.itemReadTime.setText(resources.getString(R.string.read_time_lower_than_1));
+        else if (minutes > 1)
+            viewHolder.itemReadTime.setText(resources.getString(R.string.read_time, String.valueOf(minutes)));
+        else
+            viewHolder.itemReadTime.setText(resources.getString(R.string.read_time_one_minute));
     }
 
     @Override
@@ -149,6 +159,7 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
         private TextView itemDescription;
         private ImageView feedIcon;
         private ImageView itemImage;
+        private TextView itemReadTime;
 
         ItemViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -166,6 +177,7 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
             itemDescription = itemView.findViewById(R.id.item_description);
             feedIcon = itemView.findViewById(R.id.item_feed_icon);
             itemImage = itemView.findViewById(R.id.item_image);
+            itemReadTime = itemView.findViewById(R.id.item_readtime);
         }
 
         private void bind(ItemWithFeed itemWithFeed) {
@@ -180,6 +192,8 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
                 itemDescription.setText(item.getCleanDescription());
             } else
                 itemDescription.setVisibility(View.GONE);
+
+
         }
 
         public ImageView getItemImage() {

@@ -203,18 +203,22 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
         for (Item dbItem : items) {
             if (!Boolean.valueOf(database.itemDao().guidExist(dbItem.getGuid()))) {
                 if (dbItem.getDescription() != null) {
+                    dbItem.setCleanDescription(Jsoup.parse(dbItem.getDescription()).text());
 
                     if (dbItem.getImageLink() == null) {
                         String imageUrl = HtmlParser.getDescImageLink(dbItem.getDescription(), feed.getSiteUrl());
                         if (imageUrl != null) {
                             dbItem.setImageLink(imageUrl);
 
-                            if (dbItem.getContent() != null) // removing cover image in content if found in description
+                            if (dbItem.getContent() != null) {
+                                // removing cover image in content if found in description
                                 dbItem.setContent(HtmlParser.deleteCoverImage(dbItem.getContent()));
+
+                                dbItem.setReadTime(Utils.readTimeFromString(dbItem.getContent()));
+                            } else
+                                dbItem.setReadTime(Utils.readTimeFromString(dbItem.getCleanDescription()));
                         }
                     }
-
-                    dbItem.setCleanDescription(Jsoup.parse(dbItem.getDescription()).text());
                 }
 
                 database.itemDao().insert(dbItem);

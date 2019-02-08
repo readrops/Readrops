@@ -47,6 +47,9 @@ public class Item {
     @ColumnInfo(index = true)
     private String guid;
 
+    @ColumnInfo(name = "read_time")
+    private double readTime;
+
     public int getId() {
         return id;
     }
@@ -137,6 +140,14 @@ public class Item {
 
     public boolean hasImage() {
         return getImageLink() != null;
+    }
+
+    public double getReadTime() {
+        return readTime;
+    }
+
+    public void setReadTime(double readTime) {
+        this.readTime = readTime;
     }
 
     public String getText() {

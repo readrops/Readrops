@@ -18,4 +18,8 @@
     <string name="add_feed_connexion_error">Connection error</string>
     <string name="add_feed_unknownhost_error">Unknown host</string>
     <string name="by_author">by %1$s</string>
+    <string name="read_time">%1$s mins read</string>
+    <string name="read_time_lower_than_1">Less than a minute</string>
+    <string name="read_time_one_minute">1 min read</string>
+    <string name="interpoint" translatable="false">·</string>
 </resources>

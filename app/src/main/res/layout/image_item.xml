@@ -64,29 +64,62 @@
         android:layout_below="@id/layout_start"
         android:layout_marginTop="6dp">
 
-        <ImageView
-            android:id="@+id/item_feed_icon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+        <RelativeLayout
+            android:id="@+id/item_feed_title_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:src="@drawable/ic_rss_feed" />
+            android:layout_toStartOf="@id/item_readtime">
+
+            <ImageView
+                android:id="@+id/item_feed_icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:src="@drawable/ic_rss_feed" />
+
+            <TextView
+                android:id="@+id/item_feed_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:layout_toRightOf="@id/item_feed_icon"
+                android:ellipsize="end"
+                android:maxLines="1"
+                tools:text="Numerama" />
+
+        </RelativeLayout>
+
 
         <TextView
-            android:id="@+id/item_feed_title"
+            android:id="@+id/item_readtime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
             android:layout_marginLeft="6dp"
-            android:layout_toRightOf="@id/item_feed_icon"
-            android:ellipsize="end"
-            tools:text="Numerama" />
+            android:layout_toStartOf="@id/item_interpoint"
+            tools:text="3 mins read" />
+
+        <TextView
+            android:id="@+id/item_interpoint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_toStartOf="@id/item_date"
+            android:text="@string/interpoint"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/item_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
             tools:text="January 10 2019" />
     </RelativeLayout>
 

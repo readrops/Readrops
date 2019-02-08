@@ -23,6 +23,8 @@ public final class Utils {
 
     public static final String HTTPS_PREFIX = "https://";
 
+    public static final int AVERAGE_WORDS_PER_MINUTE = 250;
+
     public static void displayErrorInMainThread(Context context, String message) {
         Toast toast = Toast.makeText(context, message, Toast.LENGTH_LONG);
 
@@ -53,6 +55,13 @@ public final class Utils {
         activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 
         return displayMetrics.widthPixels;
+    }
+
+    public static double readTimeFromString(String value) {
+        int nbWords = value.split("\\s+").length;
+        double minutes = (double)nbWords / AVERAGE_WORDS_PER_MINUTE;
+
+        return minutes;
     }
 
 }

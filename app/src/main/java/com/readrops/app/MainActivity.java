@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
 
         viewModel.getItemsWithFeed().observe(this, (itemWithFeeds -> {
             newItems = itemWithFeeds;
+
             if (!refreshLayout.isRefreshing())
                 adapter.submitList(newItems);
         }));

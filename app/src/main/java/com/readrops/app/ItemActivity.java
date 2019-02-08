@@ -14,6 +14,7 @@ import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.readrops.app.database.ItemWithFeed;
@@ -36,6 +37,8 @@ public class ItemActivity extends AppCompatActivity {
     private TextView title;
     private TextView author;
     private TextView readTime;
+
+    private RelativeLayout readTimeLayout;
 
     private CollapsingToolbarLayout toolbarLayout;
     private ReadropsWebView webView;
@@ -71,6 +74,7 @@ public class ItemActivity extends AppCompatActivity {
         title = findViewById(R.id.activity_item_title);
         author = findViewById(R.id.activity_item_author);
         readTime = findViewById(R.id.activity_item_readtime);
+        readTimeLayout = findViewById(R.id.activity_item_readtime_layout);
 
         viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(ItemViewModel.class);
         viewModel.getItemById(itemId).observe(this, this::bindUI);
@@ -85,6 +89,18 @@ public class ItemActivity extends AppCompatActivity {
         if (item.getAuthor() != null) {
             author.setText(getString(R.string.by_author, item.getAuthor()));
             author.setVisibility(View.VISIBLE);
+        }
+
+        if (item.getReadTime() > 0) {
+            int minutes = (int)Math.round(item.getReadTime());
+            if (minutes < 1)
+                readTime.setText(getResources().getString(R.string.read_time_lower_than_1));
+            else if (minutes > 1)
+                readTime.setText(getResources().getString(R.string.read_time, String.valueOf(minutes)));
+            else
+                readTime.setText(getResources().getString(R.string.read_time_one_minute));
+
+            readTimeLayout.setVisibility(View.VISIBLE);
         }
 
         webView.setItem(itemWithFeed);
