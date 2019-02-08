@@ -17,4 +17,5 @@
     <string name="add_feed_no_result">No feed url found</string>
     <string name="add_feed_connexion_error">Connection error</string>
     <string name="add_feed_unknownhost_error">Unknown host</string>
+    <string name="by_author">by %1$s</string>
 </resources>

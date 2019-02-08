@@ -16,5 +16,6 @@
     <string name="add_feed_no_result">Aucune adresse de flux trouvée</string>
     <string name="add_feed_connexion_error">Erreur de connexion au site</string>
     <string name="add_feed_unknownhost_error">Site inconnu</string>
+    <string name="by_author">par %1$s</string>
 
 </resources>

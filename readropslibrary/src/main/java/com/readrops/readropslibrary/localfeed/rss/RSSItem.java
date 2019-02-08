@@ -25,7 +25,8 @@ public class RSSItem extends AItem {
     @Namespace(prefix = "media")
     private RSSMediaContent mediaContent;
 
-    @Element(name = "author", required = false)
+    @Element(name = "creator", required = false)
+    @Namespace(prefix = "dc", reference = "http://purl.org/dc/elements/1.1/")
     private String author;
 
     @Element(name = "pubDate", required = false)

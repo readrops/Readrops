@@ -10,11 +10,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.readrops.app.database.ItemWithFeed;
 import com.readrops.app.database.entities.Item;
 import com.readrops.app.utils.GlideApp;
 import com.readrops.app.utils.ReadropsWebView;
@@ -35,6 +37,10 @@ public class ItemActivity extends AppCompatActivity {
     private TextView author;
     private TextView readTime;
 
+    private CollapsingToolbarLayout toolbarLayout;
+    private ReadropsWebView webView;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +56,7 @@ public class ItemActivity extends AppCompatActivity {
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        CollapsingToolbarLayout toolbarLayout = findViewById(R.id.collapsing_layout);
+        toolbarLayout = findViewById(R.id.collapsing_layout);
         AppBarLayout appBarLayout = findViewById(R.id.app_bar_layout);
         if (imageUrl == null)
             appBarLayout.setExpanded(false);
@@ -61,20 +67,26 @@ public class ItemActivity extends AppCompatActivity {
                 .load(imageUrl)
                 .into(imageView);
 
-        ReadropsWebView webView = findViewById(R.id.item_webview);
+        webView = findViewById(R.id.item_webview);
         title = findViewById(R.id.activity_item_title);
         author = findViewById(R.id.activity_item_author);
         readTime = findViewById(R.id.activity_item_readtime);
 
         viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(ItemViewModel.class);
-        viewModel.getItemById(itemId).observe(this, itemWithFeed -> {
-            Item item = itemWithFeed.getItem();
+        viewModel.getItemById(itemId).observe(this, this::bindUI);
+    }
 
-            toolbarLayout.setTitle(itemWithFeed.getFeedName());
-            toolbar.setTitle(itemWithFeed.getFeedName());
-            title.setText(item.getTitle());
+    private void bindUI(ItemWithFeed itemWithFeed) {
+        Item item = itemWithFeed.getItem();
 
-            webView.setItem(itemWithFeed);
-        });
+        toolbarLayout.setTitle(itemWithFeed.getFeedName());
+        title.setText(item.getTitle());
+
+        if (item.getAuthor() != null) {
+            author.setText(getString(R.string.by_author, item.getAuthor()));
+            author.setVisibility(View.VISIBLE);
+        }
+
+        webView.setItem(itemWithFeed);
     }
 }
