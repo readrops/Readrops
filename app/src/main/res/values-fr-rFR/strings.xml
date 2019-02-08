@@ -17,8 +17,8 @@
     <string name="add_feed_connexion_error">Erreur de connexion au site</string>
     <string name="add_feed_unknownhost_error">Site inconnu</string>
     <string name="by_author">par %1$s</string>
-    <string name="read_time">%1$s minutes</string>
+    <string name="read_time">%1$s min</string>
     <string name="read_time_lower_than_1">Moins d\'une minute</string>
-    <string name="read_time_one_minute">1 minute</string>
+    <string name="read_time_one_minute">1 min</string>
 
 </resources>

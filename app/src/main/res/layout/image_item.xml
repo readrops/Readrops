@@ -69,7 +69,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:layout_toStartOf="@id/item_readtime">
+            android:layout_toLeftOf="@id/item_readtime_layout">
 
             <ImageView
                 android:id="@+id/item_feed_icon"
@@ -93,15 +93,31 @@
 
         </RelativeLayout>
 
-
-        <TextView
-            android:id="@+id/item_readtime"
+        <RelativeLayout
+            android:id="@+id/item_readtime_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
+            android:layout_toLeftOf="@id/item_interpoint"
             android:layout_marginLeft="6dp"
-            android:layout_toStartOf="@id/item_interpoint"
-            tools:text="3 mins read" />
+            android:layout_marginStart="6dp">
+
+            <ImageView
+                android:id="@+id/item_readtime_icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_read_time"/>
+
+            <TextView
+                android:id="@+id/item_readtime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/item_readtime_icon"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                tools:text="3 mins" />
+
+        </RelativeLayout>
+
 
         <TextView
             android:id="@+id/item_interpoint"
@@ -120,7 +136,8 @@
             android:layout_alignParentEnd="true"
             android:layout_marginStart="4dp"
             android:layout_marginLeft="4dp"
-            tools:text="January 10 2019" />
+            tools:text="8 february 2019" />
+
     </RelativeLayout>
 
 
