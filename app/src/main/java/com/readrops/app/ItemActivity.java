@@ -103,6 +103,6 @@ public class ItemActivity extends AppCompatActivity {
             readTimeLayout.setVisibility(View.VISIBLE);
         }
 
-        webView.setItem(itemWithFeed);
+        webView.setItem(itemWithFeed, Utils.getDeviceWidth(this));
     }
 }

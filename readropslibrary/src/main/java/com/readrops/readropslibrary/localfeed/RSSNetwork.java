@@ -89,7 +89,7 @@ public class RSSNetwork {
         if (type == RSSType.RSS_UNKNOWN) {
             if (Pattern.compile(RSS_2_REGEX).matcher(xml).find())
                 type = RSSType.RSS_2;
-            else if (xml.contains("<feed xmlns=\"http://www.w3.org/2005/Atom\">"))
+            else if (xml.contains("<feed xmlns=\"http://www.w3.org/2005/Atom\""))
                 type = RSSType.RSS_ATOM;
             else {
                 callback.onSyncFailure(new Exception("Unknown xml format"));
@@ -99,6 +99,7 @@ public class RSSNetwork {
 
         String etag = response.header(LibUtils.ETAG_HEADER);
         String lastModified = response.header(LibUtils.LAST_MODIFIED_HEADER);
+
 
         switch (type) {
             case RSS_2:
@@ -112,6 +113,8 @@ public class RSSNetwork {
                 break;
             case RSS_ATOM:
                 ATOMFeed atomFeed = serializer.read(ATOMFeed.class, xml);
+                atomFeed.setWebsiteUrl(response.request().url().scheme() + "://" + response.request().url().host());
+                atomFeed.setUrl(response.request().url().toString());
                 atomFeed.setEtag(etag);
                 atomFeed.setLastModified(etag);
 

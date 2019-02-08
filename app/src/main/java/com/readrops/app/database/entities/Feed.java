@@ -150,7 +150,7 @@ public class Feed {
         feed.setName(atomFeed.getTitle());
         feed.setDescription(atomFeed.getSubtitle());
         feed.setUrl(atomFeed.getUrl());
-        feed.setSiteUrl(atomFeed.getWebSiteUrl());
+        feed.setSiteUrl(atomFeed.getWebsiteUrl());
         feed.setDescription(atomFeed.getSubtitle());
         feed.setLastUpdated(atomFeed.getUpdated());
 
