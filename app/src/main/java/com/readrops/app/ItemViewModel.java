@@ -6,6 +6,7 @@ import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 
 import com.readrops.app.database.Database;
+import com.readrops.app.database.ItemWithFeed;
 import com.readrops.app.database.entities.Item;
 
 public class ItemViewModel extends AndroidViewModel {
@@ -18,7 +19,7 @@ public class ItemViewModel extends AndroidViewModel {
         repository = new BasedRepository(application);
     }
 
-    public LiveData<Item> getItemById(int id) {
+    public LiveData<ItemWithFeed> getItemById(int id) {
         return repository.getItemById(id);
     }
 

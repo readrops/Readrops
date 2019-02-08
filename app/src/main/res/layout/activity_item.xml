@@ -8,6 +8,7 @@
     tools:context=".ItemActivity">
 
     <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/Widget.AppCompat.Light.ActionBar">
@@ -39,14 +40,56 @@
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <WebView
-            android:id="@+id/item_webview"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:id="@+id/activity_item_details_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="6dp">
+
+                <TextView
+                    android:id="@+id/activity_item_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
+                    tools:text="This is a title" />
+
+                <TextView
+                    android:id="@+id/activity_item_author"
+                    style="@style/Base.TextAppearance.AppCompat.Body1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/activity_item_title"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone"
+                    tools:text="By Santa Klaus" />
+
+                <TextView
+                    android:id="@+id/activity_item_readtime"
+                    style="@style/Base.TextAppearance.AppCompat.Body1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/activity_item_title"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone"
+                    tools:text="3 minutes reading" />
+            </RelativeLayout>
+
+            <com.readrops.app.utils.ReadropsWebView
+                android:id="@+id/item_webview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/activity_item_details_layout"
+                android:layout_marginTop="6dp" />
+
+        </RelativeLayout>
 
     </android.support.v4.widget.NestedScrollView>
 

@@ -20,7 +20,7 @@ public interface ItemDao {
     @Query("Select * from Item Order By pub_date DESC")
     LiveData<List<Item>> getAll();
 
-    @Query("Select Item.id, title, Item.description, image_link, pub_date, name, color, icon_url from Item Inner Join Feed on Item.feed_id = Feed.id Order By Item.id DESC")
+    @Query("Select Item.id, title, clean_description, image_link, pub_date, name, color, icon_url from Item Inner Join Feed on Item.feed_id = Feed.id Order By Item.id DESC")
     LiveData<List<ItemWithFeed>> getAllItemWithFeeds();
 
     @Query("Select case When :guid In (Select guid from Item) Then 'true' else 'false' end")
@@ -32,6 +32,6 @@ public interface ItemDao {
     @Insert
     void insertAll(List<Item> items);
 
-    @Query("Select * from Item Where id = :id")
-    LiveData<Item> getItemById(int id);
+    @Query("Select title, Item.description, content, pub_date, author, 0 as color, name from Item Inner Join Feed on Item.feed_id = Feed.id And Item.id = :id")
+    LiveData<ItemWithFeed> getItemById(int id);
 }

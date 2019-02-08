@@ -214,7 +214,7 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
                         }
                     }
 
-                    dbItem.setDescription(Jsoup.parse(dbItem.getDescription()).text());
+                    dbItem.setCleanDescription(Jsoup.parse(dbItem.getDescription()).text());
                 }
 
                 database.itemDao().insert(dbItem);

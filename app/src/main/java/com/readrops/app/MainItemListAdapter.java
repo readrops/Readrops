@@ -175,9 +175,9 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
             date.setText(DateUtils.formatedDateByLocal(item.getPubDate()));
             feedName.setText(itemWithFeed.getFeedName());
 
-            if (item.getDescription() != null) {
+            if (item.getCleanDescription() != null) {
                 itemDescription.setVisibility(View.VISIBLE);
-                itemDescription.setText(item.getDescription());
+                itemDescription.setText(item.getCleanDescription());
             } else
                 itemDescription.setVisibility(View.GONE);
         }

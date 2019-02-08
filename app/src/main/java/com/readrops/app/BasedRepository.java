@@ -3,6 +3,7 @@ package com.readrops.app;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 
+import com.readrops.app.database.ItemWithFeed;
 import com.readrops.app.database.entities.Item;
 import com.readrops.readropslibrary.ParsingResult;
 
@@ -12,7 +13,7 @@ public class BasedRepository extends ARepository {
         super(application);
     }
 
-    public LiveData<Item> getItemById(int id) {
+    public LiveData<ItemWithFeed> getItemById(int id) {
         return database.itemDao().getItemById(id);
     }
 

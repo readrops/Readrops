@@ -16,4 +16,10 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="TextAppearance.Design.CollapsingToolbar.Expanded.Custom" parent="TextAppearance.Design.CollapsingToolbar.Expanded">
+        <item name="android:textSize">12sp</item>
+        <item name="android:color">@color/colorBackground</item>
+        <item name="android:layout_margin">14dp</item>
+    </style>
+
 </resources>

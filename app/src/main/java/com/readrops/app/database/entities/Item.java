@@ -26,6 +26,9 @@ public class Item {
 
     private String description;
 
+    @ColumnInfo(name = "clean_description")
+    private String cleanDescription;
+
     private String link;
 
     @ColumnInfo(name = "image_link")
@@ -66,6 +69,14 @@ public class Item {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getCleanDescription() {
+        return cleanDescription;
+    }
+
+    public void setCleanDescription(String cleanDescription) {
+        this.cleanDescription = cleanDescription;
     }
 
     public String getLink() {
@@ -126,6 +137,13 @@ public class Item {
 
     public boolean hasImage() {
         return getImageLink() != null;
+    }
+
+    public String getText() {
+        if (content != null)
+            return content;
+        else
+            return description;
     }
 
     public static List<Item> itemsFromRSS(List<RSSItem> items, Feed feed) throws ParseException {

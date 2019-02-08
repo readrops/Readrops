@@ -1,10 +1,13 @@
 package com.readrops.app.utils;
 
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.DisplayMetrics;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -43,6 +46,13 @@ public final class Utils {
             return BitmapFactory.decodeStream(inputStream);
         } else
             return null;
+    }
+
+    public static int getDeviceWidth(Activity activity) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+        return displayMetrics.widthPixels;
     }
 
 }
