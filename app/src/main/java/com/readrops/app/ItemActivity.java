@@ -32,6 +32,8 @@ import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import okhttp3.internal.Util;
+
 public class ItemActivity extends AppCompatActivity {
 
     private ItemViewModel viewModel;
@@ -83,6 +85,8 @@ public class ItemActivity extends AppCompatActivity {
         } else {
             appBarLayout.setExpanded(true);
             toolbarLayout.setTitleEnabled(true);
+            toolbarLayout.setExpandedTitleColor(Color.WHITE);
+            toolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
 
             GlideApp.with(this)
                     .load(imageUrl)
