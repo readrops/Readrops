@@ -70,6 +70,7 @@ public class ItemActivity extends AppCompatActivity {
         AppBarLayout appBarLayout = findViewById(R.id.app_bar_layout);
 
         ImageView imageView = findViewById(R.id.collapsing_layout_image);
+        View scrim = findViewById(R.id.collapsing_layout_scrim);
         webView = findViewById(R.id.item_webview);
         title = findViewById(R.id.activity_item_title);
         author = findViewById(R.id.activity_item_author);
@@ -80,6 +81,7 @@ public class ItemActivity extends AppCompatActivity {
             appBarLayout.setExpanded(false);
             getSupportActionBar().setDisplayShowTitleEnabled(false);
             toolbarLayout.setTitleEnabled(false);
+            scrim.setVisibility(View.GONE);
 
             toolbar.setTitleTextColor(Color.WHITE);
         } else {

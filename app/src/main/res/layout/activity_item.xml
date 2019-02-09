@@ -28,6 +28,7 @@
                 app:layout_collapseMode="parallax" />
 
             <View
+                android:id="@+id/collapsing_layout_scrim"
                 android:layout_width="match_parent"
                 android:layout_height="160dp"
                 android:layout_gravity="bottom"
