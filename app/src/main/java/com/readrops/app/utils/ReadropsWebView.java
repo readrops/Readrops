@@ -37,6 +37,7 @@ public class ReadropsWebView extends WebView {
 
         settings.setJavaScriptEnabled(true);
         setBackgroundColor(getResources().getColor(R.color.colorBackground));
+        setPadding(0, 0, 0, 0);
     }
 
     private String getText() {

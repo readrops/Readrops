@@ -65,7 +65,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
-                    android:layout_marginBottom="8dp"
                     tools:text="This is a title" />
 
                 <TextView
@@ -74,9 +73,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/activity_item_title"
+                    android:layout_marginTop="6dp"
                     android:visibility="gone"
                     tools:text="By Santa Klaus"
-                    tools:visibility="visible"/>
+                    tools:visibility="gone"/>
 
                 <RelativeLayout
                     android:id="@+id/activity_item_readtime_layout"
@@ -84,7 +84,8 @@
                     android:layout_height="wrap_content"
                     android:visibility="gone"
                     android:layout_below="@id/activity_item_title"
-                    tools:visibility="visible">
+                    android:layout_alignParentEnd="true"
+                    tools:visibility="gone">
 
                     <ImageView
                         android:id="@+id/activity_item_readtime_icon"
@@ -116,8 +117,7 @@
                 android:id="@+id/item_webview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/activity_item_details_layout"
-                android:layout_marginTop="6dp" />
+                android:layout_below="@id/activity_item_details_layout" />
 
         </RelativeLayout>
 
