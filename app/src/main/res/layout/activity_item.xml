@@ -53,7 +53,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="6dp">
+            android:padding="10dp">
 
             <RelativeLayout
                 android:id="@+id/activity_item_details_layout"
