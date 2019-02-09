@@ -44,11 +44,11 @@ public class ReadropsWebView extends WebView {
         if (itemWithFeed.getItem().getText() != null) {
             Document document = Jsoup.parse(itemWithFeed.getItem().getText());
 
-            document.head().append("<meta name=\"viewport\" content=\"width=" + width +", initial-scale=1\">");
-            document.head().append("<style>img{display: inline;height: auto;max-width: 100%;} " +
-                    "body { margin-left: 0px; margin-right: 0px; }</style>");
+            return getContext().getString(R.string.webview_html_template, String.valueOf(width),
+                    Utils.getCssColor(itemWithFeed.getBgColor() != 0 ? itemWithFeed.getBgColor() :
+                            (itemWithFeed.getColor() != 0 ? itemWithFeed.getColor() : getResources().getColor(R.color.colorPrimary))),
+                    document.body().html());
 
-            return document.toString();
         } else
             return null;
 

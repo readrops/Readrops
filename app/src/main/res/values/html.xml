@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="webview_html_template" translatable="false"><![CDATA[
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset=\"UTF-8\">
+        <meta name=\"viewport\" content=\"width=%1$s, initial-scale=1\">
+        <style type=\"text/css\">
+        a:link, a:active, a:hover { color: %2$s }
+
+        img, video {
+            display: inline;
+            height: auto;
+            max-width: 100%%;
+        }
+
+        body {
+            margin-left: 0px;
+            margin-right: 0px;
+        }
+        </style>
+    </head>
+
+    <body>
+      %3$s
+    </body>
+</html>]]></string>
+</resources>

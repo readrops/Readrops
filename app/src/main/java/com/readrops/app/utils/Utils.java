@@ -5,13 +5,16 @@ import android.app.Application;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.ColorInt;
 import android.util.DisplayMetrics;
 import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -62,6 +65,14 @@ public final class Utils {
         double minutes = (double)nbWords / AVERAGE_WORDS_PER_MINUTE;
 
         return minutes;
+    }
+
+    public static String getCssColor(@ColorInt int color) {
+        return String.format(Locale.US, "rgba(%d,%d,%d,%.2f)",
+                Color.red(color),
+                Color.green(color),
+                Color.blue(color),
+                Color.alpha(color) / 255.0);
     }
 
 }
