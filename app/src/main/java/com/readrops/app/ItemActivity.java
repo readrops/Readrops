@@ -106,6 +106,8 @@ public class ItemActivity extends AppCompatActivity {
             toolbarLayout.setTitle(itemWithFeed.getFeedName());
 
         title.setText(item.getTitle());
+        if (itemWithFeed.getColor() != 0)
+            title.setTextColor(itemWithFeed.getColor());
 
         if (item.getAuthor() != null) {
             author.setText(getString(R.string.by_author, item.getAuthor()));
@@ -122,6 +124,16 @@ public class ItemActivity extends AppCompatActivity {
                 readTime.setText(getResources().getString(R.string.read_time_one_minute));
 
             readTimeLayout.setVisibility(View.VISIBLE);
+        }
+
+        if (itemWithFeed.getBgColor() != 0) {
+            toolbarLayout.setBackgroundColor(itemWithFeed.getBgColor());
+            toolbarLayout.setContentScrimColor(itemWithFeed.getBgColor());
+            toolbarLayout.setStatusBarScrimColor(itemWithFeed.getBgColor());
+        } else if (itemWithFeed.getColor() != 0) {
+            toolbarLayout.setBackgroundColor(itemWithFeed.getColor());
+            toolbarLayout.setContentScrimColor(itemWithFeed.getColor());
+            toolbarLayout.setStatusBarScrimColor(itemWithFeed.getColor());
         }
 
         webView.setItem(itemWithFeed, Utils.getDeviceWidth(this));

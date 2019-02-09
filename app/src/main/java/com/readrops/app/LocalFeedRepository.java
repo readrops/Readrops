@@ -3,7 +3,6 @@ package com.readrops.app;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.annotation.ColorInt;
 import android.support.v7.graphics.Palette;
 import android.util.Log;
@@ -27,15 +26,10 @@ import org.joda.time.LocalDateTime;
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class LocalFeedRepository extends ARepository implements QueryCallback {
 
@@ -231,15 +225,18 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
         String favUrl = HtmlParser.getFaviconLink(feed.getSiteUrl());
         if (favUrl != null && Patterns.WEB_URL.matcher(favUrl).matches()) {
             feed.setIconUrl(favUrl);
-            feed.setColor(getFaviconColor(favUrl));
+            setFeedColors(favUrl, feed);
         }
     }
 
-    private @ColorInt int getFaviconColor(String favUrl) throws IOException {
+    private void setFeedColors(String favUrl, Feed feed) throws IOException {
         Bitmap favicon = Utils.getImageFromUrl(favUrl);
         Palette palette = Palette.from(favicon).generate();
 
-        return palette.getDominantSwatch().getRgb();
+        feed.setTextColor(palette.getDominantSwatch().getRgb());
+
+        if (palette.getMutedSwatch() != null)
+            feed.setBackgroundColor(palette.getMutedSwatch().getRgb());
     }
 
 

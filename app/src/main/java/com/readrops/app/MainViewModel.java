@@ -2,13 +2,10 @@ package com.readrops.app;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
 import android.support.annotation.NonNull;
 
 import com.readrops.app.database.ItemWithFeed;
-import com.readrops.app.database.entities.Item;
 import com.readrops.readropslibrary.ParsingResult;
 
 import java.util.List;

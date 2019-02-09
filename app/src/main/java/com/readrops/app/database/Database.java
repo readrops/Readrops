@@ -13,8 +13,8 @@ import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Item;
 
 
-@android.arch.persistence.room.Database(entities = {Feed.class, Item.class}, version = 1)
-@TypeConverters(Converters.class)
+@android.arch.persistence.room.Database(entities = {Feed.class, Item.class}, version = 1, exportSchema = false)
+@TypeConverters({Converters.class})
 public abstract class Database extends RoomDatabase {
 
     public abstract FeedDao feedDao();

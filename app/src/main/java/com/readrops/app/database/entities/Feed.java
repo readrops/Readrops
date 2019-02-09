@@ -9,8 +9,6 @@ import com.readrops.readropslibrary.localfeed.json.JSONFeed;
 import com.readrops.readropslibrary.localfeed.rss.RSSChannel;
 import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
 
-import java.nio.channels.Channel;
-
 @Entity
 public class Feed {
 
@@ -27,7 +25,11 @@ public class Feed {
 
     private String lastUpdated;
 
-    private @ColorInt int color;
+    @ColumnInfo(name = "text_color")
+    private @ColorInt  int textColor;
+
+    @ColumnInfo(name = "background_color")
+    private @ColorInt int backgroundColor;
 
     @ColumnInfo(name = "icon_url")
     private String iconUrl;
@@ -96,12 +98,20 @@ public class Feed {
         this.lastUpdated = lastUpdated;
     }
 
-    public @ColorInt int getColor() {
-        return color;
+    public @ColorInt int getTextColor() {
+        return textColor;
     }
 
-    public void setColor(@ColorInt int color) {
-        this.color = color;
+    public void setTextColor(@ColorInt int textColor) {
+        this.textColor = textColor;
+    }
+
+    public @ColorInt int getBackgroundColor() {
+        return backgroundColor;
+    }
+
+    public void setBackgroundColor(@ColorInt int backgroundColor) {
+        this.backgroundColor = backgroundColor;
     }
 
     public String getIconUrl() {

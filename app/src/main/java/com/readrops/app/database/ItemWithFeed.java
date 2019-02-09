@@ -2,6 +2,7 @@ package com.readrops.app.database;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Embedded;
+import android.support.annotation.ColorInt;
 
 import com.readrops.app.database.entities.Item;
 
@@ -13,7 +14,11 @@ public class ItemWithFeed {
     @ColumnInfo(name = "name")
     private String feedName;
 
-    private int color;
+    @ColumnInfo(name = "text_color")
+    private @ColorInt int color;
+
+    @ColumnInfo(name = "background_color")
+    private @ColorInt int bgColor;
 
     @ColumnInfo(name = "icon_url")
     private String feedIconUrl;
@@ -34,11 +39,11 @@ public class ItemWithFeed {
         this.feedName = feedName;
     }
 
-    public int getColor() {
+    public @ColorInt int getColor() {
         return color;
     }
 
-    public void setColor(int color) {
+    public void setColor(@ColorInt int color) {
         this.color = color;
     }
 
@@ -49,4 +54,14 @@ public class ItemWithFeed {
     public void setFeedIconUrl(String feedIconUrl) {
         this.feedIconUrl = feedIconUrl;
     }
+
+    public @ColorInt int getBgColor() {
+        return bgColor;
+    }
+
+    public void setBgColor(@ColorInt int bgColor) {
+        this.bgColor = bgColor;
+    }
+
+
 }
