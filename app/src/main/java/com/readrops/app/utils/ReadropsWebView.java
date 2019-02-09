@@ -41,12 +41,16 @@ public class ReadropsWebView extends WebView {
     }
 
     private String getText() {
-        Document document = Jsoup.parse(itemWithFeed.getItem().getText());
+        if (itemWithFeed.getItem().getText() != null) {
+            Document document = Jsoup.parse(itemWithFeed.getItem().getText());
 
-        document.head().append("<meta name=\"viewport\" content=\"width=" + width +", initial-scale=1\">");
-        document.head().append("<style>img{display: inline;height: auto;max-width: 100%;}</style>");
+            document.head().append("<meta name=\"viewport\" content=\"width=" + width +", initial-scale=1\">");
+            document.head().append("<style>img{display: inline;height: auto;max-width: 100%;}</style>");
 
-        return document.toString();
+            return document.toString();
+        } else
+            return null;
+
     }
 
 

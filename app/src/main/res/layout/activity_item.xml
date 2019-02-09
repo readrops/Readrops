@@ -52,13 +52,13 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:padding="6dp">
 
             <RelativeLayout
                 android:id="@+id/activity_item_details_layout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="6dp">
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:id="@+id/activity_item_title"
@@ -117,7 +117,8 @@
                 android:id="@+id/item_webview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/activity_item_details_layout" />
+                android:layout_below="@id/activity_item_details_layout"
+                android:layout_marginTop="6dp"/>
 
         </RelativeLayout>
 
