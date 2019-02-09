@@ -127,8 +127,8 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
         adapter = new MainItemListAdapter(GlideApp.with(this), preloadSizeProvider);
         adapter.setOnItemClickListener(itemWithFeed -> {
             Intent intent = new Intent(this, ItemActivity.class);
-            intent.putExtra("itemId", itemWithFeed.getItem().getId());
-            intent.putExtra("imageUrl", itemWithFeed.getItem().getImageLink());
+            intent.putExtra(ItemActivity.ITEM_ID, itemWithFeed.getItem().getId());
+            intent.putExtra(ItemActivity.IMAGE_URL, itemWithFeed.getItem().getImageLink());
 
             startActivity(intent);
         });

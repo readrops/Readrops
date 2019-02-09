@@ -32,6 +32,6 @@ public interface ItemDao {
     @Insert
     void insertAll(List<Item> items);
 
-    @Query("Select title, Item.description, content, pub_date, author, 0 as color, read_time, name from Item Inner Join Feed on Item.feed_id = Feed.id And Item.id = :id")
+    @Query("Select title, Item.description, content, pub_date, image_link, author, 0 as color, read_time, name from Item Inner Join Feed on Item.feed_id = Feed.id And Item.id = :id")
     LiveData<ItemWithFeed> getItemById(int id);
 }

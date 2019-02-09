@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -41,7 +42,11 @@ public class ItemActivity extends AppCompatActivity {
     private RelativeLayout readTimeLayout;
 
     private CollapsingToolbarLayout toolbarLayout;
+    private Toolbar toolbar;
     private ReadropsWebView webView;
+
+    public static final String ITEM_ID = "itemId";
+    public static final String IMAGE_URL = "imageUrl";
 
 
     @Override
@@ -50,10 +55,10 @@ public class ItemActivity extends AppCompatActivity {
         setContentView(R.layout.activity_item);
 
         Intent intent = getIntent();
-        int itemId = intent.getIntExtra("itemId", 0);
-        String imageUrl = intent.getStringExtra("imageUrl");
+        int itemId = intent.getIntExtra(ITEM_ID, 0);
+        String imageUrl = intent.getStringExtra(IMAGE_URL);
 
-        Toolbar toolbar = findViewById(R.id.collasping_layout_toolbar);
+        toolbar = findViewById(R.id.collasping_layout_toolbar);
         setSupportActionBar(toolbar);
 
         if (getSupportActionBar() != null)
@@ -61,20 +66,28 @@ public class ItemActivity extends AppCompatActivity {
 
         toolbarLayout = findViewById(R.id.collapsing_layout);
         AppBarLayout appBarLayout = findViewById(R.id.app_bar_layout);
-        if (imageUrl == null)
-            appBarLayout.setExpanded(false);
 
         ImageView imageView = findViewById(R.id.collapsing_layout_image);
-
-        GlideApp.with(this)
-                .load(imageUrl)
-                .into(imageView);
-
         webView = findViewById(R.id.item_webview);
         title = findViewById(R.id.activity_item_title);
         author = findViewById(R.id.activity_item_author);
         readTime = findViewById(R.id.activity_item_readtime);
         readTimeLayout = findViewById(R.id.activity_item_readtime_layout);
+
+        if (imageUrl == null) {
+            appBarLayout.setExpanded(false);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+            toolbarLayout.setTitleEnabled(false);
+
+            toolbar.setTitleTextColor(Color.WHITE);
+        } else {
+            appBarLayout.setExpanded(true);
+            toolbarLayout.setTitleEnabled(true);
+
+            GlideApp.with(this)
+                    .load(imageUrl)
+                    .into(imageView);
+        }
 
         viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(ItemViewModel.class);
         viewModel.getItemById(itemId).observe(this, this::bindUI);
@@ -83,7 +96,11 @@ public class ItemActivity extends AppCompatActivity {
     private void bindUI(ItemWithFeed itemWithFeed) {
         Item item = itemWithFeed.getItem();
 
-        toolbarLayout.setTitle(itemWithFeed.getFeedName());
+        if (item.getImageLink() == null)
+            toolbar.setTitle(itemWithFeed.getFeedName());
+        else
+            toolbarLayout.setTitle(itemWithFeed.getFeedName());
+
         title.setText(item.getTitle());
 
         if (item.getAuthor() != null) {
