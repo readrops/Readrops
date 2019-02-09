@@ -45,7 +45,8 @@ public class ReadropsWebView extends WebView {
             Document document = Jsoup.parse(itemWithFeed.getItem().getText());
 
             document.head().append("<meta name=\"viewport\" content=\"width=" + width +", initial-scale=1\">");
-            document.head().append("<style>img{display: inline;height: auto;max-width: 100%;}</style>");
+            document.head().append("<style>img{display: inline;height: auto;max-width: 100%;} " +
+                    "body { margin-left: 0px; margin-right: 0px; }</style>");
 
             return document.toString();
         } else
