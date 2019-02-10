@@ -2,10 +2,13 @@ package com.readrops.app;
 
 import android.arch.lifecycle.ViewModelProvider;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -45,11 +48,13 @@ public class ItemActivity extends AppCompatActivity {
 
     private CollapsingToolbarLayout toolbarLayout;
     private Toolbar toolbar;
+    private FloatingActionButton actionButton;
     private ReadropsWebView webView;
 
     public static final String ITEM_ID = "itemId";
     public static final String IMAGE_URL = "imageUrl";
 
+    private ItemWithFeed itemWithFeed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,11 +76,13 @@ public class ItemActivity extends AppCompatActivity {
 
         ImageView imageView = findViewById(R.id.collapsing_layout_image);
         View scrim = findViewById(R.id.collapsing_layout_scrim);
+        actionButton = findViewById(R.id.activity_item_fab);
         webView = findViewById(R.id.item_webview);
         title = findViewById(R.id.activity_item_title);
         author = findViewById(R.id.activity_item_author);
         readTime = findViewById(R.id.activity_item_readtime);
         readTimeLayout = findViewById(R.id.activity_item_readtime_layout);
+
 
         if (imageUrl == null) {
             appBarLayout.setExpanded(false);
@@ -97,9 +104,15 @@ public class ItemActivity extends AppCompatActivity {
 
         viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(ItemViewModel.class);
         viewModel.getItemById(itemId).observe(this, this::bindUI);
+
+        actionButton.setOnClickListener(v -> {
+            Intent urlIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(itemWithFeed.getItem().getLink()));
+            startActivity(urlIntent);
+        });
     }
 
     private void bindUI(ItemWithFeed itemWithFeed) {
+        this.itemWithFeed = itemWithFeed;
         Item item = itemWithFeed.getItem();
 
         if (item.getImageLink() == null)
@@ -132,10 +145,14 @@ public class ItemActivity extends AppCompatActivity {
             toolbarLayout.setBackgroundColor(itemWithFeed.getBgColor());
             toolbarLayout.setContentScrimColor(itemWithFeed.getBgColor());
             toolbarLayout.setStatusBarScrimColor(itemWithFeed.getBgColor());
+
+            actionButton.setBackgroundTintList(ColorStateList.valueOf(itemWithFeed.getBgColor()));
         } else if (itemWithFeed.getColor() != 0) {
             toolbarLayout.setBackgroundColor(itemWithFeed.getColor());
             toolbarLayout.setContentScrimColor(itemWithFeed.getColor());
             toolbarLayout.setStatusBarScrimColor(itemWithFeed.getColor());
+
+            actionButton.setBackgroundTintList(ColorStateList.valueOf(itemWithFeed.getColor()));
         }
 
         webView.setItem(itemWithFeed, Utils.getDeviceWidth(this));
