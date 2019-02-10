@@ -23,6 +23,9 @@ public class ItemWithFeed {
     @ColumnInfo(name = "icon_url")
     private String feedIconUrl;
 
+    @ColumnInfo(name = "siteUrl")
+    private String websiteUrl;
+
     public Item getItem() {
         return item;
     }
@@ -63,5 +66,11 @@ public class ItemWithFeed {
         this.bgColor = bgColor;
     }
 
+    public String getWebsiteUrl() {
+        return websiteUrl;
+    }
 
+    public void setWebsiteUrl(String websiteUrl) {
+        this.websiteUrl = websiteUrl;
+    }
 }

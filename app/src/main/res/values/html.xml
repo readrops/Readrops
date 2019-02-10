@@ -6,9 +6,10 @@
 <html>
     <head>
         <meta charset=\"UTF-8\">
-        <meta name=\"viewport\" content=\"width=%1$s, initial-scale=1\">
         <style type=\"text/css\">
-        a:link, a:active, a:hover { color: %2$s }
+        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+
+        a:link, a:active, a:hover { color: %1$s }
 
         img, video {
             display: inline;
@@ -17,14 +18,15 @@
         }
 
         body {
-            margin-left: 0px;
-            margin-right: 0px;
+            margin: 0px;
         }
+
+
         </style>
     </head>
 
     <body>
-      %3$s
+      %2$s
     </body>
 </html>]]></string>
 </resources>
