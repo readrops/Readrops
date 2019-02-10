@@ -13,10 +13,13 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public final class HtmlParser {
 
     private static final String TAG = HtmlParser.class.getSimpleName();
+
+    public static final String COVER_IMAGE_REGEX = "^(<p>|(<div.*>))?<img.*>";
 
     /**
      * Parse the html page to get all rss urls
@@ -113,12 +116,15 @@ public final class HtmlParser {
     }
 
     public static String deleteCoverImage(String content) {
-        Document document = Jsoup.parse(content);
-        Elements elements = document.select("img");
+        if (Pattern.compile(COVER_IMAGE_REGEX).matcher(content).find()) {
+            Document document = Jsoup.parse(content);
+            Elements elements = document.select("img");
 
-        if (!elements.isEmpty())
-            elements.first().remove();
+            if (!elements.isEmpty())
+                elements.first().remove();
 
-        return document.toString();
+            return document.toString();
+        } else
+            return content;
     }
 }

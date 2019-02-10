@@ -29,6 +29,6 @@ public class RSSMediaContent {
     }
 
     public boolean isContentAnImage() {
-        return medium.equals("image");
+        return medium.equals("image") || medium.equals("image/jpeg") || medium.equals("image/png");
     }
 }
