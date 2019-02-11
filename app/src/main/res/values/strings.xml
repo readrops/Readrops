@@ -22,4 +22,5 @@
     <string name="read_time_lower_than_1">Less than a minute</string>
     <string name="read_time_one_minute">1 min</string>
     <string name="interpoint" translatable="false">·</string>
+    <string name="share">Share</string>
 </resources>

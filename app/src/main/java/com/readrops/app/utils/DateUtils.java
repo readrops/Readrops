@@ -15,12 +15,11 @@ public final class DateUtils {
 
     public static LocalDateTime stringToDateTime(String value, String pattern) throws ParseException {
         DateFormat formatter = new SimpleDateFormat(pattern, Locale.ENGLISH);
-
         return new LocalDateTime(formatter.parse(value));
     }
 
     public static String formatedDateByLocal(LocalDateTime dateTime) {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.LONG, Locale.getDefault());
+        DateFormat df = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault());
 
         return df.format(dateTime.toDate());
     }

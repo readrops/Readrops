@@ -9,11 +9,15 @@ import android.net.Uri;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -23,6 +27,7 @@ import android.widget.TextView;
 
 import com.readrops.app.database.ItemWithFeed;
 import com.readrops.app.database.entities.Item;
+import com.readrops.app.utils.DateUtils;
 import com.readrops.app.utils.GlideApp;
 import com.readrops.app.utils.ReadropsWebView;
 import com.readrops.app.utils.Utils;
@@ -40,6 +45,7 @@ import okhttp3.internal.Util;
 public class ItemActivity extends AppCompatActivity {
 
     private ItemViewModel viewModel;
+    private TextView date;
     private TextView title;
     private TextView author;
     private TextView readTime;
@@ -55,6 +61,8 @@ public class ItemActivity extends AppCompatActivity {
     public static final String IMAGE_URL = "imageUrl";
 
     private ItemWithFeed itemWithFeed;
+
+    private ShareActionProvider shareActionProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +86,7 @@ public class ItemActivity extends AppCompatActivity {
         View scrim = findViewById(R.id.collapsing_layout_scrim);
         actionButton = findViewById(R.id.activity_item_fab);
         webView = findViewById(R.id.item_webview);
+        date = findViewById(R.id.activity_item_date);
         title = findViewById(R.id.activity_item_title);
         author = findViewById(R.id.activity_item_author);
         readTime = findViewById(R.id.activity_item_readtime);
@@ -114,6 +123,8 @@ public class ItemActivity extends AppCompatActivity {
     private void bindUI(ItemWithFeed itemWithFeed) {
         this.itemWithFeed = itemWithFeed;
         Item item = itemWithFeed.getItem();
+
+        date.setText(DateUtils.formatedDateByLocal(item.getPubDate()));
 
         if (item.getImageLink() == null)
             toolbar.setTitle(itemWithFeed.getFeedName());
@@ -156,5 +167,25 @@ public class ItemActivity extends AppCompatActivity {
         }
 
         webView.setItem(itemWithFeed, Utils.getDeviceWidth(this));
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.item_menu, menu);
+
+        MenuItem menuItem = menu.findItem(R.id.item_share);
+        shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.item_share:
+                //shareActionProvider.set
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
