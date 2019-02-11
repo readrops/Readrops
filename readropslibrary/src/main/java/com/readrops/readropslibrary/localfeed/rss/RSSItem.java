@@ -3,8 +3,11 @@ package com.readrops.readropslibrary.localfeed.rss;
 import com.readrops.readropslibrary.localfeed.AItem;
 
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Namespace;
 import org.simpleframework.xml.Root;
+
+import java.util.List;
 
 @Root(name = "item", strict = false)
 public class RSSItem extends AItem {
@@ -21,9 +24,9 @@ public class RSSItem extends AItem {
     @Element(name = "imageLink", required = false)
     private String imageLink;
 
-    @Element(name = "content", required = false)
+    @ElementList(name = "content", inline = true, required = false)
     @Namespace(prefix = "media")
-    private RSSMediaContent mediaContent;
+    private List<RSSMediaContent> mediaContents;
 
     @Element(name = "creator", required = false)
     @Namespace(prefix = "dc", reference = "http://purl.org/dc/elements/1.1/")
@@ -32,7 +35,7 @@ public class RSSItem extends AItem {
     @Element(name = "pubDate", required = false)
     private String pubDate;
 
-    @Element(name = "encoded",required = false, data = true)
+    @Element(name = "encoded", required = false)
     @Namespace(prefix = "content")
     private String content;
 
@@ -103,11 +106,11 @@ public class RSSItem extends AItem {
         this.guid = guid;
     }
 
-    public RSSMediaContent getMediaContent() {
-        return mediaContent;
+    public List<RSSMediaContent> getMediaContents() {
+        return mediaContents;
     }
 
-    public void setMediaContent(RSSMediaContent mediaContent) {
-        this.mediaContent = mediaContent;
+    public void setMediaContents(List<RSSMediaContent> mediaContents) {
+        this.mediaContents = mediaContents;
     }
 }

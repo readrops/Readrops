@@ -6,6 +6,7 @@ import com.readrops.app.utils.DateUtils;
 import com.readrops.readropslibrary.localfeed.atom.ATOMEntry;
 import com.readrops.readropslibrary.localfeed.json.JSONItem;
 import com.readrops.readropslibrary.localfeed.rss.RSSItem;
+import com.readrops.readropslibrary.localfeed.rss.RSSMediaContent;
 
 import org.joda.time.LocalDateTime;
 
@@ -175,8 +176,15 @@ public class Item {
             newItem.setLink(item.getLink());
             newItem.setFeedId(feed.getId());
 
-            if (item.getMediaContent() != null && item.getMediaContent().isContentAnImage())
-                newItem.setImageLink(item.getMediaContent().getUrl());
+            if (item.getMediaContents() != null && item.getMediaContents().size() > 0) {
+                for (RSSMediaContent mediaContent : item.getMediaContents()) {
+                    if (mediaContent.isContentAnImage()) {
+                        newItem.setImageLink(mediaContent.getUrl());
+                        break;
+                    }
+                }
+
+            }
 
             dbItems.add(newItem);
         }
