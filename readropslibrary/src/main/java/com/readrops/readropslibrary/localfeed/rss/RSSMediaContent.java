@@ -27,8 +27,4 @@ public class RSSMediaContent {
     public void setMedium(String medium) {
         this.medium = medium;
     }
-
-    public boolean isContentAnImage() {
-        return medium.equals("image") || medium.equals("image/jpeg") || medium.equals("image/png");
-    }
 }

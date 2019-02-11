@@ -3,6 +3,7 @@ package com.readrops.app.database.entities;
 import android.arch.persistence.room.*;
 
 import com.readrops.app.utils.DateUtils;
+import com.readrops.app.utils.Utils;
 import com.readrops.readropslibrary.localfeed.atom.ATOMEntry;
 import com.readrops.readropslibrary.localfeed.json.JSONItem;
 import com.readrops.readropslibrary.localfeed.rss.RSSItem;
@@ -13,7 +14,7 @@ import org.joda.time.LocalDateTime;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.regex.Pattern;
 
 
 @Entity
@@ -170,20 +171,24 @@ public class Item {
             newItem.setGuid(item.getGuid());
             newItem.setTitle(item.getTitle());
 
-
-            newItem.setPubDate(DateUtils.stringToDateTime(item.getPubDate(), DateUtils.RSS_DATE_FORMAT));
+            if (Pattern.compile(DateUtils.RSS_1_DATE_FORMAT_REGEX).matcher(item.getPubDate()).matches())
+                newItem.setPubDate(DateUtils.stringToDateTime(item.getPubDate(), DateUtils.RSS_1_DATE_FORMAT));
+            else
+                newItem.setPubDate(DateUtils.stringToDateTime(item.getPubDate(), DateUtils.RSS_2_DATE_FORMAT));
 
             newItem.setLink(item.getLink());
             newItem.setFeedId(feed.getId());
 
             if (item.getMediaContents() != null && item.getMediaContents().size() > 0) {
                 for (RSSMediaContent mediaContent : item.getMediaContents()) {
-                    if (mediaContent.isContentAnImage()) {
+                    if (Utils.isTypeImage(mediaContent.getMedium())) {
                         newItem.setImageLink(mediaContent.getUrl());
                         break;
                     }
                 }
-
+            } else {
+                if (item.getEnclosure() != null && Utils.isTypeImage(item.getEnclosure().getType()))
+                    newItem.setImageLink(item.getEnclosure().getUrl());
             }
 
             dbItems.add(newItem);

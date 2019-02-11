@@ -28,6 +28,9 @@ public class RSSItem extends AItem {
     @Namespace(prefix = "media")
     private List<RSSMediaContent> mediaContents;
 
+    @Element(required = false)
+    private RSSEnclosure enclosure;
+
     @Element(name = "creator", required = false)
     @Namespace(prefix = "dc", reference = "http://purl.org/dc/elements/1.1/")
     private String author;
@@ -112,5 +115,13 @@ public class RSSItem extends AItem {
 
     public void setMediaContents(List<RSSMediaContent> mediaContents) {
         this.mediaContents = mediaContents;
+    }
+
+    public RSSEnclosure getEnclosure() {
+        return enclosure;
+    }
+
+    public void setEnclosure(RSSEnclosure enclosure) {
+        this.enclosure = enclosure;
     }
 }

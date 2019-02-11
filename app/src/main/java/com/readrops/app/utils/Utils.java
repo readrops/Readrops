@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.ColorInt;
+import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
 import android.widget.Toast;
 
@@ -73,6 +74,11 @@ public final class Utils {
                 Color.green(color),
                 Color.blue(color),
                 Color.alpha(color) / 255.0);
+    }
+
+    public static boolean isTypeImage(@NonNull String type) {
+        return type.equals("image") || type.equals("image/jpeg") || type.equals("image/jpg")
+                || type.equals("image/png");
     }
 
 }
