@@ -3,24 +3,17 @@ package com.readrops.app;
 import android.arch.lifecycle.ViewModelProvider;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -31,16 +24,6 @@ import com.readrops.app.utils.DateUtils;
 import com.readrops.app.utils.GlideApp;
 import com.readrops.app.utils.ReadropsWebView;
 import com.readrops.app.utils.Utils;
-import com.readrops.readropslibrary.Utils.LibUtils;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
-import java.io.IOException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
-
-import okhttp3.internal.Util;
 
 public class ItemActivity extends AppCompatActivity {
 
@@ -62,7 +45,6 @@ public class ItemActivity extends AppCompatActivity {
 
     private ItemWithFeed itemWithFeed;
 
-    private ShareActionProvider shareActionProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,7 +123,7 @@ public class ItemActivity extends AppCompatActivity {
         }
 
         if (item.getReadTime() > 0) {
-            int minutes = (int)Math.round(item.getReadTime());
+            int minutes = (int) Math.round(item.getReadTime());
             if (minutes < 1)
                 readTime.setText(getResources().getString(R.string.read_time_lower_than_1));
             else if (minutes > 1)
@@ -173,9 +155,6 @@ public class ItemActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.item_menu, menu);
 
-        MenuItem menuItem = menu.findItem(R.id.item_share);
-        shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
-
         return true;
     }
 
@@ -183,9 +162,16 @@ public class ItemActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.item_share:
-                //shareActionProvider.set
-                break;
+                shareArticle();
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void shareArticle() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, itemWithFeed.getItem().getTitle() + " - " + itemWithFeed.getItem().getLink());
+        startActivity(Intent.createChooser(shareIntent, getString(R.string.share)));
     }
 }

@@ -1,5 +1,7 @@
 package com.readrops.app;
 
+import com.readrops.app.utils.DateUtils;
+
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 
@@ -24,7 +26,7 @@ public class ExampleUnitTest {
 
         try {
             // RSS
-            assertTrue(dateTime.compareTo(DateUtils.stringToDateTime("Fri, 04 Jan 2019 22:21:46 +0000", DateUtils.RSS_DATE_FORMAT)) == 0);
+            assertTrue(dateTime.compareTo(DateUtils.stringToDateTime("Fri, 04 Jan 2019 22:21:46 +0000", DateUtils.RSS_2_DATE_FORMAT)) == 0);
 
             // ATOM
             assertTrue(dateTime.compareTo(DateUtils.stringToDateTime("2019-01-04T22:21:46+00:00", DateUtils.ATOM_JSON_DATE_FORMAT)) == 0);
