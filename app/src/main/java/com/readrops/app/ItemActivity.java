@@ -45,6 +45,7 @@ public class ItemActivity extends AppCompatActivity {
 
     private ItemWithFeed itemWithFeed;
 
+    private boolean appBarCollapsed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,12 +94,21 @@ public class ItemActivity extends AppCompatActivity {
                     .into(imageView);
         }
 
+        appBarLayout.addOnOffsetChangedListener(((appBarLayout1, i) -> {
+            if (Math.abs(i) >= (appBarLayout.getTotalScrollRange() - ((5 * appBarLayout.getTotalScrollRange()) / 100))) {
+                appBarCollapsed = true;
+                invalidateOptionsMenu();
+            } else {
+                appBarCollapsed = false;
+                invalidateOptionsMenu();
+            }
+        }));
+
         viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(ItemViewModel.class);
         viewModel.getItemById(itemId).observe(this, this::bindUI);
 
         actionButton.setOnClickListener(v -> {
-            Intent urlIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(itemWithFeed.getItem().getLink()));
-            startActivity(urlIntent);
+            openLink();
         });
     }
 
@@ -155,7 +165,20 @@ public class ItemActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.item_menu, menu);
 
+
         return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.item_open);
+
+        if (appBarCollapsed)
+            item.setVisible(true);
+        else
+            item.setVisible(false);
+
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -164,8 +187,16 @@ public class ItemActivity extends AppCompatActivity {
             case R.id.item_share:
                 shareArticle();
                 return true;
+            case R.id.item_open:
+                openLink();
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void openLink() {
+        Intent urlIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(itemWithFeed.getItem().getLink()));
+        startActivity(urlIntent);
     }
 
     private void shareArticle() {

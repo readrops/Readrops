@@ -21,5 +21,6 @@
     <string name="read_time_lower_than_1">Moins d\'une minute</string>
     <string name="read_time_one_minute">1 min</string>
     <string name="share">Partager l\'article</string>
+    <string name="open_url">Ouvrir le lien</string>
 
 </resources>

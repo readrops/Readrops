@@ -23,4 +23,5 @@
     <string name="read_time_one_minute">1 min</string>
     <string name="interpoint" translatable="false">·</string>
     <string name="share">Share Article</string>
+    <string name="open_url">Open url</string>
 </resources>
