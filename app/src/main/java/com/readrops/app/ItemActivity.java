@@ -124,7 +124,9 @@ public class ItemActivity extends AppCompatActivity {
             toolbarLayout.setTitle(itemWithFeed.getFeedName());
 
         title.setText(item.getTitle());
-        if (itemWithFeed.getColor() != 0)
+        if (itemWithFeed.getBgColor() != 0)
+            title.setTextColor(itemWithFeed.getBgColor());
+        else if (itemWithFeed.getColor() != 0)
             title.setTextColor(itemWithFeed.getColor());
 
         if (item.getAuthor() != null) {
