@@ -116,8 +116,9 @@ public final class HtmlParser {
     }
 
     public static String deleteCoverImage(String content) {
-        if (Pattern.compile(COVER_IMAGE_REGEX).matcher(content).find()) {
-            Document document = Jsoup.parse(content);
+        Document document = Jsoup.parse(content);
+
+        if (Pattern.compile(COVER_IMAGE_REGEX).matcher(document.body().html()).find()) {
             Elements elements = document.select("img");
 
             if (!elements.isEmpty())
