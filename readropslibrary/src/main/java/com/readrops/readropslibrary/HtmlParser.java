@@ -83,7 +83,7 @@ public final class HtmlParser {
         Elements elements = document.select("link");
 
         for (Element element : elements) {
-            if (element.attributes().get("rel").contains("icon")) {
+            if (element.attributes().get("rel").toLowerCase().contains("icon")) {
                 favUrl = element.absUrl("href");
                 break;
             }
