@@ -103,10 +103,13 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
         } else
             viewHolder.feedIcon.setImageResource(R.drawable.ic_rss_feed);
 
+        Resources resources = viewHolder.itemView.getResources();
         if (itemWithFeed.getColor() != 0)
             viewHolder.feedName.setTextColor(itemWithFeed.getColor());
+        else
+            viewHolder.feedName.setTextColor(resources.getColor(android.R.color.tab_indicator_text));
 
-        Resources resources = viewHolder.itemView.getResources();
+
         int minutes = (int)Math.round(itemWithFeed.getItem().getReadTime());
         if (minutes < 1)
             viewHolder.itemReadTime.setText(resources.getString(R.string.read_time_lower_than_1));
