@@ -213,12 +213,14 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
                         // removing cover image in content if found in description
                         dbItem.setContent(HtmlParser.deleteCoverImage(dbItem.getContent()));
 
-                        dbItem.setReadTime(Utils.readTimeFromString(Jsoup.parse(dbItem.getContent()).text()));
-                    } else if (dbItem.getDescription() != null) {
+                    } else if (dbItem.getDescription() != null)
                         dbItem.setDescription(HtmlParser.deleteCoverImage(dbItem.getDescription()));
-                        dbItem.setReadTime(Utils.readTimeFromString(dbItem.getCleanDescription()));
-                    }
                 }
+
+                if (dbItem.getContent() != null)
+                    dbItem.setReadTime(Utils.readTimeFromString(Jsoup.parse(dbItem.getContent()).text()));
+                else if (dbItem.getDescription() != null)
+                    dbItem.setReadTime(Utils.readTimeFromString(dbItem.getCleanDescription()));
 
                 database.itemDao().insert(dbItem);
             }
