@@ -19,12 +19,24 @@
             margin-top: 10px;
         }
 
+        iframe {
+            margin-top: 10px;
+        }
+
         body {
             margin: 0px;
         }
 
         h1 {
             margin-top: 0px;
+        }
+
+        body, blockquote, img, iframe, video, div, table, tbody, tr, td, pre, code, blockquote, p, em, b, span {
+            max-width: 100%% !important;
+        }
+
+        * {
+            word-wrap: break-word !important;
         }
 
 
