@@ -90,19 +90,11 @@ public class ATOMEntry extends AItem  {
     }
 
     public String getUrl() {
-        if (links.size() > 0) {
-            if (links.get(0).getRel() == null)
-                return links.get(0).getHref();
-            else {
-                if (links.size() > 1) {
-                    if (links.get(1).getRel() == null)
-                        return links.get(1).getHref();
-                    else
-                        return null;
-                } else
-                    return null;
-            }
-        } else
-            return null;
+        for (ATOMLink link : links) {
+            if (link.getRel() == null || link.getRel().equals("self") || link.getRel().equals("alternate"))
+                return link.getHref();
+        }
+
+        return null;
     }
 }
