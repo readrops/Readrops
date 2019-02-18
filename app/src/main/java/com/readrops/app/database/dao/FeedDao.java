@@ -25,10 +25,10 @@ public interface FeedDao {
     @Query("Select * from Feed Where url = :feedUrl")
     Feed getFeedByUrl(String feedUrl);
 
-    @Query("Select id from Feed Where url = :feedUrl")
-    int getFeedIdByUrl(String feedUrl);
-
     @Query("Update Feed set etag = :etag, last_modified = :lastModified Where id = :feedId")
     void updateHeaders(String etag, String lastModified, int feedId);
+
+    @Query("Update Feed set folder_id = :folderId Where id = :feedId")
+    void updateFeedFolder(int feedId, int folderId);
 
 }

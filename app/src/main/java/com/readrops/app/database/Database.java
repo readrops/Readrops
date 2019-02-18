@@ -8,18 +8,22 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.readrops.app.database.dao.FeedDao;
+import com.readrops.app.database.dao.FolderDao;
 import com.readrops.app.database.dao.ItemDao;
 import com.readrops.app.database.entities.Feed;
+import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.Item;
 
 
-@android.arch.persistence.room.Database(entities = {Feed.class, Item.class}, version = 1, exportSchema = false)
+@android.arch.persistence.room.Database(entities = {Feed.class, Item.class, Folder.class}, version = 1, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class Database extends RoomDatabase {
 
     public abstract FeedDao feedDao();
 
     public abstract ItemDao itemDao();
+
+    public abstract FolderDao folderDao();
 
     private static Database database;
 
@@ -35,9 +39,8 @@ public abstract class Database extends RoomDatabase {
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
 
-            /*Feed feed1 = new Feed("Le Media", "this is a description", "https://lemediapresse.fr/feed/");
-
-            new Thread(() -> database.feedDao().insert(feed1)).start();*/
+            Folder folder = new Folder("reserved");
+            new Thread(() -> database.folderDao().insert(folder)).start();
         }
 
         @Override

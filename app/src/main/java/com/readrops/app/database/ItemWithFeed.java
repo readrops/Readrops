@@ -4,6 +4,7 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Embedded;
 import android.support.annotation.ColorInt;
 
+import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.Item;
 
 public class ItemWithFeed {
@@ -25,6 +26,9 @@ public class ItemWithFeed {
 
     @ColumnInfo(name = "siteUrl")
     private String websiteUrl;
+
+    @Embedded(prefix = "folder_")
+    private Folder folder;
 
     public Item getItem() {
         return item;
@@ -64,6 +68,14 @@ public class ItemWithFeed {
 
     public void setBgColor(@ColorInt int bgColor) {
         this.bgColor = bgColor;
+    }
+
+    public Folder getFolder() {
+        return folder;
+    }
+
+    public void setFolder(Folder folder) {
+        this.folder = folder;
     }
 
     public String getWebsiteUrl() {

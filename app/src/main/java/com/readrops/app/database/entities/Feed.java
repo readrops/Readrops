@@ -3,13 +3,14 @@ package com.readrops.app.database.entities;
 
 import android.arch.persistence.room.*;
 import android.support.annotation.ColorInt;
+import android.support.annotation.Nullable;
 
 import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
 import com.readrops.readropslibrary.localfeed.json.JSONFeed;
 import com.readrops.readropslibrary.localfeed.rss.RSSChannel;
 import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
 
-@Entity
+@Entity(foreignKeys = @ForeignKey(entity = Folder.class, parentColumns = "id", childColumns = "folder_id"))
 public class Feed {
 
     @PrimaryKey(autoGenerate = true)
@@ -38,6 +39,9 @@ public class Feed {
 
     @ColumnInfo(name = "last_modified")
     private String lastModified;
+
+    @ColumnInfo(name = "folder_id", index = true)
+    private int folderId;
 
     public Feed() {
 
@@ -138,6 +142,14 @@ public class Feed {
         this.lastModified = lastModified;
     }
 
+    public int getFolderId() {
+        return folderId;
+    }
+
+    public void setFolderId(int folderId) {
+        this.folderId = folderId;
+    }
+
     public static Feed feedFromRSS(RSSFeed rssFeed) {
         Feed feed = new Feed();
         RSSChannel channel = rssFeed.getChannel();
@@ -150,6 +162,10 @@ public class Feed {
 
         feed.setEtag(rssFeed.getEtag());
         feed.setLastModified(rssFeed.getLastModified());
+
+        // as sqlite doesn't support null foreign keys, a default folder is linked to the feed
+        // This default folder was inserted at room db creation (see Database.java)
+        feed.setFolderId(1);
 
         return feed;
     }
@@ -167,6 +183,8 @@ public class Feed {
         feed.setEtag(atomFeed.getEtag());
         feed.setLastModified(atomFeed.getLastModified());
 
+        feed.setFolderId(1);
+
         return feed;
     }
 
@@ -180,6 +198,8 @@ public class Feed {
 
         feed.setEtag(jsonFeed.getEtag());
         feed.setLastModified(jsonFeed.getLastModified());
+
+        feed.setFolderId(1);
 
         return feed;
     }
