@@ -28,7 +28,7 @@ public class RSSItem extends AItem {
     @Namespace(prefix = "media")
     private List<RSSMediaContent> mediaContents;
 
-    @Element(required = false)
+    @ElementList(name = "enclosure", inline = true, required = false)
     private List<RSSEnclosure> enclosures;
 
     @Element(name = "creator", required = false)
