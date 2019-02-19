@@ -27,7 +27,7 @@
             margin: 0px;
         }
 
-        h1 {
+        h1, p, div {
             margin-top: 0px;
         }
 
