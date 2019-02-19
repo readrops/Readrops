@@ -29,7 +29,7 @@ public class RSSItem extends AItem {
     private List<RSSMediaContent> mediaContents;
 
     @Element(required = false)
-    private RSSEnclosure enclosure;
+    private List<RSSEnclosure> enclosures;
 
     @Element(name = "creator", required = false)
     @Namespace(prefix = "dc", reference = "http://purl.org/dc/elements/1.1/")
@@ -117,11 +117,11 @@ public class RSSItem extends AItem {
         this.mediaContents = mediaContents;
     }
 
-    public RSSEnclosure getEnclosure() {
-        return enclosure;
+    public List<RSSEnclosure> getEnclosures() {
+        return enclosures;
     }
 
-    public void setEnclosure(RSSEnclosure enclosure) {
-        this.enclosure = enclosure;
+    public void setEnclosures(List<RSSEnclosure> enclosures) {
+        this.enclosures = enclosures;
     }
 }

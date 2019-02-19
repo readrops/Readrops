@@ -6,6 +6,7 @@ import com.readrops.app.utils.DateUtils;
 import com.readrops.app.utils.Utils;
 import com.readrops.readropslibrary.localfeed.atom.ATOMEntry;
 import com.readrops.readropslibrary.localfeed.json.JSONItem;
+import com.readrops.readropslibrary.localfeed.rss.RSSEnclosure;
 import com.readrops.readropslibrary.localfeed.rss.RSSItem;
 import com.readrops.readropslibrary.localfeed.rss.RSSMediaContent;
 
@@ -187,8 +188,15 @@ public class Item {
                     }
                 }
             } else {
-                if (item.getEnclosure() != null && Utils.isTypeImage(item.getEnclosure().getType()))
-                    newItem.setImageLink(item.getEnclosure().getUrl());
+                if (item.getEnclosures() != null) {
+                    for (RSSEnclosure enclosure : item.getEnclosures()) {
+                        if (Utils.isTypeImage(enclosure.getType())) {
+                            newItem.setImageLink(enclosure.getUrl());
+                            break;
+                        }
+                    }
+
+                }
             }
 
             dbItems.add(newItem);
