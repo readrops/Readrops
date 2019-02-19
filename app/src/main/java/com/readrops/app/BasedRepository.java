@@ -4,6 +4,7 @@ import android.app.Application;
 import android.arch.lifecycle.LiveData;
 
 import com.readrops.app.database.ItemWithFeed;
+import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Item;
 import com.readrops.readropslibrary.ParsingResult;
 
@@ -29,14 +30,7 @@ public class BasedRepository extends ARepository {
     }
 
     @Override
-    public void deleteFeed(Item item) {
+    public void deleteFeed(Feed feed) {
 
     }
-
-    @Override
-    public void moveFeed(Item item) {
-
-    }
-
-
 }

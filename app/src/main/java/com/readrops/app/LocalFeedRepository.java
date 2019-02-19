@@ -3,9 +3,7 @@ package com.readrops.app;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.graphics.Bitmap;
-import android.support.annotation.ColorInt;
 import android.support.v7.graphics.Palette;
-import android.util.Log;
 import android.util.Patterns;
 
 import com.readrops.app.database.ItemWithFeed;
@@ -88,17 +86,11 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
     }
 
     @Override
-    public void deleteFeed(Item item) {
+    public void deleteFeed(Feed feed) {
         executor.execute(() -> {
 
         });
     }
-
-    @Override
-    public void moveFeed(Item item) {
-
-    }
-
 
     @Override
     public void onSyncSuccess(AFeed feed, RSSNetwork.RSSType type) {

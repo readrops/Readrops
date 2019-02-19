@@ -5,12 +5,22 @@ import android.os.Handler;
 import android.os.Looper;
 
 import com.readrops.app.database.Database;
+import com.readrops.app.database.entities.Feed;
+import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.Item;
 import com.readrops.readropslibrary.ParsingResult;
-import com.readrops.readropslibrary.localfeed.RSSNetwork;
 
+import org.reactivestreams.Subscriber;
+
+import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+
+import io.reactivex.Completable;
+import io.reactivex.CompletableEmitter;
+import io.reactivex.CompletableObserver;
+import io.reactivex.CompletableOnSubscribe;
+import io.reactivex.Flowable;
 
 public abstract class ARepository {
 
@@ -32,9 +42,31 @@ public abstract class ARepository {
 
     public abstract void addFeed(ParsingResult result);
 
-    public abstract void deleteFeed(Item item);
+    public abstract void deleteFeed(Feed feed);
 
-    public abstract void moveFeed(Item item);
+    public Completable addFolder(String name) {
+        return Completable.create(emitter -> {
+            Folder folder = new Folder(name);
+            database.folderDao().insert(folder);
+
+            emitter.onComplete();
+        });
+    }
+
+    public Completable deleteFolder(Folder folder) {
+        return Completable.create(emitter -> {
+            database.folderDao().delete(folder);
+            emitter.onComplete();
+        });
+    }
+
+    public Completable changeFeedFolder(Feed feed, Folder newFolder) {
+        return Completable.create(emitter -> {
+            database.feedDao().updateFeedFolder(feed.getId(), newFolder.getId());
+            emitter.onComplete();
+        });
+
+    }
 
     protected void failureCallBackInMainThread(Exception e) {
         Handler handler = new Handler(Looper.getMainLooper());
