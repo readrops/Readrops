@@ -166,16 +166,30 @@ public class Item {
         for(RSSItem item : items) {
             Item newItem = new Item();
 
-            newItem.setAuthor(item.getAuthor());
+            newItem.setAuthor(item.getCreator());
             newItem.setContent(item.getContent());
             newItem.setDescription(item.getDescription());
             newItem.setGuid(item.getGuid());
             newItem.setTitle(item.getTitle());
 
-            if (Pattern.compile(DateUtils.RSS_1_DATE_FORMAT_REGEX).matcher(item.getPubDate()).matches())
-                newItem.setPubDate(DateUtils.stringToDateTime(item.getPubDate(), DateUtils.RSS_1_DATE_FORMAT));
-            else
-                newItem.setPubDate(DateUtils.stringToDateTime(item.getPubDate(), DateUtils.RSS_2_DATE_FORMAT));
+            // I wish I hadn't done that...
+            if (Pattern.compile(DateUtils.RSS_ALTERNATIVE_DATE_FORMAT_REGEX).matcher(item.getDate()).matches())
+                newItem.setPubDate(DateUtils.stringToDateTime(item.getDate(), DateUtils.RSS_2_DATE_FORMAT_3));
+            else {
+                try {
+                    newItem.setPubDate(DateUtils.stringToDateTime(item.getDate(), DateUtils.RSS_2_DATE_FORMAT_2));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        newItem.setPubDate(DateUtils.stringToDateTime(item.getDate(), DateUtils.RSS_2_DATE_FORMAT));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    } finally {
+                        newItem.setPubDate(DateUtils.stringToDateTime(item.getDate(), DateUtils.ATOM_JSON_DATE_FORMAT));
+                    }
+                }
+            }
 
             newItem.setLink(item.getLink());
             newItem.setFeedId(feed.getId());
