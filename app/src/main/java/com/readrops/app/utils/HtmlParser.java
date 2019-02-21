@@ -1,7 +1,8 @@
-package com.readrops.readropslibrary;
+package com.readrops.app.utils;
 
 import android.util.Log;
 
+import com.readrops.readropslibrary.ParsingResult;
 import com.readrops.readropslibrary.Utils.LibUtils;
 
 import org.jsoup.Connection;

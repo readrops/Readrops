@@ -10,7 +10,7 @@ import com.readrops.app.database.ItemWithFeed;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Item;
 import com.readrops.app.utils.Utils;
-import com.readrops.readropslibrary.HtmlParser;
+import com.readrops.app.utils.HtmlParser;
 import com.readrops.readropslibrary.ParsingResult;
 import com.readrops.readropslibrary.QueryCallback;
 import com.readrops.readropslibrary.Utils.LibUtils;

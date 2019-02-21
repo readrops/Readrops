@@ -19,12 +19,17 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.readrops.app.utils.Utils;
-import com.readrops.readropslibrary.HtmlParser;
+import com.readrops.app.utils.HtmlParser;
 import com.readrops.readropslibrary.ParsingResult;
+import com.readrops.readropslibrary.localfeed.RSSNetwork;
 
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.Executors;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class AddFeedDialog extends Dialog implements View.OnClickListener {
 
@@ -96,12 +101,19 @@ public class AddFeedDialog extends Dialog implements View.OnClickListener {
 
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
-                List<ParsingResult> results = HtmlParser.getFeedLink(finalUrl);
+                RSSNetwork rssApi = new RSSNetwork();
+                if (rssApi.isUrlFeedLink(finalUrl)) {
+                    ParsingResult parsingResult = new ParsingResult(finalUrl, null);
+                    handler.post(() -> ((MainActivity) getOwnerActivity()).insertNewFeed(parsingResult));
+                    dismiss();
+                } else {
+                    List<ParsingResult> results = HtmlParser.getFeedLink(finalUrl);
 
-                if (results.size() > 0)
-                    handler.post(() -> displayResults(results));
-                else
-                    handler.post(() -> displayError(R.string.add_feed_no_result)) ;
+                    if (results.size() > 0)
+                        handler.post(() -> displayResults(results));
+                    else
+                        handler.post(() -> displayError(R.string.add_feed_no_result));
+                }
             } catch (Exception e) {
                 if (e instanceof UnknownHostException)
                     handler.post(() -> displayError(R.string.add_feed_unknownhost_error));
