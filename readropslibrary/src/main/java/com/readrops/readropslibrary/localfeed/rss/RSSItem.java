@@ -15,11 +15,12 @@ public class RSSItem extends AItem {
     @Element(name = "title", required = false)
     private String title;
 
-    @Element(name = "description", required = false, data = true)
-    private String description;
-
     @Element(name = "link", required = false)
     private String link;
+
+    @ElementList(name = "link", inline = true, required = false)
+    @Namespace(prefix = "atom")
+    private List<String> otherLinks;
 
     @Element(name = "imageLink", required = false)
     private String imageLink;
@@ -33,10 +34,20 @@ public class RSSItem extends AItem {
 
     @Element(name = "creator", required = false)
     @Namespace(prefix = "dc", reference = "http://purl.org/dc/elements/1.1/")
+    private String creator;
+
+    @Element(required = false)
     private String author;
 
     @Element(name = "pubDate", required = false)
     private String pubDate;
+
+    @Element(name = "date", required = false)
+    @Namespace(prefix = "dc")
+    private String date;
+
+    @Element(name = "description", required = false)
+    private String description;
 
     @Element(name = "encoded", required = false)
     @Namespace(prefix = "content")
@@ -77,12 +88,12 @@ public class RSSItem extends AItem {
         this.imageLink = imageLink;
     }
 
-    public String getAuthor() {
-        return author;
+    public String getCreator() {
+        return creator;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 
     public String getPubDate() {
@@ -123,5 +134,35 @@ public class RSSItem extends AItem {
 
     public void setEnclosures(List<RSSEnclosure> enclosures) {
         this.enclosures = enclosures;
+    }
+
+    public String getDate() {
+        if (pubDate != null)
+            return pubDate;
+        else
+            return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getAuthor() {
+        if (creator != null)
+            return creator;
+        else
+            return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public List<String> getOtherLinks() {
+        return otherLinks;
+    }
+
+    public void setOtherLinks(List<String> otherLinks) {
+        this.otherLinks = otherLinks;
     }
 }

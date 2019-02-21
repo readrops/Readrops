@@ -181,12 +181,14 @@ public class Item {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 } finally {
-                    try {
-                        newItem.setPubDate(DateUtils.stringToDateTime(item.getDate(), DateUtils.RSS_2_DATE_FORMAT));
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    } finally {
-                        newItem.setPubDate(DateUtils.stringToDateTime(item.getDate(), DateUtils.ATOM_JSON_DATE_FORMAT));
+                    if (newItem.getPubDate() == null) {
+                        try {
+                            newItem.setPubDate(DateUtils.stringToDateTime(item.getDate(), DateUtils.RSS_2_DATE_FORMAT));
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        } finally {
+                            newItem.setPubDate(DateUtils.stringToDateTime(item.getDate(), DateUtils.ATOM_JSON_DATE_FORMAT));
+                        }
                     }
                 }
             }
@@ -196,7 +198,7 @@ public class Item {
 
             if (item.getMediaContents() != null && item.getMediaContents().size() > 0) {
                 for (RSSMediaContent mediaContent : item.getMediaContents()) {
-                    if (Utils.isTypeImage(mediaContent.getMedium())) {
+                    if (mediaContent.getMedium() != null && Utils.isTypeImage(mediaContent.getMedium())) {
                         newItem.setImageLink(mediaContent.getUrl());
                         break;
                     }
@@ -204,7 +206,7 @@ public class Item {
             } else {
                 if (item.getEnclosures() != null) {
                     for (RSSEnclosure enclosure : item.getEnclosures()) {
-                        if (Utils.isTypeImage(enclosure.getType())) {
+                        if (enclosure.getType() != null && Utils.isTypeImage(enclosure.getType())) {
                             newItem.setImageLink(enclosure.getUrl());
                             break;
                         }
