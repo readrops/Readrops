@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
 import com.bumptech.glide.util.ViewPreloadSizeProvider;
+import com.github.clans.fab.FloatingActionMenu;
 import com.readrops.app.database.ItemWithFeed;
 import com.readrops.app.database.entities.Item;
 import com.readrops.app.utils.GlideApp;
@@ -47,12 +48,14 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
 
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
+    private FloatingActionMenu actionMenu;
 
     private List<ItemWithFeed> newItems;
-
     private TreeMap<LocalDateTime, Item> itemsMap;
 
     private MainViewModel viewModel;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_nav_drawer, R.string.close_nav_drawer);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
+
+        actionMenu = findViewById(R.id.fab_menu);
 
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener((menuItem) -> {
@@ -208,12 +213,13 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
     }
 
     public void displayAddFeedDialog(View view) {
+        actionMenu.close(true);
         Dialog dialog = new AddFeedDialog(this, R.layout.add_feed_layout);
         dialog.show();
     }
 
     public void addFolder(View view) {
-
+        actionMenu.close(true);
     }
 
     public void insertNewFeed(ParsingResult result) {
