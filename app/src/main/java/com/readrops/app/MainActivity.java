@@ -212,6 +212,10 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
         dialog.show();
     }
 
+    public void addFolder(View view) {
+
+    }
+
     public void insertNewFeed(ParsingResult result) {
         refreshLayout.setRefreshing(true);
         viewModel.addFeed(result);

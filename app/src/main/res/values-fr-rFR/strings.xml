@@ -22,5 +22,6 @@
     <string name="read_time_one_minute">1 min</string>
     <string name="share">Partager l\'article</string>
     <string name="open_url">Ouvrir le lien</string>
+    <string name="add_folder">Ajouter un dossier</string>
 
 </resources>
