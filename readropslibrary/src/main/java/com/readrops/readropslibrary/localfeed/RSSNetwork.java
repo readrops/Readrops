@@ -40,7 +40,7 @@ public class RSSNetwork {
      * @param url url to request
      * @throws Exception
      */
-    public void request(String url, Map<String, String> headers) throws Exception {
+    public void requestUrl(String url, Map<String, String> headers) throws Exception {
         if (callback == null)
             throw new NullPointerException("Callback can't be null");
 
@@ -137,7 +137,8 @@ public class RSSNetwork {
             if (contentType == RSSType.RSS_UNKNOWN) {
                 callback.onSyncFailure(new Exception("Unknown content format"));
                 return;
-            }
+            } else
+                type = contentType;
         }
 
         String etag = response.header(LibUtils.ETAG_HEADER);

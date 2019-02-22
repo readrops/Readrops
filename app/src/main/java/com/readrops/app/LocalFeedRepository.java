@@ -60,7 +60,7 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
                     if (feed.getLastModified() != null)
                         headers.put(LibUtils.IF_MODIFIED_HEADER, feed.getLastModified());
 
-                    rssNet.request(feed.getUrl(), headers);
+                    rssNet.requestUrl(feed.getUrl(), headers);
                 } catch (Exception e) {
                     failureCallBackInMainThread(e);
                 }
@@ -76,7 +76,7 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
             try {
                 RSSNetwork rssNet = new RSSNetwork();
                 rssNet.setCallback(this);
-                rssNet.request(result.getUrl(), new HashMap<>());
+                rssNet.requestUrl(result.getUrl(), new HashMap<>());
 
                 postCallBackSuccess();
             } catch (Exception e) {
