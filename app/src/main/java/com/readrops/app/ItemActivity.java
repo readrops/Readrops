@@ -75,7 +75,6 @@ public class ItemActivity extends AppCompatActivity {
         readTime = findViewById(R.id.activity_item_readtime);
         readTimeLayout = findViewById(R.id.activity_item_readtime_layout);
 
-
         if (imageUrl == null) {
             appBarLayout.setExpanded(false);
             getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -95,7 +94,7 @@ public class ItemActivity extends AppCompatActivity {
         }
 
         appBarLayout.addOnOffsetChangedListener(((appBarLayout1, i) -> {
-            if (Math.abs(i) >= (appBarLayout.getTotalScrollRange() - ((5 * appBarLayout.getTotalScrollRange()) / 100))) {
+            if (Math.abs(i) >= (appBarLayout.getTotalScrollRange() - ((8 * appBarLayout.getTotalScrollRange()) / 100))) {
                 appBarCollapsed = true;
                 invalidateOptionsMenu();
             } else {
@@ -187,6 +186,9 @@ public class ItemActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
             case R.id.item_share:
                 shareArticle();
                 return true;
@@ -195,6 +197,12 @@ public class ItemActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        super.onBackPressed();
     }
 
     private void openLink() {

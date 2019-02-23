@@ -31,7 +31,7 @@ public final class DateUtils {
     }
 
     public static String formatedDateTimeByLocal(LocalDateTime dateTime) {
-        return DateTimeFormat.mediumDateTime()
+        return DateTimeFormat.forPattern("dd MMM yyyy · HH:mm")
                 .withLocale(Locale.getDefault())
                 .print(dateTime);
     }
