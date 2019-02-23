@@ -9,7 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.adapters.ModelAdapter;
 import com.readrops.app.views.FeedWithFolderItem;
-import com.readrops.app.views.ManageFeedsViewModel;
+import com.readrops.app.viewmodels.ManageFeedsViewModel;
 import com.readrops.app.R;
 import com.readrops.app.database.pojo.FeedWithFolder;
 

@@ -18,7 +18,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.readrops.app.views.ItemViewModel;
+import com.readrops.app.viewmodels.ItemViewModel;
 import com.readrops.app.R;
 import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.database.entities.Item;

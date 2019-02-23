@@ -28,7 +28,7 @@ import com.bumptech.glide.util.ViewPreloadSizeProvider;
 import com.github.clans.fab.FloatingActionMenu;
 import com.readrops.app.views.AddFeedDialog;
 import com.readrops.app.views.MainItemListAdapter;
-import com.readrops.app.views.MainViewModel;
+import com.readrops.app.viewmodels.MainViewModel;
 import com.readrops.app.R;
 import com.readrops.app.views.SimpleCallback;
 import com.readrops.app.database.pojo.ItemWithFeed;

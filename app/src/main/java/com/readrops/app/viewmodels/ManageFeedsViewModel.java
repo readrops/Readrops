@@ -1,4 +1,4 @@
-package com.readrops.app.views;
+package com.readrops.app.viewmodels;
 
 import android.app.Application;
 import android.app.ListActivity;
