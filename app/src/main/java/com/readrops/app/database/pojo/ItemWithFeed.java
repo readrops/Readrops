@@ -1,4 +1,4 @@
-package com.readrops.app.database;
+package com.readrops.app.database.pojo;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Embedded;

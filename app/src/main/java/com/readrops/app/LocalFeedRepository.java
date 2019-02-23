@@ -6,7 +6,7 @@ import android.graphics.Bitmap;
 import android.support.v7.graphics.Palette;
 import android.util.Patterns;
 
-import com.readrops.app.database.ItemWithFeed;
+import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Item;
 import com.readrops.app.utils.Utils;

@@ -26,7 +26,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
 import com.bumptech.glide.util.ViewPreloadSizeProvider;
 import com.github.clans.fab.FloatingActionMenu;
-import com.readrops.app.database.ItemWithFeed;
+import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.database.entities.Item;
 import com.readrops.app.utils.GlideApp;
 import com.readrops.readropslibrary.ParsingResult;
@@ -220,10 +220,13 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
 
     public void addFolder(View view) {
         actionMenu.close(true);
+        Intent intent = new Intent(this, ManageFeedsActivity.class);
+        startActivity(intent);
     }
 
     public void insertNewFeed(ParsingResult result) {
         refreshLayout.setRefreshing(true);
         viewModel.addFeed(result);
+
     }
 }

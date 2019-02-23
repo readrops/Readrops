@@ -3,23 +3,17 @@ package com.readrops.app.utils;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.readrops.app.R;
-import com.readrops.app.database.ItemWithFeed;
-import com.readrops.app.database.entities.Item;
+import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.readropslibrary.Utils.LibUtils;
 
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Attribute;
-import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
-import java.util.Iterator;
 
 public class ReadropsWebView extends WebView {
 

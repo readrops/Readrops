@@ -3,9 +3,8 @@ package com.readrops.app;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 
-import com.readrops.app.database.ItemWithFeed;
+import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.database.entities.Feed;
-import com.readrops.app.database.entities.Item;
 import com.readrops.readropslibrary.ParsingResult;
 
 public class BasedRepository extends ARepository {

@@ -5,9 +5,7 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 
-import com.readrops.app.database.Database;
-import com.readrops.app.database.ItemWithFeed;
-import com.readrops.app.database.entities.Item;
+import com.readrops.app.database.pojo.ItemWithFeed;
 
 public class ItemViewModel extends AndroidViewModel {
 
