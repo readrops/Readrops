@@ -1,4 +1,4 @@
-package com.readrops.app;
+package com.readrops.app.views;
 
 public interface SimpleCallback {
 

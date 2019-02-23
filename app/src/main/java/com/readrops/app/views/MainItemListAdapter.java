@@ -1,4 +1,4 @@
-package com.readrops.app;
+package com.readrops.app.views;
 
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -22,6 +22,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
 import com.bumptech.glide.util.ViewPreloadSizeProvider;
+import com.readrops.app.R;
 import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.database.entities.Item;
 import com.readrops.app.utils.DateUtils;
@@ -153,7 +154,7 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
         this.listener = listener;
     }
 
-    class ItemViewHolder extends RecyclerView.ViewHolder {
+    public class ItemViewHolder extends RecyclerView.ViewHolder {
 
         private TextView itemTitle;
         private TextView date;

@@ -1,4 +1,4 @@
-package com.readrops.app;
+package com.readrops.app.views;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -7,9 +7,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.mikepenz.fastadapter.FastAdapter;
-import com.mikepenz.fastadapter.items.AbstractItem;
 import com.mikepenz.fastadapter.items.ModelAbstractItem;
+import com.readrops.app.R;
 import com.readrops.app.database.pojo.FeedWithFolder;
 import com.readrops.app.utils.GlideApp;
 

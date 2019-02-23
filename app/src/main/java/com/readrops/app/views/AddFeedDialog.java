@@ -1,4 +1,4 @@
-package com.readrops.app;
+package com.readrops.app.views;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -18,6 +18,8 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.readrops.app.R;
+import com.readrops.app.activities.MainActivity;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.utils.HtmlParser;
 import com.readrops.readropslibrary.ParsingResult;
@@ -26,10 +28,6 @@ import com.readrops.readropslibrary.localfeed.RSSNetwork;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.Executors;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class AddFeedDialog extends Dialog implements View.OnClickListener {
 

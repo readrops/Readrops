@@ -15,9 +15,9 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ManageFeedsActivity"></activity>
+        <activity android:name=".activities.ManageFeedsActivity"></activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,8 +26,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ItemActivity"
-            android:parentActivityName=".MainActivity"
+            android:name=".activities.ItemActivity"
+            android:parentActivityName=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

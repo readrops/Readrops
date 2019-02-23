@@ -1,4 +1,4 @@
-package com.readrops.app;
+package com.readrops.app.activities;
 
 import android.arch.lifecycle.ViewModelProvider;
 import android.content.Intent;
@@ -18,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.readrops.app.views.ItemViewModel;
+import com.readrops.app.R;
 import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.database.entities.Item;
 import com.readrops.app.utils.DateUtils;
@@ -166,8 +168,6 @@ public class ItemActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.item_menu, menu);
-
-
         return true;
     }
 

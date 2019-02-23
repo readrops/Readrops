@@ -1,4 +1,4 @@
-package com.readrops.app;
+package com.readrops.app.activities;
 
 import android.arch.lifecycle.ViewModelProvider;
 import android.os.Bundle;
@@ -8,6 +8,9 @@ import android.support.v7.widget.RecyclerView;
 
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.adapters.ModelAdapter;
+import com.readrops.app.views.FeedWithFolderItem;
+import com.readrops.app.views.ManageFeedsViewModel;
+import com.readrops.app.R;
 import com.readrops.app.database.pojo.FeedWithFolder;
 
 public class ManageFeedsActivity extends AppCompatActivity {

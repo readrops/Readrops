@@ -1,4 +1,4 @@
-package com.readrops.app;
+package com.readrops.app.views;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
@@ -6,6 +6,7 @@ import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 
 import com.readrops.app.database.pojo.ItemWithFeed;
+import com.readrops.app.repositories.LocalFeedRepository;
 import com.readrops.readropslibrary.ParsingResult;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.readrops.app;
+package com.readrops.app.repositories;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;

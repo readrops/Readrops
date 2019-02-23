@@ -1,26 +1,19 @@
-package com.readrops.app;
+package com.readrops.app.repositories;
 
 import android.app.Application;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.readrops.app.views.SimpleCallback;
 import com.readrops.app.database.Database;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
-import com.readrops.app.database.entities.Item;
 import com.readrops.readropslibrary.ParsingResult;
 
-import org.reactivestreams.Subscriber;
-
-import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import io.reactivex.Completable;
-import io.reactivex.CompletableEmitter;
-import io.reactivex.CompletableObserver;
-import io.reactivex.CompletableOnSubscribe;
-import io.reactivex.Flowable;
 
 public abstract class ARepository {
 

@@ -1,4 +1,4 @@
-package com.readrops.app;
+package com.readrops.app.activities;
 
 import android.app.Dialog;
 import android.arch.lifecycle.ViewModelProvider;
@@ -26,6 +26,11 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
 import com.bumptech.glide.util.ViewPreloadSizeProvider;
 import com.github.clans.fab.FloatingActionMenu;
+import com.readrops.app.views.AddFeedDialog;
+import com.readrops.app.views.MainItemListAdapter;
+import com.readrops.app.views.MainViewModel;
+import com.readrops.app.R;
+import com.readrops.app.views.SimpleCallback;
 import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.database.entities.Item;
 import com.readrops.app.utils.GlideApp;
