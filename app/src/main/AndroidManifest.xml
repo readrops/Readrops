@@ -15,7 +15,10 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".activities.ManageFeedsActivity"></activity>
+        <activity android:name=".activities.ManageFeedsActivity"
+            android:parentActivityName=".activities.MainActivitys">
+
+        </activity>
         <activity
             android:name=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
