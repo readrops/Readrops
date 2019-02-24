@@ -9,8 +9,8 @@
     <string name="settings">Paramètres</string>
     <string name="about_item">A propos</string>
     <string name="add_feed_title">Ajouter un flux</string>
-    <string name="add_feed_url">Adresse du flux</string>
-    <string name="add_feed_validate">Valider</string>
+    <string name="feed_url">Adresse du flux</string>
+    <string name="validate">Valider</string>
     <string name="add_feed_empty_field">Le champ ne peut pas être vide</string>
     <string name="add_feed_wrong_url">La valeur n\'est pas une adresse web valide</string>
     <string name="add_feed_no_result">Aucune adresse de flux trouvée</string>
@@ -23,5 +23,8 @@
     <string name="share">Partager l\'article</string>
     <string name="open_url">Ouvrir le lien</string>
     <string name="add_folder">Ajouter un dossier</string>
+    <string name="feed_folder">Dossier du flux</string>
+    <string name="feed_name">Nom du flux</string>
+    <string name="edit_feed">Modifier le flux</string>
 
 </resources>

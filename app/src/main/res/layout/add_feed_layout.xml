@@ -31,7 +31,7 @@
             android:id="@+id/add_feed_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/add_feed_url" />
+            android:hint="@string/feed_url" />
 
     </android.support.design.widget.TextInputLayout>
 
@@ -40,7 +40,7 @@
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/add_feed_validate"
+        android:text="@string/validate"
         app:layout_constraintEnd_toEndOf="parent"
         android:textAlignment="center"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />

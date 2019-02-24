@@ -16,6 +16,8 @@ import java.util.List;
 
 public class FeedWithFolderItem extends ModelAbstractItem<FeedWithFolder, FeedWithFolderItem, FeedWithFolderItem.ViewHolder> {
 
+    private ManageFeedsListener listener;
+
     public FeedWithFolderItem(FeedWithFolder feedWithFolder) {
         super(feedWithFolder);
     }
@@ -57,6 +59,18 @@ public class FeedWithFolderItem extends ModelAbstractItem<FeedWithFolder, FeedWi
             holder.feedDescription.setVisibility(View.GONE);
 
         holder.folderName.setText(feedWithFolder.getFolder().getName());
+
+        holder.editFeed.setOnClickListener(v -> listener.onEdit(feedWithFolder));
+        holder.deleteFeed.setOnClickListener(v -> listener.onDelete(feedWithFolder));
+    }
+
+    public void setListener(ManageFeedsListener listener) {
+        this.listener = listener;
+    }
+
+    public interface ManageFeedsListener {
+        void onEdit(FeedWithFolder feedWithFolder);
+        void onDelete(FeedWithFolder feedWithFolder);
     }
 
     protected static class ViewHolder extends RecyclerView.ViewHolder {
@@ -66,6 +80,8 @@ public class FeedWithFolderItem extends ModelAbstractItem<FeedWithFolder, FeedWi
         private TextView feedDescription;
         private TextView folderName;
 
+        private ImageView editFeed;
+        private ImageView deleteFeed;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -74,6 +90,8 @@ public class FeedWithFolderItem extends ModelAbstractItem<FeedWithFolder, FeedWi
             feedName = itemView.findViewById(R.id.feed_layout_name);
             feedDescription = itemView.findViewById(R.id.feed_layout_description);
             folderName = itemView.findViewById(R.id.feed_layout_folder);
+            editFeed = itemView.findViewById(R.id.feed_layout_edit);
+            deleteFeed = itemView.findViewById(R.id.feed_layout_delete);
         }
     }
 }
