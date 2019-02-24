@@ -2,6 +2,7 @@ package com.readrops.app.activities;
 
 import android.arch.lifecycle.ViewModelProvider;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -55,8 +56,10 @@ public class ManageFeedsActivity extends AppCompatActivity {
     }
 
     private void openEditFeedDialog(FeedWithFolder feedWithFolder) {
-        EditFeedDialog editFeedDialog = new EditFeedDialog(this, feedWithFolder);
-        editFeedDialog.show();
+        EditFeedDialog editFeedDialog = new EditFeedDialog();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        transaction.add(editFeedDialog, "").commit();
     }
 
     @Override
