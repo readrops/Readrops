@@ -2,6 +2,8 @@ package com.readrops.app.database.entities;
 
 
 import android.arch.persistence.room.*;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 
@@ -11,7 +13,7 @@ import com.readrops.readropslibrary.localfeed.rss.RSSChannel;
 import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
 
 @Entity(foreignKeys = @ForeignKey(entity = Folder.class, parentColumns = "id", childColumns = "folder_id"))
-public class Feed {
+public class Feed implements Parcelable {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
@@ -53,6 +55,33 @@ public class Feed {
         this.description = description;
         this.url = url;
     }
+
+    protected Feed(Parcel in) {
+        id = in.readInt();
+        name = in.readString();
+        description = in.readString();
+        url = in.readString();
+        siteUrl = in.readString();
+        lastUpdated = in.readString();
+        textColor = in.readInt();
+        backgroundColor = in.readInt();
+        iconUrl = in.readString();
+        etag = in.readString();
+        lastModified = in.readString();
+        folderId = in.readInt();
+    }
+
+    public static final Creator<Feed> CREATOR = new Creator<Feed>() {
+        @Override
+        public Feed createFromParcel(Parcel in) {
+            return new Feed(in);
+        }
+
+        @Override
+        public Feed[] newArray(int size) {
+            return new Feed[size];
+        }
+    };
 
     public int getId() {
         return id;
@@ -202,5 +231,27 @@ public class Feed {
         feed.setFolderId(1);
 
         return feed;
+    }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(name);
+        dest.writeString(description);
+        dest.writeString(url);
+        dest.writeString(siteUrl);
+        dest.writeString(lastUpdated);
+        dest.writeInt(textColor);
+        dest.writeInt(backgroundColor);
+        dest.writeString(iconUrl);
+        dest.writeString(etag);
+        dest.writeString(lastModified);
+        dest.writeInt(folderId);
     }
 }

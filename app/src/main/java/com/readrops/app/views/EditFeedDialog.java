@@ -35,20 +35,30 @@ public class EditFeedDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         viewModel = ViewModelProviders.of(getActivity()).get(ManageFeedsViewModel.class);
+
+        feedWithFolder = getArguments().getParcelable("feedWithFolder");
+
         View v = getActivity().getLayoutInflater().inflate(R.layout.edit_feed_layout, null);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
                 .setTitle(getString(R.string.edit_feed))
                 .setPositiveButton(getString(R.string.validate), (dialog, which) -> {
-
+                    
                 });
 
         builder.setView(v);
+        fillData(v);
 
+        return builder.create();
+    }
+
+    private void fillData(View v) {
         feedName = v.findViewById(R.id.edit_feed_name_edit_text);
         feedUrl = v.findViewById(R.id.edit_feed_url_edit_text);
         folder = v.findViewById(R.id.edit_feed_folder_spinner);
-        return builder.create();
+
+        feedName.setText(feedWithFolder.getFeed().getName());
+        feedUrl.setText(feedWithFolder.getFeed().getUrl());
     }
 
 

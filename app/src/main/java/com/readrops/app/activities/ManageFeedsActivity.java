@@ -57,8 +57,12 @@ public class ManageFeedsActivity extends AppCompatActivity {
 
     private void openEditFeedDialog(FeedWithFolder feedWithFolder) {
         EditFeedDialog editFeedDialog = new EditFeedDialog();
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("feedWithFolder", feedWithFolder);
+        editFeedDialog.setArguments(bundle);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.add(editFeedDialog, "").commit();
     }
 
