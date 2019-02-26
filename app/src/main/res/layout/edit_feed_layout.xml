@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="18dp">
@@ -38,17 +39,27 @@
             android:layout_height="wrap_content"
             android:hint="@string/feed_url"
             android:inputType="textUri"
-            android:lines="1"/>
+            android:lines="1" />
 
     </android.support.design.widget.TextInputLayout>
+
+    <TextView
+        android:id="@+id/edit_feed_folder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_feed_url_textinputlayout"
+        android:text="@string/folder"
+        android:textAppearance="@style/TextAppearance.Design.Hint"/>
 
     <Spinner
         android:id="@+id/edit_feed_folder_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.514"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_feed_url_textinputlayout" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_feed_folder" />
 
 </android.support.constraint.ConstraintLayout>

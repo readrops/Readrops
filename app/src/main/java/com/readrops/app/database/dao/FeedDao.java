@@ -21,6 +21,9 @@ public interface FeedDao {
     @Insert
     long insert(Feed feed);
 
+    @Update
+    void update(Feed feed);
+
     @Query("Select count(*) from Feed")
     int getFeedCount();
 
@@ -33,8 +36,12 @@ public interface FeedDao {
     @Query("Update Feed set folder_id = :folderId Where id = :feedId")
     void updateFeedFolder(int feedId, int folderId);
 
+    @Query("Update Feed set name = :feedName, url = :feedUrl, folder_id = :folderId Where id = :feedId")
+    void updateFeedFields(int feedId, String feedName, String feedUrl, int folderId);
+
     @Query("Select Feed.name as feed_name, Feed.id as feed_id, Folder.name as folder_name, Folder.id as folder_id," +
-            "Feed.description as feed_description, Feed.icon_url as feed_icon_url, Feed.url as feed_url" +
+            "Feed.description as feed_description, Feed.icon_url as feed_icon_url, Feed.url as feed_url, Feed.folder_id as feed_folder_id" +
             " from Feed Inner Join Folder on Feed.folder_id = Folder.id Order by Feed.name")
     LiveData<List<FeedWithFolder>> getAllFeedsWithFolder();
 }
+

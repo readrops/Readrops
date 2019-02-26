@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.support.v7.graphics.Palette;
 import android.util.Patterns;
 
+import com.readrops.app.database.pojo.FeedWithFolder;
 import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Item;
@@ -82,6 +83,25 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
             } catch (Exception e) {
                 failureCallBackInMainThread(e);
             }
+        });
+    }
+
+    @Override
+    public void updateFeed(Feed feed) {
+        executor.execute(() -> {
+            try {
+                database.feedDao().update(feed);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+    }
+
+    @Override
+    public void updateFeedWithFolder(FeedWithFolder feedWithFolder) {
+        executor.execute(() -> {
+            Feed feed = feedWithFolder.getFeed();
+            database.feedDao().updateFeedFields(feed.getId(), feed.getName(), feed.getUrl(), feed.getFolderId());
         });
     }
 

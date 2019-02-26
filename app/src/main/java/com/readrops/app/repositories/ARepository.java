@@ -4,6 +4,7 @@ import android.app.Application;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.readrops.app.database.pojo.FeedWithFolder;
 import com.readrops.app.views.SimpleCallback;
 import com.readrops.app.database.Database;
 import com.readrops.app.database.entities.Feed;
@@ -34,6 +35,10 @@ public abstract class ARepository {
     public abstract void sync();
 
     public abstract void addFeed(ParsingResult result);
+
+    public abstract void updateFeed(Feed feed);
+
+    public abstract void updateFeedWithFolder(FeedWithFolder feedWithFolder);
 
     public abstract void deleteFeed(Feed feed);
 

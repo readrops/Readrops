@@ -28,4 +28,5 @@
     <string name="feed_folder">Feed folder</string>
     <string name="feed_name">Feed name</string>
     <string name="edit_feed">Edit feed</string>
+    <string name="folder">Folder</string>
 </resources>

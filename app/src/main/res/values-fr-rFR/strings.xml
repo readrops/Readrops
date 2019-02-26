@@ -26,5 +26,6 @@
     <string name="feed_folder">Dossier du flux</string>
     <string name="feed_name">Nom du flux</string>
     <string name="edit_feed">Modifier le flux</string>
+    <string name="folder">dossier</string>
 
 </resources>

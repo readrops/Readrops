@@ -21,6 +21,7 @@ public class ManageFeedsActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private ModelAdapter<FeedWithFolder, FeedWithFolderItem> itemAdapter;
+    private FastAdapter fastAdapter;
     private ManageFeedsViewModel viewModel;
 
     @Override
@@ -48,11 +49,15 @@ public class ManageFeedsActivity extends AppCompatActivity {
             return folderItem;
         });
 
-        FastAdapter fastAdapter = FastAdapter.with(itemAdapter);
+        fastAdapter = FastAdapter.with(itemAdapter);
+
         recyclerView.setAdapter(fastAdapter);
 
         viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(ManageFeedsViewModel.class);
-        viewModel.getFeedsWithFolder().observe(this, feedWithFolders -> itemAdapter.add(feedWithFolders));
+        viewModel.getFeedsWithFolder().observe(this, feedWithFolders -> {
+            itemAdapter.add(feedWithFolders);
+            fastAdapter.notifyAdapterDataSetChanged();
+        });
     }
 
     private void openEditFeedDialog(FeedWithFolder feedWithFolder) {
