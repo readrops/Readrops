@@ -14,7 +14,7 @@ import java.util.List;
 public interface FolderDao {
 
     @Query("Select * from Folder")
-    List<Folder> getAllFolders();
+    LiveData<List<Folder>> getAllFolders();
 
     @Insert
     long insert(Folder folder);

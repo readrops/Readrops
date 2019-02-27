@@ -48,17 +48,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_feed_url_textinputlayout"
         android:text="@string/folder"
-        android:textAppearance="@style/TextAppearance.Design.Hint"/>
+        android:textAppearance="@style/TextAppearance.Design.Hint"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_feed_url_textinputlayout" />
 
     <Spinner
         android:id="@+id/edit_feed_folder_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.514"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edit_feed_folder" />
 

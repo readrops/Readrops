@@ -8,19 +8,31 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import com.readrops.app.R;
 import com.readrops.app.database.entities.Feed;
+import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.FeedWithFolder;
 import com.readrops.app.viewmodels.ManageFeedsViewModel;
 
-public class EditFeedDialog extends DialogFragment {
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executors;
+
+public class EditFeedDialog extends DialogFragment implements AdapterView.OnItemSelectedListener {
 
     private TextInputEditText feedName;
     private TextInputEditText feedUrl;
     private Spinner folder;
+
+    Map<String, Integer> values;
 
     private FeedWithFolder feedWithFolder;
     private ManageFeedsViewModel viewModel;
@@ -43,8 +55,26 @@ public class EditFeedDialog extends DialogFragment {
                     viewModel.updateFeedWithFolder(feedWithFolder);
                 });
 
+
+
         builder.setView(v);
         fillData(v);
+
+        viewModel.getFolders().observe(this, folders -> {
+            values = new HashMap<>();
+            for (Folder folder : folders) {
+                if (folder.getId() != 1)
+                    values.put(folder.getName(), folder.getId());
+                else
+                    values.put(getString(R.string.no_folder), 1);
+            }
+
+            ArrayAdapter<String> spinnerData = new ArrayAdapter<String>(getActivity(),
+                    android.R.layout.simple_spinner_dropdown_item, new ArrayList<>(values.keySet()));
+            spinnerData.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            folder.setAdapter(spinnerData);
+            folder.setOnItemSelectedListener(this);
+        });
 
         return builder.create();
     }
@@ -58,5 +88,14 @@ public class EditFeedDialog extends DialogFragment {
         feedUrl.setText(feedWithFolder.getFeed().getUrl());
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        String folderName = (String)parent.getAdapter().getItem(position);
+        feedWithFolder.getFeed().setFolderId(values.get(folderName));
+    }
 
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
 }

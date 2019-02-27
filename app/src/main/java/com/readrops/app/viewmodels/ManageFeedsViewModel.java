@@ -6,6 +6,7 @@ import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 
 import com.readrops.app.database.Database;
+import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.FeedWithFolder;
 import com.readrops.app.repositories.LocalFeedRepository;
 
@@ -15,6 +16,7 @@ public class ManageFeedsViewModel extends AndroidViewModel {
 
     private Database db;
     private LiveData<List<FeedWithFolder>> feedsWithFolder;
+    private LiveData<List<Folder>> folders;
     private LocalFeedRepository repository;
 
     public ManageFeedsViewModel(@NonNull Application application) {
@@ -23,6 +25,7 @@ public class ManageFeedsViewModel extends AndroidViewModel {
         repository = new LocalFeedRepository(application);
 
         feedsWithFolder = db.feedDao().getAllFeedsWithFolder();
+        folders = db.folderDao().getAllFolders();
     }
 
     public LiveData<List<FeedWithFolder>> getFeedsWithFolder() {
@@ -31,5 +34,9 @@ public class ManageFeedsViewModel extends AndroidViewModel {
 
     public void updateFeedWithFolder(FeedWithFolder feedWithFolder) {
         repository.updateFeedWithFolder(feedWithFolder);
+    }
+
+    public LiveData<List<Folder>> getFolders() {
+        return folders;
     }
 }

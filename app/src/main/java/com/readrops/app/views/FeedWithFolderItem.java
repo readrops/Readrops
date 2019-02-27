@@ -49,7 +49,8 @@ public class FeedWithFolderItem extends ModelAbstractItem<FeedWithFolder, FeedWi
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .placeholder(R.drawable.ic_rss_feed)
                     .into(holder.feedIcon);
-        }
+        } else
+            holder.feedIcon.setImageResource(R.drawable.ic_rss_feed);
 
         holder.feedName.setText(feedWithFolder.getFeed().getName());
         if (feedWithFolder.getFeed().getDescription() != null) {
@@ -58,7 +59,10 @@ public class FeedWithFolderItem extends ModelAbstractItem<FeedWithFolder, FeedWi
         } else
             holder.feedDescription.setVisibility(View.GONE);
 
-        holder.folderName.setText(feedWithFolder.getFolder().getName());
+        if (feedWithFolder.getFolder().getId() != 1)
+            holder.folderName.setText(feedWithFolder.getFolder().getName());
+        else
+            holder.folderName.setText(holder.itemView.getResources().getString(R.string.no_folder));
 
         holder.editFeed.setOnClickListener(v -> listener.onEdit(feedWithFolder));
         holder.deleteFeed.setOnClickListener(v -> listener.onDelete(feedWithFolder));

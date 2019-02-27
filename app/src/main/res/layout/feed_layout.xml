@@ -7,13 +7,15 @@
     android:layout_marginStart="6dp"
     android:layout_marginTop="6dp"
     android:layout_marginEnd="6dp"
-    android:background="?android:attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
         android:padding="6dp">
 
         <RelativeLayout
@@ -34,8 +36,8 @@
                 style="@style/Base.TextAppearance.AppCompat.Subhead"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/feed_layout_icon"
                 android:layout_toStartOf="@id/feed_layout_delete"
+                android:layout_toEndOf="@id/feed_layout_icon"
                 android:ellipsize="end"
                 android:maxLines="2"
                 android:minLines="1"
@@ -53,8 +55,8 @@
                 android:maxLines="3"
                 android:minLines="1"
                 android:visibility="visible"
-                tools:visibility="visible"
-                tools:text="This is a feed description" />
+                tools:text="This is a feed description"
+                tools:visibility="visible" />
 
             <ImageView
                 android:id="@+id/feed_layout_delete"
@@ -69,8 +71,8 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:layout_below="@id/feed_layout_first_part">
+            android:layout_below="@id/feed_layout_first_part"
+            android:layout_marginTop="6dp">
 
             <TextView
                 android:id="@+id/feed_layout_folder"
@@ -79,8 +81,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_toStartOf="@id/feed_layout_edit"
-                android:maxLines="1"
                 android:ellipsize="end"
+                android:maxLines="1"
                 tools:text="Folder 1" />
 
             <ImageView
@@ -92,9 +94,7 @@
                 android:src="@drawable/ic_edit_grey" />
 
 
-
         </RelativeLayout>
-
 
 
     </RelativeLayout>
