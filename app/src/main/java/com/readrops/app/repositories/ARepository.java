@@ -42,14 +42,7 @@ public abstract class ARepository {
 
     public abstract void deleteFeed(Feed feed);
 
-    public Completable addFolder(String name) {
-        return Completable.create(emitter -> {
-            Folder folder = new Folder(name);
-            database.folderDao().insert(folder);
-
-            emitter.onComplete();
-        });
-    }
+    public abstract Completable addFolder(Folder folder);
 
     public Completable deleteFolder(Folder folder) {
         return Completable.create(emitter -> {

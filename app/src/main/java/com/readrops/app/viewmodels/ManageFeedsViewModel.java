@@ -12,6 +12,8 @@ import com.readrops.app.repositories.LocalFeedRepository;
 
 import java.util.List;
 
+import io.reactivex.Completable;
+
 public class ManageFeedsViewModel extends AndroidViewModel {
 
     private Database db;
@@ -38,5 +40,9 @@ public class ManageFeedsViewModel extends AndroidViewModel {
 
     public LiveData<List<Folder>> getFolders() {
         return folders;
+    }
+
+    public Completable addFolder(Folder folder) {
+        return repository.addFolder(folder);
     }
 }

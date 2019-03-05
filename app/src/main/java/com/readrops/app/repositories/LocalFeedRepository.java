@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.support.v7.graphics.Palette;
 import android.util.Patterns;
 
+import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.FeedWithFolder;
 import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.database.entities.Feed;
@@ -29,6 +30,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
+
+import io.reactivex.Completable;
 
 public class LocalFeedRepository extends ARepository implements QueryCallback {
 
@@ -109,6 +112,14 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
     public void deleteFeed(Feed feed) {
         executor.execute(() -> {
 
+        });
+    }
+
+    @Override
+    public Completable addFolder(Folder folder) {
+        return Completable.create(emitter -> {
+            database.folderDao().insert(folder);
+            emitter.onComplete();
         });
     }
 
