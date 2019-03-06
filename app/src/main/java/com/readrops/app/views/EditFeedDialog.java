@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.Executors;
 
 public class EditFeedDialog extends DialogFragment implements AdapterView.OnItemSelectedListener {
@@ -61,7 +62,7 @@ public class EditFeedDialog extends DialogFragment implements AdapterView.OnItem
         fillData(v);
 
         viewModel.getFolders().observe(this, folders -> {
-            values = new HashMap<>();
+            values = new TreeMap<>(String::compareTo);
             for (Folder folder : folders) {
                 if (folder.getId() != 1)
                     values.put(folder.getName(), folder.getId());
@@ -69,11 +70,17 @@ public class EditFeedDialog extends DialogFragment implements AdapterView.OnItem
                     values.put(getString(R.string.no_folder), 1);
             }
 
-            ArrayAdapter<String> spinnerData = new ArrayAdapter<String>(getActivity(),
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
                     android.R.layout.simple_spinner_dropdown_item, new ArrayList<>(values.keySet()));
-            spinnerData.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            folder.setAdapter(spinnerData);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+            folder.setAdapter(adapter);
             folder.setOnItemSelectedListener(this);
+
+            if (!feedWithFolder.getFolder().getName().equals("reserved"))
+                folder.setSelection(adapter.getPosition(feedWithFolder.getFolder().getName()));
+            else
+                folder.setSelection(adapter.getPosition(getString(R.string.no_folder)));
         });
 
         return builder.create();

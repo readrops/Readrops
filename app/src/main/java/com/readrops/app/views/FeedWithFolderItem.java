@@ -18,7 +18,8 @@ import java.util.List;
 public class FeedWithFolderItem extends ModelAbstractItem<FeedWithFolder, FeedWithFolderItem, FeedWithFolderItem.ViewHolder> {
 
     public static final String FEED_NAME_KEY = "name";
-    public static final String FOLDER_NAME_KEY = "folder_name";
+    public static final String FOLDER_NAME_KEY = "folderName";
+    public static final String FOLDER_ID_KEY = "folderKey";
 
     private ManageFeedsListener listener;
 
@@ -53,11 +54,13 @@ public class FeedWithFolderItem extends ModelAbstractItem<FeedWithFolder, FeedWi
         if (!payloads.isEmpty()) {
             Bundle bundle = (Bundle)payloads.get(0);
 
-            if (bundle.getString(FEED_NAME_KEY) != null)
+            if (bundle.getString(FEED_NAME_KEY) != null) {
                 holder.feedName.setText(bundle.getString(FEED_NAME_KEY));
+            }
 
-            if (bundle.getString(FOLDER_NAME_KEY) != null)
+            if (bundle.getString(FOLDER_NAME_KEY) != null) {
                 holder.folderName.setText(bundle.getString(FOLDER_NAME_KEY));
+            }
         } else {
             FeedWithFolder feedWithFolder = getModel();
 
@@ -82,8 +85,8 @@ public class FeedWithFolderItem extends ModelAbstractItem<FeedWithFolder, FeedWi
             else
                 holder.folderName.setText(holder.itemView.getResources().getString(R.string.no_folder));
 
-            holder.editFeed.setOnClickListener(v -> listener.onEdit(feedWithFolder));
-            holder.deleteFeed.setOnClickListener(v -> listener.onDelete(feedWithFolder));
+            holder.editFeed.setOnClickListener(v -> listener.onEdit(getModel()));
+            holder.deleteFeed.setOnClickListener(v -> listener.onDelete(getModel()));
         }
 
 

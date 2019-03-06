@@ -13,7 +13,7 @@ import java.util.List;
 @Dao
 public interface FolderDao {
 
-    @Query("Select * from Folder")
+    @Query("Select * from Folder Order By name ASC")
     LiveData<List<Folder>> getAllFolders();
 
     @Insert
