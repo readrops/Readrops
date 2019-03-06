@@ -104,7 +104,7 @@ public class ManageFeedsActivity extends AppCompatActivity {
                         FeedWithFolder feedWithFolder1 = oldItem.getModel();
                         FeedWithFolder feedWithFolder2 = newItem.getModel();
 
-                        return feedWithFolder1.getFeed().getName().equals(feedWithFolder1.getFeed().getName()) &&
+                        return feedWithFolder1.getFeed().getName().equals(feedWithFolder2.getFeed().getName()) &&
                                 feedWithFolder1.getFeed().getUrl().equals(feedWithFolder2.getFeed().getUrl()) &&
                                 feedWithFolder1.getFolder().getName().equals(feedWithFolder2.getFolder().getName());
                     }
@@ -112,7 +112,18 @@ public class ManageFeedsActivity extends AppCompatActivity {
                     @Nullable
                     @Override
                     public Object getChangePayload(FeedWithFolderItem oldItem, int oldItemPosition, FeedWithFolderItem newItem, int newItemPosition) {
-                        return null;
+                        Bundle bundle = new Bundle();
+
+                        if (!oldItem.getModel().getFeed().getName().equals(newItem.getModel().getFeed().getName()))
+                            bundle.putString(FeedWithFolderItem.FEED_NAME_KEY, newItem.getModel().getFeed().getName());
+
+                        if (!oldItem.getModel().getFolder().getName().equals(newItem.getModel().getFolder().getName()))
+                            bundle.putString(FeedWithFolderItem.FOLDER_NAME_KEY, newItem.getModel().getFolder().getName());
+
+                        if (bundle.size() > 0)
+                            return bundle;
+                        else
+                            return null;
                     }
                 });
 

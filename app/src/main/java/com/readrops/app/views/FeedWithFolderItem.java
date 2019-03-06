@@ -1,5 +1,6 @@
 package com.readrops.app.views;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -15,6 +16,9 @@ import com.readrops.app.utils.GlideApp;
 import java.util.List;
 
 public class FeedWithFolderItem extends ModelAbstractItem<FeedWithFolder, FeedWithFolderItem, FeedWithFolderItem.ViewHolder> {
+
+    public static final String FEED_NAME_KEY = "name";
+    public static final String FOLDER_NAME_KEY = "folder_name";
 
     private ManageFeedsListener listener;
 
@@ -39,33 +43,50 @@ public class FeedWithFolderItem extends ModelAbstractItem<FeedWithFolder, FeedWi
     }
 
     @Override
+    public long getIdentifier() {
+        return getModel().getFeed().getId();
+    }
+
+    @Override
     public void bindView(ViewHolder holder, List<Object> payloads) {
         super.bindView(holder, payloads);
-        FeedWithFolder feedWithFolder = getModel();
+        if (!payloads.isEmpty()) {
+            Bundle bundle = (Bundle)payloads.get(0);
 
-        if (feedWithFolder.getFeed().getIconUrl() != null) {
-            GlideApp.with(holder.itemView.getContext())
-                    .load(feedWithFolder.getFeed().getIconUrl())
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .placeholder(R.drawable.ic_rss_feed)
-                    .into(holder.feedIcon);
-        } else
-            holder.feedIcon.setImageResource(R.drawable.ic_rss_feed);
+            if (bundle.getString(FEED_NAME_KEY) != null)
+                holder.feedName.setText(bundle.getString(FEED_NAME_KEY));
 
-        holder.feedName.setText(feedWithFolder.getFeed().getName());
-        if (feedWithFolder.getFeed().getDescription() != null) {
-            holder.feedDescription.setVisibility(View.VISIBLE);
-            holder.feedDescription.setText(feedWithFolder.getFeed().getDescription());
-        } else
-            holder.feedDescription.setVisibility(View.GONE);
+            if (bundle.getString(FOLDER_NAME_KEY) != null)
+                holder.folderName.setText(bundle.getString(FOLDER_NAME_KEY));
+        } else {
+            FeedWithFolder feedWithFolder = getModel();
 
-        if (feedWithFolder.getFolder().getId() != 1)
-            holder.folderName.setText(feedWithFolder.getFolder().getName());
-        else
-            holder.folderName.setText(holder.itemView.getResources().getString(R.string.no_folder));
+            if (feedWithFolder.getFeed().getIconUrl() != null) {
+                GlideApp.with(holder.itemView.getContext())
+                        .load(feedWithFolder.getFeed().getIconUrl())
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .placeholder(R.drawable.ic_rss_feed)
+                        .into(holder.feedIcon);
+            } else
+                holder.feedIcon.setImageResource(R.drawable.ic_rss_feed);
 
-        holder.editFeed.setOnClickListener(v -> listener.onEdit(feedWithFolder));
-        holder.deleteFeed.setOnClickListener(v -> listener.onDelete(feedWithFolder));
+            holder.feedName.setText(feedWithFolder.getFeed().getName());
+            if (feedWithFolder.getFeed().getDescription() != null) {
+                holder.feedDescription.setVisibility(View.VISIBLE);
+                holder.feedDescription.setText(feedWithFolder.getFeed().getDescription());
+            } else
+                holder.feedDescription.setVisibility(View.GONE);
+
+            if (feedWithFolder.getFolder().getId() != 1)
+                holder.folderName.setText(feedWithFolder.getFolder().getName());
+            else
+                holder.folderName.setText(holder.itemView.getResources().getString(R.string.no_folder));
+
+            holder.editFeed.setOnClickListener(v -> listener.onEdit(feedWithFolder));
+            holder.deleteFeed.setOnClickListener(v -> listener.onDelete(feedWithFolder));
+        }
+
+
     }
 
     public void setListener(ManageFeedsListener listener) {
