@@ -17,9 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static android.arch.persistence.room.ForeignKey.CASCADE;
+
 
 @Entity
-(foreignKeys = @ForeignKey(entity = Feed.class, parentColumns = "id", childColumns = "feed_id"))
+(foreignKeys = @ForeignKey(entity = Feed.class, parentColumns = "id", childColumns = "feed_id", onDelete = CASCADE))
 public class Item {
 
     @PrimaryKey(autoGenerate = true)
@@ -44,7 +46,7 @@ public class Item {
 
     private String content;
 
-    @ColumnInfo(name = "feed_id", index = true)
+    @ColumnInfo(name = "feed_id")
     private int feedId;
 
     @ColumnInfo(index = true)

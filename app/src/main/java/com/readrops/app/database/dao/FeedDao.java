@@ -24,6 +24,9 @@ public interface FeedDao {
     @Update
     void update(Feed feed);
 
+    @Query("Delete From Feed Where id = :feedId")
+    void delete(int feedId);
+
     @Query("Select count(*) from Feed")
     int getFeedCount();
 

@@ -8,8 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.InputType;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -18,7 +16,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.adapters.ModelAdapter;
 import com.mikepenz.fastadapter.commons.utils.DiffCallback;
-import com.mikepenz.fastadapter.commons.utils.DiffCallbackImpl;
 import com.mikepenz.fastadapter.commons.utils.FastAdapterDiffUtil;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.views.EditFeedDialog;
@@ -29,9 +26,7 @@ import com.readrops.app.database.pojo.FeedWithFolder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -61,7 +56,20 @@ public class ManageFeedsActivity extends AppCompatActivity {
 
                 @Override
                 public void onDelete(FeedWithFolder feedWithFolder) {
+                    viewModel.deleteFeed(feedWithFolder.getFeed().getId())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new DisposableCompletableObserver() {
+                                @Override
+                                public void onComplete() {
+                                    Toast.makeText(getApplication(), "feed deleted", Toast.LENGTH_LONG).show();
+                                }
 
+                                @Override
+                                public void onError(Throwable e) {
+                                    Toast.makeText(getApplication(), "error on feed deletion", Toast.LENGTH_LONG).show();
+                                }
+                            });
                 }
             });
 
@@ -85,7 +93,20 @@ public class ManageFeedsActivity extends AppCompatActivity {
 
                     @Override
                     public void onDelete(FeedWithFolder feedWithFolder) {
+                        viewModel.deleteFeed(feedWithFolder.getFeed().getId())
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new DisposableCompletableObserver() {
+                                    @Override
+                                    public void onComplete() {
+                                        Toast.makeText(getApplication(), "feed deleted", Toast.LENGTH_LONG).show();
+                                    }
 
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        Toast.makeText(getApplication(), "error on feed deletion", Toast.LENGTH_LONG).show();
+                                    }
+                                });
                     }
                 });
 
@@ -104,9 +125,9 @@ public class ManageFeedsActivity extends AppCompatActivity {
                         FeedWithFolder feedWithFolder1 = oldItem.getModel();
                         FeedWithFolder feedWithFolder2 = newItem.getModel();
 
-                        return feedWithFolder1.getFeed().getName().equals(feedWithFolder2.getFeed().getName()) &&
-                                feedWithFolder1.getFeed().getUrl().equals(feedWithFolder2.getFeed().getUrl()) &&
-                                feedWithFolder1.getFolder().getName().equals(feedWithFolder2.getFolder().getName());
+                        return feedWithFolder1.getFolder().getName().equals(feedWithFolder2.getFolder().getName()) &&
+                                feedWithFolder1.getFeed().getName().equals(feedWithFolder2.getFeed().getName()) &&
+                                feedWithFolder1.getFeed().getUrl().equals(feedWithFolder2.getFeed().getUrl());
                     }
 
                     @Nullable

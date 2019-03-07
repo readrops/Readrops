@@ -40,7 +40,7 @@ public abstract class ARepository {
 
     public abstract void updateFeedWithFolder(FeedWithFolder feedWithFolder);
 
-    public abstract void deleteFeed(Feed feed);
+    public abstract Completable deleteFeed(int feedId);
 
     public abstract Completable addFolder(Folder folder);
 

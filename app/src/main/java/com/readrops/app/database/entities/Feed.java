@@ -12,7 +12,9 @@ import com.readrops.readropslibrary.localfeed.json.JSONFeed;
 import com.readrops.readropslibrary.localfeed.rss.RSSChannel;
 import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
 
-@Entity(foreignKeys = @ForeignKey(entity = Folder.class, parentColumns = "id", childColumns = "folder_id"))
+import static android.arch.persistence.room.ForeignKey.NO_ACTION;
+
+@Entity(foreignKeys = @ForeignKey(entity = Folder.class, parentColumns = "id", childColumns = "folder_id", onDelete = ForeignKey.SET_NULL))
 public class Feed implements Parcelable {
 
     @PrimaryKey(autoGenerate = true)
@@ -42,7 +44,7 @@ public class Feed implements Parcelable {
     @ColumnInfo(name = "last_modified")
     private String lastModified;
 
-    @ColumnInfo(name = "folder_id", index = true)
+    @ColumnInfo(name = "folder_id")
     private int folderId;
 
     public Feed() {

@@ -45,4 +45,8 @@ public class ManageFeedsViewModel extends AndroidViewModel {
     public Completable addFolder(Folder folder) {
         return repository.addFolder(folder);
     }
+
+    public Completable deleteFeed(int feedId) {
+        return repository.deleteFeed(feedId);
+    }
 }

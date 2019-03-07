@@ -109,9 +109,10 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
     }
 
     @Override
-    public void deleteFeed(Feed feed) {
-        executor.execute(() -> {
-
+    public Completable deleteFeed(int feedId) {
+        return Completable.create(emitter -> {
+            database.feedDao().delete(feedId);
+            emitter.onComplete();
         });
     }
 
