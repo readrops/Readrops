@@ -28,5 +28,7 @@
     <string name="edit_feed">Modifier le flux</string>
     <string name="folder">Dossier</string>
     <string name="no_folder">Pas de dossier</string>
+    <string name="cancel">Retour</string>
+    <string name="delete_feed">Supprimer le flux ?</string>
 
 </resources>

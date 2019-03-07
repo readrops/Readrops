@@ -56,20 +56,7 @@ public class ManageFeedsActivity extends AppCompatActivity {
 
                 @Override
                 public void onDelete(FeedWithFolder feedWithFolder) {
-                    viewModel.deleteFeed(feedWithFolder.getFeed().getId())
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(new DisposableCompletableObserver() {
-                                @Override
-                                public void onComplete() {
-                                    Toast.makeText(getApplication(), "feed deleted", Toast.LENGTH_LONG).show();
-                                }
-
-                                @Override
-                                public void onError(Throwable e) {
-                                    Toast.makeText(getApplication(), "error on feed deletion", Toast.LENGTH_LONG).show();
-                                }
-                            });
+                    deleteFolder(feedWithFolder.getFeed().getId());
                 }
             });
 
@@ -93,20 +80,7 @@ public class ManageFeedsActivity extends AppCompatActivity {
 
                     @Override
                     public void onDelete(FeedWithFolder feedWithFolder) {
-                        viewModel.deleteFeed(feedWithFolder.getFeed().getId())
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(new DisposableCompletableObserver() {
-                                    @Override
-                                    public void onComplete() {
-                                        Toast.makeText(getApplication(), "feed deleted", Toast.LENGTH_LONG).show();
-                                    }
-
-                                    @Override
-                                    public void onError(Throwable e) {
-                                        Toast.makeText(getApplication(), "error on feed deletion", Toast.LENGTH_LONG).show();
-                                    }
-                                });
+                        deleteFolder(feedWithFolder.getFeed().getId());
                     }
                 });
 
@@ -151,6 +125,28 @@ public class ManageFeedsActivity extends AppCompatActivity {
                 FastAdapterDiffUtil.set(itemAdapter, diffResult);
             }
         });
+    }
+
+    private void deleteFolder(int feedId) {
+        new MaterialDialog.Builder(this)
+                .title(getString(R.string.delete_feed))
+                .positiveText(getString(R.string.validate))
+                .negativeText(getString(R.string.cancel))
+                .onPositive((dialog, which) -> viewModel.deleteFeed(feedId)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new DisposableCompletableObserver() {
+                            @Override
+                            public void onComplete() {
+                                Toast.makeText(getApplication(), "feed deleted", Toast.LENGTH_LONG).show();
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Toast.makeText(getApplication(), "error on feed deletion", Toast.LENGTH_LONG).show();
+                            }
+                        }))
+                .show();
     }
 
     private void openEditFeedDialog(FeedWithFolder feedWithFolder) {
