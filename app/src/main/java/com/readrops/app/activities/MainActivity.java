@@ -43,6 +43,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableCompletableObserver;
+import io.reactivex.schedulers.Schedulers;
+
 public class MainActivity extends AppCompatActivity implements SimpleCallback, SwipeRefreshLayout.OnRefreshListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
@@ -214,7 +218,23 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
     @Override
     public void onRefresh() {
         Log.d(TAG, "syncing started");
-        viewModel.sync();
+
+        viewModel.sync()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        refreshLayout.setRefreshing(false);
+                        adapter.submitList(newItems);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        refreshLayout.setRefreshing(false);
+                        Toast.makeText(getApplication(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
     public void displayAddFeedDialog(View view) {

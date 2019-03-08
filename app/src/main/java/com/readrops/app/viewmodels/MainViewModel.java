@@ -12,6 +12,8 @@ import com.readrops.readropslibrary.ParsingResult;
 
 import java.util.List;
 
+import io.reactivex.Completable;
+
 public class MainViewModel extends AndroidViewModel {
 
     private LiveData<List<ItemWithFeed>> itemsWithFeed;
@@ -33,8 +35,8 @@ public class MainViewModel extends AndroidViewModel {
         repository.setCallback(simpleCallback);
     }
 
-    public void sync() {
-        repository.sync();
+    public Completable sync() {
+        return repository.sync();
     }
 
     public void addFeed(ParsingResult parsingResult) {

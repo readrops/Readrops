@@ -1,5 +1,6 @@
 package com.readrops.app.repositories;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.graphics.Bitmap;
@@ -50,8 +51,8 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
     }
 
     @Override
-    public void sync() {
-        executor.execute(() -> {
+    public Completable sync() {
+        return Completable.create(emitter -> {
             RSSNetwork rssNet = new RSSNetwork();
             rssNet.setCallback(this);
             List<Feed> feedList = database.feedDao().getAllFeeds();
@@ -66,11 +67,11 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
 
                     rssNet.requestUrl(feed.getUrl(), headers);
                 } catch (Exception e) {
-                    failureCallBackInMainThread(e);
+                    emitter.onError(e);
                 }
             }
 
-            postCallBackSuccess();
+            emitter.onComplete();
         });
     }
 

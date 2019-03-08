@@ -32,7 +32,7 @@ public abstract class ARepository {
         this.callback = callback;
     }
 
-    public abstract void sync();
+    public abstract Completable sync();
 
     public abstract void addFeed(ParsingResult result);
 
