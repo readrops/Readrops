@@ -46,7 +46,7 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
         itemsWhithFeed = database.itemDao().getAllItemWithFeeds();
     }
 
-    public LiveData<List<ItemWithFeed>> getItemsWhithFeed() {
+    public LiveData<List<ItemWithFeed>> getItemsWithFeed() {
         return itemsWhithFeed;
     }
 

@@ -24,7 +24,7 @@ public class MainViewModel extends AndroidViewModel {
 
         repository = new LocalFeedRepository(application);
 
-        itemsWithFeed = repository.getItemsWhithFeed();
+        itemsWithFeed = repository.getItemsWithFeed();
     }
 
     public LiveData<List<ItemWithFeed>> getItemsWithFeed() {
