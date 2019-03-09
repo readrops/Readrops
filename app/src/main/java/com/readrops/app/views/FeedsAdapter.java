@@ -120,7 +120,10 @@ public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.ViewH
             }
 
             if (bundle.getString(FOLDER_NAME_KEY) != null) {
-                holder.folderName.setText(bundle.getString(FOLDER_NAME_KEY));
+                if (getItem(position).getFolder().getId() != 1)
+                    holder.folderName.setText(bundle.getString(FOLDER_NAME_KEY));
+                else
+                    holder.folderName.setText(holder.itemView.getContext().getString(R.string.no_folder));
             }
         } else
             onBindViewHolder(holder, position);
