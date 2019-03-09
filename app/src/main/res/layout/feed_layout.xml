@@ -14,8 +14,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?android:attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
         android:padding="6dp">
 
         <RelativeLayout
@@ -74,25 +72,25 @@
             android:layout_below="@id/feed_layout_first_part"
             android:layout_marginTop="6dp">
 
+            <ImageView
+                android:id="@+id/feed_layout_folder_icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentStart="true"
+                android:src="@drawable/ic_folder_grey" />
+
             <TextView
                 android:id="@+id/feed_layout_folder"
                 style="@style/Base.TextAppearance.AppCompat.Body1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_toStartOf="@id/feed_layout_edit"
+                android:layout_toEndOf="@id/feed_layout_folder_icon"
+                android:layout_toRightOf="@id/feed_layout_folder_icon"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="6dp"
                 android:ellipsize="end"
                 android:maxLines="1"
                 tools:text="Folder 1" />
-
-            <ImageView
-                android:id="@+id/feed_layout_edit"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_alignParentEnd="true"
-                android:layout_marginStart="8dp"
-                android:src="@drawable/ic_edit_grey" />
-
 
         </RelativeLayout>
 

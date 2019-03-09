@@ -1,7 +1,10 @@
 package com.readrops.app.activities;
 
 import android.arch.lifecycle.ViewModelProvider;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -55,6 +58,15 @@ public class ManageFeedsActivity extends AppCompatActivity {
             @Override
             public void onDelete(FeedWithFolder feedWithFolder) {
                 deleteFolder(feedWithFolder.getFeed().getId());
+            }
+
+            @Override
+            public void onOpenLink(FeedWithFolder feedWithFolder) {
+                Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+                vibrator.vibrate(50);
+
+                Intent urlIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(feedWithFolder.getFeed().getSiteUrl()));
+                startActivity(urlIntent);
             }
         });
 

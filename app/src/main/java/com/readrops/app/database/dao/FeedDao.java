@@ -44,7 +44,7 @@ public interface FeedDao {
 
     @Query("Select Feed.name as feed_name, Feed.id as feed_id, Folder.name as folder_name, Folder.id as folder_id," +
             "Feed.description as feed_description, Feed.icon_url as feed_icon_url, Feed.url as feed_url, Feed.folder_id as feed_folder_id" +
-            " from Feed Inner Join Folder on Feed.folder_id = Folder.id Order by Feed.name")
+            ", Feed.siteUrl as feed_siteUrl from Feed Inner Join Folder on Feed.folder_id = Folder.id Order by Feed.name")
     LiveData<List<FeedWithFolder>> getAllFeedsWithFolder();
 }
 

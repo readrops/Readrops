@@ -31,7 +31,6 @@ public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.ViewH
     private static final DiffUtil.ItemCallback<FeedWithFolder> DIFF_CALLBACK = new DiffUtil.ItemCallback<FeedWithFolder>() {
         @Override
         public boolean areItemsTheSame(@NonNull FeedWithFolder feedWithFolder, @NonNull FeedWithFolder t1) {
-            Log.d("", "areItemsTheSame: ");
             return feedWithFolder.getFeed().getId() == t1.getFeed().getId();
         }
 
@@ -67,6 +66,8 @@ public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.ViewH
     }
 
 
+
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -100,7 +101,11 @@ public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.ViewH
         else
             viewHolder.folderName.setText(viewHolder.itemView.getResources().getString(R.string.no_folder));
 
-        viewHolder.editFeed.setOnClickListener(v -> listener.onEdit(getItem(i)));
+        viewHolder.itemView.setOnClickListener(v -> listener.onEdit(getItem(i)));
+        viewHolder.itemView.setOnLongClickListener(v -> {
+            listener.onOpenLink(getItem(i));
+            return true;
+        });
         viewHolder.deleteFeed.setOnClickListener(v -> listener.onDelete(getItem(i)));
     }
 
@@ -122,20 +127,20 @@ public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.ViewH
     }
 
     public interface ManageFeedsListener {
+        void onOpenLink(FeedWithFolder feedWithFolder);
         void onEdit(FeedWithFolder feedWithFolder);
         void onDelete(FeedWithFolder feedWithFolder);
     }
 
 
 
-    protected static class ViewHolder extends RecyclerView.ViewHolder {
+    protected class ViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView feedIcon;
         private TextView feedName;
         private TextView feedDescription;
         private TextView folderName;
 
-        private ImageView editFeed;
         private ImageView deleteFeed;
 
         public ViewHolder(View itemView) {
@@ -145,7 +150,6 @@ public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.ViewH
             feedName = itemView.findViewById(R.id.feed_layout_name);
             feedDescription = itemView.findViewById(R.id.feed_layout_description);
             folderName = itemView.findViewById(R.id.feed_layout_folder);
-            editFeed = itemView.findViewById(R.id.feed_layout_edit);
             deleteFeed = itemView.findViewById(R.id.feed_layout_delete);
         }
     }
