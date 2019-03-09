@@ -5,12 +5,15 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -56,11 +59,6 @@ public class ManageFeedsActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onDelete(FeedWithFolder feedWithFolder) {
-                deleteFolder(feedWithFolder.getFeed().getId());
-            }
-
-            @Override
             public void onOpenLink(FeedWithFolder feedWithFolder) {
                 Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
                 vibrator.vibrate(50);
@@ -72,13 +70,40 @@ public class ManageFeedsActivity extends AppCompatActivity {
 
         recyclerView.setAdapter(adapter);
 
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                int swipeFlags = ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
+
+                return makeMovementFlags(0, swipeFlags);
+            }
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+                deleteFolder(adapter.getItemAt(viewHolder.getAdapterPosition()).getFeed().getId(),
+                        viewHolder.getAdapterPosition());
+
+            }
+
+            @Override
+            public boolean isItemViewSwipeEnabled() {
+                return true;
+            }
+
+        }).attachToRecyclerView(recyclerView);
+
         viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(ManageFeedsViewModel.class);
         viewModel.getFeedsWithFolder().observe(this, feedWithFolders -> {
             adapter.submitList(feedWithFolders);
         });
     }
 
-    private void deleteFolder(int feedId) {
+    private void deleteFolder(int feedId, int position) {
         new MaterialDialog.Builder(this)
                 .title(getString(R.string.delete_feed))
                 .positiveText(getString(R.string.validate))
@@ -97,6 +122,7 @@ public class ManageFeedsActivity extends AppCompatActivity {
                                 Toast.makeText(getApplication(), "error on feed deletion", Toast.LENGTH_LONG).show();
                             }
                         }))
+                .onNegative(((dialog, which) -> adapter.notifyItemChanged(position)))
                 .show();
     }
 

@@ -34,7 +34,7 @@
                 style="@style/Base.TextAppearance.AppCompat.Subhead"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toStartOf="@id/feed_layout_delete"
+                android:layout_alignParentEnd="true"
                 android:layout_toEndOf="@id/feed_layout_icon"
                 android:ellipsize="end"
                 android:maxLines="2"
@@ -53,16 +53,8 @@
                 android:maxLines="3"
                 android:minLines="1"
                 android:visibility="visible"
-                tools:text="This is a feed description"
-                tools:visibility="visible" />
+                tools:text="This is a feed description" />
 
-            <ImageView
-                android:id="@+id/feed_layout_delete"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_alignParentEnd="true"
-                android:layout_marginStart="8dp"
-                android:src="@drawable/ic_delete_grey" />
 
         </RelativeLayout>
 
@@ -84,10 +76,10 @@
                 style="@style/Base.TextAppearance.AppCompat.Body1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/feed_layout_folder_icon"
-                android:layout_toRightOf="@id/feed_layout_folder_icon"
                 android:layout_alignParentEnd="true"
                 android:layout_marginStart="6dp"
+                android:layout_toEndOf="@id/feed_layout_folder_icon"
+                android:layout_toRightOf="@id/feed_layout_folder_icon"
                 android:ellipsize="end"
                 android:maxLines="1"
                 tools:text="Folder 1" />

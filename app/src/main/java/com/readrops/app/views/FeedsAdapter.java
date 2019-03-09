@@ -65,8 +65,9 @@ public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.ViewH
         this.listener = listener;
     }
 
-
-
+    public FeedWithFolder getItemAt(int position) {
+        return getItem(position);
+    }
 
     @NonNull
     @Override
@@ -106,7 +107,6 @@ public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.ViewH
             listener.onOpenLink(getItem(i));
             return true;
         });
-        viewHolder.deleteFeed.setOnClickListener(v -> listener.onDelete(getItem(i)));
     }
 
 
@@ -129,9 +129,7 @@ public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.ViewH
     public interface ManageFeedsListener {
         void onOpenLink(FeedWithFolder feedWithFolder);
         void onEdit(FeedWithFolder feedWithFolder);
-        void onDelete(FeedWithFolder feedWithFolder);
     }
-
 
 
     protected class ViewHolder extends RecyclerView.ViewHolder {
@@ -141,8 +139,6 @@ public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.ViewH
         private TextView feedDescription;
         private TextView folderName;
 
-        private ImageView deleteFeed;
-
         public ViewHolder(View itemView) {
             super(itemView);
 
@@ -150,7 +146,6 @@ public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.ViewH
             feedName = itemView.findViewById(R.id.feed_layout_name);
             feedDescription = itemView.findViewById(R.id.feed_layout_description);
             folderName = itemView.findViewById(R.id.feed_layout_folder);
-            deleteFeed = itemView.findViewById(R.id.feed_layout_delete);
         }
     }
 }
