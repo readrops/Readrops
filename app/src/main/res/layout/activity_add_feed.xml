@@ -71,7 +71,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/add_feed_main_layout"
-        android:enabled="false"/>
+        android:enabled="true"/>
 
 
 </android.support.constraint.ConstraintLayout>

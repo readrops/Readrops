@@ -90,6 +90,19 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
     }
 
     @Override
+    public Completable addFeeds(List<ParsingResult> results) {
+        return Completable.create(emitter -> {
+           for (ParsingResult result : results) {
+               RSSNetwork rssNet = new RSSNetwork();
+               rssNet.setCallback(this);
+               rssNet.requestUrl(result.getUrl(), new HashMap<>());
+           }
+
+            emitter.onComplete();
+        });
+    }
+
+    @Override
     public void updateFeed(Feed feed) {
         executor.execute(() -> {
             try {

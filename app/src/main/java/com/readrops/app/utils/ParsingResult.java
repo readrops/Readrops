@@ -2,6 +2,7 @@ package com.readrops.app.utils;
 
 import android.support.annotation.NonNull;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.mikepenz.fastadapter.FastAdapter;
@@ -15,6 +16,8 @@ public class ParsingResult extends AbstractItem<ParsingResult, ParsingResult.Par
     private String url;
 
     private String label;
+
+    private boolean checked;
 
     public ParsingResult(String url, String label) {
         this.url = url;
@@ -35,6 +38,14 @@ public class ParsingResult extends AbstractItem<ParsingResult, ParsingResult.Par
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
+
+    public boolean isChecked() {
+        return checked;
     }
 
     @Override
@@ -67,18 +78,27 @@ public class ParsingResult extends AbstractItem<ParsingResult, ParsingResult.Par
 
         private TextView feedLabel;
         private TextView feedUrl;
+        private CheckBox checkBox;
 
         public ParsingResultViewHolder(View itemView) {
             super(itemView);
 
             feedLabel = itemView.findViewById(R.id.add_feed_item_label);
             feedUrl = itemView.findViewById(R.id.add_feed_item_url);
+            checkBox = itemView.findViewById(R.id.add_feed_checkbox);
         }
 
         @Override
         public void bindView(ParsingResult item, List<Object> payloads) {
-            feedLabel.setText(item.getLabel());
+            if (item.getLabel() != null)
+                feedLabel.setText(item.getLabel());
+            else
+                feedLabel.setVisibility(View.GONE);
+
             feedUrl.setText(item.getUrl());
+
+            checkBox.setChecked(item.isChecked());
+            checkBox.setClickable(false);
         }
 
         @Override

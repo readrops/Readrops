@@ -1,5 +1,8 @@
 package com.readrops.app.activities;
 
+import android.arch.lifecycle.AndroidViewModel;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -7,29 +10,32 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Patterns;
+import android.util.SparseBooleanArray;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.mikepenz.fastadapter.FastAdapter;
-import com.mikepenz.fastadapter.IAdapter;
 import com.mikepenz.fastadapter.adapters.ItemAdapter;
-import com.mikepenz.fastadapter.listeners.OnClickListener;
 import com.readrops.app.R;
 import com.readrops.app.utils.HtmlParser;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.utils.ParsingResult;
+import com.readrops.app.viewmodels.AddFeedsViewModel;
 import com.readrops.readropslibrary.localfeed.RSSNetwork;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Scheduler;
 import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.SingleOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.schedulers.Schedulers;
 
 public class AddFeedActivity extends AppCompatActivity implements View.OnClickListener {
@@ -41,7 +47,7 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
     private RecyclerView recyclerView;
 
     private ItemAdapter<ParsingResult> itemAdapter;
-
+    private AddFeedsViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,10 +63,20 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         load.setOnClickListener(this);
         validate.setOnClickListener(this);
 
+        viewModel = ViewModelProviders.of(this).get(AddFeedsViewModel.class);
+
         itemAdapter = new ItemAdapter<>();
         FastAdapter<ParsingResult> fastAdapter = FastAdapter.with(itemAdapter);
         fastAdapter.withSelectable(true);
         fastAdapter.withOnClickListener((v, adapter, item, position) -> {
+            if (item.isChecked()) {
+                item.setChecked(false);
+                fastAdapter.notifyAdapterItemChanged(position);
+            } else {
+                item.setChecked(true);
+                fastAdapter.notifyAdapterItemChanged(position);
+            }
+
             return true;
         });
 
@@ -81,7 +97,7 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
                 }
                 break;
             case R.id.add_feed_ok:
-                exit();
+                insertFeeds();
                 break;
         }
     }
@@ -99,8 +115,27 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
             return true;
     }
 
-    private void exit() {
+    private void insertFeeds() {
+        List<ParsingResult> feedsToInsert = new ArrayList<>();
+        for (ParsingResult result : itemAdapter.getAdapterItems()) {
+            if (result.isChecked())
+                feedsToInsert.add(result);
+        }
 
+        viewModel.addFeeds(feedsToInsert)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Toast.makeText(getApplication(), "feeds inserted", Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(getApplication(), "error on feed insertion", Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
     private void loadFeed() {
