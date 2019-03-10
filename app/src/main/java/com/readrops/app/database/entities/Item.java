@@ -11,6 +11,7 @@ import com.readrops.readropslibrary.localfeed.rss.RSSItem;
 import com.readrops.readropslibrary.localfeed.rss.RSSMediaContent;
 
 import org.joda.time.LocalDateTime;
+import org.jsoup.Jsoup;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -172,7 +173,7 @@ public class Item {
             newItem.setContent(item.getContent());
             newItem.setDescription(item.getDescription());
             newItem.setGuid(item.getGuid());
-            newItem.setTitle(item.getTitle());
+            newItem.setTitle(Jsoup.parse(item.getTitle()).text());
 
             // I wish I hadn't done that...
             if (Pattern.compile(DateUtils.RSS_ALTERNATIVE_DATE_FORMAT_REGEX).matcher(item.getDate()).matches())

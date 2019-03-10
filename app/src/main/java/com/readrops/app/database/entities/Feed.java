@@ -12,6 +12,8 @@ import com.readrops.readropslibrary.localfeed.json.JSONFeed;
 import com.readrops.readropslibrary.localfeed.rss.RSSChannel;
 import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
 
+import org.jsoup.Jsoup;
+
 import static android.arch.persistence.room.ForeignKey.NO_ACTION;
 
 @Entity(foreignKeys = @ForeignKey(entity = Folder.class, parentColumns = "id", childColumns = "folder_id", onDelete = ForeignKey.SET_NULL))
@@ -185,7 +187,7 @@ public class Feed implements Parcelable {
         Feed feed = new Feed();
         RSSChannel channel = rssFeed.getChannel();
 
-        feed.setName(channel.getTitle());
+        feed.setName(Jsoup.parse(channel.getTitle()).text());
         feed.setUrl(channel.getFeedUrl());
         feed.setSiteUrl(channel.getUrl());
         feed.setDescription(channel.getDescription());
