@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name" translatable="false">Readrops</string>
-    
+
     <string name="to_read">To read</string>
     <string name="non_read_articles">Non read articles</string>
     <string name="open_nav_drawer">Open menu</string>
@@ -32,4 +32,5 @@
     <string name="no_folder">No folder</string>
     <string name="cancel">Cancel</string>
     <string name="delete_feed">Delete feed ?</string>
+    <string name="load">Load</string>
 </resources>

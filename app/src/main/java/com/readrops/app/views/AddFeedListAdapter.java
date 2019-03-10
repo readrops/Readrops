@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.readrops.app.R;
-import com.readrops.readropslibrary.ParsingResult;
+import com.readrops.app.utils.ParsingResult;
 
 import java.util.List;
 

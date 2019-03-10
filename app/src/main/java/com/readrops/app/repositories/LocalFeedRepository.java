@@ -1,6 +1,5 @@
 package com.readrops.app.repositories;
 
-import android.annotation.SuppressLint;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.graphics.Bitmap;
@@ -14,7 +13,7 @@ import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Item;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.utils.HtmlParser;
-import com.readrops.readropslibrary.ParsingResult;
+import com.readrops.app.utils.ParsingResult;
 import com.readrops.readropslibrary.QueryCallback;
 import com.readrops.readropslibrary.Utils.LibUtils;
 import com.readrops.readropslibrary.localfeed.AFeed;

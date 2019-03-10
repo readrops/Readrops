@@ -9,7 +9,7 @@ import com.readrops.app.views.SimpleCallback;
 import com.readrops.app.database.Database;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
-import com.readrops.readropslibrary.ParsingResult;
+import com.readrops.app.utils.ParsingResult;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;

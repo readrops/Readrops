@@ -34,7 +34,7 @@ import com.readrops.app.views.SimpleCallback;
 import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.database.entities.Item;
 import com.readrops.app.utils.GlideApp;
-import com.readrops.readropslibrary.ParsingResult;
+import com.readrops.app.utils.ParsingResult;
 
 
 import org.joda.time.LocalDateTime;
@@ -239,8 +239,10 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
 
     public void displayAddFeedDialog(View view) {
         actionMenu.close(true);
-        Dialog dialog = new AddFeedDialog(this, R.layout.add_feed_layout);
-        dialog.show();
+        //Dialog dialog = new AddFeedDialog(this, R.layout.add_feed_layout);
+        //dialog.show();
+        Intent intent = new Intent(this, AddFeedActivity.class);
+        startActivity(intent);
     }
 
     public void addFolder(View view) {

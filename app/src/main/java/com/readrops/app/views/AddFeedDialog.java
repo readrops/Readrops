@@ -22,7 +22,7 @@ import com.readrops.app.R;
 import com.readrops.app.activities.MainActivity;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.utils.HtmlParser;
-import com.readrops.readropslibrary.ParsingResult;
+import com.readrops.app.utils.ParsingResult;
 import com.readrops.readropslibrary.localfeed.RSSNetwork;
 
 import java.net.UnknownHostException;
@@ -54,7 +54,7 @@ public class AddFeedDialog extends Dialog implements View.OnClickListener {
 
         button = findViewById(R.id.add_feed_validate);
         button.setOnClickListener(this);
-        textInputEditText = findViewById(R.id.add_feed_edit_text);
+        textInputEditText = findViewById(R.id.add_feed_text_input);
         progressBar = findViewById(R.id.add_feed_progressbar);
         errorTextView = findViewById(R.id.add_feed_error);
     }
