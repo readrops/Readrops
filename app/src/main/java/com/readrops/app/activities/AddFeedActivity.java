@@ -147,19 +147,8 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         else
             finalUrl = url;
 
-        Single.create((SingleOnSubscribe<List<ParsingResult>>) emitter -> {
-            RSSNetwork rssApi = new RSSNetwork();
-            List<ParsingResult> results = new ArrayList<>();
-
-            if (rssApi.isUrlFeedLink(finalUrl)) {
-                ParsingResult parsingResult = new ParsingResult(finalUrl, null);
-                results.add(parsingResult);
-
-            } else
-                results.addAll(HtmlParser.getFeedLink(finalUrl));
-
-            emitter.onSuccess(results);
-        }).subscribeOn(Schedulers.io())
+        viewModel.parseUrl(finalUrl)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<List<ParsingResult>>() {
                     @Override
