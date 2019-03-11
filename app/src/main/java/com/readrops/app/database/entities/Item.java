@@ -10,11 +10,13 @@ import com.readrops.readropslibrary.localfeed.rss.RSSEnclosure;
 import com.readrops.readropslibrary.localfeed.rss.RSSItem;
 import com.readrops.readropslibrary.localfeed.rss.RSSMediaContent;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.jsoup.Jsoup;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -23,7 +25,7 @@ import static android.arch.persistence.room.ForeignKey.CASCADE;
 
 @Entity
 (foreignKeys = @ForeignKey(entity = Feed.class, parentColumns = "id", childColumns = "feed_id", onDelete = CASCADE))
-public class Item {
+public class Item implements Comparable<Item> {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
@@ -268,5 +270,10 @@ public class Item {
         }
 
         return dbItems;
+    }
+
+    @Override
+    public int compareTo(Item o) {
+        return this.pubDate.compareTo(o.getPubDate());
     }
 }

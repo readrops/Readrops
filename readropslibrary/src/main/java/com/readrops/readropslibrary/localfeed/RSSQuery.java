@@ -24,9 +24,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class RSSNetwork {
+public class RSSQuery {
 
-    private static final String TAG = RSSNetwork.class.getSimpleName();
+    private static final String TAG = RSSQuery.class.getSimpleName();
 
     private static final String RSS_CONTENT_TYPE_REGEX = "([^;]+)";
 
@@ -40,26 +40,24 @@ public class RSSNetwork {
      * @param url url to request
      * @throws Exception
      */
-    public void requestUrl(String url, Map<String, String> headers) throws Exception {
-        if (callback == null)
-            throw new NullPointerException("Callback can't be null");
-
+    public RSSQueryResult queryUrl(String url, Map<String, String> headers) throws Exception {
         Response response = query(url, headers);
+        RSSQueryResult queryResult;
 
         if (response.isSuccessful()) {
             String header = response.header(LibUtils.CONTENT_TYPE_HEADER);
             RSSType type = getRSSType(header);
 
             if (type == null) {
-                callback.onSyncFailure(new IllegalArgumentException("bad content type : " + header + "for " + url));
-                return;
+                queryResult = new RSSQueryResult(new IllegalArgumentException("bad content type : " + header + "for " + url));
+                return queryResult;
             }
 
-            parseFeed(response.body().byteStream(), type, response);
+            return parseFeed(response.body().byteStream(), type, response);
         } else if (response.code() == 304)
-            return;
+            return null;
         else
-            callback.onSyncFailure(new Exception("Error " + response.code() + " when requesting url " + url));
+            return new RSSQueryResult(new Exception("Error " + response.code() + " when requesting url " + url));
     }
 
     public boolean isUrlFeedLink(String url) throws IOException {
@@ -128,7 +126,7 @@ public class RSSNetwork {
      * @param response query response
      * @throws Exception
      */
-    private void parseFeed(InputStream stream, RSSType type, Response response) throws Exception {
+    private RSSQueryResult parseFeed(InputStream stream, RSSType type, Response response) throws Exception {
         String xml = LibUtils.inputStreamToString(stream);
         Serializer serializer = new Persister();
 
@@ -136,43 +134,50 @@ public class RSSNetwork {
             RSSType contentType = getContentRSSType(xml);
             if (contentType == RSSType.RSS_UNKNOWN) {
                 callback.onSyncFailure(new Exception("Unknown content format"));
-                return;
+                return null;
             } else
                 type = contentType;
         }
 
         String etag = response.header(LibUtils.ETAG_HEADER);
         String lastModified = response.header(LibUtils.LAST_MODIFIED_HEADER);
+        AFeed feed;
+        RSSQueryResult queryResult = new RSSQueryResult();
 
         switch (type) {
             case RSS_2:
-                RSSFeed rssFeed = serializer.read(RSSFeed.class, xml);
-                if (rssFeed.getChannel().getFeedUrl() == null) // workaround si the channel does not have any atom:link tag
-                    rssFeed.getChannel().getLinks().add(new RSSLink(null, response.request().url().toString()));
-                rssFeed.setEtag(etag);
-                rssFeed.setLastModified(lastModified);
+                feed = serializer.read(RSSFeed.class, xml);
+                if (((RSSFeed)feed).getChannel().getFeedUrl() == null) // workaround si the channel does not have any atom:link tag
+                    ((RSSFeed)feed).getChannel().getLinks().add(new RSSLink(null, response.request().url().toString()));
+                feed.setEtag(etag);
+                feed.setLastModified(lastModified);
 
-                callback.onSyncSuccess(rssFeed, type);
+                queryResult.setFeed(feed);
+                queryResult.setRssType(type);
                 break;
             case RSS_ATOM:
-                ATOMFeed atomFeed = serializer.read(ATOMFeed.class, xml);
-                atomFeed.setWebsiteUrl(response.request().url().scheme() + "://" + response.request().url().host());
-                atomFeed.setUrl(response.request().url().toString());
-                atomFeed.setEtag(etag);
-                atomFeed.setLastModified(etag);
+                feed = serializer.read(ATOMFeed.class, xml);
+                ((ATOMFeed)feed).setWebsiteUrl(response.request().url().scheme() + "://" + response.request().url().host());
+                ((ATOMFeed)feed).setUrl(response.request().url().toString());
+                feed.setEtag(etag);
+                feed.setLastModified(etag);
 
-                callback.onSyncSuccess(atomFeed, type);
+                queryResult.setFeed(feed);
+                queryResult.setRssType(type);
                 break;
             case RSS_JSON:
                 Gson gson = new Gson();
-                JSONFeed feed = gson.fromJson(xml, JSONFeed.class);
+                feed = gson.fromJson(xml, JSONFeed.class);
 
                 feed.setEtag(etag);
                 feed.setLastModified(lastModified);
 
-                callback.onSyncSuccess(feed, type);
+                queryResult.setFeed(feed);
+                queryResult.setRssType(type);
                 break;
         }
+
+        return queryResult;
     }
 
     private RSSType getContentRSSType(String content) {

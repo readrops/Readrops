@@ -17,7 +17,8 @@ import com.readrops.app.utils.ParsingResult;
 import com.readrops.readropslibrary.QueryCallback;
 import com.readrops.readropslibrary.Utils.LibUtils;
 import com.readrops.readropslibrary.localfeed.AFeed;
-import com.readrops.readropslibrary.localfeed.RSSNetwork;
+import com.readrops.readropslibrary.localfeed.RSSQuery;
+import com.readrops.readropslibrary.localfeed.RSSQueryResult;
 import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
 import com.readrops.readropslibrary.localfeed.json.JSONFeed;
 import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
@@ -26,12 +27,16 @@ import org.joda.time.LocalDateTime;
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 
 import io.reactivex.Completable;
+import io.reactivex.Single;
 
 public class LocalFeedRepository extends ARepository implements QueryCallback {
 
@@ -50,11 +55,17 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
     }
 
     @Override
-    public Completable sync() {
+    public Completable sync(List<Feed> feeds) {
         return Completable.create(emitter -> {
-            RSSNetwork rssNet = new RSSNetwork();
-            rssNet.setCallback(this);
-            List<Feed> feedList = database.feedDao().getAllFeeds();
+            List<Feed> feedList;
+
+            if (feeds == null || feeds.size() == 0)
+                feedList = database.feedDao().getAllFeeds();
+            else
+                feedList = new ArrayList<>(feeds);
+
+            RSSQuery rssQuery = new RSSQuery();
+            rssQuery.setCallback(this);
 
             for (Feed feed : feedList) {
                 try {
@@ -64,8 +75,11 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
                     if (feed.getLastModified() != null)
                         headers.put(LibUtils.IF_MODIFIED_HEADER, feed.getLastModified());
 
-                    rssNet.requestUrl(feed.getUrl(), headers);
-                } catch (Exception e) {
+                    RSSQueryResult queryResult = rssQuery.queryUrl(feed.getUrl(), headers);
+                    if (queryResult != null && queryResult.getException() == null)
+                        insertNewItems(queryResult.getFeed(), queryResult.getRssType());
+
+                } catch (ParseException e) {
                     emitter.onError(e);
                 }
             }
@@ -78,9 +92,13 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
     public void addFeed(ParsingResult result) {
         executor.execute(() -> {
             try {
-                RSSNetwork rssNet = new RSSNetwork();
+                RSSQuery rssNet = new RSSQuery();
                 rssNet.setCallback(this);
-                rssNet.requestUrl(result.getUrl(), new HashMap<>());
+
+                RSSQueryResult queryResult = rssNet.queryUrl(result.getUrl(), new HashMap<>());
+                if (queryResult != null && queryResult.getException() == null) {
+                    insertFeed(queryResult.getFeed(), queryResult.getRssType());
+                }
 
                 postCallBackSuccess();
             } catch (Exception e) {
@@ -90,15 +108,21 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
     }
 
     @Override
-    public Completable addFeeds(List<ParsingResult> results) {
-        return Completable.create(emitter -> {
-           for (ParsingResult result : results) {
-               RSSNetwork rssNet = new RSSNetwork();
-               rssNet.setCallback(this);
-               rssNet.requestUrl(result.getUrl(), new HashMap<>());
-           }
+    public Single<List<Feed>> addFeeds(List<ParsingResult> results) {
+         return Single.create(emitter -> {
+             List<Feed> insertedFeeds = new ArrayList<>();
 
-            emitter.onComplete();
+             for (ParsingResult result : results) {
+               RSSQuery rssNet = new RSSQuery();
+               rssNet.setCallback(this);
+
+               RSSQueryResult queryResult = rssNet.queryUrl(result.getUrl(), new HashMap<>());
+               if (queryResult != null && queryResult.getException() == null) {
+                    insertedFeeds.add(insertFeed(queryResult.getFeed(), queryResult.getRssType()));
+               }
+            }
+
+            emitter.onSuccess(insertedFeeds);
         });
     }
 
@@ -138,7 +162,7 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
     }
 
     @Override
-    public void onSyncSuccess(AFeed feed, RSSNetwork.RSSType type) {
+    public void onSyncSuccess(AFeed feed, RSSQuery.RSSType type) {
         switch (type) {
             case RSS_2:
                 parseRSSItems(((RSSFeed) feed));
@@ -156,6 +180,52 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
     public void onSyncFailure(Exception e) {
         failureCallBackInMainThread(e);
     }
+
+    private void insertNewItems(AFeed feed, RSSQuery.RSSType type) throws ParseException {
+        Feed dbFeed = null;
+        List<Item> items = null;
+
+        switch (type) {
+            case RSS_2:
+                dbFeed = database.feedDao().getFeedByUrl(((RSSFeed) feed).getChannel().getFeedUrl());
+                items = Item.itemsFromRSS(((RSSFeed) feed).getChannel().getItems(), dbFeed);
+                break;
+            case RSS_ATOM:
+                dbFeed = database.feedDao().getFeedByUrl(((ATOMFeed) feed).getUrl());
+                items = Item.itemsFromATOM(((ATOMFeed) feed).getEntries(), dbFeed);
+                break;
+            case RSS_JSON:
+                dbFeed = database.feedDao().getFeedByUrl(((JSONFeed) feed).getFeedUrl());
+                items = Item.itemsFromJSON(((JSONFeed) feed).getItems(), dbFeed);
+                break;
+        }
+
+        database.feedDao().updateHeaders(dbFeed.getEtag(), dbFeed.getLastModified(), dbFeed.getId());
+
+        Collections.sort(items, Item::compareTo);
+        insertItems(items, dbFeed);
+    }
+
+    private Feed insertFeed(AFeed feed, RSSQuery.RSSType type) throws IOException {
+        Feed dbFeed = null;
+        switch (type) {
+            case RSS_2:
+                dbFeed = Feed.feedFromRSS((RSSFeed) feed);
+                break;
+            case RSS_ATOM:
+                dbFeed = Feed.feedFromATOM((ATOMFeed) feed);
+                break;
+            case RSS_JSON:
+                dbFeed = Feed.feedFromJSON((JSONFeed) feed);
+                break;
+        }
+
+        setFavIconUtils(dbFeed);
+        dbFeed.setId((int)(database.feedDao().insert(dbFeed)));
+
+        return dbFeed;
+    }
+
 
     private void parseRSSItems(RSSFeed rssFeed) {
         try {

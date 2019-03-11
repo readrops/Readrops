@@ -23,7 +23,7 @@ import com.readrops.app.activities.MainActivity;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.utils.HtmlParser;
 import com.readrops.app.utils.ParsingResult;
-import com.readrops.readropslibrary.localfeed.RSSNetwork;
+import com.readrops.readropslibrary.localfeed.RSSQuery;
 
 import java.net.UnknownHostException;
 import java.util.List;
@@ -99,7 +99,7 @@ public class AddFeedDialog extends Dialog implements View.OnClickListener {
 
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
-                RSSNetwork rssApi = new RSSNetwork();
+                RSSQuery rssApi = new RSSQuery();
                 if (rssApi.isUrlFeedLink(finalUrl)) {
                     ParsingResult parsingResult = new ParsingResult(finalUrl, null);
                     handler.post(() -> ((MainActivity) getOwnerActivity()).insertNewFeed(parsingResult));

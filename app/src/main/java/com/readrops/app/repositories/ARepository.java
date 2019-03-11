@@ -16,6 +16,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import io.reactivex.Completable;
+import io.reactivex.Single;
 
 public abstract class ARepository {
 
@@ -33,11 +34,11 @@ public abstract class ARepository {
         this.callback = callback;
     }
 
-    public abstract Completable sync();
+    public abstract Completable sync(List<Feed> feeds);
 
     public abstract void addFeed(ParsingResult result);
 
-    public abstract Completable addFeeds(List<ParsingResult> results);
+    public abstract Single<List<Feed>> addFeeds(List<ParsingResult> results);
 
     public abstract void updateFeed(Feed feed);
 

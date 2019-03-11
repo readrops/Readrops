@@ -5,6 +5,7 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 
+import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.repositories.LocalFeedRepository;
 import com.readrops.app.views.SimpleCallback;
@@ -36,7 +37,7 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     public Completable sync() {
-        return repository.sync();
+        return repository.sync(null);
     }
 
     public void addFeed(ParsingResult parsingResult) {

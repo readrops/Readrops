@@ -1,7 +1,5 @@
 package com.readrops.app.activities;
 
-import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
@@ -10,32 +8,25 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Patterns;
-import android.util.SparseBooleanArray;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.adapters.ItemAdapter;
 import com.readrops.app.R;
-import com.readrops.app.utils.HtmlParser;
+import com.readrops.app.database.entities.Feed;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.viewmodels.AddFeedsViewModel;
-import com.readrops.readropslibrary.localfeed.RSSNetwork;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.Scheduler;
-import io.reactivex.Single;
 import io.reactivex.SingleObserver;
-import io.reactivex.SingleOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.schedulers.Schedulers;
 
 public class AddFeedActivity extends AppCompatActivity implements View.OnClickListener {
@@ -125,15 +116,20 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         viewModel.addFeeds(feedsToInsert)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DisposableCompletableObserver() {
+                .subscribe(new SingleObserver<List<Feed>>() {
                     @Override
-                    public void onComplete() {
-                        Toast.makeText(getApplication(), "feeds inserted", Toast.LENGTH_LONG).show();
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(List<Feed> feeds) {
+
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Toast.makeText(getApplication(), "error on feed insertion", Toast.LENGTH_LONG).show();
+
                     }
                 });
     }
