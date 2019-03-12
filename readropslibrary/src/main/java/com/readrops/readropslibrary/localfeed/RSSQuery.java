@@ -133,8 +133,7 @@ public class RSSQuery {
         if (type == RSSType.RSS_UNKNOWN) {
             RSSType contentType = getContentRSSType(xml);
             if (contentType == RSSType.RSS_UNKNOWN) {
-                callback.onSyncFailure(new Exception("Unknown content format"));
-                return null;
+                return new RSSQueryResult(new Exception("Unknown content format"));
             } else
                 type = contentType;
         }
