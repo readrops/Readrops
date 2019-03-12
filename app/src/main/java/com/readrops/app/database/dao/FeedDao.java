@@ -27,6 +27,9 @@ public interface FeedDao {
     @Query("Delete From Feed Where id = :feedId")
     void delete(int feedId);
 
+    @Query("Select case When :feedUrl In (Select url from Feed) Then 'true' else 'false' end")
+    String feedExists(String feedUrl);
+
     @Query("Select count(*) from Feed")
     int getFeedCount();
 

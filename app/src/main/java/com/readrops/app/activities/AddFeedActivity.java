@@ -1,6 +1,7 @@
 package com.readrops.app.activities;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -40,6 +41,8 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
     private ItemAdapter<ParsingResult> itemAdapter;
     private AddFeedsViewModel viewModel;
 
+    private ArrayList<Feed> feedsToUpdate;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +79,8 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         recyclerView.setLayoutManager(layoutManager);
         DividerItemDecoration decoration = new DividerItemDecoration(this, ((LinearLayoutManager) layoutManager).getOrientation());
         recyclerView.addItemDecoration(decoration);
+
+        feedsToUpdate = new ArrayList<>();
     }
 
     @Override
@@ -124,7 +129,7 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
 
                     @Override
                     public void onSuccess(List<Feed> feeds) {
-
+                        feedsToUpdate.addAll(feeds);
                     }
 
                     @Override
@@ -173,6 +178,7 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onBackPressed() {
+        exit();
         finish();
         super.onBackPressed();
     }
@@ -181,10 +187,20 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+                exit();
                 finish();
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void exit() {
+        if (feedsToUpdate.size() > 0) {
+            Intent intent = new Intent();
+            intent.putParcelableArrayListExtra("feedIds", feedsToUpdate);
+
+            setResult(RESULT_OK, intent);
+        }
     }
 }

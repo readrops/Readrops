@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProvider;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
@@ -26,6 +27,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
 import com.bumptech.glide.util.ViewPreloadSizeProvider;
 import com.github.clans.fab.FloatingActionMenu;
+import com.readrops.app.database.entities.Feed;
 import com.readrops.app.views.AddFeedDialog;
 import com.readrops.app.views.MainItemListAdapter;
 import com.readrops.app.viewmodels.MainViewModel;
@@ -50,6 +52,7 @@ import io.reactivex.schedulers.Schedulers;
 public class MainActivity extends AppCompatActivity implements SimpleCallback, SwipeRefreshLayout.OnRefreshListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
+    public static final int ADD_FEED_REQUEST = 1;
 
     private RecyclerView recyclerView;
     private MainItemListAdapter adapter;
@@ -199,10 +202,6 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
         });
     }
 
-    private void updateList() {
-
-    }
-
     @Override
     public void onSuccess() {
         refreshLayout.setRefreshing(false);
@@ -219,7 +218,45 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
     public void onRefresh() {
         Log.d(TAG, "syncing started");
 
-        viewModel.sync()
+        sync(null);
+    }
+
+    public void displayAddFeedDialog(View view) {
+        actionMenu.close(true);
+        //Dialog dialog = new AddFeedDialog(this, R.layout.add_feed_layout);
+        //dialog.show();
+        Intent intent = new Intent(this, AddFeedActivity.class);
+        startActivityForResult(intent, ADD_FEED_REQUEST);
+    }
+
+    public void addFolder(View view) {
+        actionMenu.close(true);
+        Intent intent = new Intent(this, ManageFeedsActivity.class);
+        startActivity(intent);
+    }
+
+    public void insertNewFeed(ParsingResult result) {
+        refreshLayout.setRefreshing(true);
+        viewModel.addFeed(result);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == ADD_FEED_REQUEST && resultCode ==  RESULT_OK) {
+            ArrayList<Feed> feeds = data.getParcelableArrayListExtra("feedIds");
+
+            if (feeds != null && feeds.size() > 0) {
+                refreshLayout.setRefreshing(true);
+                sync(feeds);
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void sync(List<Feed> feeds) {
+        viewModel.sync(feeds)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new DisposableCompletableObserver() {
@@ -235,25 +272,5 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
                         Toast.makeText(getApplication(), e.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
-    }
-
-    public void displayAddFeedDialog(View view) {
-        actionMenu.close(true);
-        //Dialog dialog = new AddFeedDialog(this, R.layout.add_feed_layout);
-        //dialog.show();
-        Intent intent = new Intent(this, AddFeedActivity.class);
-        startActivity(intent);
-    }
-
-    public void addFolder(View view) {
-        actionMenu.close(true);
-        Intent intent = new Intent(this, ManageFeedsActivity.class);
-        startActivity(intent);
-    }
-
-    public void insertNewFeed(ParsingResult result) {
-        refreshLayout.setRefreshing(true);
-        viewModel.addFeed(result);
-
     }
 }

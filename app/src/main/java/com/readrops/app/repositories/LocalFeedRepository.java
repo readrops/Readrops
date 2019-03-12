@@ -118,7 +118,9 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
 
                RSSQueryResult queryResult = rssNet.queryUrl(result.getUrl(), new HashMap<>());
                if (queryResult != null && queryResult.getException() == null) {
-                    insertedFeeds.add(insertFeed(queryResult.getFeed(), queryResult.getRssType()));
+                   Feed feed = insertFeed(queryResult.getFeed(), queryResult.getRssType());
+                   if (feed != null)
+                       insertedFeeds.add(feed);
                }
             }
 
@@ -220,9 +222,16 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
                 break;
         }
 
-        setFavIconUtils(dbFeed);
-        dbFeed.setId((int)(database.feedDao().insert(dbFeed)));
+        if (Boolean.valueOf(database.feedDao().feedExists(dbFeed.getUrl())))
+            return null; // feed already inserted
 
+        setFavIconUtils(dbFeed);
+
+        // we need empty headers to query the feed just after, without any 304 result
+        dbFeed.setEtag(null);
+        dbFeed.setLastModified(null);
+
+        dbFeed.setId((int)(database.feedDao().insert(dbFeed)));
         return dbFeed;
     }
 

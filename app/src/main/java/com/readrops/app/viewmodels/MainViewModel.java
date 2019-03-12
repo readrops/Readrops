@@ -36,8 +36,8 @@ public class MainViewModel extends AndroidViewModel {
         repository.setCallback(simpleCallback);
     }
 
-    public Completable sync() {
-        return repository.sync(null);
+    public Completable sync(List<Feed> feeds) {
+        return repository.sync(feeds);
     }
 
     public void addFeed(ParsingResult parsingResult) {
