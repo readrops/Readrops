@@ -1,5 +1,6 @@
 package com.readrops.app.repositories;
 
+import android.accounts.NetworkErrorException;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.graphics.Bitmap;
@@ -11,11 +12,13 @@ import com.readrops.app.database.pojo.FeedWithFolder;
 import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Item;
+import com.readrops.app.utils.SyncError;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.utils.HtmlParser;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.readropslibrary.QueryCallback;
 import com.readrops.readropslibrary.Utils.LibUtils;
+import com.readrops.readropslibrary.Utils.UnknownFormatException;
 import com.readrops.readropslibrary.localfeed.AFeed;
 import com.readrops.readropslibrary.localfeed.RSSQuery;
 import com.readrops.readropslibrary.localfeed.RSSQueryResult;
@@ -55,8 +58,8 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
     }
 
     @Override
-    public Completable sync(List<Feed> feeds) {
-        return Completable.create(emitter -> {
+    public Single<List<SyncError>> sync(List<Feed> feeds) {
+        return Single.create(emitter -> {
             List<Feed> feedList;
 
             if (feeds == null || feeds.size() == 0)
@@ -65,9 +68,11 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
                 feedList = new ArrayList<>(feeds);
 
             RSSQuery rssQuery = new RSSQuery();
-            rssQuery.setCallback(this);
+            List<SyncError> syncErrors = new ArrayList<>();
 
             for (Feed feed : feedList) {
+                SyncError syncError = new SyncError();
+
                 try {
                     HashMap<String, String> headers = new HashMap<>();
                     if (feed.getEtag() != null)
@@ -78,13 +83,29 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
                     RSSQueryResult queryResult = rssQuery.queryUrl(feed.getUrl(), headers);
                     if (queryResult != null && queryResult.getException() == null)
                         insertNewItems(queryResult.getFeed(), queryResult.getRssType());
+                    else if (queryResult != null && queryResult.getException() != null) {
+                        Exception e = queryResult.getException();
 
-                } catch (ParseException e) {
-                    emitter.onError(e);
+                        if (e instanceof UnknownFormatException)
+                            syncError.setInsertionError(SyncError.FeedInsertionError.FORMAT_ERROR);
+                        else if (e instanceof NetworkErrorException)
+                            syncError.setInsertionError(SyncError.FeedInsertionError.NETWORK_ERROR);
+
+                        syncError.setFeed(feed);
+                        syncErrors.add(syncError);
+                    }
+                } catch (Exception e) {
+                    if (e instanceof IOException)
+                        syncError.setInsertionError(SyncError.FeedInsertionError.NETWORK_ERROR);
+                    else
+                        syncError.setInsertionError(SyncError.FeedInsertionError.PARSE_ERROR);
+
+                    syncError.setFeed(feed);
+                    syncErrors.add(syncError);
                 }
             }
 
-            emitter.onComplete();
+            emitter.onSuccess(syncErrors);
         });
     }
 
@@ -92,10 +113,9 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
     public void addFeed(ParsingResult result) {
         executor.execute(() -> {
             try {
-                RSSQuery rssNet = new RSSQuery();
-                rssNet.setCallback(this);
+                RSSQuery rssQuery = new RSSQuery();
 
-                RSSQueryResult queryResult = rssNet.queryUrl(result.getUrl(), new HashMap<>());
+                RSSQueryResult queryResult = rssQuery.queryUrl(result.getUrl(), new HashMap<>());
                 if (queryResult != null && queryResult.getException() == null) {
                     insertFeed(queryResult.getFeed(), queryResult.getRssType());
                 }
@@ -114,9 +134,8 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
 
              for (ParsingResult result : results) {
                RSSQuery rssNet = new RSSQuery();
-               rssNet.setCallback(this);
-
                RSSQueryResult queryResult = rssNet.queryUrl(result.getUrl(), new HashMap<>());
+
                if (queryResult != null && queryResult.getException() == null) {
                    Feed feed = insertFeed(queryResult.getFeed(), queryResult.getRssType());
                    if (feed != null)

@@ -1,10 +1,12 @@
 package com.readrops.readropslibrary.localfeed;
 
+import android.accounts.NetworkErrorException;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.readrops.readropslibrary.QueryCallback;
 import com.readrops.readropslibrary.Utils.LibUtils;
+import com.readrops.readropslibrary.Utils.UnknownFormatException;
 import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
 import com.readrops.readropslibrary.localfeed.json.JSONFeed;
 import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
@@ -20,6 +22,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.xml.stream.XMLStreamException;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -31,8 +35,6 @@ public class RSSQuery {
     private static final String RSS_CONTENT_TYPE_REGEX = "([^;]+)";
 
     private static final String RSS_2_REGEX = "rss.*version=\"2.0\"";
-
-    private QueryCallback callback;
 
     /**
      * Request the url given in parameter.
@@ -49,7 +51,7 @@ public class RSSQuery {
             RSSType type = getRSSType(header);
 
             if (type == null) {
-                queryResult = new RSSQueryResult(new IllegalArgumentException("bad content type : " + header + "for " + url));
+                queryResult = new RSSQueryResult(new UnknownFormatException("bad content type : " + header + "for " + url));
                 return queryResult;
             }
 
@@ -57,7 +59,7 @@ public class RSSQuery {
         } else if (response.code() == 304)
             return null;
         else
-            return new RSSQueryResult(new Exception("Error " + response.code() + " when requesting url " + url));
+            return new RSSQueryResult(new NetworkErrorException("Error " + response.code() + " when requesting url " + url));
     }
 
     public boolean isUrlFeedLink(String url) throws IOException {
@@ -133,7 +135,7 @@ public class RSSQuery {
         if (type == RSSType.RSS_UNKNOWN) {
             RSSType contentType = getContentRSSType(xml);
             if (contentType == RSSType.RSS_UNKNOWN) {
-                return new RSSQueryResult(new Exception("Unknown content format"));
+                return new RSSQueryResult(new UnknownFormatException("Unknown content format"));
             } else
                 type = contentType;
         }
@@ -190,10 +192,6 @@ public class RSSQuery {
             type = RSSType.RSS_UNKNOWN;
 
         return type;
-    }
-
-    public void setCallback(QueryCallback callback) {
-        this.callback = callback;
     }
 
     public enum RSSType {

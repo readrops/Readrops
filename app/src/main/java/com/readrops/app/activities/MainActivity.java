@@ -28,6 +28,7 @@ import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
 import com.bumptech.glide.util.ViewPreloadSizeProvider;
 import com.github.clans.fab.FloatingActionMenu;
 import com.readrops.app.database.entities.Feed;
+import com.readrops.app.utils.SyncError;
 import com.readrops.app.views.AddFeedDialog;
 import com.readrops.app.views.MainItemListAdapter;
 import com.readrops.app.viewmodels.MainViewModel;
@@ -45,7 +46,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
+import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -259,9 +262,14 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
         viewModel.sync(feeds)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DisposableCompletableObserver() {
+                .subscribe(new SingleObserver<List<SyncError>>() {
                     @Override
-                    public void onComplete() {
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(List<SyncError> syncErrors) {
                         refreshLayout.setRefreshing(false);
                         adapter.submitList(newItems);
                     }

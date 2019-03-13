@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 
 import com.readrops.app.database.pojo.FeedWithFolder;
+import com.readrops.app.utils.SyncError;
 import com.readrops.app.views.SimpleCallback;
 import com.readrops.app.database.Database;
 import com.readrops.app.database.entities.Feed;
@@ -34,7 +35,7 @@ public abstract class ARepository {
         this.callback = callback;
     }
 
-    public abstract Completable sync(List<Feed> feeds);
+    public abstract Single<List<SyncError>> sync(List<Feed> feeds);
 
     public abstract void addFeed(ParsingResult result);
 

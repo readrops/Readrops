@@ -8,12 +8,14 @@ import android.support.annotation.NonNull;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.repositories.LocalFeedRepository;
+import com.readrops.app.utils.SyncError;
 import com.readrops.app.views.SimpleCallback;
 import com.readrops.app.utils.ParsingResult;
 
 import java.util.List;
 
 import io.reactivex.Completable;
+import io.reactivex.Single;
 
 public class MainViewModel extends AndroidViewModel {
 
@@ -36,7 +38,7 @@ public class MainViewModel extends AndroidViewModel {
         repository.setCallback(simpleCallback);
     }
 
-    public Completable sync(List<Feed> feeds) {
+    public Single<List<SyncError>> sync(List<Feed> feeds) {
         return repository.sync(feeds);
     }
 
