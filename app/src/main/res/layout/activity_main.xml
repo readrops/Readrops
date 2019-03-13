@@ -55,9 +55,10 @@
                 android:id="@+id/sync_progress_bar"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="4dp"
                 android:layout_below="@id/sync_progress_feeds_layout"
-                android:max="100"/>
+                android:layout_margin="0dp"
+                android:max="100" />
 
         </RelativeLayout>
 

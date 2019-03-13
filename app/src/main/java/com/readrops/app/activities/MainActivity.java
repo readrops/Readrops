@@ -2,6 +2,8 @@ package com.readrops.app.activities;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -234,30 +236,7 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
     public void onRefresh() {
         Log.d(TAG, "syncing started");
 
-        viewModel.getFeedCount()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<Integer>() {
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        syncProgressLayout.setVisibility(View.VISIBLE);
-                        syncProgressBar.setProgress(0);
-                    }
-
-                    @Override
-                    public void onSuccess(Integer integer) {
-                        feedNb = integer;
-                        sync(null);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Toast.makeText(getApplicationContext(), "error on getting feeds number", Toast.LENGTH_LONG).show();
-                    }
-                });
-
-
+        presync(null);
     }
 
     public void displayAddFeedDialog(View view) {
@@ -287,11 +266,36 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
 
             if (feeds != null && feeds.size() > 0) {
                 refreshLayout.setRefreshing(true);
-                sync(feeds);
+                presync(feeds);
             }
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void presync(List<Feed> feeds) {
+        viewModel.getFeedCount()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<Integer>() {
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        syncProgressLayout.setVisibility(View.VISIBLE);
+                        syncProgressBar.setProgress(0);
+                    }
+
+                    @Override
+                    public void onSuccess(Integer integer) {
+                        feedNb = integer;
+                        sync(feeds);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(getApplicationContext(), "error on getting feeds number", Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
     private void sync(List<Feed> feeds) {
@@ -307,12 +311,12 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
                     @Override
                     public void onNext(Feed feed) {
                         syncProgress.setText(getString(R.string.updating_feed, feed.getName()));
-                        feedCount++;
-
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                             syncProgressBar.setProgress((feedCount * 100) / feedNb, true);
                         } else
                             syncProgressBar.setProgress((feedCount * 100) / feedNb);
+
+                        feedCount++;
                     }
 
                     @Override
@@ -323,7 +327,11 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
 
                     @Override
                     public void onComplete() {
-                        syncProgressBar.setProgress(0);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                            syncProgressBar.setProgress(100, true);
+                        else
+                            syncProgressBar.setProgress(100);
+
                         syncProgressLayout.setVisibility(View.GONE);
                         refreshLayout.setRefreshing(false);
                         adapter.submitList(newItems);
