@@ -10,6 +10,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
         android:orientation="vertical">
 
         <android.support.design.widget.AppBarLayout
@@ -25,6 +26,40 @@
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
         </android.support.design.widget.AppBarLayout>
+
+        <RelativeLayout
+            android:id="@+id/sync_progress_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <RelativeLayout
+                android:id="@+id/sync_progress_feeds_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary"
+                android:padding="8dp">
+
+                <TextView
+                    android:id="@+id/sync_progress_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:textColor="@color/colorBackground"
+                    tools:text="updating feeds" />
+
+            </RelativeLayout>
+
+            <ProgressBar
+                android:id="@+id/sync_progress_bar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/sync_progress_feeds_layout"
+                android:max="100"/>
+
+        </RelativeLayout>
 
         <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/swipe_refresh_layout"
@@ -44,7 +79,8 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true">
 
         <com.github.clans.fab.FloatingActionMenu
             android:id="@+id/fab_menu"

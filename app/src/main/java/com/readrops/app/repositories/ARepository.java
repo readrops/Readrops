@@ -17,6 +17,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import io.reactivex.Completable;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 
 public abstract class ARepository {
@@ -35,7 +36,7 @@ public abstract class ARepository {
         this.callback = callback;
     }
 
-    public abstract Single<List<SyncError>> sync(List<Feed> feeds);
+    public abstract Observable<Feed> sync(List<Feed> feeds);
 
     public abstract void addFeed(ParsingResult result);
 
@@ -62,6 +63,12 @@ public abstract class ARepository {
             emitter.onComplete();
         });
 
+    }
+
+    public Single<Integer> getFeedCount() {
+        return Single.create(emitter -> {
+           emitter.onSuccess(database.feedDao().getFeedCount());
+        });
     }
 
     protected void failureCallBackInMainThread(Exception e) {

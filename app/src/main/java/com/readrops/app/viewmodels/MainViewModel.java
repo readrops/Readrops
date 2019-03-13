@@ -15,6 +15,7 @@ import com.readrops.app.utils.ParsingResult;
 import java.util.List;
 
 import io.reactivex.Completable;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 
 public class MainViewModel extends AndroidViewModel {
@@ -38,11 +39,15 @@ public class MainViewModel extends AndroidViewModel {
         repository.setCallback(simpleCallback);
     }
 
-    public Single<List<SyncError>> sync(List<Feed> feeds) {
+    public Observable<Feed> sync(List<Feed> feeds) {
         return repository.sync(feeds);
     }
 
     public void addFeed(ParsingResult parsingResult) {
         repository.addFeed(parsingResult);
+    }
+
+    public Single<Integer> getFeedCount() {
+        return repository.getFeedCount();
     }
 }

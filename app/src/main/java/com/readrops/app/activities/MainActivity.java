@@ -1,8 +1,8 @@
 package com.readrops.app.activities;
 
-import android.app.Dialog;
-import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,6 +20,9 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -28,8 +31,6 @@ import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
 import com.bumptech.glide.util.ViewPreloadSizeProvider;
 import com.github.clans.fab.FloatingActionMenu;
 import com.readrops.app.database.entities.Feed;
-import com.readrops.app.utils.SyncError;
-import com.readrops.app.views.AddFeedDialog;
 import com.readrops.app.views.MainItemListAdapter;
 import com.readrops.app.viewmodels.MainViewModel;
 import com.readrops.app.R;
@@ -46,10 +47,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
+import io.reactivex.Observer;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.observers.DisposableCompletableObserver;
+import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity implements SimpleCallback, SwipeRefreshLayout.OnRefreshListener {
@@ -70,7 +72,12 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
 
     private MainViewModel viewModel;
 
+    private RelativeLayout syncProgressLayout;
+    private TextView syncProgress;
+    private ProgressBar syncProgressBar;
 
+    private int feedCount;
+    private int feedNb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
             return true;
         });
 
-        viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(this.getApplication()).create(MainViewModel.class);
+        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
         viewModel.setSimpleCallback(this);
 
         itemsMap = new TreeMap<>(LocalDateTime::compareTo);
@@ -117,6 +124,12 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
 
         refreshLayout = findViewById(R.id.swipe_refresh_layout);
         refreshLayout.setOnRefreshListener(this);
+
+        syncProgressLayout = findViewById(R.id.sync_progress_layout);
+        syncProgress = findViewById(R.id.sync_progress_text_view);
+        syncProgressBar = findViewById(R.id.sync_progress_bar);
+
+        feedCount = 0;
 
         initRecyclerView();
     }
@@ -221,7 +234,30 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
     public void onRefresh() {
         Log.d(TAG, "syncing started");
 
-        sync(null);
+        viewModel.getFeedCount()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<Integer>() {
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        syncProgressLayout.setVisibility(View.VISIBLE);
+                        syncProgressBar.setProgress(0);
+                    }
+
+                    @Override
+                    public void onSuccess(Integer integer) {
+                        feedNb = integer;
+                        sync(null);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(getApplicationContext(), "error on getting feeds number", Toast.LENGTH_LONG).show();
+                    }
+                });
+
+
     }
 
     public void displayAddFeedDialog(View view) {
@@ -262,22 +298,35 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
         viewModel.sync(feeds)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<List<SyncError>>() {
+                .subscribe(new Observer<Feed>() {
                     @Override
                     public void onSubscribe(Disposable d) {
 
                     }
 
                     @Override
-                    public void onSuccess(List<SyncError> syncErrors) {
-                        refreshLayout.setRefreshing(false);
-                        adapter.submitList(newItems);
+                    public void onNext(Feed feed) {
+                        syncProgress.setText(getString(R.string.updating_feed, feed.getName()));
+                        feedCount++;
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            syncProgressBar.setProgress((feedCount * 100) / feedNb, true);
+                        } else
+                            syncProgressBar.setProgress((feedCount * 100) / feedNb);
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         refreshLayout.setRefreshing(false);
                         Toast.makeText(getApplication(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        syncProgressBar.setProgress(0);
+                        syncProgressLayout.setVisibility(View.GONE);
+                        refreshLayout.setRefreshing(false);
+                        adapter.submitList(newItems);
                     }
                 });
     }

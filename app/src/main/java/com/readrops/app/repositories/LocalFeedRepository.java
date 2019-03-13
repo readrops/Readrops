@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.TreeMap;
 
 import io.reactivex.Completable;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 
 public class LocalFeedRepository extends ARepository implements QueryCallback {
@@ -58,8 +59,8 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
     }
 
     @Override
-    public Single<List<SyncError>> sync(List<Feed> feeds) {
-        return Single.create(emitter -> {
+    public Observable<Feed> sync(List<Feed> feeds) {
+        return Observable.create(emitter -> {
             List<Feed> feedList;
 
             if (feeds == null || feeds.size() == 0)
@@ -71,6 +72,7 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
             List<SyncError> syncErrors = new ArrayList<>();
 
             for (Feed feed : feedList) {
+                emitter.onNext(feed);
                 SyncError syncError = new SyncError();
 
                 try {
@@ -105,7 +107,7 @@ public class LocalFeedRepository extends ARepository implements QueryCallback {
                 }
             }
 
-            emitter.onSuccess(syncErrors);
+            emitter.onComplete();
         });
     }
 

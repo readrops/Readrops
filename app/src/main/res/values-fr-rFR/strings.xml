@@ -31,5 +31,6 @@
     <string name="cancel">Retour</string>
     <string name="delete_feed">Supprimer le flux ?</string>
     <string name="load">Charger</string>
+    <string name="updating_feed">Mise à jour du flux : %1$s</string>
 
 </resources>
