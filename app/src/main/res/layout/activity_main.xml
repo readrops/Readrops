@@ -45,7 +45,13 @@
                     android:id="@+id/sync_progress_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentEnd="true"
                     android:layout_centerInParent="true"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:minLines="1"
+                    android:textAlignment="center"
                     android:textColor="@color/colorBackground"
                     tools:text="updating feeds" />
 
