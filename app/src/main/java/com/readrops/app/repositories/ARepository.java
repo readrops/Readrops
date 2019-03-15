@@ -1,17 +1,23 @@
 package com.readrops.app.repositories;
 
 import android.app.Application;
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v7.graphics.Palette;
+import android.util.Patterns;
 
 import com.readrops.app.database.pojo.FeedWithFolder;
-import com.readrops.app.utils.SyncError;
+import com.readrops.app.utils.FeedInsertionResult;
+import com.readrops.app.utils.HtmlParser;
+import com.readrops.app.utils.Utils;
 import com.readrops.app.views.SimpleCallback;
 import com.readrops.app.database.Database;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.utils.ParsingResult;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -40,7 +46,7 @@ public abstract class ARepository {
 
     public abstract void addFeed(ParsingResult result);
 
-    public abstract Single<List<Feed>> addFeeds(List<ParsingResult> results);
+    public abstract Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results);
 
     public abstract void updateFeed(Feed feed);
 
@@ -69,6 +75,24 @@ public abstract class ARepository {
         return Single.create(emitter -> {
            emitter.onSuccess(database.feedDao().getFeedCount());
         });
+    }
+
+    protected void setFavIconUtils(Feed feed) throws IOException {
+        String favUrl = HtmlParser.getFaviconLink(feed.getSiteUrl());
+        if (favUrl != null && Patterns.WEB_URL.matcher(favUrl).matches()) {
+            feed.setIconUrl(favUrl);
+            setFeedColors(favUrl, feed);
+        }
+    }
+
+    protected void setFeedColors(String favUrl, Feed feed) throws IOException {
+        Bitmap favicon = Utils.getImageFromUrl(favUrl);
+        Palette palette = Palette.from(favicon).generate();
+
+        feed.setTextColor(palette.getDominantSwatch().getRgb());
+
+        if (palette.getMutedSwatch() != null)
+            feed.setBackgroundColor(palette.getMutedSwatch().getRgb());
     }
 
     protected void failureCallBackInMainThread(Exception e) {

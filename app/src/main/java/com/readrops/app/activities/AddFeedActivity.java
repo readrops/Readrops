@@ -13,11 +13,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.adapters.ItemAdapter;
 import com.readrops.app.R;
 import com.readrops.app.database.entities.Feed;
+import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.viewmodels.AddFeedsViewModel;
@@ -36,9 +38,16 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
     private Button load;
     private ProgressBar progressBar;
     private Button validate;
-    private RecyclerView recyclerView;
+    private RecyclerView parseResultsRecyclerView;
+    private TextView resultsTextView;
 
-    private ItemAdapter<ParsingResult> itemAdapter;
+    private ProgressBar feedInsertionProgressBar;
+    private RecyclerView insertionResultsRecyclerView;
+
+    private ItemAdapter<ParsingResult> parseItemsAdapter;
+    private ItemAdapter<FeedInsertionResult> insertionResultsAdapter;
+
+
     private AddFeedsViewModel viewModel;
 
     private ArrayList<Feed> feedsToUpdate;
@@ -51,16 +60,20 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         feedInput = findViewById(R.id.add_feed_text_input);
         load = findViewById(R.id.add_feed_load);
         validate = findViewById(R.id.add_feed_ok);
-        progressBar = findViewById(R.id.fadd_feed_loading);
-        recyclerView = findViewById(R.id.add_feed_results);
+        progressBar = findViewById(R.id.add_feed_loading);
+        parseResultsRecyclerView = findViewById(R.id.add_feed_results);
+        resultsTextView = findViewById(R.id.add_feed_results_text_view);
+        feedInsertionProgressBar = findViewById(R.id.add_feed_insert_progressbar);
+        insertionResultsRecyclerView = findViewById(R.id.add_feed_inserted_results_recyclerview);
 
         load.setOnClickListener(this);
         validate.setOnClickListener(this);
+        validate.setEnabled(false);
 
         viewModel = ViewModelProviders.of(this).get(AddFeedsViewModel.class);
 
-        itemAdapter = new ItemAdapter<>();
-        FastAdapter<ParsingResult> fastAdapter = FastAdapter.with(itemAdapter);
+        parseItemsAdapter = new ItemAdapter<>();
+        FastAdapter<ParsingResult> fastAdapter = FastAdapter.with(parseItemsAdapter);
         fastAdapter.withSelectable(true);
         fastAdapter.withOnClickListener((v, adapter, item, position) -> {
             if (item.isChecked()) {
@@ -74,11 +87,17 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
             return true;
         });
 
-        recyclerView.setAdapter(fastAdapter);
+        parseResultsRecyclerView.setAdapter(fastAdapter);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
+        parseResultsRecyclerView.setLayoutManager(layoutManager);
         DividerItemDecoration decoration = new DividerItemDecoration(this, ((LinearLayoutManager) layoutManager).getOrientation());
-        recyclerView.addItemDecoration(decoration);
+        //parseResultsRecyclerView.addItemDecoration(decoration);
+
+        insertionResultsAdapter = new ItemAdapter<>();
+        RecyclerView.LayoutManager layoutManager1 = new LinearLayoutManager(this);
+        insertionResultsRecyclerView.setAdapter(FastAdapter.with(insertionResultsAdapter));
+        insertionResultsRecyclerView.setLayoutManager(layoutManager1);
+        //insertionResultsRecyclerView.addItemDecoration(decoration);
 
         feedsToUpdate = new ArrayList<>();
     }
@@ -112,8 +131,11 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void insertFeeds() {
+        feedInsertionProgressBar.setVisibility(View.VISIBLE);
+        validate.setEnabled(false);
+
         List<ParsingResult> feedsToInsert = new ArrayList<>();
-        for (ParsingResult result : itemAdapter.getAdapterItems()) {
+        for (ParsingResult result : parseItemsAdapter.getAdapterItems()) {
             if (result.isChecked())
                 feedsToInsert.add(result);
         }
@@ -121,15 +143,15 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         viewModel.addFeeds(feedsToInsert)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<List<Feed>>() {
+                .subscribe(new SingleObserver<List<FeedInsertionResult>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
 
                     }
 
                     @Override
-                    public void onSuccess(List<Feed> feeds) {
-                        feedsToUpdate.addAll(feeds);
+                    public void onSuccess(List<FeedInsertionResult> feedInsertionResults) {
+                        processResults(feedInsertionResults);
                     }
 
                     @Override
@@ -137,6 +159,18 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
 
                     }
                 });
+    }
+
+    private void processResults(List<FeedInsertionResult> feedInsertionResults) {
+        feedInsertionProgressBar.setVisibility(View.GONE);
+        insertionResultsRecyclerView.setVisibility(View.VISIBLE);
+
+        for (FeedInsertionResult feedInsertionResult : feedInsertionResults) {
+            if (feedInsertionResult.getFeed() != null)
+                feedsToUpdate.add(feedInsertionResult.getFeed());
+        }
+
+        insertionResultsAdapter.add(feedInsertionResults);
     }
 
     private void loadFeed() {
@@ -170,10 +204,14 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void displayResults(List<ParsingResult> parsingResultList) {
-        recyclerView.setVisibility(View.VISIBLE);
-        progressBar.setVisibility(View.GONE);
+        if (parsingResultList.size() > 0) {
+            parseResultsRecyclerView.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+            resultsTextView.setVisibility(View.VISIBLE);
 
-        itemAdapter.add(parsingResultList);
+            parseItemsAdapter.add(parsingResultList);
+            validate.setEnabled(true);
+        }
     }
 
     @Override

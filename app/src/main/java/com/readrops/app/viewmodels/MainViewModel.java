@@ -8,13 +8,11 @@ import android.support.annotation.NonNull;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.repositories.LocalFeedRepository;
-import com.readrops.app.utils.SyncError;
 import com.readrops.app.views.SimpleCallback;
 import com.readrops.app.utils.ParsingResult;
 
 import java.util.List;
 
-import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 

@@ -34,4 +34,10 @@
     <string name="delete_feed">Delete feed ?</string>
     <string name="load">Load</string>
     <string name="updating_feed">Updating feed : %1$s</string>
+    <string name="results">Results</string>
+    <string name="feed_insertion_successfull">Feed %1$s added successfully</string>
+    <string name="feed_insertion_network_failed">Network failure when accessing feed %1$s</string>
+    <string name="feed_insertion_parse_failed">Failure when parsing feed %1$s</string>
+    <string name="feed_insertion_wrong_format">Wrong format for feed %1$s</string>
+    <string name="feed_insertion_unknown_error">Unknown error for feed %1$s</string>
 </resources>

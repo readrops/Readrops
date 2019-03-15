@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.repositories.LocalFeedRepository;
+import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.HtmlParser;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.readropslibrary.localfeed.RSSQuery;
@@ -25,7 +26,7 @@ public class AddFeedsViewModel extends AndroidViewModel {
         repository = new LocalFeedRepository(application);
     }
 
-    public Single<List<Feed>> addFeeds(List<ParsingResult> results) {
+    public Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results) {
         return repository.addFeeds(results);
     }
 

@@ -32,5 +32,11 @@
     <string name="delete_feed">Supprimer le flux ?</string>
     <string name="load">Charger</string>
     <string name="updating_feed">Mise à jour du flux : %1$s</string>
+    <string name="results">Résultats</string>
+    <string name="feed_insertion_successfull">Le flux %1$s a été ajouté</string>
+    <string name="feed_insertion_network_failed">Erreur d\'accès au flux %1$s</string>
+    <string name="feed_insertion_parse_failed">Erreur de traitement pour le flux %1$s</string>
+    <string name="feed_insertion_wrong_format">Mauvais format pour le flux %1$s</string>
+    <string name="feed_insertion_unknown_error">Erreur inconnue pour le flux %1$s</string>
 
 </resources>

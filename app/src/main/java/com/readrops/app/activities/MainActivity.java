@@ -236,44 +236,6 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
     public void onRefresh() {
         Log.d(TAG, "syncing started");
 
-        presync(null);
-    }
-
-    public void displayAddFeedDialog(View view) {
-        actionMenu.close(true);
-        //Dialog dialog = new AddFeedDialog(this, R.layout.add_feed_layout);
-        //dialog.show();
-        Intent intent = new Intent(this, AddFeedActivity.class);
-        startActivityForResult(intent, ADD_FEED_REQUEST);
-    }
-
-    public void addFolder(View view) {
-        actionMenu.close(true);
-        Intent intent = new Intent(this, ManageFeedsActivity.class);
-        startActivity(intent);
-    }
-
-    public void insertNewFeed(ParsingResult result) {
-        refreshLayout.setRefreshing(true);
-        viewModel.addFeed(result);
-
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == ADD_FEED_REQUEST && resultCode ==  RESULT_OK) {
-            ArrayList<Feed> feeds = data.getParcelableArrayListExtra("feedIds");
-
-            if (feeds != null && feeds.size() > 0) {
-                refreshLayout.setRefreshing(true);
-                presync(feeds);
-            }
-        }
-
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    private void presync(List<Feed> feeds) {
         viewModel.getFeedCount()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -281,14 +243,13 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
 
                     @Override
                     public void onSubscribe(Disposable d) {
-                        syncProgressLayout.setVisibility(View.VISIBLE);
-                        syncProgressBar.setProgress(0);
+
                     }
 
                     @Override
                     public void onSuccess(Integer integer) {
                         feedNb = integer;
-                        sync(feeds);
+                        sync(null);
                     }
 
                     @Override
@@ -298,6 +259,40 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
                 });
     }
 
+    public void displayAddFeedDialog(View view) {
+        actionMenu.close(true);
+
+        Intent intent = new Intent(this, AddFeedActivity.class);
+        startActivityForResult(intent, ADD_FEED_REQUEST);
+    }
+
+    public void addFolder(View view) {
+        actionMenu.close(true);
+
+        Intent intent = new Intent(this, ManageFeedsActivity.class);
+        startActivity(intent);
+    }
+
+    public void insertNewFeed(ParsingResult result) {
+        refreshLayout.setRefreshing(true);
+        viewModel.addFeed(result);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == ADD_FEED_REQUEST && resultCode ==  RESULT_OK) {
+            ArrayList<Feed> feeds = data.getParcelableArrayListExtra("feedIds");
+
+            if (feeds != null && feeds.size() > 0) {
+                refreshLayout.setRefreshing(true);
+                feedNb = feeds.size();
+                sync(feeds);
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     private void sync(List<Feed> feeds) {
         viewModel.sync(feeds)
                 .subscribeOn(Schedulers.io())
@@ -305,7 +300,8 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
                 .subscribe(new Observer<Feed>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-
+                        syncProgressLayout.setVisibility(View.VISIBLE);
+                        syncProgressBar.setProgress(0);
                     }
 
                     @Override
