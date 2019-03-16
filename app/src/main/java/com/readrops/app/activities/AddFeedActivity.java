@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Patterns;
@@ -17,6 +16,7 @@ import android.widget.TextView;
 
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.adapters.ItemAdapter;
+import com.mikepenz.fastadapter.commons.utils.FastAdapterDiffUtil;
 import com.readrops.app.R;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.utils.FeedInsertionResult;
@@ -30,6 +30,7 @@ import java.util.List;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
 public class AddFeedActivity extends AppCompatActivity implements View.OnClickListener {
@@ -47,9 +48,7 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
     private ItemAdapter<ParsingResult> parseItemsAdapter;
     private ItemAdapter<FeedInsertionResult> insertionResultsAdapter;
 
-
     private AddFeedsViewModel viewModel;
-
     private ArrayList<Feed> feedsToUpdate;
 
     @Override
@@ -84,13 +83,15 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
                 fastAdapter.notifyAdapterItemChanged(position);
             }
 
+            validate.setEnabled(recyclerViewHasCheckedItems());
+
             return true;
         });
 
         parseResultsRecyclerView.setAdapter(fastAdapter);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         parseResultsRecyclerView.setLayoutManager(layoutManager);
-        
+
         insertionResultsAdapter = new ItemAdapter<>();
         RecyclerView.LayoutManager layoutManager1 = new LinearLayoutManager(this);
         insertionResultsRecyclerView.setAdapter(FastAdapter.with(insertionResultsAdapter));
@@ -127,47 +128,13 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
             return true;
     }
 
-    private void insertFeeds() {
-        feedInsertionProgressBar.setVisibility(View.VISIBLE);
-        validate.setEnabled(false);
-
-        List<ParsingResult> feedsToInsert = new ArrayList<>();
+    private boolean recyclerViewHasCheckedItems() {
         for (ParsingResult result : parseItemsAdapter.getAdapterItems()) {
             if (result.isChecked())
-                feedsToInsert.add(result);
+                return true;
         }
 
-        viewModel.addFeeds(feedsToInsert)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<List<FeedInsertionResult>>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(List<FeedInsertionResult> feedInsertionResults) {
-                        processResults(feedInsertionResults);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-                });
-    }
-
-    private void processResults(List<FeedInsertionResult> feedInsertionResults) {
-        feedInsertionProgressBar.setVisibility(View.GONE);
-        insertionResultsRecyclerView.setVisibility(View.VISIBLE);
-
-        for (FeedInsertionResult feedInsertionResult : feedInsertionResults) {
-            if (feedInsertionResult.getFeed() != null)
-                feedsToUpdate.add(feedInsertionResult.getFeed());
-        }
-
-        insertionResultsAdapter.add(feedInsertionResults);
+        return false;
     }
 
     private void loadFeed() {
@@ -190,7 +157,7 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
 
                     @Override
                     public void onSuccess(List<ParsingResult> parsingResultList) {
-                        displayResults(parsingResultList);
+                        displayParseResults(parsingResultList);
                     }
 
                     @Override
@@ -200,20 +167,61 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
                 });
     }
 
-    private void displayResults(List<ParsingResult> parsingResultList) {
+    private void displayParseResults(List<ParsingResult> parsingResultList) {
         if (parsingResultList.size() > 0) {
             parseResultsRecyclerView.setVisibility(View.VISIBLE);
             progressBar.setVisibility(View.GONE);
             resultsTextView.setVisibility(View.VISIBLE);
 
             parseItemsAdapter.add(parsingResultList);
-            validate.setEnabled(true);
-        }
+            validate.setEnabled(recyclerViewHasCheckedItems());
+        } else
+            progressBar.setVisibility(View.GONE);
     }
+
+    private void insertFeeds() {
+        feedInsertionProgressBar.setVisibility(View.VISIBLE);
+        validate.setEnabled(false);
+
+        List<ParsingResult> feedsToInsert = new ArrayList<>();
+        for (ParsingResult result : parseItemsAdapter.getAdapterItems()) {
+            if (result.isChecked())
+                feedsToInsert.add(result);
+        }
+
+        viewModel.addFeeds(feedsToInsert)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableSingleObserver<List<FeedInsertionResult>>() {
+                    @Override
+                    public void onSuccess(List<FeedInsertionResult> feedInsertionResults) {
+                        displayInsertionResults(feedInsertionResults);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+                });
+    }
+
+    private void displayInsertionResults(List<FeedInsertionResult> feedInsertionResults) {
+        feedInsertionProgressBar.setVisibility(View.GONE);
+        insertionResultsRecyclerView.setVisibility(View.VISIBLE);
+
+        for (FeedInsertionResult feedInsertionResult : feedInsertionResults) {
+            if (feedInsertionResult.getFeed() != null)
+                feedsToUpdate.add(feedInsertionResult.getFeed());
+        }
+
+        insertionResultsAdapter.add(feedInsertionResults);
+        validate.setEnabled(recyclerViewHasCheckedItems());
+    }
+
+
 
     @Override
     public void onBackPressed() {
-        exit();
         finish();
         super.onBackPressed();
     }
@@ -222,7 +230,6 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                exit();
                 finish();
                 return true;
         }
@@ -230,12 +237,15 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         return super.onOptionsItemSelected(item);
     }
 
-    private void exit() {
+    @Override
+    public void finish() {
         if (feedsToUpdate.size() > 0) {
             Intent intent = new Intent();
             intent.putParcelableArrayListExtra("feedIds", feedsToUpdate);
 
             setResult(RESULT_OK, intent);
         }
+
+        super.finish();
     }
 }

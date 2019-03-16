@@ -22,4 +22,9 @@
         <item name="android:layout_margin">14dp</item>
     </style>
 
+    <style name="GenericButton" parent="Base.Widget.AppCompat.Button.Colored">
+        <item name="android:colorBackground">@color/colorPrimary</item>
+        <item name="android:textColorPrimary">@color/colorControlNormal</item>
+    </style>
+
 </resources>
