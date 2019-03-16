@@ -90,14 +90,11 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         parseResultsRecyclerView.setAdapter(fastAdapter);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         parseResultsRecyclerView.setLayoutManager(layoutManager);
-        DividerItemDecoration decoration = new DividerItemDecoration(this, ((LinearLayoutManager) layoutManager).getOrientation());
-        //parseResultsRecyclerView.addItemDecoration(decoration);
-
+        
         insertionResultsAdapter = new ItemAdapter<>();
         RecyclerView.LayoutManager layoutManager1 = new LinearLayoutManager(this);
         insertionResultsRecyclerView.setAdapter(FastAdapter.with(insertionResultsAdapter));
         insertionResultsRecyclerView.setLayoutManager(layoutManager1);
-        //insertionResultsRecyclerView.addItemDecoration(decoration);
 
         feedsToUpdate = new ArrayList<>();
     }
