@@ -56,7 +56,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
-public class MainActivity extends AppCompatActivity implements SimpleCallback, SwipeRefreshLayout.OnRefreshListener {
+public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
     public static final int ADD_FEED_REQUEST = 1;
@@ -112,7 +112,6 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
         });
 
         viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
-        viewModel.setSimpleCallback(this);
 
         itemsMap = new TreeMap<>(LocalDateTime::compareTo);
         newItems = new ArrayList<>();
@@ -218,18 +217,6 @@ public class MainActivity extends AppCompatActivity implements SimpleCallback, S
                 recyclerView.scrollToPosition(0);
             }
         });
-    }
-
-    @Override
-    public void onSuccess() {
-        refreshLayout.setRefreshing(false);
-        adapter.submitList(newItems);
-    }
-
-    @Override
-    public void onFailure(Exception e) {
-        refreshLayout.setRefreshing(false);
-        Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
     }
 
     @Override
