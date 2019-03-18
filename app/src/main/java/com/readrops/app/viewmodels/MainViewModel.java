@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.repositories.LocalFeedRepository;
-import com.readrops.app.views.SimpleCallback;
 import com.readrops.app.utils.ParsingResult;
 
 import java.util.List;
@@ -31,10 +30,6 @@ public class MainViewModel extends AndroidViewModel {
 
     public LiveData<List<ItemWithFeed>> getItemsWithFeed() {
         return itemsWithFeed;
-    }
-
-    public void setSimpleCallback(SimpleCallback simpleCallback) {
-        repository.setCallback(simpleCallback);
     }
 
     public Observable<Feed> sync(List<Feed> feeds) {

@@ -2,8 +2,6 @@ package com.readrops.app.activities;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -36,7 +34,6 @@ import com.readrops.app.database.entities.Feed;
 import com.readrops.app.views.MainItemListAdapter;
 import com.readrops.app.viewmodels.MainViewModel;
 import com.readrops.app.R;
-import com.readrops.app.views.SimpleCallback;
 import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.database.entities.Item;
 import com.readrops.app.utils.GlideApp;
@@ -53,7 +50,6 @@ import io.reactivex.Observer;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {

@@ -116,9 +116,8 @@ public class LocalFeedRepository extends ARepository {
                     insertFeed(queryResult.getFeed(), queryResult.getRssType());
                 }
 
-                postCallBackSuccess();
             } catch (Exception e) {
-                failureCallBackInMainThread(e);
+
             }
         });
     }

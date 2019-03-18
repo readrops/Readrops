@@ -2,8 +2,6 @@ package com.readrops.app.repositories;
 
 import android.app.Application;
 import android.graphics.Bitmap;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v7.graphics.Palette;
 import android.util.Patterns;
 
@@ -11,7 +9,6 @@ import com.readrops.app.database.pojo.FeedWithFolder;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.HtmlParser;
 import com.readrops.app.utils.Utils;
-import com.readrops.app.views.SimpleCallback;
 import com.readrops.app.database.Database;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
@@ -29,17 +26,12 @@ import io.reactivex.Single;
 public abstract class ARepository {
 
     protected Executor executor;
-    protected SimpleCallback callback;
 
     protected Database database;
 
     protected ARepository(Application application) {
         executor = Executors.newSingleThreadExecutor();
         this.database = Database.getInstance(application);
-    }
-
-    public void setCallback(SimpleCallback callback) {
-        this.callback = callback;
     }
 
     public abstract Observable<Feed> sync(List<Feed> feeds);
@@ -93,17 +85,5 @@ public abstract class ARepository {
 
         if (palette.getMutedSwatch() != null)
             feed.setBackgroundColor(palette.getMutedSwatch().getRgb());
-    }
-
-    protected void failureCallBackInMainThread(Exception e) {
-        Handler handler = new Handler(Looper.getMainLooper());
-
-        handler.post(() -> callback.onFailure(e));
-    }
-
-    protected void postCallBackSuccess() {
-        // we go back to the main thread
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(() -> callback.onSuccess());
     }
 }
