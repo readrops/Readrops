@@ -2,17 +2,21 @@ package com.readrops.app.activities;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.adapters.ItemAdapter;
@@ -92,6 +96,36 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         parseResultsRecyclerView.setLayoutManager(layoutManager);
 
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                int swipeFlags = ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
+
+                return makeMovementFlags(0, swipeFlags);
+            }
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+                parseItemsAdapter.remove(viewHolder.getAdapterPosition());
+
+                if (parseItemsAdapter.getAdapterItemCount() == 0) {
+                    resultsTextView.setVisibility(View.GONE);
+                    parseResultsRecyclerView.setVisibility(View.GONE);
+                }
+
+            }
+
+            @Override
+            public boolean isItemViewSwipeEnabled() {
+                return true;
+            }
+        }).attachToRecyclerView(parseResultsRecyclerView);
+
         insertionResultsAdapter = new ItemAdapter<>();
         RecyclerView.LayoutManager layoutManager1 = new LinearLayoutManager(this);
         insertionResultsRecyclerView.setAdapter(FastAdapter.with(insertionResultsAdapter));
@@ -162,7 +196,8 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
 
                     @Override
                     public void onError(Throwable e) {
-
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                        progressBar.setVisibility(View.GONE);
                     }
                 });
     }
