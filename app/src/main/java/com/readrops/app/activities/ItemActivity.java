@@ -124,6 +124,9 @@ public class ItemActivity extends AppCompatActivity {
         else
             toolbarLayout.setTitle(itemWithFeed.getFeedName());
 
+        if (itemWithFeed.getFolder().getId() != 1)
+            toolbar.setSubtitle(itemWithFeed.getFolder().getName());
+
         title.setText(item.getTitle());
 
         if (itemWithFeed.getBgColor() != 0)

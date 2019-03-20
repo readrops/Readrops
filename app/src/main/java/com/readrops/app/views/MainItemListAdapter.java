@@ -57,7 +57,9 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
             Item item = itemWithFeed.getItem();
             Item item1 = t1.getItem();
 
-            return item.getTitle().equals(item1.getTitle());
+            return item.getTitle().equals(item1.getTitle()) &&
+                    itemWithFeed.getFeedName().equals(t1.getFeedName()) &&
+                    itemWithFeed.getFolder().getName().equals(t1.getFolder().getName());
         }
     };
 
@@ -117,6 +119,11 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
             viewHolder.itemReadTime.setText(resources.getString(R.string.read_time, String.valueOf(minutes)));
         else
             viewHolder.itemReadTime.setText(resources.getString(R.string.read_time_one_minute));
+
+        if (itemWithFeed.getFolder().getId() != 1)
+            viewHolder.itemFolderName.setText(itemWithFeed.getFolder().getName());
+        else
+            viewHolder.itemFolderName.setText(resources.getString(R.string.no_folder));
     }
 
     @Override
@@ -163,6 +170,7 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
         private ImageView feedIcon;
         private ImageView itemImage;
         private TextView itemReadTime;
+        private TextView itemFolderName;
 
         ItemViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -181,6 +189,7 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
             feedIcon = itemView.findViewById(R.id.item_feed_icon);
             itemImage = itemView.findViewById(R.id.item_image);
             itemReadTime = itemView.findViewById(R.id.item_readtime);
+            itemFolderName = itemView.findViewById(R.id.item_folder_name);
         }
 
         private void bind(ItemWithFeed itemWithFeed) {
