@@ -108,9 +108,7 @@ public class ItemActivity extends AppCompatActivity {
         viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(ItemViewModel.class);
         viewModel.getItemById(itemId).observe(this, this::bindUI);
 
-        actionButton.setOnClickListener(v -> {
-            openLink();
-        });
+        actionButton.setOnClickListener(v -> openLink());
     }
 
     private void bindUI(ItemWithFeed itemWithFeed) {
@@ -124,8 +122,10 @@ public class ItemActivity extends AppCompatActivity {
         else
             toolbarLayout.setTitle(itemWithFeed.getFeedName());
 
-        if (itemWithFeed.getFolder().getId() != 1)
+        if (itemWithFeed.getFolder().getId() != 1) {
             toolbar.setSubtitle(itemWithFeed.getFolder().getName());
+            toolbar.setSubtitleTextColor(Color.WHITE);
+        }
 
         title.setText(item.getTitle());
 
