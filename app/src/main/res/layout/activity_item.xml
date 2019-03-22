@@ -50,7 +50,7 @@
         android:id="@+id/activity_item_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
         android:clickable="true"
         android:focusable="true"
         android:src="@drawable/ic_open_in_browser_white"
@@ -73,18 +73,33 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TextView
-                    android:id="@+id/activity_item_date"
-                    style="@style/Base.TextAppearance.AppCompat.Body1"
+                <RelativeLayout
+                    android:id="@+id/activity_item_date_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:text="10 february 2019" />
+                    android:background="@drawable/item_date_background"
+                    android:paddingStart="8dp"
+                    android:paddingTop="1dp"
+                    android:paddingEnd="8dp"
+                    android:paddingBottom="1dp">
+
+                    <TextView
+                        android:id="@+id/activity_item_date"
+                        style="@style/Base.TextAppearance.AppCompat.Body1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorBackground"
+                        tools:text="10 february 2019" />
+
+                </RelativeLayout>
 
                 <TextView
                     android:id="@+id/activity_item_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/activity_item_date"
+                    android:layout_below="@id/activity_item_date_layout"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentEnd="true"
                     android:layout_marginTop="6dp"
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
                     tools:text="This is a title" />
@@ -95,7 +110,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/activity_item_title"
+                    android:layout_alignParentStart="true"
                     android:layout_marginTop="6dp"
+                    android:layout_toStartOf="@id/activity_item_readtime_layout"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:minLines="1"
                     android:visibility="gone"
                     tools:text="By Santa Klaus"
                     tools:visibility="visible" />
@@ -106,9 +126,8 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/activity_item_title"
                     android:layout_alignParentEnd="true"
+                    android:layout_marginStart="6dp"
                     android:layout_marginTop="6dp"
-                    android:layout_toEndOf="@id/activity_item_author"
-                    android:layout_toRightOf="@id/activity_item_author"
                     android:visibility="gone"
                     tools:visibility="visible">
 
@@ -116,9 +135,8 @@
                         android:id="@+id/activity_item_readtime_icon"
                         android:layout_width="16dp"
                         android:layout_height="16dp"
-                        android:layout_alignBottom="@id/activity_item_readtime_icon"
+                        android:layout_alignParentStart="true"
                         android:layout_centerVertical="true"
-                        android:layout_toStartOf="@id/activity_item_readtime"
                         android:src="@drawable/ic_read_time" />
 
                     <TextView
@@ -126,15 +144,11 @@
                         style="@style/Base.TextAppearance.AppCompat.Body1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
                         android:layout_marginStart="4dp"
-                        android:layout_marginLeft="4dp"
-                        android:textAlignment="viewStart"
-                        tools:text="3 mins" />
+                        android:layout_toEndOf="@id/activity_item_readtime_icon"
+                        tools:text="3 min" />
                 </RelativeLayout>
-
 
             </RelativeLayout>
 
