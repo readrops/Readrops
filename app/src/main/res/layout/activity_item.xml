@@ -35,7 +35,7 @@
                 android:background="@drawable/toolbar_scrim" />
 
             <android.support.v7.widget.Toolbar
-                android:id="@+id/collasping_layout_toolbar"
+                android:id="@+id/collapsing_layout_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:theme="@style/AlertDialog.AppCompat.Light"
@@ -89,7 +89,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/colorBackground"
-                        tools:text="10 february 2019" />
+                        tools:text="10 feb 2019" />
 
                 </RelativeLayout>
 
@@ -116,6 +116,7 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:minLines="1"
+                    android:textStyle="italic"
                     android:visibility="gone"
                     tools:text="By Santa Klaus"
                     tools:visibility="visible" />

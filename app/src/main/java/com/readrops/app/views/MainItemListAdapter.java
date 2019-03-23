@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.ListPreloader;
@@ -27,6 +28,7 @@ import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.database.entities.Item;
 import com.readrops.app.utils.DateUtils;
 import com.readrops.app.utils.GlideRequests;
+import com.readrops.app.utils.Utils;
 
 import java.util.Collections;
 import java.util.List;
@@ -106,11 +108,14 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
             viewHolder.feedIcon.setImageResource(R.drawable.ic_rss_feed);
 
         Resources resources = viewHolder.itemView.getResources();
-        if (itemWithFeed.getColor() != 0)
+        if (itemWithFeed.getColor() != 0) {
             viewHolder.feedName.setTextColor(itemWithFeed.getColor());
-        else
+            Utils.setDrawableColor(viewHolder.dateLayout.getBackground(), itemWithFeed.getColor());
+        } else
             viewHolder.feedName.setTextColor(resources.getColor(android.R.color.tab_indicator_text));
 
+        if (itemWithFeed.getBgColor() != 0)
+            Utils.setDrawableColor(viewHolder.dateLayout.getBackground(), itemWithFeed.getBgColor());
 
         int minutes = (int)Math.round(itemWithFeed.getItem().getReadTime());
         if (minutes < 1)
@@ -171,6 +176,7 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
         private ImageView itemImage;
         private TextView itemReadTime;
         private TextView itemFolderName;
+        private RelativeLayout dateLayout;
 
         ItemViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -190,6 +196,7 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
             itemImage = itemView.findViewById(R.id.item_image);
             itemReadTime = itemView.findViewById(R.id.item_readtime);
             itemFolderName = itemView.findViewById(R.id.item_folder_name);
+            dateLayout = itemView.findViewById(R.id.item_date_layout);
         }
 
         private void bind(ItemWithFeed itemWithFeed) {
@@ -204,8 +211,6 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
                 itemDescription.setText(item.getCleanDescription());
             } else
                 itemDescription.setVisibility(View.GONE);
-
-
         }
 
         public ImageView getItemImage() {

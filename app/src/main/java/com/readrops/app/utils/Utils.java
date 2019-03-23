@@ -6,6 +6,9 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.ColorInt;
@@ -79,6 +82,10 @@ public final class Utils {
     public static boolean isTypeImage(@NonNull String type) {
         return type.equals("image") || type.equals("image/jpeg") || type.equals("image/jpg")
                 || type.equals("image/png");
+    }
+
+    public static void setDrawableColor(Drawable drawable, int color) {
+        drawable.mutate().setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
     }
 
 }

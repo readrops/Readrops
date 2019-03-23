@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -36,6 +38,7 @@ public class ItemActivity extends AppCompatActivity {
     private TextView readTime;
 
     private RelativeLayout readTimeLayout;
+    RelativeLayout dateLayout;
 
     private CollapsingToolbarLayout toolbarLayout;
     private Toolbar toolbar;
@@ -58,7 +61,7 @@ public class ItemActivity extends AppCompatActivity {
         int itemId = intent.getIntExtra(ITEM_ID, 0);
         String imageUrl = intent.getStringExtra(IMAGE_URL);
 
-        toolbar = findViewById(R.id.collasping_layout_toolbar);
+        toolbar = findViewById(R.id.collapsing_layout_toolbar);
         setSupportActionBar(toolbar);
 
         if (getSupportActionBar() != null)
@@ -76,6 +79,7 @@ public class ItemActivity extends AppCompatActivity {
         author = findViewById(R.id.activity_item_author);
         readTime = findViewById(R.id.activity_item_readtime);
         readTimeLayout = findViewById(R.id.activity_item_readtime_layout);
+        dateLayout = findViewById(R.id.activity_item_date_layout);
 
         if (imageUrl == null) {
             appBarLayout.setExpanded(false);
@@ -111,6 +115,7 @@ public class ItemActivity extends AppCompatActivity {
         actionButton.setOnClickListener(v -> openLink());
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void bindUI(ItemWithFeed itemWithFeed) {
         this.itemWithFeed = itemWithFeed;
         Item item = itemWithFeed.getItem();
@@ -129,10 +134,13 @@ public class ItemActivity extends AppCompatActivity {
 
         title.setText(item.getTitle());
 
-        if (itemWithFeed.getBgColor() != 0)
+        if (itemWithFeed.getBgColor() != 0) {
             title.setTextColor(itemWithFeed.getBgColor());
-        else if (itemWithFeed.getColor() != 0)
+            Utils.setDrawableColor(dateLayout.getBackground(), itemWithFeed.getBgColor());
+        } else if (itemWithFeed.getColor() != 0) {
             title.setTextColor(itemWithFeed.getColor());
+            Utils.setDrawableColor(dateLayout.getBackground(), itemWithFeed.getColor());
+        }
 
         if (item.getAuthor() != null) {
             author.setText(getString(R.string.by_author, item.getAuthor()));
