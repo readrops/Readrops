@@ -6,7 +6,8 @@
     android:background="?android:attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
-    android:padding="6dp">
+    android:paddingStart="6dp"
+    android:paddingEnd="6dp">
 
     <CheckBox
         android:id="@+id/add_feed_checkbox"
@@ -20,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="8dp"
-        android:layout_marginBottom="6dp"
+        android:layout_marginTop="6dp"
         android:layout_toEndOf="@id/add_feed_checkbox"
         android:ellipsize="end"
         android:maxLines="1"
@@ -34,6 +35,8 @@
         android:layout_below="@id/add_feed_item_label"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="6dp"
         android:layout_toEndOf="@id/add_feed_checkbox"
         android:ellipsize="end"
         android:maxLines="2"
