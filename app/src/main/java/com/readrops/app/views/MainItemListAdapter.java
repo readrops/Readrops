@@ -4,6 +4,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.recyclerview.extensions.ListAdapter;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
@@ -116,6 +117,9 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
 
         if (itemWithFeed.getBgColor() != 0)
             Utils.setDrawableColor(viewHolder.dateLayout.getBackground(), itemWithFeed.getBgColor());
+        else if (itemWithFeed.getBgColor() == 0 && itemWithFeed.getColor() == 0)
+            Utils.setDrawableColor(viewHolder.dateLayout.getBackground(),
+                    ContextCompat.getColor(viewHolder.itemView.getContext(), R.color.colorPrimary));
 
         int minutes = (int)Math.round(itemWithFeed.getItem().getReadTime());
         if (minutes < 1)
