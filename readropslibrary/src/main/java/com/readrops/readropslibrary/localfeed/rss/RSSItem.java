@@ -12,7 +12,7 @@ import java.util.List;
 @Root(name = "item", strict = false)
 public class RSSItem extends AItem {
 
-    @Element(name = "title", required = false)
+    @Element
     private String title;
 
     @Element(name = "link", required = false)
@@ -53,7 +53,7 @@ public class RSSItem extends AItem {
     @Namespace(prefix = "content")
     private String content;
 
-    @Element(required = false)
+    @Element
     private String guid;
 
     public String getTitle() {
