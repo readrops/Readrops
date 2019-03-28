@@ -183,12 +183,7 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         viewModel.parseUrl(finalUrl)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<List<ParsingResult>>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
+                .subscribe(new DisposableSingleObserver<List<ParsingResult>>() {
                     @Override
                     public void onSuccess(List<ParsingResult> parsingResultList) {
                         displayParseResults(parsingResultList);

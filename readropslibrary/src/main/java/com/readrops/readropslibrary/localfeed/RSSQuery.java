@@ -44,16 +44,13 @@ public class RSSQuery {
      */
     public RSSQueryResult queryUrl(String url, Map<String, String> headers) throws Exception {
         Response response = query(url, headers);
-        RSSQueryResult queryResult;
 
         if (response.isSuccessful()) {
             String header = response.header(LibUtils.CONTENT_TYPE_HEADER);
             RSSType type = getRSSType(header);
 
-            if (type == null) {
-                queryResult = new RSSQueryResult(new UnknownFormatException("bad content type : " + header + "for " + url));
-                return queryResult;
-            }
+            if (type == null)
+                return new RSSQueryResult(new UnknownFormatException("bad content type : " + header + "for " + url));
 
             return parseFeed(response.body().byteStream(), type, response);
         } else if (response.code() == 304)
