@@ -36,6 +36,9 @@ public interface FeedDao {
     @Query("Select * from Feed Where url = :feedUrl")
     Feed getFeedByUrl(String feedUrl);
 
+    @Query("Select * from Feed Where folder_id = :folderId")
+    List<Feed> getFeedsByFolder(int folderId);
+
     @Query("Update Feed set etag = :etag, last_modified = :lastModified Where id = :feedId")
     void updateHeaders(String etag, String lastModified, int feedId);
 

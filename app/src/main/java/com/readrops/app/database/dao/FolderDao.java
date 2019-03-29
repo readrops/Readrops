@@ -16,6 +16,9 @@ public interface FolderDao {
     @Query("Select * from Folder Order By name ASC")
     LiveData<List<Folder>> getAllFolders();
 
+    @Query("Select * from Folder Order By name ASC")
+    List<Folder> getFolders();
+
     @Insert
     long insert(Folder folder);
 

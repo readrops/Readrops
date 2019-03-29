@@ -30,7 +30,14 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
 import com.bumptech.glide.util.ViewPreloadSizeProvider;
 import com.github.clans.fab.FloatingActionMenu;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.ExpandableBadgeDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.readrops.app.database.entities.Feed;
+import com.readrops.app.database.entities.Folder;
 import com.readrops.app.views.MainItemListAdapter;
 import com.readrops.app.viewmodels.MainViewModel;
 import com.readrops.app.R;
@@ -43,6 +50,7 @@ import com.readrops.app.utils.ParsingResult;
 import org.joda.time.LocalDateTime;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -50,19 +58,20 @@ import io.reactivex.Observer;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
     public static final int ADD_FEED_REQUEST = 1;
+    public static final int MANAGE_FEEDS_REQUEST = 2;
 
     private RecyclerView recyclerView;
     private MainItemListAdapter adapter;
     private SwipeRefreshLayout refreshLayout;
 
-    private NavigationView navigationView;
-    private DrawerLayout drawerLayout;
+    private Drawer drawer;
     private FloatingActionMenu actionMenu;
 
     private List<ItemWithFeed> newItems;
@@ -85,28 +94,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         Toolbar toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
 
-        drawerLayout = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_nav_drawer, R.string.close_nav_drawer);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
-
         actionMenu = findViewById(R.id.fab_menu);
-
-        navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener((menuItem) -> {
-            menuItem.setChecked(true);
-            drawerLayout.closeDrawers();
-
-            switch (menuItem.getItemId()) {
-                case R.id.to_read:
-                    break;
-                case R.id.non_read_articles:
-                    break;
-            }
-
-            return true;
-        });
-
         viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
         itemsMap = new TreeMap<>(LocalDateTime::compareTo);
@@ -127,25 +115,80 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         syncProgressBar = findViewById(R.id.sync_progress_bar);
 
         feedCount = 0;
-
         initRecyclerView();
+
+        drawer = new DrawerBuilder()
+                .withActivity(this)
+                .withToolbar(toolbar)
+                .withShowDrawerOnFirstLaunch(true)
+                .build();
+
+            updateDrawerFeeds();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                drawerLayout.openDrawer(GravityCompat.START);
-                return true;
+    private void updateDrawerFeeds() {
+        viewModel.getFoldersWithFeeds()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableSingleObserver<HashMap<Folder, List<Feed>>>() {
+                    @Override
+                    public void onSuccess(HashMap<Folder, List<Feed>> folderListHashMap) {
+                        populateDrawer(folderListHashMap);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+                });
+    }
+
+    private void populateDrawer(HashMap<Folder, List<Feed>> folderListHashMap) {
+        drawer.removeAllItems();
+        List<SecondaryDrawerItem> feedsWithoutFolder = new ArrayList<>();
+
+        for (Folder folder : folderListHashMap.keySet()) {
+            if (folder.getId() != 1) {
+                ExpandableBadgeDrawerItem badgeDrawerItem = new ExpandableBadgeDrawerItem()
+                        .withName(folder.getName())
+                        .withIdentifier(folder.getId())
+                        .withIcon(getDrawable(R.drawable.ic_folder_grey));
+
+                List<IDrawerItem> secondaryDrawerItems = new ArrayList<>();
+
+                for (Feed feed : folderListHashMap.get(folder)) {
+                    SecondaryDrawerItem secondaryDrawerItem = new SecondaryDrawerItem()
+                            .withName(feed.getName())
+                            .withIdentifier(feed.getId());
+
+                    secondaryDrawerItems.add(secondaryDrawerItem);
+                }
+
+                if (secondaryDrawerItems.size() > 0) {
+                    badgeDrawerItem.withSubItems(secondaryDrawerItems);
+                    drawer.addItem(badgeDrawerItem);
+                }
+            } else { // no folder case
+                for (Feed feed : folderListHashMap.get(folder)) {
+                    SecondaryDrawerItem primaryDrawerItem = new SecondaryDrawerItem()
+                            .withName(feed.getName())
+                            .withIdentifier(feed.getId());
+
+                    feedsWithoutFolder.add(primaryDrawerItem);
+                }
+            }
         }
 
-        return super.onOptionsItemSelected(item);
+        // work-around as MaterialDrawer doesn't accept an item list
+        for (SecondaryDrawerItem primaryDrawerItem : feedsWithoutFolder) {
+            drawer.addItem(primaryDrawerItem);
+        }
     }
 
     @Override
     public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START))
-            drawerLayout.closeDrawers();
+        if (drawer.isDrawerOpen())
+            drawer.closeDrawer();
         else
             super.onBackPressed();
     }
@@ -242,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 });
     }
 
-    public void displayAddFeedDialog(View view) {
+    public void openAddFeedActivity(View view) {
         actionMenu.close(true);
 
         Intent intent = new Intent(this, AddFeedActivity.class);
@@ -253,12 +296,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         actionMenu.close(true);
 
         Intent intent = new Intent(this, ManageFeedsActivity.class);
-        startActivity(intent);
-    }
-
-    public void insertNewFeed(ParsingResult result) {
-        refreshLayout.setRefreshing(true);
-        viewModel.addFeed(result);
+        startActivityForResult(intent, MANAGE_FEEDS_REQUEST);
     }
 
     @Override
@@ -271,6 +309,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 feedNb = feeds.size();
                 sync(feeds);
             }
+        } else if (requestCode == MANAGE_FEEDS_REQUEST) {
+            updateDrawerFeeds();
         }
 
         super.onActivityResult(requestCode, resultCode, data);

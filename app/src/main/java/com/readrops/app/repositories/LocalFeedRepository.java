@@ -3,6 +3,7 @@ package com.readrops.app.repositories;
 import android.accounts.NetworkErrorException;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
+import android.support.annotation.Nullable;
 
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.FeedWithFolder;
@@ -53,7 +54,7 @@ public class LocalFeedRepository extends ARepository {
     }
 
     @Override
-    public Observable<Feed> sync(List<Feed> feeds) {
+    public Observable<Feed> sync(@Nullable List<Feed> feeds) {
         return Observable.create(emitter -> {
             List<Feed> feedList;
 

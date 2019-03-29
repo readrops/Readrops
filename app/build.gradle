@@ -60,4 +60,5 @@ dependencies {
     // fastadapter requires androidx after 3.2.9
     implementation 'com.mikepenz:fastadapter:3.2.9'
     implementation 'com.mikepenz:fastadapter-commons:3.2.9'
+    implementation "com.mikepenz:materialdrawer:6.0.9"
 }
