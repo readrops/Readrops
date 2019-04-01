@@ -90,7 +90,7 @@ public class ParsingResult extends AbstractItem<ParsingResult, ParsingResult.Par
 
         @Override
         public void bindView(ParsingResult item, List<Object> payloads) {
-            if (item.getLabel() != null)
+            if (item.getLabel() != null && !item.getLabel().isEmpty())
                 feedLabel.setText(item.getLabel());
             else
                 feedLabel.setVisibility(View.GONE);
