@@ -309,6 +309,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 feedNb = feeds.size();
                 sync(feeds);
             }
+
+            updateDrawerFeeds();
         } else if (requestCode == MANAGE_FEEDS_REQUEST) {
             updateDrawerFeeds();
         }
