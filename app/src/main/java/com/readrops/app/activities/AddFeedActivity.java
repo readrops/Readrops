@@ -1,5 +1,6 @@
 package com.readrops.app.activities;
 
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -12,8 +13,10 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,6 +58,7 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
     private AddFeedsViewModel viewModel;
     private ArrayList<Feed> feedsToUpdate;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +76,19 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         load.setOnClickListener(this);
         validate.setOnClickListener(this);
         validate.setEnabled(false);
+
+        feedInput.setOnTouchListener((v, event) -> {
+            final int DRAWABLE_RIGHT = 2;
+
+            if(event.getAction() == MotionEvent.ACTION_UP) {
+                if(event.getRawX() >= (feedInput.getRight() - feedInput.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                    feedInput.setText("");
+                    return true;
+                }
+            }
+
+            return false;
+        });
 
         viewModel = ViewModelProviders.of(this).get(AddFeedsViewModel.class);
 

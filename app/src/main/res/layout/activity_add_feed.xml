@@ -33,10 +33,10 @@
                     android:id="@+id/add_feed_text_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/feed_url" />
+                    android:hint="@string/feed_url"
+                    android:drawableEnd="@drawable/ic_cancel_grey"/>
 
             </android.support.design.widget.TextInputLayout>
-
 
             <Button
                 android:id="@+id/add_feed_load"
