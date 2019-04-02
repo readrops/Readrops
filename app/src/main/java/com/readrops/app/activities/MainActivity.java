@@ -38,6 +38,7 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
+import com.readrops.app.utils.DrawerManager;
 import com.readrops.app.views.MainItemListAdapter;
 import com.readrops.app.viewmodels.MainViewModel;
 import com.readrops.app.R;
@@ -78,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private TreeMap<LocalDateTime, Item> itemsMap;
 
     private MainViewModel viewModel;
+    private DrawerManager drawerManager;
 
     private RelativeLayout syncProgressLayout;
     private TextView syncProgress;
@@ -123,7 +125,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 .withShowDrawerOnFirstLaunch(true)
                 .build();
 
-            updateDrawerFeeds();
+        drawerManager = new DrawerManager(drawer);
+
+        updateDrawerFeeds();
     }
 
     private void updateDrawerFeeds() {
@@ -133,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 .subscribe(new DisposableSingleObserver<HashMap<Folder, List<Feed>>>() {
                     @Override
                     public void onSuccess(HashMap<Folder, List<Feed>> folderListHashMap) {
-                        populateDrawer(folderListHashMap);
+                        drawerManager.updateDrawer(getApplicationContext(), folderListHashMap);
                     }
 
                     @Override
@@ -141,48 +145,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
                     }
                 });
-    }
-
-    private void populateDrawer(HashMap<Folder, List<Feed>> folderListHashMap) {
-        drawer.removeAllItems();
-        List<SecondaryDrawerItem> feedsWithoutFolder = new ArrayList<>();
-
-        for (Folder folder : folderListHashMap.keySet()) {
-            if (folder.getId() != 1) {
-                ExpandableBadgeDrawerItem badgeDrawerItem = new ExpandableBadgeDrawerItem()
-                        .withName(folder.getName())
-                        .withIdentifier(folder.getId())
-                        .withIcon(getDrawable(R.drawable.ic_folder_grey));
-
-                List<IDrawerItem> secondaryDrawerItems = new ArrayList<>();
-
-                for (Feed feed : folderListHashMap.get(folder)) {
-                    SecondaryDrawerItem secondaryDrawerItem = new SecondaryDrawerItem()
-                            .withName(feed.getName())
-                            .withIdentifier(feed.getId());
-
-                    secondaryDrawerItems.add(secondaryDrawerItem);
-                }
-
-                if (secondaryDrawerItems.size() > 0) {
-                    badgeDrawerItem.withSubItems(secondaryDrawerItems);
-                    drawer.addItem(badgeDrawerItem);
-                }
-            } else { // no folder case
-                for (Feed feed : folderListHashMap.get(folder)) {
-                    SecondaryDrawerItem primaryDrawerItem = new SecondaryDrawerItem()
-                            .withName(feed.getName())
-                            .withIdentifier(feed.getId());
-
-                    feedsWithoutFolder.add(primaryDrawerItem);
-                }
-            }
-        }
-
-        // work-around as MaterialDrawer doesn't accept an item list
-        for (SecondaryDrawerItem primaryDrawerItem : feedsWithoutFolder) {
-            drawer.addItem(primaryDrawerItem);
-        }
     }
 
     @Override

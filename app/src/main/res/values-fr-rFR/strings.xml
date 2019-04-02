@@ -38,5 +38,7 @@
     <string name="feed_insertion_parse_failed">Erreur de traitement pour le flux %1$s</string>
     <string name="feed_insertion_wrong_format">Mauvais format pour le flux %1$s</string>
     <string name="feed_insertion_unknown_error">Erreur inconnue pour le flux %1$s</string>
+    <string name="articles">Articles</string>
+    <string name="read_later">A lire plus tard</string>
 
 </resources>
