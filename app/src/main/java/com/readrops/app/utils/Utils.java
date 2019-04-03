@@ -9,6 +9,8 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.ColorInt;
@@ -86,6 +88,16 @@ public final class Utils {
 
     public static void setDrawableColor(Drawable drawable, int color) {
         drawable.mutate().setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
+    }
+
+    public static Drawable drawableWithColor(@ColorInt int color) {
+        ShapeDrawable drawable = new ShapeDrawable(new OvalShape());
+        drawable.setIntrinsicWidth(50);
+        drawable.setIntrinsicHeight(50);
+
+        drawable.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
+
+        return drawable;
     }
 
 }
