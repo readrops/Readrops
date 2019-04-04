@@ -5,9 +5,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -20,14 +18,14 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.readrops.app.viewmodels.ItemViewModel;
 import com.readrops.app.R;
-import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.database.entities.Item;
+import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.utils.DateUtils;
 import com.readrops.app.utils.GlideApp;
 import com.readrops.app.utils.ReadropsWebView;
 import com.readrops.app.utils.Utils;
+import com.readrops.app.viewmodels.ItemViewModel;
 
 public class ItemActivity extends AppCompatActivity {
 
@@ -111,11 +109,9 @@ public class ItemActivity extends AppCompatActivity {
 
         viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(ItemViewModel.class);
         viewModel.getItemById(itemId).observe(this, this::bindUI);
-
         actionButton.setOnClickListener(v -> openLink());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void bindUI(ItemWithFeed itemWithFeed) {
         this.itemWithFeed = itemWithFeed;
         Item item = itemWithFeed.getItem();

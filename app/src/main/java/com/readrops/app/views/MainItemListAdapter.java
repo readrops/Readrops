@@ -83,6 +83,17 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
     }
 
     @Override
+    public void onBindViewHolder(@NonNull ItemViewHolder holder, int position, @NonNull List<Object> payloads) {
+        if (payloads.size() > 0) {
+            ItemWithFeed itemWithFeed = (ItemWithFeed) payloads.get(0);
+
+            float alpha = itemWithFeed.getItem().isRead() ? 0.5f : 1.0f;
+            holder.itemView.setAlpha(alpha);
+        } else
+            onBindViewHolder(holder, position);
+    }
+
+    @Override
     public void onBindViewHolder(@NonNull ItemViewHolder viewHolder, int i) {
         ItemWithFeed itemWithFeed = getItem(i);
         viewHolder.bind(itemWithFeed);
@@ -133,6 +144,9 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
             viewHolder.itemFolderName.setText(itemWithFeed.getFolder().getName());
         else
             viewHolder.itemFolderName.setText(resources.getString(R.string.no_folder));
+
+        float alpha = itemWithFeed.getItem().isRead() ? 0.5f : 1.0f;
+        viewHolder.itemView.setAlpha(alpha);
     }
 
     @Override
@@ -163,7 +177,7 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
     }
 
     public interface OnItemClickListener {
-        void onItemClick(ItemWithFeed itemWithFeed);
+        void onItemClick(ItemWithFeed itemWithFeed, int position);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -189,7 +203,7 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
                 int position = getAdapterPosition();
 
                 if (listener != null && position != RecyclerView.NO_POSITION)
-                    listener.onItemClick(getItem(position));
+                    listener.onItemClick(getItem(position), position);
             }));
 
             itemTitle = itemView.findViewById(R.id.item_title);

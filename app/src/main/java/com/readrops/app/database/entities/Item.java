@@ -58,6 +58,8 @@ public class Item implements Comparable<Item> {
     @ColumnInfo(name = "read_time")
     private double readTime;
 
+    private boolean read;
+
     public int getId() {
         return id;
     }
@@ -163,6 +165,14 @@ public class Item implements Comparable<Item> {
             return content;
         else
             return description;
+    }
+
+    public boolean isRead() {
+        return read;
+    }
+
+    public void setRead(boolean read) {
+        this.read = read;
     }
 
     public static List<Item> itemsFromRSS(List<RSSItem> items, Feed feed) throws ParseException {

@@ -57,6 +57,7 @@ import io.reactivex.Observer;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     public static final String TAG = MainActivity.class.getSimpleName();
     public static final int ADD_FEED_REQUEST = 1;
     public static final int MANAGE_FEEDS_REQUEST = 2;
+    public static final int ITEM_REQUEST = 3;
 
     private RecyclerView recyclerView;
     private MainItemListAdapter adapter;
@@ -85,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     private int feedCount;
     private int feedNb;
+    private int itemToUpdatePos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -188,12 +191,32 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         ViewPreloadSizeProvider preloadSizeProvider = new ViewPreloadSizeProvider();
         adapter = new MainItemListAdapter(GlideApp.with(this), preloadSizeProvider);
-        adapter.setOnItemClickListener(itemWithFeed -> {
+        adapter.setOnItemClickListener((itemWithFeed, position) -> {
             Intent intent = new Intent(this, ItemActivity.class);
+
             intent.putExtra(ItemActivity.ITEM_ID, itemWithFeed.getItem().getId());
             intent.putExtra(ItemActivity.IMAGE_URL, itemWithFeed.getItem().getImageLink());
+            startActivityForResult(intent, ITEM_REQUEST);
 
-            startActivity(intent);
+            viewModel.setItemRead(itemWithFeed.getItem().getId())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new DisposableCompletableObserver() {
+                        @Override
+                        public void onComplete() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+
+                        }
+                    });
+
+            itemWithFeed.getItem().setRead(true);
+            adapter.notifyItemChanged(position, itemWithFeed);
+
+
         });
 
         RecyclerViewPreloader<String> preloader = new RecyclerViewPreloader<String>(Glide.with(this), adapter, preloadSizeProvider, 10);
