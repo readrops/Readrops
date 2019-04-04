@@ -51,12 +51,15 @@ public class DrawerManager {
                         .withIcon(context.getDrawable(R.drawable.ic_folder_grey));
 
                 List<IDrawerItem> secondaryDrawerItems = new ArrayList<>();
+                int expandableUnreadCount = 0;
 
                 for (Feed feed : folderListMap.get(folder)) {
                     int color = feed.getTextColor();
+                    expandableUnreadCount += feed.getUnreadCount();
 
                     SecondaryDrawerItem secondaryDrawerItem = new SecondaryDrawerItem()
                             .withName(feed.getName())
+                            .withBadge(String.valueOf(feed.getUnreadCount()))
                             .withIcon(color != 0 ? drawableWithColor(color) : drawableWithColor(context.getResources().getColor(R.color.colorPrimary)))
                             .withIdentifier(feed.getId());
 
@@ -65,6 +68,7 @@ public class DrawerManager {
 
                 if (secondaryDrawerItems.size() > 0) {
                     badgeDrawerItem.withSubItems(secondaryDrawerItems);
+                    badgeDrawerItem.withBadge(String.valueOf(expandableUnreadCount));
                     drawer.addItem(badgeDrawerItem);
                 }
             } else { // no folder case, items to add after the folders
@@ -73,6 +77,7 @@ public class DrawerManager {
 
                     SecondaryDrawerItem primaryDrawerItem = new SecondaryDrawerItem()
                             .withName(feed.getName())
+                            .withBadge(String.valueOf(feed.getUnreadCount()))
                             .withIcon(color != 0 ? drawableWithColor(color) : drawableWithColor(context.getResources().getColor(R.color.colorPrimary)))
                             .withIdentifier(feed.getId());
 

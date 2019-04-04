@@ -52,6 +52,12 @@ public class MainViewModel extends AndroidViewModel {
 
             for (Folder folder : folders) {
                 List<Feed> feeds = db.feedDao().getFeedsByFolder(folder.getId());
+
+                for (Feed feed : feeds) {
+                    int unreadCount = db.itemDao().getUnreadCount(feed.getId());
+                    feed.setUnreadCount(unreadCount);
+                }
+
                 foldersWithFeeds.put(folder, feeds);
             }
 

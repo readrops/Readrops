@@ -136,9 +136,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
     private void handleDrawerClick(IDrawerItem drawerItem) {
-        drawer.closeDrawer();
 
         if (drawerItem instanceof PrimaryDrawerItem) {
+            drawer.closeDrawer();
             int id = (int)drawerItem.getIdentifier();
 
             switch (id) {
@@ -150,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
             }
         } else if (drawerItem instanceof SecondaryDrawerItem) {
+            drawer.closeDrawer();
             filterItems((int)drawerItem.getIdentifier());
         }
     }

@@ -49,6 +49,9 @@ public class Feed implements Parcelable {
     @ColumnInfo(name = "folder_id")
     private int folderId;
 
+    @Ignore
+    private int unreadCount;
+
     public Feed() {
 
     }
@@ -181,6 +184,14 @@ public class Feed implements Parcelable {
 
     public void setFolderId(int folderId) {
         this.folderId = folderId;
+    }
+
+    public int getUnreadCount() {
+        return unreadCount;
+    }
+
+    public void setUnreadCount(int unreadCount) {
+        this.unreadCount = unreadCount;
     }
 
     public static Feed feedFromRSS(RSSFeed rssFeed) {
