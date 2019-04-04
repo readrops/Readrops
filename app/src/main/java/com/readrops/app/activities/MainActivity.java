@@ -6,10 +6,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.NavigationView;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
@@ -18,7 +14,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -30,10 +25,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
 import com.bumptech.glide.util.ViewPreloadSizeProvider;
 import com.github.clans.fab.FloatingActionMenu;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
-import com.mikepenz.materialdrawer.model.ExpandableBadgeDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.readrops.app.database.entities.Feed;
@@ -45,10 +42,11 @@ import com.readrops.app.R;
 import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.database.entities.Item;
 import com.readrops.app.utils.GlideApp;
-import com.readrops.app.utils.ParsingResult;
 
 
+import org.apache.commons.collections4.Predicate;
 import org.joda.time.LocalDateTime;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private Drawer drawer;
     private FloatingActionMenu actionMenu;
 
-    private List<ItemWithFeed> newItems;
+    private List<ItemWithFeed> allItems;
     private TreeMap<LocalDateTime, Item> itemsMap;
 
     private MainViewModel viewModel;
@@ -100,13 +98,13 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
         itemsMap = new TreeMap<>(LocalDateTime::compareTo);
-        newItems = new ArrayList<>();
+        allItems = new ArrayList<>();
 
         viewModel.getItemsWithFeed().observe(this, (itemWithFeeds -> {
-            newItems = itemWithFeeds;
+            allItems = itemWithFeeds;
 
             if (!refreshLayout.isRefreshing())
-                adapter.submitList(newItems);
+                adapter.submitList(allItems);
         }));
 
         refreshLayout = findViewById(R.id.swipe_refresh_layout);
@@ -123,11 +121,41 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withShowDrawerOnFirstLaunch(true)
+                .withOnDrawerItemClickListener((view, position, drawerItem) -> {
+                    handleDrawerClick(drawerItem);
+                    return true;
+                })
                 .build();
 
         drawerManager = new DrawerManager(drawer);
 
         updateDrawerFeeds();
+    }
+
+    private void handleDrawerClick(IDrawerItem drawerItem) {
+        drawer.closeDrawer();
+
+        if (drawerItem instanceof PrimaryDrawerItem) {
+            int id = (int)drawerItem.getIdentifier();
+
+            switch (id) {
+                case DrawerManager.ARTICLES_ITEM_ID:
+                    adapter.submitList(allItems);
+                    break;
+                case DrawerManager.READ_LATER_ID:
+                    break;
+
+            }
+        } else if (drawerItem instanceof SecondaryDrawerItem) {
+            filterItems((int)drawerItem.getIdentifier());
+        }
+    }
+
+    private void filterItems(int id) {
+        List<ItemWithFeed> filteredItems = new ArrayList<>(allItems);
+        CollectionUtils.filter(filteredItems, object -> object.getFeedId() == id);
+
+        adapter.submitList(filteredItems);
     }
 
     private void updateDrawerFeeds() {
@@ -317,7 +345,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
                         syncProgressLayout.setVisibility(View.GONE);
                         refreshLayout.setRefreshing(false);
-                        adapter.submitList(newItems);
+                        adapter.submitList(allItems);
                     }
                 });
     }

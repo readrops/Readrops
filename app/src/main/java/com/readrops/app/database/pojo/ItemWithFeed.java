@@ -15,6 +15,9 @@ public class ItemWithFeed {
     @ColumnInfo(name = "name")
     private String feedName;
 
+    @ColumnInfo(name = "feedId")
+    private int feedId;
+
     @ColumnInfo(name = "text_color")
     private @ColorInt int color;
 
@@ -44,6 +47,14 @@ public class ItemWithFeed {
 
     public void setFeedName(String feedName) {
         this.feedName = feedName;
+    }
+
+    public int getFeedId() {
+        return feedId;
+    }
+
+    public void setFeedId(int feedId) {
+        this.feedId = feedId;
     }
 
     public @ColorInt int getColor() {

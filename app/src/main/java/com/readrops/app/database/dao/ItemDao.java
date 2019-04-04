@@ -20,7 +20,7 @@ public interface ItemDao {
     @Query("Select * from Item Order By pub_date DESC")
     LiveData<List<Item>> getAll();
 
-    @Query("Select Item.id, title, clean_description, image_link, pub_date, Feed.name, text_color, background_color, icon_url, read_time, Folder.id as folder_id, Folder.name as folder_name from Item Inner Join Feed, Folder on Item.feed_id = Feed.id And Folder.id = Feed.folder_id Order By Item.id DESC")
+    @Query("Select Item.id, title, clean_description, image_link, pub_date, Feed.name, text_color, background_color, icon_url, read_time, Feed.id as feedId, Folder.id as folder_id, Folder.name as folder_name from Item Inner Join Feed, Folder on Item.feed_id = Feed.id And Folder.id = Feed.folder_id Order By Item.id DESC")
     LiveData<List<ItemWithFeed>> getAllItemWithFeeds();
 
     @Query("Select case When :guid In (Select guid from Item) Then 'true' else 'false' end")
@@ -32,6 +32,6 @@ public interface ItemDao {
     @Insert
     void insertAll(List<Item> items);
 
-    @Query("Select title, Item.description, content, link, pub_date, image_link, author, text_color, background_color, read_time, Feed.name, siteUrl, Folder.id as folder_id, Folder.name as folder_name from Item Inner Join Feed, Folder on Item.feed_id = Feed.id And Item.id = :id And Folder.id = Feed.folder_id")
+    @Query("Select title, Item.description, content, link, pub_date, image_link, author, text_color, background_color, read_time, Feed.name, Feed.id as feedId, siteUrl, Folder.id as folder_id, Folder.name as folder_name from Item Inner Join Feed, Folder on Item.feed_id = Feed.id And Item.id = :id And Folder.id = Feed.folder_id")
     LiveData<ItemWithFeed> getItemById(int id);
 }
