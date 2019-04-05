@@ -216,8 +216,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
             itemWithFeed.getItem().setRead(true);
             adapter.notifyItemChanged(position, itemWithFeed);
-
-
+            updateDrawerFeeds();
         });
 
         RecyclerViewPreloader<String> preloader = new RecyclerViewPreloader<String>(Glide.with(this), adapter, preloadSizeProvider, 10);
@@ -279,13 +278,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         viewModel.getFeedCount()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<Integer>() {
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
+                .subscribe(new DisposableSingleObserver<Integer>() {
                     @Override
                     public void onSuccess(Integer integer) {
                         feedNb = integer;
