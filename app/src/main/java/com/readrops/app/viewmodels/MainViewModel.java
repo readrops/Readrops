@@ -14,6 +14,8 @@ import com.readrops.app.utils.ParsingResult;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -45,10 +47,10 @@ public class MainViewModel extends AndroidViewModel {
         return repository.getFeedCount();
     }
 
-    public Single<HashMap<Folder, List<Feed>>> getFoldersWithFeeds() {
+    public Single<Map<Folder, List<Feed>>> getFoldersWithFeeds() {
         return Single.create(emitter -> {
             List<Folder> folders = db.folderDao().getFolders();
-            HashMap<Folder, List<Feed>> foldersWithFeeds = new HashMap<>();
+            Map<Folder, List<Feed>> foldersWithFeeds = new TreeMap<>(Folder::compareTo);
 
             for (Folder folder : folders) {
                 List<Feed> feeds = db.feedDao().getFeedsByFolder(folder.getId());

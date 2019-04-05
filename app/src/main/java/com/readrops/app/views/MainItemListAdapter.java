@@ -98,6 +98,17 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
         ItemWithFeed itemWithFeed = getItem(i);
         viewHolder.bind(itemWithFeed);
 
+        View[] alphaViews = new View[] {
+                viewHolder.dateLayout,
+                viewHolder.itemFolderName,
+                viewHolder.feedIcon,
+                viewHolder.feedName,
+                viewHolder.itemDescription,
+                viewHolder.itemTitle,
+                viewHolder.itemImage,
+                viewHolder.itemReadTime,
+        };
+
         if (itemWithFeed.getItem().hasImage()) {
             viewHolder.itemImage.setVisibility(View.VISIBLE);
 
@@ -146,7 +157,10 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
             viewHolder.itemFolderName.setText(resources.getString(R.string.no_folder));
 
         float alpha = itemWithFeed.getItem().isRead() ? 0.5f : 1.0f;
-        viewHolder.itemView.setAlpha(alpha);
+        for (View view : alphaViews) {
+            view.setAlpha(alpha);
+        }
+
     }
 
     @Override

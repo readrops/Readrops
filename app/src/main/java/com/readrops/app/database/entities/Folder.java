@@ -7,7 +7,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 @Entity
-public class Folder implements Parcelable {
+public class Folder implements Parcelable,  Comparable<Folder> {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
@@ -67,5 +67,10 @@ public class Folder implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
         dest.writeString(name);
+    }
+
+    @Override
+    public int compareTo(Folder o) {
+        return this.getName().compareTo(o.getName());
     }
 }

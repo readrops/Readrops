@@ -51,6 +51,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import io.reactivex.Observer;
@@ -136,7 +137,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
     private void handleDrawerClick(IDrawerItem drawerItem) {
-
         if (drawerItem instanceof PrimaryDrawerItem) {
             drawer.closeDrawer();
             int id = (int)drawerItem.getIdentifier();
@@ -166,9 +166,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         viewModel.getFoldersWithFeeds()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DisposableSingleObserver<HashMap<Folder, List<Feed>>>() {
+                .subscribe(new DisposableSingleObserver<Map<Folder, List<Feed>>>() {
                     @Override
-                    public void onSuccess(HashMap<Folder, List<Feed>> folderListHashMap) {
+                    public void onSuccess(Map<Folder, List<Feed>> folderListHashMap) {
                         drawerManager.updateDrawer(getApplicationContext(), folderListHashMap);
                     }
 
@@ -323,8 +323,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 feedNb = feeds.size();
                 sync(feeds);
             }
-
-            updateDrawerFeeds();
         } else if (requestCode == MANAGE_FEEDS_REQUEST) {
             updateDrawerFeeds();
         }
@@ -369,7 +367,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
                         syncProgressLayout.setVisibility(View.GONE);
                         refreshLayout.setRefreshing(false);
+
                         adapter.submitList(allItems);
+                        updateDrawerFeeds(); // update drawer after syncing feeds
                     }
                 });
     }
