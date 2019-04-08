@@ -14,48 +14,40 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
 import com.bumptech.glide.util.ViewPreloadSizeProvider;
 import com.github.clans.fab.FloatingActionMenu;
-import com.mikepenz.materialdrawer.AccountHeader;
-import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
-import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.readrops.app.R;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
-import com.readrops.app.utils.DrawerManager;
-import com.readrops.app.views.MainItemListAdapter;
-import com.readrops.app.viewmodels.MainViewModel;
-import com.readrops.app.R;
 import com.readrops.app.database.pojo.ItemWithFeed;
-import com.readrops.app.database.entities.Item;
+import com.readrops.app.utils.DrawerManager;
 import com.readrops.app.utils.GlideApp;
+import com.readrops.app.utils.SharedPreferencesManager;
+import com.readrops.app.viewmodels.MainViewModel;
+import com.readrops.app.views.MainItemListAdapter;
 
-
-import org.apache.commons.collections4.Predicate;
-import org.joda.time.LocalDateTime;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import io.reactivex.Observer;
-import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableCompletableObserver;
@@ -77,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private FloatingActionMenu actionMenu;
 
     private List<ItemWithFeed> allItems;
-    private TreeMap<LocalDateTime, Item> itemsMap;
 
     private MainViewModel viewModel;
     private DrawerManager drawerManager;
@@ -88,7 +79,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     private int feedCount;
     private int feedNb;
-    private int itemToUpdatePos;
+
+    private boolean showReadItems;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,14 +93,17 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         actionMenu = findViewById(R.id.fab_menu);
         viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
-        itemsMap = new TreeMap<>(LocalDateTime::compareTo);
         allItems = new ArrayList<>();
+
+        showReadItems = SharedPreferencesManager.readBoolean(this,
+                SharedPreferencesManager.SharedPrefKey.SHOW_READ_ARTICLES);
 
         viewModel.getItemsWithFeed().observe(this, (itemWithFeeds -> {
             allItems = itemWithFeeds;
 
             if (!refreshLayout.isRefreshing())
-                adapter.submitList(allItems);
+                filterItems(0);
+
         }));
 
         refreshLayout = findViewById(R.id.swipe_refresh_layout);
@@ -132,7 +127,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 .build();
 
         drawerManager = new DrawerManager(drawer);
-
         updateDrawerFeeds();
     }
 
@@ -157,7 +151,18 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     private void filterItems(int id) {
         List<ItemWithFeed> filteredItems = new ArrayList<>(allItems);
-        CollectionUtils.filter(filteredItems, object -> object.getFeedId() == id);
+        CollectionUtils.filter(filteredItems, object -> {
+            boolean showRead;
+            if (object.getItem().isRead())
+                showRead = (object.getItem().isRead() == showReadItems);
+            else
+                showRead = true; // item unread
+
+            if (id == 0)
+                return showRead;
+            else
+                return object.getItem().getId() == id && showRead;
+        });
 
         adapter.submitList(filteredItems);
     }
@@ -362,8 +367,43 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                         refreshLayout.setRefreshing(false);
 
                         adapter.submitList(allItems);
+                        filterItems(0);
                         updateDrawerFeeds(); // update drawer after syncing feeds
                     }
                 });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.item_list_menu, menu);
+
+        MenuItem articlesItem = menu.findItem(R.id.item_filter_read_items);
+        articlesItem.setChecked(showReadItems);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.item_filter_read_items:
+                if (item.isChecked()) {
+                    item.setChecked(false);
+                    showReadItems = false;
+                    SharedPreferencesManager.writeValue(this,
+                            SharedPreferencesManager.SharedPrefKey.SHOW_READ_ARTICLES, false);
+                } else {
+                    item.setChecked(true);
+                    showReadItems = true;
+                    SharedPreferencesManager.writeValue(this,
+                            SharedPreferencesManager.SharedPrefKey.SHOW_READ_ARTICLES, true);
+
+                }
+
+                filterItems(0);
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

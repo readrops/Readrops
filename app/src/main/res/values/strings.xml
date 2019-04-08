@@ -42,4 +42,5 @@
     <string name="feed_insertion_unknown_error">Unknown error for feed %1$s</string>
     <string name="articles">Articles</string>
     <string name="read_later">To read later</string>
+    <string name="show_read_articles">Show read articles</string>
 </resources>

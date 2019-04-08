@@ -40,5 +40,6 @@
     <string name="feed_insertion_unknown_error">Erreur inconnue pour le flux %1$s</string>
     <string name="articles">Articles</string>
     <string name="read_later">A lire plus tard</string>
+    <string name="show_read_articles">Afficher les articles lus</string>
 
 </resources>
