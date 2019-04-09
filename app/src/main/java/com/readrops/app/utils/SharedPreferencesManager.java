@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 
 public final class SharedPreferencesManager {
 
-    private static final String PREFS = "readrops.uniquepreferences";
+    private static final String PREFS = "com.readrops.app.uniquepreferences";
 
     private static SharedPreferences getSharedPreferences(Context context) {
         return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);

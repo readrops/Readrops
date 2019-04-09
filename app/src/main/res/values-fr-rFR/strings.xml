@@ -41,5 +41,11 @@
     <string name="articles">Articles</string>
     <string name="read_later">A lire plus tard</string>
     <string name="show_read_articles">Afficher les articles lus</string>
+    <string name="filter">Filtrer</string>
+
+    <string-array name="filter_items">
+        <item>Du plus récent au plus ancien</item>
+        <item>Du plus ancien au plus récent</item>
+    </string-array>
 
 </resources>

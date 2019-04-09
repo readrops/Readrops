@@ -43,4 +43,10 @@
     <string name="articles">Articles</string>
     <string name="read_later">To read later</string>
     <string name="show_read_articles">Show read articles</string>
+    <string name="filter">Filter</string>
+
+    <string-array name="filter_items">
+        <item>Newest to oldest</item>
+        <item>Oldest to newsest</item>
+    </string-array>
 </resources>
