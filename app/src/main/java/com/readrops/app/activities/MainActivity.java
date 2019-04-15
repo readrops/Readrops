@@ -309,6 +309,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                                 break;
                         }
 
+                        updateDrawerFeeds();
                         actionMode.finish();
                         return true;
                     }
