@@ -6,4 +6,6 @@
     <color name="colorControlNormal">#d7d7d7</color>
     <color name="colorBackground">#fafafa</color>
     <color name="textColorPrimary">#000000</color>
+
+    <color name="selected_background">#E0E0E0</color>
 </resources>

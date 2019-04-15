@@ -32,8 +32,13 @@ public interface ItemDao {
     @Insert
     void insertAll(List<Item> items);
 
-    @Query("Update Item set read = 1 Where id = :itemId")
-    void setRead(int itemId);
+    /**
+     * Set an item read or unread
+     * @param itemId if of the item to update
+     * @param readState 1 for read, 0 for unread
+     */
+    @Query("Update Item set read = :readState Where id = :itemId")
+    void setReadState(int itemId, int readState);
 
     @Query("Select count(*) From Item Where feed_id = :feedId And read = 0")
     int getUnreadCount(int feedId);

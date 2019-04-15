@@ -49,4 +49,6 @@
         <item>Newest to oldest</item>
         <item>Oldest to newsest</item>
     </string-array>
+    <string name="unread">Mark as non read</string>
+    <string name="read">Mark as read</string>
 </resources>

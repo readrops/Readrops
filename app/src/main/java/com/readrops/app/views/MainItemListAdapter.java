@@ -1,13 +1,19 @@
 package com.readrops.app.views;
 
+import android.content.Context;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.recyclerview.extensions.ListAdapter;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +38,7 @@ import com.readrops.app.utils.GlideRequests;
 import com.readrops.app.utils.Utils;
 
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import static com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions.withCrossFade;
@@ -42,11 +49,14 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
     private OnItemClickListener listener;
     private ViewPreloadSizeProvider preloadSizeProvider;
 
+    private LinkedHashSet<Integer> selection;
+
     public MainItemListAdapter(GlideRequests glideRequests, ViewPreloadSizeProvider preloadSizeProvider) {
         super(DIFF_CALLBACK);
 
         this.glideRequests = glideRequests;
         this.preloadSizeProvider = preloadSizeProvider;
+        selection = new LinkedHashSet<>();
     }
 
     private static final DiffUtil.ItemCallback<ItemWithFeed> DIFF_CALLBACK = new DiffUtil.ItemCallback<ItemWithFeed>() {
@@ -87,8 +97,8 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
         if (payloads.size() > 0) {
             ItemWithFeed itemWithFeed = (ItemWithFeed) payloads.get(0);
 
-            float alpha = itemWithFeed.getItem().isRead() ? 0.5f : 1.0f;
-            holder.itemView.setAlpha(alpha);
+            holder.setReadState(itemWithFeed.getItem().isRead());
+            holder.setSelected(selection.contains(position));
         } else
             onBindViewHolder(holder, position);
     }
@@ -97,17 +107,6 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
     public void onBindViewHolder(@NonNull ItemViewHolder viewHolder, int i) {
         ItemWithFeed itemWithFeed = getItem(i);
         viewHolder.bind(itemWithFeed);
-
-        View[] alphaViews = new View[] {
-                viewHolder.dateLayout,
-                viewHolder.itemFolderName,
-                viewHolder.feedIcon,
-                viewHolder.feedName,
-                viewHolder.itemDescription,
-                viewHolder.itemTitle,
-                viewHolder.itemImage,
-                viewHolder.itemReadTime,
-        };
 
         if (itemWithFeed.getItem().hasImage()) {
             viewHolder.itemImage.setVisibility(View.VISIBLE);
@@ -156,16 +155,45 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
         else
             viewHolder.itemFolderName.setText(resources.getString(R.string.no_folder));
 
-        float alpha = itemWithFeed.getItem().isRead() ? 0.5f : 1.0f;
-        for (View view : alphaViews) {
-            view.setAlpha(alpha);
-        }
-
+        viewHolder.setReadState(itemWithFeed.getItem().isRead());
+        viewHolder.setSelected(selection.contains(viewHolder.getAdapterPosition()));
     }
+
+
 
     @Override
     public long getItemId(int position) {
         return getItem(position).getItem().getId();
+    }
+
+    public void toggleSelection(int position) {
+        if (selection.contains(position))
+            selection.remove(position);
+        else
+            selection.add(position);
+
+        notifyItemChanged(position);
+    }
+
+    public void clearSelection() {
+        selection.clear();
+        notifyDataSetChanged();
+    }
+
+    public LinkedHashSet<Integer> getSelection() {
+        return selection;
+    }
+
+    public void updateSelection(boolean read) {
+        for (int position : selection) {
+            ItemWithFeed itemWithFeed = getItem(position);
+            itemWithFeed.getItem().setRead(read);
+            notifyItemChanged(position, itemWithFeed);
+        }
+    }
+
+    public ItemWithFeed getItemWithFeed(int i) {
+        return getItem(i);
     }
 
     @NonNull
@@ -177,7 +205,6 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
         } else {
             return Collections.emptyList();
         }
-
     }
 
     @Nullable
@@ -192,6 +219,7 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
 
     public interface OnItemClickListener {
         void onItemClick(ItemWithFeed itemWithFeed, int position);
+        void onItemLongClick(ItemWithFeed itemWithFeed, int position);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -210,6 +238,8 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
         private TextView itemFolderName;
         private RelativeLayout dateLayout;
 
+        View[] alphaViews;
+
         ItemViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -220,6 +250,15 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
                     listener.onItemClick(getItem(position), position);
             }));
 
+            itemView.setOnLongClickListener(v -> {
+                int position = getAdapterPosition();
+
+                if (listener != null && position != RecyclerView.NO_POSITION)
+                    listener.onItemLongClick(getItem(position), position);
+
+                return true;
+            });
+
             itemTitle = itemView.findViewById(R.id.item_title);
             date = itemView.findViewById(R.id.item_date);
             feedName = itemView.findViewById(R.id.item_feed_title);
@@ -229,6 +268,17 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
             itemReadTime = itemView.findViewById(R.id.item_readtime);
             itemFolderName = itemView.findViewById(R.id.item_folder_name);
             dateLayout = itemView.findViewById(R.id.item_date_layout);
+
+            alphaViews = new View[] {
+                    dateLayout,
+                    itemFolderName,
+                    feedIcon,
+                    feedName,
+                    itemDescription,
+                    itemTitle,
+                    itemImage,
+                    itemReadTime
+            };
         }
 
         private void bind(ItemWithFeed itemWithFeed) {
@@ -243,6 +293,27 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
                 itemDescription.setText(item.getCleanDescription());
             } else
                 itemDescription.setVisibility(View.GONE);
+        }
+
+        private void setReadState(boolean isRead) {
+            float alpha = isRead ? 0.5f : 1.0f;
+            for (View view : alphaViews) {
+                view.setAlpha(alpha);
+            }
+        }
+
+        private void setSelected(boolean selected) {
+            Context context = itemView.getContext();
+
+            if (selected)
+                itemView.setBackground(new ColorDrawable(ContextCompat.getColor(context, R.color.selected_background)));
+            else {
+                TypedValue outValue = new TypedValue();
+                context.getTheme().resolveAttribute(
+                        android.R.attr.selectableItemBackground, outValue, true);
+
+                itemView.setBackgroundResource(outValue.resourceId);
+            }
         }
 
         public ImageView getItemImage() {

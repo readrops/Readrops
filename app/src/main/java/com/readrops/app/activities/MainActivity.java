@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
@@ -14,6 +15,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,6 +48,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -86,6 +89,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     private boolean showReadItems;
     private ListSortType sortType;
+
+    private ActionMode actionMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -221,31 +226,105 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         ViewPreloadSizeProvider preloadSizeProvider = new ViewPreloadSizeProvider();
         adapter = new MainItemListAdapter(GlideApp.with(this), preloadSizeProvider);
-        adapter.setOnItemClickListener((itemWithFeed, position) -> {
-            Intent intent = new Intent(this, ItemActivity.class);
+        adapter.setOnItemClickListener(new MainItemListAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(ItemWithFeed itemWithFeed, int position) {
+                if (actionMode == null) {
+                    Intent intent = new Intent(getApplicationContext(), ItemActivity.class);
 
-            intent.putExtra(ItemActivity.ITEM_ID, itemWithFeed.getItem().getId());
-            intent.putExtra(ItemActivity.IMAGE_URL, itemWithFeed.getItem().getImageLink());
-            startActivityForResult(intent, ITEM_REQUEST);
+                    intent.putExtra(ItemActivity.ITEM_ID, itemWithFeed.getItem().getId());
+                    intent.putExtra(ItemActivity.IMAGE_URL, itemWithFeed.getItem().getImageLink());
+                    startActivityForResult(intent, ITEM_REQUEST);
 
-            viewModel.setItemRead(itemWithFeed.getItem().getId())
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new DisposableCompletableObserver() {
-                        @Override
-                        public void onComplete() {
+                    viewModel.setItemReadState(itemWithFeed.getItem().getId(), true)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new DisposableCompletableObserver() {
+                                @Override
+                                public void onComplete() {
 
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+
+                                }
+                            });
+
+                    itemWithFeed.getItem().setRead(true);
+                    adapter.notifyItemChanged(position, itemWithFeed);
+                    updateDrawerFeeds();
+                } else {
+                    adapter.toggleSelection(position);
+
+                    if (adapter.getSelection().isEmpty())
+                        actionMode.finish();
+                }
+
+            }
+
+            @Override
+            public void onItemLongClick(ItemWithFeed itemWithFeed, int position) {
+                if (actionMode != null)
+                    return;
+
+                adapter.toggleSelection(position);
+
+                actionMode = startActionMode(new ActionMode.Callback() {
+                    @Override
+                    public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+                        drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                        refreshLayout.setEnabled(false);
+                        actionMode.getMenuInflater().inflate(R.menu.item_list_contextual_menu, menu);
+
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+                        menu.findItem(R.id.item_mark_read).setVisible(!itemWithFeed.getItem().isRead());
+                        menu.findItem(R.id.item_mark_unread).setVisible(itemWithFeed.getItem().isRead());
+
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+                        switch (menuItem.getItemId()) {
+                            case R.id.item_mark_read:
+                                viewModel.setItemsReadState(getIdsFromPositions(adapter.getSelection()), true)
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe();
+                                adapter.updateSelection(true);
+
+                                break;
+                            case R.id.item_mark_unread:
+                                viewModel.setItemsReadState(getIdsFromPositions(adapter.getSelection()), false)
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe();
+                                adapter.updateSelection(false);
+
+                                break;
                         }
 
-                        @Override
-                        public void onError(Throwable e) {
+                        actionMode.finish();
+                        return true;
+                    }
 
-                        }
-                    });
+                    @Override
+                    public void onDestroyActionMode(ActionMode mode) {
+                        mode.finish();
+                        actionMode = null;
 
-            itemWithFeed.getItem().setRead(true);
-            adapter.notifyItemChanged(position, itemWithFeed);
-            updateDrawerFeeds();
+                        drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                        refreshLayout.setEnabled(true);
+
+                        adapter.clearSelection();
+                    }
+                });
+            }
         });
 
         RecyclerViewPreloader<String> preloader = new RecyclerViewPreloader<String>(Glide.with(this), adapter, preloadSizeProvider, 10);
@@ -421,7 +500,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     showReadItems = true;
                     SharedPreferencesManager.writeValue(this,
                             SharedPreferencesManager.SharedPrefKey.SHOW_READ_ARTICLES, true);
-
                 }
 
                 filterItems(filterFeedId);
@@ -457,8 +535,20 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 .show();
     }
 
+    private List<Integer> getIdsFromPositions(LinkedHashSet<Integer> positions) {
+        List<Integer> ids = new ArrayList<>();
+
+        for (int position : positions) {
+            ids.add((int)adapter.getItemId(position));
+        }
+
+        return ids;
+    }
+
     public enum ListSortType {
         NEWEST_TO_OLDEST,
         OLDEST_TO_NEWEST
     }
+
+
 }

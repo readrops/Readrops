@@ -47,5 +47,7 @@
         <item>Du plus récent au plus ancien</item>
         <item>Du plus ancien au plus récent</item>
     </string-array>
+    <string name="unread">Marquer comme non lu</string>
+    <string name="read">Marquer comme lu</string>
 
 </resources>

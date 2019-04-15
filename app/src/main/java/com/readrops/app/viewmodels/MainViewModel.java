@@ -10,9 +10,8 @@ import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.repositories.LocalFeedRepository;
-import com.readrops.app.utils.ParsingResult;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -67,10 +66,20 @@ public class MainViewModel extends AndroidViewModel {
         });
     }
 
-    public Completable setItemRead(int itemId) {
+    public Completable setItemReadState(int itemId, boolean read) {
         return Completable.create(emitter -> {
-            db.itemDao().setRead(itemId);
+            db.itemDao().setReadState(itemId, read ? 1 : 0);
             emitter.onComplete();
         });
+    }
+
+    public Completable setItemsReadState(List<Integer> ids, boolean read) {
+        List<Completable> completableList = new ArrayList<>();
+
+        for (int id : ids) {
+            completableList.add(setItemReadState(id, read));
+        }
+
+        return Completable.concat(completableList);
     }
 }
