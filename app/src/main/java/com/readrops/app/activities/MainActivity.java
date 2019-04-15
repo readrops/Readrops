@@ -2,6 +2,7 @@ package com.readrops.app.activities;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -99,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         Toolbar toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
+        toolbar.setTitleTextColor(Color.WHITE);
 
         actionMenu = findViewById(R.id.fab_menu);
         viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
