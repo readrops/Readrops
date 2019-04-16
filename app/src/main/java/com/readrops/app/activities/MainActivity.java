@@ -2,7 +2,12 @@ package com.readrops.app.activities;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,6 +15,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -42,6 +48,7 @@ import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.utils.DrawerManager;
 import com.readrops.app.utils.GlideApp;
 import com.readrops.app.utils.SharedPreferencesManager;
+import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.MainViewModel;
 import com.readrops.app.views.MainItemListAdapter;
 
@@ -241,17 +248,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     viewModel.setItemReadState(itemWithFeed.getItem().getId(), true)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(new DisposableCompletableObserver() {
-                                @Override
-                                public void onComplete() {
-
-                                }
-
-                                @Override
-                                public void onError(Throwable e) {
-
-                                }
-                            });
+                            .doOnError(throwable -> Toast.makeText(getApplicationContext(),
+                                    "Error when updating in db", Toast.LENGTH_LONG).show())
+                            .subscribe();
 
                     itemWithFeed.getItem().setRead(true);
                     adapter.notifyItemChanged(position, itemWithFeed);
@@ -297,6 +296,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                                 viewModel.setItemsReadState(getIdsFromPositions(adapter.getSelection()), true)
                                         .subscribeOn(Schedulers.io())
                                         .observeOn(AndroidSchedulers.mainThread())
+                                        .doOnError(throwable -> Toast.makeText(getApplicationContext(),
+                                                "Error when updating in db", Toast.LENGTH_LONG).show())
                                         .subscribe();
                                 adapter.updateSelection(true);
 
@@ -305,6 +306,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                                 viewModel.setItemsReadState(getIdsFromPositions(adapter.getSelection()), false)
                                         .subscribeOn(Schedulers.io())
                                         .observeOn(AndroidSchedulers.mainThread())
+                                        .doOnError(throwable -> Toast.makeText(getApplicationContext(),
+                                                "Error when updating in db", Toast.LENGTH_LONG).show())
                                         .subscribe();
                                 adapter.updateSelection(false);
 
@@ -361,10 +364,24 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-                if (i == ItemTouchHelper.LEFT)
+                if (i == ItemTouchHelper.LEFT) { // set item read state
+                    ItemWithFeed itemWithFeed = adapter.getItemWithFeed(viewHolder.getAdapterPosition());
+
+                    viewModel.setItemReadState(itemWithFeed.getItem().getId(), !itemWithFeed.getItem().isRead())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe();
+
+                    itemWithFeed.getItem().setRead(!itemWithFeed.getItem().isRead());
+
+                    // work-around to undo swipe as only notifyItemChanged(position) can do it,
+                    // but we need first to update the viewHolder.
+                    adapter.notifyItemChanged(viewHolder.getAdapterPosition(), itemWithFeed);
+                    adapter.notifyItemChanged(viewHolder.getAdapterPosition());
+
+
+                } else { // add item to read it later section
                     adapter.notifyItemRemoved(viewHolder.getAdapterPosition());
-                else {
-                    Log.d("", "");
                 }
             }
 
