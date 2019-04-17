@@ -20,7 +20,7 @@ public interface ItemDao {
     @Query("Select * from Item Order By pub_date DESC")
     LiveData<List<Item>> getAll();
 
-    @Query("Select Item.id, title, clean_description, image_link, pub_date, read, Feed.name, text_color, background_color, icon_url, read_time, Feed.id as feedId, Folder.id as folder_id, Folder.name as folder_name from Item Inner Join Feed, Folder on Item.feed_id = Feed.id And Folder.id = Feed.folder_id Order By Item.id DESC")
+    @Query("Select Item.id, title, clean_description, image_link, pub_date, read, read_it_later, Feed.name, text_color, background_color, icon_url, read_time, Feed.id as feedId, Folder.id as folder_id, Folder.name as folder_name from Item Inner Join Feed, Folder on Item.feed_id = Feed.id And Folder.id = Feed.folder_id Order By Item.id DESC")
     LiveData<List<ItemWithFeed>> getAllItemWithFeeds();
 
     @Query("Select case When :guid In (Select guid from Item) Then 'true' else 'false' end")
@@ -39,6 +39,9 @@ public interface ItemDao {
      */
     @Query("Update Item set read = :readState Where id = :itemId")
     void setReadState(int itemId, int readState);
+
+    @Query("Update Item set read_it_later = 1 Where id = :itemId")
+    void setReadItLater(int itemId);
 
     @Query("Select count(*) From Item Where feed_id = :feedId And read = 0")
     int getUnreadCount(int feedId);

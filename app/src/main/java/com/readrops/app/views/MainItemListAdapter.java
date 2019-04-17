@@ -72,7 +72,9 @@ public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListA
 
             return item.getTitle().equals(item1.getTitle()) &&
                     itemWithFeed.getFeedName().equals(t1.getFeedName()) &&
-                    itemWithFeed.getFolder().getName().equals(t1.getFolder().getName());
+                    itemWithFeed.getFolder().getName().equals(t1.getFolder().getName()) &&
+                    item.isRead() == item1.isRead() &&
+                    item.isReadItLater() == item1.isReadItLater();
         }
     };
 

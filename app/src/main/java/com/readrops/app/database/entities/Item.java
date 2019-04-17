@@ -60,6 +60,9 @@ public class Item implements Comparable<Item> {
 
     private boolean read;
 
+    @ColumnInfo(name = "read_it_later")
+    private boolean readItLater;
+
     public int getId() {
         return id;
     }
@@ -173,6 +176,14 @@ public class Item implements Comparable<Item> {
 
     public void setRead(boolean read) {
         this.read = read;
+    }
+
+    public boolean isReadItLater() {
+        return readItLater;
+    }
+
+    public void setReadItLater(boolean readItLater) {
+        this.readItLater = readItLater;
     }
 
     public static List<Item> itemsFromRSS(List<RSSItem> items, Feed feed) throws ParseException {

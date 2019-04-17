@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private int feedCount;
     private int feedNb;
     private int filterFeedId;
+    private boolean readItLater;
 
     private boolean showReadItems;
     private ListSortType sortType;
@@ -121,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             allItems = itemWithFeeds;
 
             if (!refreshLayout.isRefreshing())
-                filterItems(0);
+                filterItems(filterFeedId);
         }));
 
         refreshLayout = findViewById(R.id.swipe_refresh_layout);
@@ -157,13 +158,17 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
             switch (id) {
                 case DrawerManager.ARTICLES_ITEM_ID:
+                    readItLater = false;
                     filterItems(0);
                     break;
                 case DrawerManager.READ_LATER_ID:
+                    readItLater = true;
+                    filterItems(0);
                     break;
 
             }
         } else if (drawerItem instanceof SecondaryDrawerItem) {
+            readItLater = false;
             drawer.closeDrawer();
             filterItems((int)drawerItem.getIdentifier());
         }
@@ -180,14 +185,20 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             else
                 showRead = true; // item unread
 
-            if (id == 0)
-                return showRead;
-            else
-                return object.getFeedId() == id && showRead;
+            if (id != 0) {
+                if (readItLater)
+                    return object.getItem().isReadItLater() && object.getFeedId() == id && showRead;
+                else
+                    return !object.getItem().isReadItLater() && object.getFeedId() == id && showRead;
+            } else {
+                if (readItLater)
+                    return object.getItem().isReadItLater() && showRead;
+                else
+                    return !object.getItem().isReadItLater() && showRead;
+            }
         });
 
         sortItems();
-
         adapter.submitList(filteredItems);
     }
 
@@ -374,14 +385,15 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
                     itemWithFeed.getItem().setRead(!itemWithFeed.getItem().isRead());
 
-                    // work-around to undo swipe as only notifyItemChanged(position) can do it,
-                    // but we need first to update the viewHolder.
-                    adapter.notifyItemChanged(viewHolder.getAdapterPosition(), itemWithFeed);
                     adapter.notifyItemChanged(viewHolder.getAdapterPosition());
-
-
                 } else { // add item to read it later section
-                    adapter.notifyItemRemoved(viewHolder.getAdapterPosition());
+                    viewModel.setItemReadItLater((int) adapter.getItemId(viewHolder.getAdapterPosition()))
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe();
+
+                    if (readItLater)
+                        adapter.notifyItemChanged(viewHolder.getAdapterPosition());
                 }
             }
 
@@ -569,6 +581,4 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         NEWEST_TO_OLDEST,
         OLDEST_TO_NEWEST
     }
-
-
 }

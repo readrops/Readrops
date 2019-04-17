@@ -82,4 +82,11 @@ public class MainViewModel extends AndroidViewModel {
 
         return Completable.concat(completableList);
     }
+
+    public Completable setItemReadItLater(int itemId) {
+        return Completable.create(emitter -> {
+            db.itemDao().setReadItLater(itemId);
+            emitter.onComplete();
+        });
+    }
 }
