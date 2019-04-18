@@ -502,7 +502,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                         refreshLayout.setRefreshing(false);
 
                         adapter.submitList(allItems);
-                        filterItems(0);
+                        filterItems(filterFeedId);
                         updateDrawerFeeds(); // update drawer after syncing feeds
                     }
                 });
