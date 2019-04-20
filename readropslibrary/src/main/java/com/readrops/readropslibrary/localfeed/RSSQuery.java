@@ -38,7 +38,7 @@ public class RSSQuery {
 
     /**
      * Request the url given in parameter.
-     * This method is synchronous, <b>it has to be called from another thread than the main one</b>.
+     * This method is synchronous, it <b>has</b> to be called from another thread than the main one.
      * @param url url to request
      * @throws Exception
      */
@@ -116,8 +116,6 @@ public class RSSQuery {
         }
     }
 
-
-
     /**
      * Parse input feed
      * @param stream source to parse
@@ -145,7 +143,7 @@ public class RSSQuery {
         switch (type) {
             case RSS_2:
                 feed = serializer.read(RSSFeed.class, xml);
-                if (((RSSFeed)feed).getChannel().getFeedUrl() == null) // workaround si the channel does not have any atom:link tag
+                if (((RSSFeed)feed).getChannel().getFeedUrl() == null) // workaround if the channel does not have any atom:link tag
                     ((RSSFeed)feed).getChannel().getLinks().add(new RSSLink(null, response.request().url().toString()));
                 feed.setEtag(etag);
                 feed.setLastModified(lastModified);

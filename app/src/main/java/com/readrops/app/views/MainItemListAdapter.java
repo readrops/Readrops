@@ -1,5 +1,6 @@
 package com.readrops.app.views;
 
+import android.arch.paging.PagedListAdapter;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -43,7 +44,7 @@ import java.util.List;
 
 import static com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions.withCrossFade;
 
-public class MainItemListAdapter extends ListAdapter<ItemWithFeed, MainItemListAdapter.ItemViewHolder> implements ListPreloader.PreloadModelProvider<String> {
+public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItemListAdapter.ItemViewHolder> implements ListPreloader.PreloadModelProvider<String> {
 
     private GlideRequests glideRequests;
     private OnItemClickListener listener;

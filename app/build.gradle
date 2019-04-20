@@ -48,6 +48,9 @@ dependencies {
     implementation 'android.arch.lifecycle:extensions:1.1.1'
     implementation "android.arch.persistence.room:runtime:1.1.1"
     annotationProcessor "android.arch.persistence.room:compiler:1.1.1"
+    implementation 'android.arch.paging:runtime:1.0.1'
+    implementation 'android.arch.paging:common:1.0.1'
+
 
     implementation "joda-time:joda-time:2.9.9"
     implementation 'org.jsoup:jsoup:1.11.3'

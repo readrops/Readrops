@@ -2,7 +2,7 @@ package com.readrops.app.repositories;
 
 import android.accounts.NetworkErrorException;
 import android.app.Application;
-import android.arch.lifecycle.LiveData;
+import android.arch.paging.PageKeyedDataSource;
 import android.support.annotation.Nullable;
 
 import com.readrops.app.database.entities.Folder;
@@ -41,16 +41,11 @@ public class LocalFeedRepository extends ARepository {
 
     private static final String TAG = LocalFeedRepository.class.getSimpleName();
 
-    private LiveData<List<ItemWithFeed>> itemsWhithFeed;
+    private PageKeyedDataSource.Factory<Integer, ItemWithFeed> itemsWhithFeed;
 
     public LocalFeedRepository(Application application) {
         super(application);
 
-        itemsWhithFeed = database.itemDao().getAllItemWithFeeds();
-    }
-
-    public LiveData<List<ItemWithFeed>> getItemsWithFeed() {
-        return itemsWhithFeed;
     }
 
     @Override
@@ -107,23 +102,6 @@ public class LocalFeedRepository extends ARepository {
     }
 
     @Override
-    public void addFeed(ParsingResult result) {
-        executor.execute(() -> {
-            try {
-                RSSQuery rssQuery = new RSSQuery();
-
-                RSSQueryResult queryResult = rssQuery.queryUrl(result.getUrl(), new HashMap<>());
-                if (queryResult != null && queryResult.getException() == null) {
-                    insertFeed(queryResult.getFeed(), queryResult.getRssType());
-                }
-
-            } catch (Exception e) {
-
-            }
-        });
-    }
-
-    @Override
     public Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results) {
          return Single.create(emitter -> {
              List<FeedInsertionResult> insertionResults = new ArrayList<>();
@@ -161,17 +139,6 @@ public class LocalFeedRepository extends ARepository {
              }
 
             emitter.onSuccess(insertionResults);
-        });
-    }
-
-    @Override
-    public void updateFeed(Feed feed) {
-        executor.execute(() -> {
-            try {
-                database.feedDao().update(feed);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
         });
     }
 

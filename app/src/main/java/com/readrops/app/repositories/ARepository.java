@@ -36,11 +36,7 @@ public abstract class ARepository {
 
     public abstract Observable<Feed> sync(List<Feed> feeds);
 
-    public abstract void addFeed(ParsingResult result);
-
     public abstract Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results);
-
-    public abstract void updateFeed(Feed feed);
 
     public abstract void updateFeedWithFolder(FeedWithFolder feedWithFolder);
 

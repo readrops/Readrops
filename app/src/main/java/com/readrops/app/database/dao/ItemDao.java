@@ -2,6 +2,8 @@ package com.readrops.app.database.dao;
 
 
 import android.arch.lifecycle.LiveData;
+import android.arch.paging.DataSource;
+import android.arch.paging.PageKeyedDataSource;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
@@ -14,14 +16,45 @@ import java.util.List;
 @Dao
 public interface ItemDao {
 
-    @Query("Select * from Item Where feed_id = :feedId")
-    LiveData<List<Item>> getAllByFeed(int feedId);
+    String SELECT_ALL_FIELDS = "Item.id, title, clean_description, image_link, pub_date, read, read_it_later, " +
+            "Feed.name, text_color, background_color, icon_url, read_time, Feed.id as feedId, Folder.id as folder_id, " +
+            "Folder.name as folder_name";
 
-    @Query("Select * from Item Order By pub_date DESC")
-    LiveData<List<Item>> getAll();
+    String SELECT_ALL_JOIN = "Item Inner Join Feed, Folder on Item.feed_id = Feed.id And Folder.id = Feed.folder_id";
 
-    @Query("Select Item.id, title, clean_description, image_link, pub_date, read, read_it_later, Feed.name, text_color, background_color, icon_url, read_time, Feed.id as feedId, Folder.id as folder_id, Folder.name as folder_name from Item Inner Join Feed, Folder on Item.feed_id = Feed.id And Folder.id = Feed.folder_id Order By Item.id DESC")
-    LiveData<List<ItemWithFeed>> getAllItemWithFeeds();
+    String SELECT_ALL_ORDER_BY_ASC = "Order by Item.id DESC";
+
+    String SELECT_ALL_ORDER_BY_DESC = "Order By pub_date ASC";
+
+    @Query("Select " + SELECT_ALL_FIELDS + " from " + SELECT_ALL_JOIN + " Where feed_id = :feedId " +
+            "And read = :readState And read_it_later = 0 " + SELECT_ALL_ORDER_BY_ASC)
+    DataSource.Factory<Integer, ItemWithFeed> selectAllByFeedASC(int feedId, int readState);
+
+    @Query("Select " + SELECT_ALL_FIELDS + " from " + SELECT_ALL_JOIN + " Where feed_id = :feedId " +
+            "And read = :readState And read_it_later = 0 " + SELECT_ALL_ORDER_BY_DESC)
+    DataSource.Factory<Integer, ItemWithFeed> selectAllByFeedsDESC(int feedId, int readState);
+
+    @Query("Select " + SELECT_ALL_FIELDS + " from " + SELECT_ALL_JOIN + " Where read_it_later = 1 " +
+            "And read = :readState " + SELECT_ALL_ORDER_BY_ASC)
+    DataSource.Factory<Integer, ItemWithFeed> selectAllReadItLaterASC(int readState);
+
+    @Query("Select " + SELECT_ALL_FIELDS + " from " + SELECT_ALL_JOIN + " Where read_it_later = 1 " +
+            "And read = :readState " + SELECT_ALL_ORDER_BY_DESC)
+    DataSource.Factory<Integer, ItemWithFeed> selectAllReadItLaterDESC(int readState);
+
+    /**
+     * ASC means here from the newest (inserted) to the oldest
+     */
+    @Query("Select " + SELECT_ALL_FIELDS + " From " + SELECT_ALL_JOIN + " Where read = :readState And " +
+            "read_it_later = 0 " + SELECT_ALL_ORDER_BY_ASC)
+    DataSource.Factory<Integer, ItemWithFeed> selectAllASC(int readState);
+
+    /**
+     * DESC means here from the oldest to the newest
+     */
+    @Query("Select " + SELECT_ALL_FIELDS + " From " + SELECT_ALL_JOIN + " Where read = :readState And "
+            + "read_it_later = 0 " + SELECT_ALL_ORDER_BY_DESC)
+    PageKeyedDataSource.Factory<Integer, ItemWithFeed> selectAllDESC(int readState);
 
     @Query("Select case When :guid In (Select guid from Item) Then 'true' else 'false' end")
     String guidExist(String guid);

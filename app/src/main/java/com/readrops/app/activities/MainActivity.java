@@ -1,13 +1,9 @@
 package com.readrops.app.activities;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.arch.paging.PagedList;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.RectF;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,7 +11,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -48,14 +43,10 @@ import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.utils.DrawerManager;
 import com.readrops.app.utils.GlideApp;
 import com.readrops.app.utils.SharedPreferencesManager;
-import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.MainViewModel;
 import com.readrops.app.views.MainItemListAdapter;
 
-import org.apache.commons.collections4.CollectionUtils;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +54,6 @@ import java.util.Map;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -81,8 +71,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private Drawer drawer;
     private FloatingActionMenu actionMenu;
 
-    private List<ItemWithFeed> allItems;
-    private List<ItemWithFeed> filteredItems;
+    private PagedList<ItemWithFeed> allItems;
 
     private MainViewModel viewModel;
     private DrawerManager drawerManager;
@@ -93,11 +82,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     private int feedCount;
     private int feedNb;
-    private int filterFeedId;
-    private boolean readItLater;
-
-    private boolean showReadItems;
-    private ListSortType sortType;
+    private boolean scrollToTop;
 
     private ActionMode actionMode;
 
@@ -113,17 +98,15 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         actionMenu = findViewById(R.id.fab_menu);
         viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
-        allItems = new ArrayList<>();
+        viewModel.setShowReadItems(SharedPreferencesManager.readBoolean(this,
+                SharedPreferencesManager.SharedPrefKey.SHOW_READ_ARTICLES));
 
-        showReadItems = SharedPreferencesManager.readBoolean(this,
-                SharedPreferencesManager.SharedPrefKey.SHOW_READ_ARTICLES);
-
-        viewModel.getItemsWithFeed().observe(this, (itemWithFeeds -> {
+        viewModel.getItemsWithFeed().observe(this, itemWithFeeds -> {
             allItems = itemWithFeeds;
 
             if (!refreshLayout.isRefreshing())
-                filterItems(filterFeedId);
-        }));
+                adapter.submitList(itemWithFeeds);
+        });
 
         refreshLayout = findViewById(R.id.swipe_refresh_layout);
         refreshLayout.setOnRefreshListener(this);
@@ -134,7 +117,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         feedCount = 0;
         initRecyclerView();
-        sortType = ListSortType.NEWEST_TO_OLDEST;
 
         drawer = new DrawerBuilder()
                 .withActivity(this)
@@ -154,65 +136,24 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         if (drawerItem instanceof PrimaryDrawerItem) {
             drawer.closeDrawer();
             int id = (int)drawerItem.getIdentifier();
-            filterFeedId = 0;
 
             switch (id) {
                 case DrawerManager.ARTICLES_ITEM_ID:
-                    readItLater = false;
-                    filterItems(0);
+                    viewModel.setFilterType(MainViewModel.FilterType.NO_FILTER);
+                    viewModel.invalidate();
                     break;
                 case DrawerManager.READ_LATER_ID:
-                    readItLater = true;
-                    filterItems(0);
+                    viewModel.setFilterType(MainViewModel.FilterType.READ_IT_LATER_FILTER);
+                    viewModel.invalidate();
                     break;
 
             }
         } else if (drawerItem instanceof SecondaryDrawerItem) {
-            readItLater = false;
             drawer.closeDrawer();
-            filterItems((int)drawerItem.getIdentifier());
-        }
-    }
 
-    private void filterItems(int id) {
-        filterFeedId = id;
-        filteredItems = new ArrayList<>(allItems);
-
-        CollectionUtils.filter(filteredItems, object -> {
-            boolean showRead;
-            if (object.getItem().isRead())
-                showRead = (object.getItem().isRead() == showReadItems);
-            else
-                showRead = true; // item unread
-
-            if (id != 0) {
-                if (readItLater)
-                    return object.getItem().isReadItLater() && object.getFeedId() == id && showRead;
-                else
-                    return !object.getItem().isReadItLater() && object.getFeedId() == id && showRead;
-            } else {
-                if (readItLater)
-                    return object.getItem().isReadItLater() && showRead;
-                else
-                    return !object.getItem().isReadItLater() && showRead;
-            }
-        });
-
-        sortItems();
-        adapter.submitList(filteredItems);
-    }
-
-    private void sortItems() {
-        switch (sortType) {
-            case OLDEST_TO_NEWEST:
-                Collections.sort(filteredItems, ((o1, o2) -> o1.getItem().getPubDate().compareTo(o2.getItem().getPubDate())));
-                break;
-            case NEWEST_TO_OLDEST:
-                Collections.sort(filteredItems, ((o1, o2) -> -1 * o1.getItem().getPubDate().compareTo(o2.getItem().getPubDate())));
-                break;
-            default:
-                Collections.sort(filteredItems, ((o1, o2) -> -1 * o1.getItem().getPubDate().compareTo(o2.getItem().getPubDate())));
-                break;
+            viewModel.setFilterFeedId((int) drawerItem.getIdentifier());
+            viewModel.setFilterType(MainViewModel.FilterType.FEED_FILTER);
+            viewModel.invalidate();
         }
     }
 
@@ -392,7 +333,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe();
 
-                    if (readItLater)
+                    if (viewModel.getFilterType() == MainViewModel.FilterType.READ_IT_LATER_FILTER)
                         adapter.notifyItemChanged(viewHolder.getAdapterPosition());
                 }
             }
@@ -406,7 +347,19 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
-                recyclerView.scrollToPosition(0);
+                if (scrollToTop) {
+                    recyclerView.scrollToPosition(0);
+                    scrollToTop = false;
+                }
+            }
+
+            @Override
+            public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
+                if (scrollToTop) {
+                    recyclerView.scrollToPosition(0);
+                    scrollToTop = false;
+                } else
+                    super.onItemRangeMoved(fromPosition, toPosition, itemCount);
             }
         });
     }
@@ -501,8 +454,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                         syncProgressLayout.setVisibility(View.GONE);
                         refreshLayout.setRefreshing(false);
 
+                        scrollToTop = true;
                         adapter.submitList(allItems);
-                        filterItems(filterFeedId);
+
                         updateDrawerFeeds(); // update drawer after syncing feeds
                     }
                 });
@@ -513,7 +467,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         getMenuInflater().inflate(R.menu.item_list_menu, menu);
 
         MenuItem articlesItem = menu.findItem(R.id.item_filter_read_items);
-        articlesItem.setChecked(showReadItems);
+        articlesItem.setChecked(viewModel.showReadItems());
 
         return true;
     }
@@ -524,17 +478,17 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             case R.id.item_filter_read_items:
                 if (item.isChecked()) {
                     item.setChecked(false);
-                    showReadItems = false;
+                    viewModel.setShowReadItems(false);
                     SharedPreferencesManager.writeValue(this,
                             SharedPreferencesManager.SharedPrefKey.SHOW_READ_ARTICLES, false);
                 } else {
                     item.setChecked(true);
-                    showReadItems = true;
+                    viewModel.setShowReadItems(true);
                     SharedPreferencesManager.writeValue(this,
                             SharedPreferencesManager.SharedPrefKey.SHOW_READ_ARTICLES, true);
                 }
 
-                filterItems(filterFeedId);
+                viewModel.invalidate();
                 return true;
             case R.id.item_sort:
                 displayFilterDialog();
@@ -545,7 +499,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
     private void displayFilterDialog() {
-        int index = sortType == ListSortType.OLDEST_TO_NEWEST ? 1 : 0;
+        int index = viewModel.getSortType() == ListSortType.OLDEST_TO_NEWEST ? 1 : 0;
 
         new MaterialDialog.Builder(this)
                 .title(getString(R.string.filter))
@@ -554,14 +508,12 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     String[] items = getResources().getStringArray(R.array.filter_items);
 
                     if (text.toString().equals(items[0]))
-                        sortType = ListSortType.NEWEST_TO_OLDEST;
+                        viewModel.setSortType(ListSortType.NEWEST_TO_OLDEST);
                     else
-                        sortType = ListSortType.OLDEST_TO_NEWEST;
+                        viewModel.setSortType(ListSortType.OLDEST_TO_NEWEST);
 
-                    sortItems();
-                    adapter.submitList(filteredItems);
-                    adapter.notifyDataSetChanged();
-
+                    scrollToTop = true;
+                    viewModel.invalidate();
                     return true;
                 })
                 .show();
