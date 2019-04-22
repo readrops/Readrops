@@ -11,10 +11,12 @@ import android.arch.lifecycle.Transformations;
 import android.arch.paging.DataSource;
 import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
+import android.arch.persistence.db.SupportSQLiteQuery;
 import android.support.annotation.NonNull;
 
 import com.readrops.app.activities.MainActivity;
 import com.readrops.app.database.Database;
+import com.readrops.app.database.ItemsListQueryBuilder;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.ItemWithFeed;
@@ -36,54 +38,28 @@ public class MainViewModel extends AndroidViewModel {
     private LocalFeedRepository repository;
     private Database db;
 
-    private boolean showReadItems;
-    private FilterType filterType;
-    private MainActivity.ListSortType sortType;
-    private int filterFeedId;
+    private ItemsListQueryBuilder queryBuilder;
 
     public MainViewModel(@NonNull Application application) {
         super(application);
 
-        filterType = FilterType.NO_FILTER;
-        sortType = MainActivity.ListSortType.NEWEST_TO_OLDEST;
+        queryBuilder = new ItemsListQueryBuilder();
+
+        queryBuilder.setFilterType(FilterType.NO_FILTER);
+        queryBuilder.setSortType(MainActivity.ListSortType.NEWEST_TO_OLDEST);
 
         repository = new LocalFeedRepository(application);
         db = Database.getInstance(application);
 
         itemsWithFeed = new MediatorLiveData<>();
-
-        buildPagedList();
     }
 
     private void buildPagedList() {
-        DataSource.Factory<Integer, ItemWithFeed> items;
-        int readState = showReadItems ? 1 : 0;
-
-        switch (filterType) {
-            case FEED_FILTER:
-                if (sortType == MainActivity.ListSortType.NEWEST_TO_OLDEST)
-                    items = db.itemDao().selectAllByFeedASC(filterFeedId, readState);
-                else
-                    items = db.itemDao().selectAllByFeedsDESC(filterFeedId, readState);
-                break;
-            case READ_IT_LATER_FILTER:
-                if (sortType == MainActivity.ListSortType.NEWEST_TO_OLDEST)
-                    items = db.itemDao().selectAllReadItLaterASC(readState);
-                else
-                    items = db.itemDao().selectAllReadItLaterDESC(readState);
-                break;
-            default:
-                if (sortType == MainActivity.ListSortType.NEWEST_TO_OLDEST)
-                    items = db.itemDao().selectAllASC(readState);
-                else
-                    items = db.itemDao().selectAllDESC(readState);
-                break;
-        }
-
         if (lastFetch != null)
             itemsWithFeed.removeSource(lastFetch);
 
-        lastFetch = new LivePagedListBuilder<>(items, new PagedList.Config.Builder()
+        lastFetch = new LivePagedListBuilder<>(db.itemDao().selectAll(queryBuilder.getQuery()),
+                new PagedList.Config.Builder()
                 .setPageSize(40)
                 .setPrefetchDistance(80)
                 .setEnablePlaceholders(false)
@@ -98,31 +74,31 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     public void setShowReadItems(boolean showReadItems) {
-        this.showReadItems = showReadItems;
+        queryBuilder.setShowReaditems(showReadItems);
     }
 
     public boolean showReadItems() {
-        return showReadItems;
+        return queryBuilder.showReaditems();
     }
 
     public void setFilterType(FilterType filterType) {
-        this.filterType = filterType;
+        queryBuilder.setFilterType(filterType);
     }
 
     public FilterType getFilterType() {
-        return filterType;
+        return queryBuilder.getFilterType();
     }
 
     public void setSortType(MainActivity.ListSortType sortType) {
-        this.sortType = sortType;
+        queryBuilder.setSortType(sortType);
     }
 
     public MainActivity.ListSortType getSortType() {
-        return sortType;
+        return queryBuilder.getSortType();
     }
 
     public void setFilterFeedId(int filterFeedId) {
-        this.filterFeedId = filterFeedId;
+        queryBuilder.setFilterFeedId(filterFeedId);
     }
 
     public MediatorLiveData<PagedList<ItemWithFeed>> getItemsWithFeed() {

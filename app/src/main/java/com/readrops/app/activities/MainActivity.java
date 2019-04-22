@@ -101,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         viewModel.setShowReadItems(SharedPreferencesManager.readBoolean(this,
                 SharedPreferencesManager.SharedPrefKey.SHOW_READ_ARTICLES));
 
+        viewModel.invalidate();
         viewModel.getItemsWithFeed().observe(this, itemWithFeeds -> {
             allItems = itemWithFeeds;
 
