@@ -248,10 +248,10 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
                         switch (menuItem.getItemId()) {
                             case R.id.item_mark_read:
-                                setReadState(true, allItemsSelected);
+                                setReadState(true);
                                 break;
                             case R.id.item_mark_unread:
-                                setReadState(false, allItemsSelected);
+                                setReadState(false);
                                 break;
                             case R.id.item_select_all:
                                 adapter.selectAll();
@@ -355,8 +355,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         });
     }
 
-    private void setReadState(boolean read, boolean allItems) {
-        if (allItems) {
+    private void setReadState(boolean read) {
+        if (allItemsSelected) {
             viewModel.setAllItemsReadState(read)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
