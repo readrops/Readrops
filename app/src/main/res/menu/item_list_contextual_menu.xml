@@ -14,4 +14,9 @@
         android:icon="@drawable/ic_read"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/item_select_all"
+        android:title="@string/select_all"
+        app:showAsAction="never" />
+
 </menu>

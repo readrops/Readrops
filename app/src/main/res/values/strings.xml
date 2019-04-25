@@ -51,4 +51,5 @@
     </string-array>
     <string name="unread">Mark as non read</string>
     <string name="read">Mark as read</string>
+    <string name="select_all">Select all</string>
 </resources>

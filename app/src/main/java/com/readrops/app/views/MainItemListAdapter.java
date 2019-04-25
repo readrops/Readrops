@@ -195,6 +195,15 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
         }
     }
 
+    public void selectAll() {
+        selection.clear();
+        for (int i = 0; i < getItemCount(); i++) {
+            selection.add(i);
+        }
+
+        notifyDataSetChanged();
+    }
+
     public ItemWithFeed getItemWithFeed(int i) {
         return getItem(i);
     }

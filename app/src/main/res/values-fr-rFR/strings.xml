@@ -49,5 +49,6 @@
     </string-array>
     <string name="unread">Marquer comme non lu</string>
     <string name="read">Marquer comme lu</string>
+    <string name="select_all">Tout sélectionner</string>
 
 </resources>

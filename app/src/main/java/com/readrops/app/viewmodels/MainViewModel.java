@@ -150,6 +150,13 @@ public class MainViewModel extends AndroidViewModel {
         return Completable.concat(completableList);
     }
 
+    public Completable setAllItemsReadState(boolean read) {
+        return Completable.create(emitter -> {
+            db.itemDao().setAllItemsReadState(read ? 1 : 0);
+            emitter.onComplete();
+        });
+    }
+
     public Completable setItemReadItLater(int itemId) {
         return Completable.create(emitter -> {
             db.itemDao().setReadItLater(itemId);

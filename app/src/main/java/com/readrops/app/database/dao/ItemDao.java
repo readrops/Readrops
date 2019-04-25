@@ -31,11 +31,14 @@ public interface ItemDao {
 
     /**
      * Set an item read or unread
-     * @param itemId if of the item to update
+     * @param itemId id of the item to update
      * @param readState 1 for read, 0 for unread
      */
     @Query("Update Item set read = :readState Where id = :itemId")
     void setReadState(int itemId, int readState);
+
+    @Query("Update Item set read = :readState")
+    void setAllItemsReadState(int readState);
 
     @Query("Update Item set read_it_later = 1 Where id = :itemId")
     void setReadItLater(int itemId);

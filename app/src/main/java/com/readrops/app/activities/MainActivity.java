@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private int feedCount;
     private int feedNb;
     private boolean scrollToTop;
+    private boolean allItemsSelected;
 
     private ActionMode actionMode;
 
@@ -247,29 +248,17 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
                         switch (menuItem.getItemId()) {
                             case R.id.item_mark_read:
-                                viewModel.setItemsReadState(getIdsFromPositions(adapter.getSelection()), true)
-                                        .subscribeOn(Schedulers.io())
-                                        .observeOn(AndroidSchedulers.mainThread())
-                                        .doOnError(throwable -> Toast.makeText(getApplicationContext(),
-                                                "Error when updating in db", Toast.LENGTH_LONG).show())
-                                        .subscribe();
-                                adapter.updateSelection(true);
-
+                                setReadState(true, allItemsSelected);
                                 break;
                             case R.id.item_mark_unread:
-                                viewModel.setItemsReadState(getIdsFromPositions(adapter.getSelection()), false)
-                                        .subscribeOn(Schedulers.io())
-                                        .observeOn(AndroidSchedulers.mainThread())
-                                        .doOnError(throwable -> Toast.makeText(getApplicationContext(),
-                                                "Error when updating in db", Toast.LENGTH_LONG).show())
-                                        .subscribe();
-                                adapter.updateSelection(false);
-
+                                setReadState(false, allItemsSelected);
+                                break;
+                            case R.id.item_select_all:
+                                adapter.selectAll();
+                                allItemsSelected = true;
                                 break;
                         }
 
-                        updateDrawerFeeds();
-                        actionMode.finish();
                         return true;
                     }
 
@@ -364,6 +353,28 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     super.onItemRangeMoved(fromPosition, toPosition, itemCount);
             }
         });
+    }
+
+    private void setReadState(boolean read, boolean allItems) {
+        if (allItems) {
+            viewModel.setAllItemsReadState(read)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe();
+
+            allItemsSelected = false;
+        } else {
+            viewModel.setItemsReadState(getIdsFromPositions(adapter.getSelection()), read)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnError(throwable -> Toast.makeText(getApplicationContext(),
+                            "Error when updating in db", Toast.LENGTH_LONG).show())
+                    .subscribe();
+        }
+
+        adapter.updateSelection(read);
+        updateDrawerFeeds();
+        actionMode.finish();
     }
 
     @Override
