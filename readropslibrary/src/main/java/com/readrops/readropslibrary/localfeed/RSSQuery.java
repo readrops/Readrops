@@ -4,9 +4,9 @@ import android.accounts.NetworkErrorException;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.readrops.readropslibrary.QueryCallback;
-import com.readrops.readropslibrary.Utils.LibUtils;
-import com.readrops.readropslibrary.Utils.UnknownFormatException;
+import com.readrops.readropslibrary.utils.LibOkHttpClient;
+import com.readrops.readropslibrary.utils.LibUtils;
+import com.readrops.readropslibrary.utils.UnknownFormatException;
 import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
 import com.readrops.readropslibrary.localfeed.json.JSONFeed;
 import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.xml.stream.XMLStreamException;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -75,7 +73,7 @@ public class RSSQuery {
     }
 
     private Response query(String url, Map<String, String> headers) throws IOException {
-        OkHttpClient okHttpClient = new OkHttpClient();
+        OkHttpClient okHttpClient = LibOkHttpClient.getInstance();
 
         Request.Builder builder = new Request.Builder().url(url);
         for (String header : headers.keySet()) {

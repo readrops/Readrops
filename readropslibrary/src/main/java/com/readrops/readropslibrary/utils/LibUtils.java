@@ -1,4 +1,4 @@
-package com.readrops.readropslibrary.Utils;
+package com.readrops.readropslibrary.utils;
 
 import java.io.InputStream;
 import java.util.Scanner;

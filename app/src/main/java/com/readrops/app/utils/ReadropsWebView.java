@@ -8,7 +8,7 @@ import android.webkit.WebView;
 
 import com.readrops.app.R;
 import com.readrops.app.database.pojo.ItemWithFeed;
-import com.readrops.readropslibrary.Utils.LibUtils;
+import com.readrops.readropslibrary.utils.LibUtils;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
