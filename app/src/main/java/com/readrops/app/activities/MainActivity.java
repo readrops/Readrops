@@ -141,6 +141,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             switch (id) {
                 case DrawerManager.ARTICLES_ITEM_ID:
                     viewModel.setFilterType(MainViewModel.FilterType.NO_FILTER);
+                    scrollToTop = true;
                     viewModel.invalidate();
                     break;
                 case DrawerManager.READ_LATER_ID:
