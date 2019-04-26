@@ -100,7 +100,7 @@ public class MainViewModel extends AndroidViewModel {
     public void setFilterFeedId(int filterFeedId) {
         queryBuilder.setFilterFeedId(filterFeedId);
     }
-
+    
     public MediatorLiveData<PagedList<ItemWithFeed>> getItemsWithFeed() {
         return itemsWithFeed;
     }
@@ -152,7 +152,10 @@ public class MainViewModel extends AndroidViewModel {
 
     public Completable setAllItemsReadState(boolean read) {
         return Completable.create(emitter -> {
-            db.itemDao().setAllItemsReadState(read ? 1 : 0);
+            if (queryBuilder.getFilterType() == FilterType.FEED_FILTER)
+                db.itemDao().setAllItemsReadState(queryBuilder.getFilterFeedId(), read ? 1 : 0);
+            else
+                db.itemDao().setAllItemsReadState(read ? 1 : 0);
             emitter.onComplete();
         });
     }

@@ -40,6 +40,9 @@ public interface ItemDao {
     @Query("Update Item set read = :readState")
     void setAllItemsReadState(int readState);
 
+    @Query("Update Item set read = :readState Where feed_id = :feedId")
+    void setAllItemsReadState(int feedId, int readState);
+
     @Query("Update Item set read_it_later = 1 Where id = :itemId")
     void setReadItLater(int itemId);
 
