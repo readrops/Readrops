@@ -237,11 +237,13 @@ public class Feed implements Parcelable {
 
         feed.setName(jsonFeed.getTitle());
         feed.setUrl(jsonFeed.getFeedUrl());
+        feed.setSiteUrl(jsonFeed.getHomePageUrl());
         feed.setDescription(jsonFeed.getDescription());
         //feed.setLastUpdated(jsonFeed.); maybe later ?
 
         feed.setEtag(jsonFeed.getEtag());
         feed.setLastModified(jsonFeed.getLastModified());
+        feed.setIconUrl(jsonFeed.getFaviconUrl());
 
         feed.setFolderId(1);
 

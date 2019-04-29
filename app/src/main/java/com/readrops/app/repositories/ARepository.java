@@ -66,7 +66,13 @@ public abstract class ARepository {
     }
 
     protected void setFavIconUtils(Feed feed) throws IOException {
-        String favUrl = HtmlParser.getFaviconLink(feed.getSiteUrl());
+        String favUrl;
+
+        if (feed.getIconUrl() != null)
+            favUrl = feed.getIconUrl();
+        else
+            favUrl = HtmlParser.getFaviconLink(feed.getSiteUrl());
+
         if (favUrl != null && Patterns.WEB_URL.matcher(favUrl).matches()) {
             feed.setIconUrl(favUrl);
             setFeedColors(favUrl, feed);

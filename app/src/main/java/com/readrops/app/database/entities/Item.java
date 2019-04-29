@@ -275,7 +275,9 @@ public class Item implements Comparable<Item> {
         for (JSONItem item : items) {
             Item dbItem = new Item();
 
-            dbItem.setAuthor(item.getAuthor().getName());
+            if (item.getAuthor() != null)
+                dbItem.setAuthor(item.getAuthor().getName());
+
             dbItem.setContent(item.getContent());
             dbItem.setDescription(item.getSummary());
             dbItem.setGuid(item.getId());
