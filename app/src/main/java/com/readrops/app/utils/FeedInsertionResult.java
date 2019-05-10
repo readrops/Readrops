@@ -1,8 +1,8 @@
 package com.readrops.app.utils;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
-import android.util.Log;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;

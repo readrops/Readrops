@@ -1,11 +1,11 @@
 package com.readrops.app.database;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
-import android.arch.persistence.room.Room;
-import android.arch.persistence.room.RoomDatabase;
-import android.arch.persistence.room.TypeConverters;
+import androidx.sqlite.db.SupportSQLiteDatabase;
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.readrops.app.database.dao.FeedDao;
 import com.readrops.app.database.dao.FolderDao;
@@ -15,7 +15,7 @@ import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.Item;
 
 
-@android.arch.persistence.room.Database(entities = {Feed.class, Item.class, Folder.class}, version = 1, exportSchema = false)
+@androidx.room.Database(entities = {Feed.class, Item.class, Folder.class}, version = 1, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class Database extends RoomDatabase {
 

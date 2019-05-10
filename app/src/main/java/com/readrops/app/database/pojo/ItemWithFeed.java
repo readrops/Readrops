@@ -1,8 +1,8 @@
 package com.readrops.app.database.pojo;
 
-import android.arch.persistence.room.ColumnInfo;
-import android.arch.persistence.room.Embedded;
-import android.support.annotation.ColorInt;
+import androidx.room.ColumnInfo;
+import androidx.room.Embedded;
+import androidx.annotation.ColorInt;
 
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.Item;

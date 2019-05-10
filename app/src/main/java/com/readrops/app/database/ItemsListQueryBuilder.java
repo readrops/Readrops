@@ -1,9 +1,7 @@
 package com.readrops.app.database;
 
-import android.arch.persistence.db.SupportSQLiteQuery;
-import android.arch.persistence.db.SupportSQLiteQueryBuilder;
-import android.database.sqlite.SQLiteQuery;
-import android.database.sqlite.SQLiteQueryBuilder;
+import androidx.sqlite.db.SupportSQLiteQuery;
+import androidx.sqlite.db.SupportSQLiteQueryBuilder;
 
 import com.readrops.app.activities.MainActivity;
 import com.readrops.app.viewmodels.MainViewModel;

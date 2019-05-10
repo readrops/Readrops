@@ -1,21 +1,19 @@
 package com.readrops.app.database.dao;
 
 
-import android.arch.lifecycle.LiveData;
-import android.arch.paging.DataSource;
-import android.arch.paging.PageKeyedDataSource;
-import android.arch.persistence.db.SupportSQLiteQuery;
-import android.arch.persistence.room.Dao;
-import android.arch.persistence.room.Insert;
-import android.arch.persistence.room.Query;
-import android.arch.persistence.room.RawQuery;
+import androidx.lifecycle.LiveData;
+import androidx.paging.DataSource;
+import androidx.paging.PageKeyedDataSource;
+import androidx.sqlite.db.SupportSQLiteQuery;
+import androidx.room.Dao;
+import androidx.room.Insert;
+import androidx.room.Query;
+import androidx.room.RawQuery;
 
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.database.entities.Item;
-
-import java.util.List;
 
 @Dao
 public interface ItemDao {

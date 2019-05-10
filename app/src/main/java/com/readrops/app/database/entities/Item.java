@@ -1,6 +1,6 @@
 package com.readrops.app.database.entities;
 
-import android.arch.persistence.room.*;
+import androidx.room.*;
 
 import com.readrops.app.utils.DateUtils;
 import com.readrops.app.utils.Utils;
@@ -10,17 +10,15 @@ import com.readrops.readropslibrary.localfeed.rss.RSSEnclosure;
 import com.readrops.readropslibrary.localfeed.rss.RSSItem;
 import com.readrops.readropslibrary.localfeed.rss.RSSMediaContent;
 
-import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.jsoup.Jsoup;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static android.arch.persistence.room.ForeignKey.CASCADE;
+import static androidx.room.ForeignKey.CASCADE;
 
 
 @Entity

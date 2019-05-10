@@ -1,11 +1,11 @@
 package com.readrops.app.database.entities;
 
 
-import android.arch.persistence.room.*;
+import androidx.room.*;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.ColorInt;
-import android.support.annotation.Nullable;
+import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
 
 import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
 import com.readrops.readropslibrary.localfeed.json.JSONFeed;
@@ -14,7 +14,7 @@ import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
 
 import org.jsoup.Jsoup;
 
-import static android.arch.persistence.room.ForeignKey.NO_ACTION;
+import static androidx.room.ForeignKey.NO_ACTION;
 
 @Entity(foreignKeys = @ForeignKey(entity = Folder.class, parentColumns = "id", childColumns = "folder_id", onDelete = ForeignKey.SET_NULL))
 public class Feed implements Parcelable {

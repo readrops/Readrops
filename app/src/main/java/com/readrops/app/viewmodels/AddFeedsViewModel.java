@@ -1,10 +1,9 @@
 package com.readrops.app.viewmodels;
 
 import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
-import android.support.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.annotation.NonNull;
 
-import com.readrops.app.database.entities.Feed;
 import com.readrops.app.repositories.LocalFeedRepository;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.HtmlParser;

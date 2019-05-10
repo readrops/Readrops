@@ -1,6 +1,6 @@
 package com.readrops.app.database.pojo;
 
-import android.arch.persistence.room.Embedded;
+import androidx.room.Embedded;
 import android.os.Parcel;
 import android.os.Parcelable;
 

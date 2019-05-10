@@ -1,18 +1,18 @@
 package com.readrops.app.viewmodels;
 
 import android.app.Application;
-import android.arch.core.util.Function;
-import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LifecycleOwner;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MediatorLiveData;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.Transformations;
-import android.arch.paging.DataSource;
-import android.arch.paging.LivePagedListBuilder;
-import android.arch.paging.PagedList;
-import android.arch.persistence.db.SupportSQLiteQuery;
-import android.support.annotation.NonNull;
+import androidx.arch.core.util.Function;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.Transformations;
+import androidx.paging.DataSource;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PagedList;
+import androidx.sqlite.db.SupportSQLiteQuery;
+import androidx.annotation.NonNull;
 
 import com.readrops.app.activities.MainActivity;
 import com.readrops.app.database.Database;
@@ -21,6 +21,7 @@ import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.repositories.LocalFeedRepository;
+import com.readrops.app.repositories.ARepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,7 @@ public class MainViewModel extends AndroidViewModel {
 
     private MediatorLiveData<PagedList<ItemWithFeed>> itemsWithFeed;
     private LiveData<PagedList<ItemWithFeed>> lastFetch;
-    private LocalFeedRepository repository;
+    private ARepository repository;
     private Database db;
 
     private ItemsListQueryBuilder queryBuilder;

@@ -1,6 +1,6 @@
 package com.readrops.app.utils;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;

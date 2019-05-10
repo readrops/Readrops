@@ -2,8 +2,8 @@ package com.readrops.app.repositories;
 
 import android.accounts.NetworkErrorException;
 import android.app.Application;
-import android.arch.paging.PageKeyedDataSource;
-import android.support.annotation.Nullable;
+import androidx.paging.PageKeyedDataSource;
+import androidx.annotation.Nullable;
 
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.FeedWithFolder;

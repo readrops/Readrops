@@ -2,7 +2,7 @@ package com.readrops.app.repositories;
 
 import android.app.Application;
 import android.graphics.Bitmap;
-import android.support.v7.graphics.Palette;
+import androidx.palette.graphics.Palette;
 import android.util.Patterns;
 
 import com.readrops.app.database.pojo.FeedWithFolder;
