@@ -1,8 +1,8 @@
-package com.readrops.readropslibrary.services.nextcloudnews;
+package com.readrops.readropslibrary.services.nextcloudnews.json;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Folder {
+public class NextNewsFolder {
 
     @SerializedName("id")
     private int id;

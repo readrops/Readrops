@@ -20,8 +20,8 @@ import com.readrops.app.database.ItemsListQueryBuilder;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.ItemWithFeed;
-import com.readrops.app.repositories.LocalFeedRepository;
 import com.readrops.app.repositories.ARepository;
+import com.readrops.app.repositories.NextNewsRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +49,7 @@ public class MainViewModel extends AndroidViewModel {
         queryBuilder.setFilterType(FilterType.NO_FILTER);
         queryBuilder.setSortType(MainActivity.ListSortType.NEWEST_TO_OLDEST);
 
-        repository = new LocalFeedRepository(application);
+        repository = new NextNewsRepository(application);
         db = Database.getInstance(application);
 
         itemsWithFeed = new MediatorLiveData<>();
