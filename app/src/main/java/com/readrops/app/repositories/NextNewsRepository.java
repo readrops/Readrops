@@ -14,7 +14,7 @@ import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.utils.Utils;
 import com.readrops.readropslibrary.services.nextcloudnews.Credentials;
 import com.readrops.readropslibrary.services.nextcloudnews.NextNewsAPI;
-import com.readrops.readropslibrary.services.nextcloudnews.SyncResults;
+import com.readrops.readropslibrary.services.nextcloudnews.SyncResult;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItem;
@@ -22,6 +22,7 @@ import com.readrops.readropslibrary.utils.LibUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Completable;
@@ -43,21 +44,25 @@ public class NextNewsRepository extends ARepository {
             try {
                 NextNewsAPI newsAPI = new NextNewsAPI();
 
-                Credentials credentials = new Credentials("", LibUtils.NEXTCLOUD_PASSWORD, "");
-                SyncResults results = newsAPI.sync(credentials, NextNewsAPI.SyncType.INITIAL_SYNC, null);
+                Credentials credentials = new Credentials("Lucas", LibUtils.NEXTCLOUD_PASSWORD, "https://cloud.openserver.fr");
+                SyncResult syncResult = newsAPI.sync(credentials, NextNewsAPI.SyncType.INITIAL_SYNC, null);
 
-                TimingLogger timings = new TimingLogger(TAG, "sync");
-                insertFolders(results.getFolders());
-                timings.addSplit("insert folders");
+                if (!syncResult.isError()) {
+                    TimingLogger timings = new TimingLogger(TAG, "sync");
+                    insertFolders(syncResult.getFolders());
+                    timings.addSplit("insert folders");
 
-                insertFeeds(results.getFeeds());
-                timings.addSplit("insert feeds");
+                    insertFeeds(syncResult.getFeeds());
+                    timings.addSplit("insert feeds");
 
-                insertItems(results.getItems());
-                timings.addSplit("insert items");
-                timings.dumpToLog();
+                    insertItems(syncResult.getItems());
+                    timings.addSplit("insert items");
+                    timings.dumpToLog();
 
-                emitter.onComplete();
+                    emitter.onComplete();
+                } else
+                    emitter.onError(new Throwable());
+                
             } catch (IOException e) {
                 e.printStackTrace();
                 emitter.onError(e);
@@ -155,6 +160,7 @@ public class NextNewsRepository extends ARepository {
             }
         }
 
+        Collections.sort(newItems, Item::compareTo);
         database.itemDao().insert(newItems);
     }
 }

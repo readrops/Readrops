@@ -19,7 +19,7 @@ public class HttpManager {
         this.credentials = credentials;
 
         okHttpClient = HttpBuilder.getBuilder()
-                .callTimeout(20, TimeUnit.SECONDS)
+                .callTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(1, TimeUnit.HOURS)
                 .addInterceptor(new AuthInterceptor())
                 .build();
@@ -35,11 +35,19 @@ public class HttpManager {
 
     public class AuthInterceptor implements Interceptor {
 
+        public AuthInterceptor() {
+
+        }
+
         @Override
         public Response intercept(Chain chain) throws IOException {
             Request request = chain.request();
 
-            request = request.newBuilder()
+            // AuthInterceptor is called twice when using Okhttp for the second time and I don't know why,
+            // which adds the authorization header twice and make the auth fail
+            // So preventively, I delete the first added header
+            // TODO : find why AuthInterceptor is called twice
+            request = request.newBuilder().removeHeader("Authorization")
                     .addHeader("Authorization", credentials.getBase64())
                     .build();
 

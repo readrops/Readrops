@@ -13,6 +13,7 @@ import com.readrops.readropslibrary.utils.HttpManager;
 
 import java.io.IOException;
 
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -32,30 +33,48 @@ public class NextNewsAPI {
                 .build();
     }
 
-    public SyncResults sync(@NonNull Credentials credentials, @NonNull SyncType syncType, @Nullable SyncData data) throws IOException {
+    public SyncResult sync(@NonNull Credentials credentials, @NonNull SyncType syncType, @Nullable SyncData data) throws IOException {
         HttpManager httpManager = new HttpManager(credentials);
         Retrofit retrofit = getConfiguredRetrofitInstance(httpManager);
 
         NextNewsService api = retrofit.create(NextNewsService.class);
 
+        SyncResult syncResult = new SyncResult();
         TimingLogger timings = new TimingLogger(TAG, "sync");
 
-        NextNewsFeeds feedList = api.getFeeds().execute().body();
+        Response<NextNewsFeeds> feedResponse = api.getFeeds().execute();
+        NextNewsFeeds feedList = feedResponse.body();
         timings.addSplit("get feeds");
 
-        NextNewsFolders folderList = api.getFolders().execute().body();
+        if (!feedResponse.isSuccessful())
+            syncResult.setError(true);
+
+        Response<NextNewsFolders> folderResponse = api.getFolders().execute();
+        NextNewsFolders folderList = folderResponse.body();
         timings.addSplit("get folders");
 
-        NextNewsItems itemList = api.getItems(3, false, 300).execute().body();
+        if (!folderResponse.isSuccessful())
+            syncResult.setError(true);
+
+        Response<NextNewsItems> itemsResponse = api.getItems(3, false, -1).execute();
+        NextNewsItems itemList = itemsResponse.body();
         timings.addSplit("get items");
+
+        if (!itemsResponse.isSuccessful())
+            syncResult.setError(true);
+
         timings.dumpToLog();
 
-        SyncResults results = new SyncResults();
-        results.setFeeds(feedList.getFeeds());
-        results.setFolders(folderList.getFolders());
-        results.setItems(itemList.getItems());
+        if (feedList.getFeeds() != null)
+            syncResult.setFeeds(feedList.getFeeds());
 
-        return results;
+        if (folderList.getFolders() != null)
+            syncResult.setFolders(folderList.getFolders());
+
+        if (itemList.getItems() != null)
+            syncResult.setItems(itemList.getItems());
+
+        return syncResult;
     }
 
     public enum SyncType {
