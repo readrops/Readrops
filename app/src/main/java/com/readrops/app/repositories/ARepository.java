@@ -2,17 +2,18 @@ package com.readrops.app.repositories;
 
 import android.app.Application;
 import android.graphics.Bitmap;
-import androidx.palette.graphics.Palette;
 import android.util.Patterns;
 
-import com.readrops.app.database.pojo.FeedWithFolder;
-import com.readrops.app.utils.FeedInsertionResult;
-import com.readrops.app.utils.HtmlParser;
-import com.readrops.app.utils.Utils;
+import androidx.palette.graphics.Palette;
+
 import com.readrops.app.database.Database;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
+import com.readrops.app.database.pojo.FeedWithFolder;
+import com.readrops.app.utils.FeedInsertionResult;
+import com.readrops.app.utils.HtmlParser;
 import com.readrops.app.utils.ParsingResult;
+import com.readrops.app.utils.Utils;
 
 import java.io.IOException;
 import java.util.List;
@@ -79,13 +80,16 @@ public abstract class ARepository {
         }
     }
 
-    protected void setFeedColors(String favUrl, Feed feed) throws IOException {
+    protected void setFeedColors(String favUrl, Feed feed) {
         Bitmap favicon = Utils.getImageFromUrl(favUrl);
-        Palette palette = Palette.from(favicon).generate();
 
-        feed.setTextColor(palette.getDominantSwatch().getRgb());
+        if (favicon != null) {
+            Palette palette = Palette.from(favicon).generate();
 
-        if (palette.getMutedSwatch() != null)
-            feed.setBackgroundColor(palette.getMutedSwatch().getRgb());
+            feed.setTextColor(palette.getDominantSwatch().getRgb());
+
+            if (palette.getMutedSwatch() != null)
+                feed.setBackgroundColor(palette.getMutedSwatch().getRgb());
+        }
     }
 }

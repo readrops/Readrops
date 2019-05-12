@@ -1,24 +1,37 @@
 package com.readrops.app.repositories;
 
 import android.app.Application;
+import android.util.TimingLogger;
 
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
+import com.readrops.app.database.entities.Item;
 import com.readrops.app.database.pojo.FeedWithFolder;
 import com.readrops.app.utils.FeedInsertionResult;
+import com.readrops.app.utils.FeedMatcher;
+import com.readrops.app.utils.ItemMatcher;
 import com.readrops.app.utils.ParsingResult;
+import com.readrops.app.utils.Utils;
 import com.readrops.readropslibrary.services.nextcloudnews.Credentials;
 import com.readrops.readropslibrary.services.nextcloudnews.NextNewsAPI;
+import com.readrops.readropslibrary.services.nextcloudnews.SyncResults;
+import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeed;
+import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
+import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItem;
 import com.readrops.readropslibrary.utils.LibUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 
 public class NextNewsRepository extends ARepository {
+
+    private static final String TAG = NextNewsRepository.class.getSimpleName();
 
     public NextNewsRepository(Application application) {
         super(application);
@@ -31,7 +44,18 @@ public class NextNewsRepository extends ARepository {
                 NextNewsAPI newsAPI = new NextNewsAPI();
 
                 Credentials credentials = new Credentials("", LibUtils.NEXTCLOUD_PASSWORD, "");
-                newsAPI.sync(credentials, NextNewsAPI.SyncType.INITIAL_SYNC, null);
+                SyncResults results = newsAPI.sync(credentials, NextNewsAPI.SyncType.INITIAL_SYNC, null);
+
+                TimingLogger timings = new TimingLogger(TAG, "sync");
+                insertFolders(results.getFolders());
+                timings.addSplit("insert folders");
+
+                insertFeeds(results.getFeeds());
+                timings.addSplit("insert feeds");
+
+                insertItems(results.getItems());
+                timings.addSplit("insert items");
+                timings.dumpToLog();
 
                 emitter.onComplete();
             } catch (IOException e) {
@@ -59,5 +83,78 @@ public class NextNewsRepository extends ARepository {
     @Override
     public Completable addFolder(Folder folder) {
         return null;
+    }
+
+    private void insertFeeds(List<NextNewsFeed> feeds) {
+        List<Feed> newFeeds = new ArrayList<>();
+
+        for (NextNewsFeed nextNewsFeed : feeds) {
+
+            if (!database.feedDao().remoteFeedExists(nextNewsFeed.getId())) {
+                Feed feed = FeedMatcher.nextNewsFeedToFeed(nextNewsFeed);
+
+                // if the Nextcloud feed has a folder, it is already inserted, so we have to get its local id
+                if (nextNewsFeed.getFolderId() != 0) {
+                    int folderId = database.folderDao().getRemoteFolderLocalId(nextNewsFeed.getFolderId());
+
+                    if (folderId != 0)
+                        feed.setFolderId(folderId);
+                }
+
+                newFeeds.add(feed);
+            }
+        }
+
+        long[] ids = database.feedDao().insert(newFeeds);
+
+        List<Feed> insertedFeeds = database.feedDao().selectFromIdList(ids);
+        Observable.<Feed>create(emitter -> {
+            for (Feed feed : insertedFeeds) {
+                setFavIconUtils(feed);
+                emitter.onNext(feed);
+            }
+        }).subscribeOn(Schedulers.computation())
+                .observeOn(Schedulers.io())
+                .doOnNext(feed1 -> database.feedDao().updateColors(feed1.getId(),
+                        feed1.getTextColor(), feed1.getBackgroundColor()))
+                .subscribe();
+    }
+
+    private void insertFolders(List<NextNewsFolder> folders) {
+        List<Folder> newFolders = new ArrayList<>();
+
+        for (NextNewsFolder nextNewsFolder : folders) {
+
+            if (!database.folderDao().remoteFolderExists(nextNewsFolder.getId())) {
+                Folder folder = new Folder(nextNewsFolder.getName());
+                folder.setRemoteId(nextNewsFolder.getId());
+
+                newFolders.add(folder);
+            }
+        }
+
+        database.folderDao().insert(newFolders);
+    }
+
+    private void insertItems(List<NextNewsItem> items) {
+        List<Item> newItems = new ArrayList<>();
+
+        for (NextNewsItem nextNewsItem : items) {
+
+            if (!database.itemDao().remoteItemExists(nextNewsItem.getId())) {
+                try {
+                    Feed feed = database.feedDao().getFeedByRemoteId(nextNewsItem.getFeedId());
+                    Item item = ItemMatcher.nextNewsItemToItem(nextNewsItem, feed);
+
+                    item.setReadTime(Utils.readTimeFromString(item.getContent()));
+
+                    newItems.add(item);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        database.itemDao().insert(newItems);
     }
 }

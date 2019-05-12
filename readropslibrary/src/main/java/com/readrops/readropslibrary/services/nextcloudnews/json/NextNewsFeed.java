@@ -10,13 +10,13 @@ public class NextNewsFeed {
 
     private String faviconLink;
 
-    private float added;
+    private long added;
 
-    private float folderId;
+    private int folderId;
 
-    private float unreadCount;
+    private int unreadCount;
 
-    private float ordering;
+    private int ordering;
 
     private String link;
 
@@ -54,35 +54,35 @@ public class NextNewsFeed {
         this.faviconLink = faviconLink;
     }
 
-    public float getAdded() {
+    public long getAdded() {
         return added;
     }
 
-    public void setAdded(float added) {
+    public void setAdded(long added) {
         this.added = added;
     }
 
-    public float getFolderId() {
+    public int getFolderId() {
         return folderId;
     }
 
-    public void setFolderId(float folderId) {
+    public void setFolderId(int folderId) {
         this.folderId = folderId;
     }
 
-    public float getUnreadCount() {
+    public int getUnreadCount() {
         return unreadCount;
     }
 
-    public void setUnreadCount(float unreadCount) {
+    public void setUnreadCount(int unreadCount) {
         this.unreadCount = unreadCount;
     }
 
-    public float getOrdering() {
+    public int getOrdering() {
         return ordering;
     }
 
-    public void setOrdering(float ordering) {
+    public void setOrdering(int ordering) {
         this.ordering = ordering;
     }
 

@@ -47,7 +47,7 @@ public class Item implements Comparable<Item> {
 
     private String content;
 
-    @ColumnInfo(name = "feed_id")
+    @ColumnInfo(name = "feed_id", index = true)
     private int feedId;
 
     @ColumnInfo(index = true)
@@ -60,6 +60,8 @@ public class Item implements Comparable<Item> {
 
     @ColumnInfo(name = "read_it_later")
     private boolean readItLater;
+
+    private int remoteId;
 
     public int getId() {
         return id;
@@ -182,6 +184,14 @@ public class Item implements Comparable<Item> {
 
     public void setReadItLater(boolean readItLater) {
         this.readItLater = readItLater;
+    }
+
+    public int getRemoteId() {
+        return remoteId;
+    }
+
+    public void setRemoteId(int remoteId) {
+        this.remoteId = remoteId;
     }
 
     public static List<Item> itemsFromRSS(List<RSSItem> items, Feed feed) throws ParseException {

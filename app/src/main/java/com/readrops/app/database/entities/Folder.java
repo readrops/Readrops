@@ -1,10 +1,11 @@
 package com.readrops.app.database.entities;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
-import android.os.Parcel;
-import android.os.Parcelable;
 
 @Entity
 public class Folder implements Parcelable,  Comparable<Folder> {
@@ -13,6 +14,8 @@ public class Folder implements Parcelable,  Comparable<Folder> {
     private int id;
 
     private String name;
+
+    private int remoteId;
 
     public Folder() {
 
@@ -44,6 +47,14 @@ public class Folder implements Parcelable,  Comparable<Folder> {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getRemoteId() {
+        return remoteId;
+    }
+
+    public void setRemoteId(int remoteId) {
+        this.remoteId = remoteId;
     }
 
     public static final Creator<Folder> CREATOR = new Creator<Folder>() {

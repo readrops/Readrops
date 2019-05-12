@@ -219,6 +219,8 @@ public class LocalFeedRepository extends ARepository {
     }
 
     private void insertItems(Collection<Item> items, Feed feed) {
+        List<Item> itemsToInsert = new ArrayList<>();
+
         for (Item dbItem : items) {
             if (!Boolean.valueOf(database.itemDao().guidExist(dbItem.getGuid()))) {
                 if (dbItem.getDescription() != null) {
@@ -247,9 +249,11 @@ public class LocalFeedRepository extends ARepository {
                 else if (dbItem.getDescription() != null)
                     dbItem.setReadTime(Utils.readTimeFromString(dbItem.getCleanDescription()));
 
-                database.itemDao().insert(dbItem);
+                itemsToInsert.add(dbItem);
             }
         }
+
+        database.itemDao().insert(itemsToInsert);
     }
 
     private FeedInsertionResult.FeedInsertionError getErrorFromException(Exception e) {

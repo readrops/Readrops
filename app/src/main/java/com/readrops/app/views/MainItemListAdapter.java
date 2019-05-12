@@ -1,17 +1,9 @@
 package com.readrops.app.views;
 
-import androidx.paging.PagedListAdapter;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.recyclerview.widget.ListAdapter;
-import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +11,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.paging.PagedListAdapter;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.ListPreloader;
 import com.bumptech.glide.RequestBuilder;
@@ -30,8 +29,8 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
 import com.bumptech.glide.util.ViewPreloadSizeProvider;
 import com.readrops.app.R;
-import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.database.entities.Item;
+import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.utils.DateUtils;
 import com.readrops.app.utils.GlideRequests;
 import com.readrops.app.utils.Utils;
@@ -39,8 +38,6 @@ import com.readrops.app.utils.Utils;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
-
-import static com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions.withCrossFade;
 
 public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItemListAdapter.ItemViewHolder> implements ListPreloader.PreloadModelProvider<String> {
 
@@ -73,7 +70,9 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
                     itemWithFeed.getFeedName().equals(t1.getFeedName()) &&
                     itemWithFeed.getFolder().getName().equals(t1.getFolder().getName()) &&
                     item.isRead() == item1.isRead() &&
-                    item.isReadItLater() == item1.isReadItLater();
+                    item.isReadItLater() == item1.isReadItLater() &&
+                    itemWithFeed.getColor() == t1.getColor() &&
+                    itemWithFeed.getBgColor() == t1.getBgColor();
         }
     };
 
@@ -123,7 +122,8 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
             viewHolder.itemImage.setVisibility(View.GONE);
 
         if (itemWithFeed.getFeedIconUrl() != null) {
-            glideRequests.load(itemWithFeed.getFeedIconUrl())
+            glideRequests.
+                    load(itemWithFeed.getFeedIconUrl())
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .placeholder(R.drawable.ic_rss_feed)
                     .into(viewHolder.feedIcon);
@@ -222,6 +222,7 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
     public RequestBuilder<Drawable> getPreloadRequestBuilder(@NonNull String url) {
         return glideRequests
                 .load(url)
+                .centerCrop()
                 .apply(requestOptions)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .transition(DrawableTransitionOptions.withCrossFade(FADE_FACTORY));

@@ -1,11 +1,15 @@
 package com.readrops.app.database.entities;
 
 
-import androidx.room.*;
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
 import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
 import com.readrops.readropslibrary.localfeed.json.JSONFeed;
@@ -13,8 +17,6 @@ import com.readrops.readropslibrary.localfeed.rss.RSSChannel;
 import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
 
 import org.jsoup.Jsoup;
-
-import static androidx.room.ForeignKey.NO_ACTION;
 
 @Entity(foreignKeys = @ForeignKey(entity = Folder.class, parentColumns = "id", childColumns = "folder_id", onDelete = ForeignKey.SET_NULL))
 public class Feed implements Parcelable {
@@ -33,7 +35,7 @@ public class Feed implements Parcelable {
     private String lastUpdated;
 
     @ColumnInfo(name = "text_color")
-    private @ColorInt  int textColor;
+    private @ColorInt int textColor;
 
     @ColumnInfo(name = "background_color")
     private @ColorInt int backgroundColor;
@@ -46,8 +48,10 @@ public class Feed implements Parcelable {
     @ColumnInfo(name = "last_modified")
     private String lastModified;
 
-    @ColumnInfo(name = "folder_id")
+    @ColumnInfo(name = "folder_id", index = true)
     private int folderId;
+
+    private int remoteId;
 
     @Ignore
     private int unreadCount;
@@ -76,6 +80,7 @@ public class Feed implements Parcelable {
         etag = in.readString();
         lastModified = in.readString();
         folderId = in.readInt();
+        remoteId = in.readInt();
     }
 
     public static final Creator<Feed> CREATOR = new Creator<Feed>() {
@@ -194,6 +199,14 @@ public class Feed implements Parcelable {
         this.unreadCount = unreadCount;
     }
 
+    public int getRemoteId() {
+        return remoteId;
+    }
+
+    public void setRemoteId(int remoteId) {
+        this.remoteId = remoteId;
+    }
+
     public static Feed feedFromRSS(RSSFeed rssFeed) {
         Feed feed = new Feed();
         RSSChannel channel = rssFeed.getChannel();
@@ -270,5 +283,6 @@ public class Feed implements Parcelable {
         dest.writeString(etag);
         dest.writeString(lastModified);
         dest.writeInt(folderId);
+        dest.writeInt(remoteId);
     }
 }

@@ -22,6 +22,15 @@ public interface FolderDao {
     @Insert
     long insert(Folder folder);
 
+    @Insert
+    long[] insert(List<Folder> folders);
+
     @Delete
     void delete(Folder folder);
+
+    @Query("Select id From Folder Where remoteId = :remoteId")
+    int getRemoteFolderLocalId(int remoteId);
+
+    @Query("Select case When :remoteId In (Select remoteId from Folder) Then 1 else 0 end")
+    boolean remoteFolderExists(int remoteId);
 }

@@ -14,7 +14,7 @@ public class NextNewsItem {
 
     private String author;
 
-    private float pubDate;
+    private long pubDate;
 
     private String body;
 
@@ -22,13 +22,13 @@ public class NextNewsItem {
 
     private String enclosureLink;
 
-    private float feedId;
+    private int feedId;
 
     private boolean unread;
 
     private boolean starred;
 
-    private float lastModified;
+    private long lastModified;
 
     private String fingerprint;
 
@@ -80,11 +80,11 @@ public class NextNewsItem {
         this.author = author;
     }
 
-    public float getPubDate() {
+    public long getPubDate() {
         return pubDate;
     }
 
-    public void setPubDate(float pubDate) {
+    public void setPubDate(long pubDate) {
         this.pubDate = pubDate;
     }
 
@@ -112,11 +112,11 @@ public class NextNewsItem {
         this.enclosureLink = enclosureLink;
     }
 
-    public float getFeedId() {
+    public int getFeedId() {
         return feedId;
     }
 
-    public void setFeedId(float feedId) {
+    public void setFeedId(int feedId) {
         this.feedId = feedId;
     }
 
@@ -136,11 +136,11 @@ public class NextNewsItem {
         this.starred = starred;
     }
 
-    public float getLastModified() {
+    public long getLastModified() {
         return lastModified;
     }
 
-    public void setLastModified(float lastModified) {
+    public void setLastModified(long lastModified) {
         this.lastModified = lastModified;
     }
 

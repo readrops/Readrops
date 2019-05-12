@@ -100,7 +100,7 @@ public final class HtmlParser {
         String head = body.substring(body.indexOf("<head>"), body.indexOf("</head>"));
 
         long end = System.currentTimeMillis();
-        Log.d(TAG, "parsing time : " + String.valueOf(end - start));
+        Log.d(TAG, "parsing time : " + (end - start));
 
         return head;
     }

@@ -1,8 +1,5 @@
 package com.readrops.readropslibrary.services;
 
-import androidx.annotation.CallSuper;
-
-import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeeds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolders;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItems;
@@ -11,9 +8,11 @@ import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface NextNewsService {
 
@@ -25,21 +24,24 @@ public interface NextNewsService {
     @GET("feeds")
     Call<NextNewsFeeds> getFeeds();
 
-    @GET("items?type={type}&getRead={read}&batchSize={batchSize}")
-    Call<NextNewsItems> getItems(@Path("type") int type, @Path("read") boolean read, @Path("batchSize") int batchSize);
+    @GET("items")
+    Call<NextNewsItems> getItems(@Query("type") int type, @Query("getRead") boolean read, @Query("batchSize") int batchSize);
 
-    @GET("items/updated?lastModified={lastModified}&type=3")
-    Call<NextNewsItems> getNewItems(@Path("lastModified") long lastModified);
+    @GET("items/updated?type=3")
+    Call<NextNewsItems> getNewItems(@Query("lastModified") long lastModified);
 
     @PUT("items/read/multiple")
-    Call<ResponseBody> setReadArticles();
+    Call<ResponseBody> setReadArticles(@Body List<Integer> itemsIds);
 
     @PUT("items/unread/multiple")
-    Call<ResponseBody> setUnreadArticles();
+    Call<ResponseBody> setUnreadArticles(@Body List<Integer> itemsIds);
 
     @PUT("items/starred/multiple")
-    Call<ResponseBody> setStarredArticles();
+    Call<ResponseBody> setStarredArticles(@Body List<Integer> itemsIds);
 
     @PUT("items/unstarred/multiple")
-    Call<ResponseBody> setUnstarredArticles();
+    Call<ResponseBody> setUnstarredArticles(@Body List<Integer> itemsIds);
+
+    @PUT("items/{stateType}/multiple")
+    Call<ResponseBody> setArticlesState(@Path("stateType") String stateType, @Body List<Integer> items);
 }

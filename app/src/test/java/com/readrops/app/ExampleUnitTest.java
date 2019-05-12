@@ -2,12 +2,13 @@ package com.readrops.app;
 
 import com.readrops.app.utils.DateUtils;
 
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 
 import java.text.ParseException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -38,5 +39,12 @@ public class ExampleUnitTest {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void timeStamptoDateTest() {
+        LocalDateTime localDateTime = new LocalDateTime(1367270544 * 1000L, DateTimeZone.getDefault());
+
+        assertEquals(0, localDateTime.compareTo(new LocalDateTime(2013, 4, 29, 21, 22, 24)));
     }
 }

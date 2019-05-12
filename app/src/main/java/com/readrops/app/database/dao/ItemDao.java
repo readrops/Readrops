@@ -2,18 +2,19 @@ package com.readrops.app.database.dao;
 
 
 import androidx.lifecycle.LiveData;
-import androidx.paging.DataSource;
 import androidx.paging.PageKeyedDataSource;
-import androidx.sqlite.db.SupportSQLiteQuery;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.RawQuery;
+import androidx.sqlite.db.SupportSQLiteQuery;
 
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
-import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.database.entities.Item;
+import com.readrops.app.database.pojo.ItemWithFeed;
+
+import java.util.List;
 
 @Dao
 public interface ItemDao {
@@ -24,8 +25,14 @@ public interface ItemDao {
     @Query("Select case When :guid In (Select guid from Item) Then 'true' else 'false' end")
     String guidExist(String guid);
 
+    @Query("Select case When :remoteId In (Select remoteId from Item) Then 1 else 0 end")
+    boolean remoteItemExists(int remoteId);
+
     @Insert
     long insert(Item item);
+
+    @Insert
+    long[] insert(List<Item> items);
 
     /**
      * Set an item read or unread

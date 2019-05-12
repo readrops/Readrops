@@ -40,7 +40,7 @@ public class HttpManager {
             Request request = chain.request();
 
             request = request.newBuilder()
-                    .addHeader("Authorization", credentials.toBase64())
+                    .addHeader("Authorization", credentials.getBase64())
                     .build();
 
             return chain.proceed(request);
