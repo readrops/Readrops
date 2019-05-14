@@ -14,6 +14,7 @@ import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.utils.Utils;
 import com.readrops.readropslibrary.services.nextcloudnews.Credentials;
 import com.readrops.readropslibrary.services.nextcloudnews.NextNewsAPI;
+import com.readrops.readropslibrary.services.nextcloudnews.SyncData;
 import com.readrops.readropslibrary.services.nextcloudnews.SyncResult;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
@@ -44,8 +45,8 @@ public class NextNewsRepository extends ARepository {
             try {
                 NextNewsAPI newsAPI = new NextNewsAPI();
 
-                Credentials credentials = new Credentials("Lucas", LibUtils.NEXTCLOUD_PASSWORD, "https://cloud.openserver.fr");
-                SyncResult syncResult = newsAPI.sync(credentials, NextNewsAPI.SyncType.INITIAL_SYNC, null);
+                Credentials credentials = new Credentials("", LibUtils.NEXTCLOUD_PASSWORD, "");
+                SyncResult syncResult = newsAPI.sync(credentials, NextNewsAPI.SyncType.INITIAL_SYNC, new SyncData());
 
                 if (!syncResult.isError()) {
                     TimingLogger timings = new TimingLogger(TAG, "sync");
@@ -62,7 +63,7 @@ public class NextNewsRepository extends ARepository {
                     emitter.onComplete();
                 } else
                     emitter.onError(new Throwable());
-                
+
             } catch (IOException e) {
                 e.printStackTrace();
                 emitter.onError(e);

@@ -1,7 +1,5 @@
 package com.readrops.readropslibrary.services.nextcloudnews;
 
-import android.util.TimingLogger;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -21,6 +19,8 @@ public class NextNewsAPI {
 
     private static final String TAG = NextNewsAPI.class.getSimpleName();
 
+    private NextNewsService api;
+
     public NextNewsAPI() {
 
     }
@@ -37,44 +37,84 @@ public class NextNewsAPI {
         HttpManager httpManager = new HttpManager(credentials);
         Retrofit retrofit = getConfiguredRetrofitInstance(httpManager);
 
-        NextNewsService api = retrofit.create(NextNewsService.class);
+        api = retrofit.create(NextNewsService.class);
 
         SyncResult syncResult = new SyncResult();
-        TimingLogger timings = new TimingLogger(TAG, "sync");
+        switch (syncType) {
+            case INITIAL_SYNC:
+                initialSync(syncResult);
+                break;
+            case CLASSIC_SYNC:
+                if (data == null)
+                    throw new NullPointerException("SyncData can't be null");
 
+                classicSync(syncResult, data);
+                break;
+        }
+
+        return syncResult;
+    }
+
+    private void initialSync(SyncResult syncResult) throws IOException {
+        getFeedsAndFolders(syncResult);
+
+        Response<NextNewsItems> itemsResponse = api.getItems(3, false, -1).execute();
+        NextNewsItems itemList = itemsResponse.body();
+
+        if (!itemsResponse.isSuccessful())
+            syncResult.setError(true);
+
+        if (itemList != null)
+            syncResult.setItems(itemList.getItems());
+    }
+
+    private void classicSync(SyncResult syncResult, SyncData data) throws IOException {
+        putModifiedItems(data, syncResult);
+        getFeedsAndFolders(syncResult);
+
+        Response<NextNewsItems> itemsResponse = api.getNewItems(data.getLastModified(), 3).execute();
+        NextNewsItems itemList = itemsResponse.body();
+
+        if (!itemsResponse.isSuccessful())
+            syncResult.setError(true);
+
+        if (itemList != null)
+            syncResult.setItems(itemList.getItems());
+    }
+
+    private void getFeedsAndFolders(SyncResult syncResult) throws IOException {
         Response<NextNewsFeeds> feedResponse = api.getFeeds().execute();
         NextNewsFeeds feedList = feedResponse.body();
-        timings.addSplit("get feeds");
 
         if (!feedResponse.isSuccessful())
             syncResult.setError(true);
 
         Response<NextNewsFolders> folderResponse = api.getFolders().execute();
         NextNewsFolders folderList = folderResponse.body();
-        timings.addSplit("get folders");
 
         if (!folderResponse.isSuccessful())
             syncResult.setError(true);
 
-        Response<NextNewsItems> itemsResponse = api.getItems(3, false, -1).execute();
-        NextNewsItems itemList = itemsResponse.body();
-        timings.addSplit("get items");
-
-        if (!itemsResponse.isSuccessful())
-            syncResult.setError(true);
-
-        timings.dumpToLog();
-
-        if (feedList.getFeeds() != null)
-            syncResult.setFeeds(feedList.getFeeds());
-
-        if (folderList.getFolders() != null)
+        if (folderList != null)
             syncResult.setFolders(folderList.getFolders());
 
-        if (itemList.getItems() != null)
-            syncResult.setItems(itemList.getItems());
+        if (feedList != null)
+            syncResult.setFeeds(feedList.getFeeds());
 
-        return syncResult;
+    }
+
+    private void putModifiedItems(SyncData data, SyncResult syncResult) throws IOException {
+        Response readItemsResponse = api.setArticlesState(StateType.READ.name(),
+                data.getReadItems()).execute();
+
+        Response unreadItemsResponse = api.setArticlesState(StateType.UNREAD.toString(),
+                data.getUnreadItems()).execute();
+
+        if (!readItemsResponse.isSuccessful())
+            syncResult.setError(true);
+
+        if (!unreadItemsResponse.isSuccessful())
+            syncResult.setError(true);
     }
 
     public enum SyncType {

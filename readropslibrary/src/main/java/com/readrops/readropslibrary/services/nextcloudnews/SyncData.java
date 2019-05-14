@@ -13,6 +13,8 @@ public class SyncData {
 
     private List<Integer> unstarredItems;
 
+    private long lastModified;
+
     public SyncData() {
         unreadItems = new ArrayList<>();
         readItems = new ArrayList<>();
@@ -50,5 +52,13 @@ public class SyncData {
 
     public List<Integer> getUnstarredItems() {
         return unstarredItems;
+    }
+
+    public long getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(long lastModified) {
+        this.lastModified = lastModified;
     }
 }
