@@ -5,6 +5,7 @@ import android.app.Application;
 import androidx.paging.PageKeyedDataSource;
 import androidx.annotation.Nullable;
 
+import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.FeedWithFolder;
 import com.readrops.app.database.pojo.ItemWithFeed;
@@ -49,7 +50,7 @@ public class LocalFeedRepository extends ARepository {
     }
 
     @Override
-    public Observable<Feed> sync(@Nullable List<Feed> feeds) {
+    public Observable<Feed> sync(@Nullable List<Feed> feeds, Account account) {
         return Observable.create(emitter -> {
             List<Feed> feedList;
 

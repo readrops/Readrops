@@ -3,6 +3,7 @@ package com.readrops.app.repositories;
 import android.app.Application;
 import android.util.TimingLogger;
 
+import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.Item;
@@ -20,6 +21,8 @@ import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItem;
 import com.readrops.readropslibrary.utils.LibUtils;
+
+import org.joda.time.LocalDateTime;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,13 +43,23 @@ public class NextNewsRepository extends ARepository {
     }
 
     @Override
-    public Observable<Feed> sync(List<Feed> feeds) {
+    public Observable<Feed> sync(List<Feed> feeds, Account account) {
         return Observable.create(emitter -> {
             try {
                 NextNewsAPI newsAPI = new NextNewsAPI();
+                long lastModified = LocalDateTime.now().toDateTime().getMillis();
+                NextNewsAPI.SyncType syncType;
 
-                Credentials credentials = new Credentials("", LibUtils.NEXTCLOUD_PASSWORD, "");
-                SyncResult syncResult = newsAPI.sync(credentials, NextNewsAPI.SyncType.INITIAL_SYNC, new SyncData());
+                if (account.getLastModified() != 0)
+                    syncType = NextNewsAPI.SyncType.CLASSIC_SYNC;
+                else
+                    syncType = NextNewsAPI.SyncType.INITIAL_SYNC;
+
+                SyncData syncData = new SyncData();
+                syncData.setLastModified(account.getLastModified() / 1000L);
+
+                Credentials credentials = new Credentials("Lucas", LibUtils.NEXTCLOUD_PASSWORD, account.getUrl());
+                SyncResult syncResult = newsAPI.sync(credentials, syncType, syncData);
 
                 if (!syncResult.isError()) {
                     TimingLogger timings = new TimingLogger(TAG, "sync");
@@ -56,9 +69,11 @@ public class NextNewsRepository extends ARepository {
                     insertFeeds(syncResult.getFeeds());
                     timings.addSplit("insert feeds");
 
-                    insertItems(syncResult.getItems());
+                    insertItems(syncResult.getItems(), syncType == NextNewsAPI.SyncType.INITIAL_SYNC);
                     timings.addSplit("insert items");
                     timings.dumpToLog();
+
+                    database.accountDao().updateLastModified(account.getId(), lastModified);
 
                     emitter.onComplete();
                 } else
@@ -142,22 +157,25 @@ public class NextNewsRepository extends ARepository {
         database.folderDao().insert(newFolders);
     }
 
-    private void insertItems(List<NextNewsItem> items) {
+    private void insertItems(List<NextNewsItem> items, boolean initialSync) {
         List<Item> newItems = new ArrayList<>();
 
         for (NextNewsItem nextNewsItem : items) {
 
-            if (!database.itemDao().remoteItemExists(nextNewsItem.getId())) {
-                try {
-                    Feed feed = database.feedDao().getFeedByRemoteId(nextNewsItem.getFeedId());
-                    Item item = ItemMatcher.nextNewsItemToItem(nextNewsItem, feed);
+            if (!initialSync) {
+                if (database.itemDao().remoteItemExists(nextNewsItem.getId()))
+                    continue; // skip the current item if it exists in the db
+            }
 
-                    item.setReadTime(Utils.readTimeFromString(item.getContent()));
+            try {
+                Feed feed = database.feedDao().getFeedByRemoteId(nextNewsItem.getFeedId());
+                Item item = ItemMatcher.nextNewsItemToItem(nextNewsItem, feed);
 
-                    newItems.add(item);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                item.setReadTime(Utils.readTimeFromString(item.getContent()));
+
+                newItems.add(item);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 

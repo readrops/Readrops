@@ -1,21 +1,24 @@
 package com.readrops.app.database;
 
-import androidx.sqlite.db.SupportSQLiteDatabase;
+import android.content.Context;
+
+import androidx.annotation.NonNull;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
-import android.content.Context;
-import androidx.annotation.NonNull;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import com.readrops.app.database.dao.AccountDao;
 import com.readrops.app.database.dao.FeedDao;
 import com.readrops.app.database.dao.FolderDao;
 import com.readrops.app.database.dao.ItemDao;
+import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.Item;
 
 
-@androidx.room.Database(entities = {Feed.class, Item.class, Folder.class}, version = 1, exportSchema = false)
+@androidx.room.Database(entities = {Feed.class, Item.class, Folder.class, Account.class}, version = 1, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class Database extends RoomDatabase {
 
@@ -24,6 +27,8 @@ public abstract class Database extends RoomDatabase {
     public abstract ItemDao itemDao();
 
     public abstract FolderDao folderDao();
+
+    public abstract AccountDao accountDao();
 
     private static Database database;
 
@@ -41,6 +46,11 @@ public abstract class Database extends RoomDatabase {
 
             Folder folder = new Folder("reserved");
             new Thread(() -> database.folderDao().insert(folder)).start();
+
+            Account account = new Account("", "Nextcloud News",
+                    Account.AccountType.NEXTCLOUD_NEWS);
+
+            new Thread(() -> database.accountDao().insert(account)).start();
         }
 
         @Override

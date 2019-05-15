@@ -38,6 +38,7 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.readrops.app.R;
+import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.ItemWithFeed;
@@ -88,6 +89,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     private ActionMode actionMode;
 
+    private Account account;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,6 +113,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             if (!refreshLayout.isRefreshing())
                 adapter.submitList(itemWithFeeds);
         });
+
+        viewModel.getAccounts().observe(this, accounts -> account = accounts.get(0));
 
         refreshLayout = findViewById(R.id.swipe_refresh_layout);
         refreshLayout.setOnRefreshListener(this);
@@ -431,7 +436,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
     private void sync(List<Feed> feeds) {
-        viewModel.sync(feeds)
+        viewModel.sync(feeds, account)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Feed>() {

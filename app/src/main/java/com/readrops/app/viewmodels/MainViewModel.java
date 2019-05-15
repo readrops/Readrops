@@ -1,22 +1,18 @@
 package com.readrops.app.viewmodels;
 
 import android.app.Application;
-import androidx.arch.core.util.Function;
+
+import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.Transformations;
-import androidx.paging.DataSource;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
-import androidx.sqlite.db.SupportSQLiteQuery;
-import androidx.annotation.NonNull;
 
 import com.readrops.app.activities.MainActivity;
 import com.readrops.app.database.Database;
 import com.readrops.app.database.ItemsListQueryBuilder;
+import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.ItemWithFeed;
@@ -106,8 +102,8 @@ public class MainViewModel extends AndroidViewModel {
         return itemsWithFeed;
     }
 
-    public Observable<Feed> sync(List<Feed> feeds) {
-        return repository.sync(feeds);
+    public Observable<Feed> sync(List<Feed> feeds, Account account) {
+        return repository.sync(feeds, account);
     }
 
     public Single<Integer> getFeedCount() {
@@ -132,6 +128,10 @@ public class MainViewModel extends AndroidViewModel {
 
             emitter.onSuccess(foldersWithFeeds);
         });
+    }
+
+    public LiveData<List<Account>> getAccounts() {
+        return db.accountDao().selectAll();
     }
 
     public Completable setItemReadState(int itemId, boolean read) {

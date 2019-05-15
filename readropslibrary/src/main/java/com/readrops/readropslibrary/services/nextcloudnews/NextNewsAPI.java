@@ -104,10 +104,10 @@ public class NextNewsAPI {
     }
 
     private void putModifiedItems(SyncData data, SyncResult syncResult) throws IOException {
-        Response readItemsResponse = api.setArticlesState(StateType.READ.name(),
+        Response readItemsResponse = api.setArticlesState(StateType.READ.name().toLowerCase(),
                 data.getReadItems()).execute();
 
-        Response unreadItemsResponse = api.setArticlesState(StateType.UNREAD.toString(),
+        Response unreadItemsResponse = api.setArticlesState(StateType.UNREAD.toString().toLowerCase(),
                 data.getUnreadItems()).execute();
 
         if (!readItemsResponse.isSuccessful())

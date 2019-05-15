@@ -7,6 +7,7 @@ import android.util.Patterns;
 import androidx.palette.graphics.Palette;
 
 import com.readrops.app.database.Database;
+import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.FeedWithFolder;
@@ -35,7 +36,7 @@ public abstract class ARepository {
         this.database = Database.getInstance(application);
     }
 
-    public abstract Observable<Feed> sync(List<Feed> feeds);
+    public abstract Observable<Feed> sync(List<Feed> feeds, Account account);
 
     public abstract Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results);
 
