@@ -56,9 +56,14 @@ public class NextNewsRepository extends ARepository {
                     syncType = NextNewsAPI.SyncType.INITIAL_SYNC;
 
                 SyncData syncData = new SyncData();
-                syncData.setLastModified(account.getLastModified() / 1000L);
 
-                Credentials credentials = new Credentials("Lucas", LibUtils.NEXTCLOUD_PASSWORD, account.getUrl());
+                if (syncType == NextNewsAPI.SyncType.CLASSIC_SYNC) {
+                    syncData.setLastModified(account.getLastModified() / 1000L);
+                    syncData.setReadItems(database.itemDao().getReadChanges());
+                    syncData.setUnreadItems(database.itemDao().getUnreadChanges());
+                }
+
+                Credentials credentials = new Credentials("", LibUtils.NEXTCLOUD_PASSWORD, account.getUrl());
                 SyncResult syncResult = newsAPI.sync(credentials, syncType, syncData);
 
                 if (!syncResult.isError()) {
@@ -74,6 +79,7 @@ public class NextNewsRepository extends ARepository {
                     timings.dumpToLog();
 
                     database.accountDao().updateLastModified(account.getId(), lastModified);
+                    database.itemDao().resetReadChanges();
 
                     emitter.onComplete();
                 } else

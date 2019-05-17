@@ -2,10 +2,9 @@ package com.readrops.readropslibrary.services;
 
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeeds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolders;
+import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItemIds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItems;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
-
-import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -35,5 +34,5 @@ public interface NextNewsService {
     Call<NextNewsItems> getNewItems(@Query("lastModified") long lastModified, @Query("type") int type);
 
     @PUT("items/{stateType}/multiple")
-    Call<ResponseBody> setArticlesState(@Path("stateType") String stateType, @Body List<Integer> items);
+    Call<ResponseBody> setArticlesState(@Path("stateType") String stateType, @Body NextNewsItemIds items);
 }

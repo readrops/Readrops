@@ -35,6 +35,7 @@ import com.readrops.app.utils.DateUtils;
 import com.readrops.app.utils.GlideRequests;
 import com.readrops.app.utils.Utils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -200,6 +201,16 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
         }
 
         notifyDataSetChanged();
+    }
+
+    public List<ItemWithFeed> getSelectedItems() {
+        List<ItemWithFeed> items = new ArrayList<>();
+
+        for (int i = 0; i < selection.size(); i++) {
+            items.add(getItem(i));
+        }
+
+        return items;
     }
 
     public ItemWithFeed getItemWithFeed(int i) {

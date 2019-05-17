@@ -49,7 +49,6 @@ import com.readrops.app.viewmodels.MainViewModel;
 import com.readrops.app.views.MainItemListAdapter;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -143,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private void handleDrawerClick(IDrawerItem drawerItem) {
         if (drawerItem instanceof PrimaryDrawerItem) {
             drawer.closeDrawer();
-            int id = (int)drawerItem.getIdentifier();
+            int id = (int) drawerItem.getIdentifier();
 
             switch (id) {
                 case DrawerManager.ARTICLES_ITEM_ID:
@@ -206,7 +205,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     intent.putExtra(ItemActivity.IMAGE_URL, itemWithFeed.getItem().getImageLink());
                     startActivityForResult(intent, ITEM_REQUEST);
 
-                    viewModel.setItemReadState(itemWithFeed.getItem().getId(), true)
+                    viewModel.setItemReadState(itemWithFeed.getItem().getId(), true,
+                            !itemWithFeed.getItem().isReadChanged())
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .doOnError(throwable -> Toast.makeText(getApplicationContext(),
@@ -316,7 +316,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 if (i == ItemTouchHelper.LEFT) { // set item read state
                     ItemWithFeed itemWithFeed = adapter.getItemWithFeed(viewHolder.getAdapterPosition());
 
-                    viewModel.setItemReadState(itemWithFeed.getItem().getId(), !itemWithFeed.getItem().isRead())
+                    viewModel.setItemReadState(itemWithFeed.getItem().getId(), !itemWithFeed.getItem().isRead(),
+                            !itemWithFeed.getItem().isReadChanged())
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe();
@@ -370,7 +371,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
             allItemsSelected = false;
         } else {
-            viewModel.setItemsReadState(getIdsFromPositions(adapter.getSelection()), read)
+            viewModel.setItemsReadState(adapter.getSelectedItems(), read)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnError(throwable -> Toast.makeText(getApplicationContext(),
@@ -420,7 +421,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == ADD_FEED_REQUEST && resultCode ==  RESULT_OK) {
+        if (requestCode == ADD_FEED_REQUEST && resultCode == RESULT_OK) {
             ArrayList<Feed> feeds = data.getParcelableArrayListExtra("feedIds");
 
             if (feeds != null && feeds.size() > 0) {
@@ -442,17 +443,21 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 .subscribe(new Observer<Feed>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        syncProgressLayout.setVisibility(View.VISIBLE);
-                        syncProgressBar.setProgress(0);
+                        if (isAccountLocal()) {
+                            syncProgressLayout.setVisibility(View.VISIBLE);
+                            syncProgressBar.setProgress(0);
+                        }
                     }
 
                     @Override
                     public void onNext(Feed feed) {
-                        syncProgress.setText(getString(R.string.updating_feed, feed.getName()));
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            syncProgressBar.setProgress((feedCount * 100) / feedNb, true);
-                        } else
-                            syncProgressBar.setProgress((feedCount * 100) / feedNb);
+                        if (isAccountLocal()) {
+                            syncProgress.setText(getString(R.string.updating_feed, feed.getName()));
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                syncProgressBar.setProgress((feedCount * 100) / feedNb, true);
+                            } else
+                                syncProgressBar.setProgress((feedCount * 100) / feedNb);
+                        }
 
                         feedCount++;
                     }
@@ -467,12 +472,15 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
                     @Override
                     public void onComplete() {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                            syncProgressBar.setProgress(100, true);
-                        else
-                            syncProgressBar.setProgress(100);
+                        if (isAccountLocal()) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                                syncProgressBar.setProgress(100, true);
+                            else
+                                syncProgressBar.setProgress(100);
 
-                        syncProgressLayout.setVisibility(View.GONE);
+                            syncProgressLayout.setVisibility(View.GONE);
+                        }
+
                         refreshLayout.setRefreshing(false);
 
                         scrollToTop = true;
@@ -481,6 +489,10 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                         updateDrawerFeeds(); // update drawer after syncing feeds
                     }
                 });
+    }
+
+    private boolean isAccountLocal() {
+        return account.getAccountType() == Account.AccountType.LOCAL;
     }
 
     @Override
@@ -538,16 +550,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     return true;
                 })
                 .show();
-    }
-
-    private List<Integer> getIdsFromPositions(LinkedHashSet<Integer> positions) {
-        List<Integer> ids = new ArrayList<>();
-
-        for (int position : positions) {
-            ids.add((int)adapter.getItemId(position));
-        }
-
-        return ids;
     }
 
     public enum ListSortType {

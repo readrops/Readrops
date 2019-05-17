@@ -34,7 +34,9 @@ public abstract class Database extends RoomDatabase {
 
     public static Database getInstance(Context context) {
         if (database == null)
-            database = Room.databaseBuilder(context, Database.class, "readrops-db").addCallback(roomCallback).build();
+            database = Room.databaseBuilder(context, Database.class, "readrops-db")
+                    .addCallback(roomCallback)
+                    .build();
 
         return database;
     }

@@ -134,18 +134,19 @@ public class MainViewModel extends AndroidViewModel {
         return db.accountDao().selectAll();
     }
 
-    public Completable setItemReadState(int itemId, boolean read) {
+    public Completable setItemReadState(int itemId, boolean read, boolean readChanged) {
         return Completable.create(emitter -> {
-            db.itemDao().setReadState(itemId, read ? 1 : 0);
+            db.itemDao().setReadState(itemId, read ? 1 : 0, readChanged ? 1 : 0);
             emitter.onComplete();
         });
     }
 
-    public Completable setItemsReadState(List<Integer> ids, boolean read) {
+    public Completable setItemsReadState(List<ItemWithFeed> items, boolean read) {
         List<Completable> completableList = new ArrayList<>();
 
-        for (int id : ids) {
-            completableList.add(setItemReadState(id, read));
+        for (ItemWithFeed itemWithFeed : items) {
+            completableList.add(setItemReadState(itemWithFeed.getItem().getId(), read,
+                    !itemWithFeed.getItem().isReadChanged()));
         }
 
         return Completable.concat(completableList);

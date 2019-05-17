@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import com.readrops.readropslibrary.services.NextNewsService;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeeds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolders;
+import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItemIds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItems;
 import com.readrops.readropslibrary.utils.HttpManager;
 
@@ -105,10 +106,10 @@ public class NextNewsAPI {
 
     private void putModifiedItems(SyncData data, SyncResult syncResult) throws IOException {
         Response readItemsResponse = api.setArticlesState(StateType.READ.name().toLowerCase(),
-                data.getReadItems()).execute();
+                new NextNewsItemIds(data.getReadItems())).execute();
 
         Response unreadItemsResponse = api.setArticlesState(StateType.UNREAD.toString().toLowerCase(),
-                data.getUnreadItems()).execute();
+                new NextNewsItemIds(data.getUnreadItems())).execute();
 
         if (!readItemsResponse.isSuccessful())
             syncResult.setError(true);

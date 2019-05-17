@@ -106,9 +106,10 @@ public class Account {
     }
 
     public enum AccountType {
-        NEXTCLOUD_NEWS(0),
-        FEEDLY(1),
-        FRESHRSS(2);
+        LOCAL(0),
+        NEXTCLOUD_NEWS(1),
+        FEEDLY(2),
+        FRESHRSS(3);
 
         private int code;
 

@@ -9,7 +9,7 @@ import com.readrops.app.viewmodels.MainViewModel;
 public class ItemsListQueryBuilder {
 
     private String [] columns = {"Item.id", "title", "clean_description", "image_link", "pub_date", "read",
-            "read_it_later", "Feed.name", "text_color", "background_color", "icon_url", "read_time",
+            "read_changed", "read_it_later", "Feed.name", "text_color", "background_color", "icon_url", "read_time",
             "Feed.id as feedId", "Folder.id as folder_id", "Folder.name as folder_name"};
 
     private String SELECT_ALL_JOIN = "Item Inner Join Feed, Folder on Item.feed_id = Feed.id And Folder.id = Feed.folder_id";

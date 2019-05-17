@@ -58,6 +58,9 @@ public class Item implements Comparable<Item> {
 
     private boolean read;
 
+    @ColumnInfo(name = "read_changed")
+    private boolean readChanged;
+
     @ColumnInfo(name = "read_it_later")
     private boolean readItLater;
 
@@ -176,6 +179,14 @@ public class Item implements Comparable<Item> {
 
     public void setRead(boolean read) {
         this.read = read;
+    }
+
+    public boolean isReadChanged() {
+        return readChanged;
+    }
+
+    public void setReadChanged(boolean readChanged) {
+        this.readChanged = readChanged;
     }
 
     public boolean isReadItLater() {
