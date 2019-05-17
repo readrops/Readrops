@@ -208,7 +208,7 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
     public List<ItemWithFeed> getSelectedItems() {
         List<ItemWithFeed> items = new ArrayList<>();
 
-        for (int i = 0; i < selection.size(); i++) {
+        for (int i : selection) {
             items.add(getItem(i));
         }
 
