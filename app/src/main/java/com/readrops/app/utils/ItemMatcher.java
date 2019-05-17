@@ -22,6 +22,8 @@ public final class ItemMatcher {
                 DateTimeZone.getDefault()));
         item.setContent(nextNewsItem.getBody());
 
+        if (Utils.isTypeImage(nextNewsItem.getEnclosureMime()))
+            item.setImageLink(nextNewsItem.getEnclosureLink());
 
         item.setLink(nextNewsItem.getUrl());
         item.setGuid(nextNewsItem.getGuid());

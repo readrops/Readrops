@@ -316,8 +316,11 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
             if (item.getCleanDescription() != null) {
                 itemDescription.setVisibility(View.VISIBLE);
                 itemDescription.setText(item.getCleanDescription());
-            } else
+            } else {
                 itemDescription.setVisibility(View.GONE);
+                if (itemWithFeed.getItem().hasImage())
+                    itemTitle.setMaxLines(4);
+            }
         }
 
         private void setReadState(boolean isRead) {
