@@ -1,7 +1,6 @@
 package com.readrops.app.utils;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -10,10 +9,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.DisplayMetrics;
-import android.widget.Toast;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -33,18 +29,6 @@ public final class Utils {
     public static final String HTTPS_PREFIX = "https://";
 
     public static final int AVERAGE_WORDS_PER_MINUTE = 250;
-
-    public static void displayErrorInMainThread(Context context, String message) {
-        Toast toast = Toast.makeText(context, message, Toast.LENGTH_LONG);
-
-        if (!(Looper.myLooper() == Looper.getMainLooper())) {
-            Handler handler = new Handler(Looper.getMainLooper());
-            Looper.prepare();
-            handler.post(toast::show);
-        } else
-            toast.show();
-
-    }
 
     public static Bitmap getImageFromUrl(String url) {
         try {
@@ -74,7 +58,7 @@ public final class Utils {
 
     public static double readTimeFromString(String value) {
         int nbWords = value.split("\\s+").length;
-        double minutes = (double)nbWords / AVERAGE_WORDS_PER_MINUTE;
+        double minutes = (double) nbWords / AVERAGE_WORDS_PER_MINUTE;
 
         return minutes;
     }
@@ -92,7 +76,7 @@ public final class Utils {
                 || type.equals("image/png");
     }
 
-    public static void setDrawableColor(Drawable drawable, int color) {
+    public static void setDrawableColor(Drawable drawable, @ColorInt int color) {
         drawable.mutate().setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
     }
 

@@ -132,19 +132,22 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
             viewHolder.feedIcon.setImageResource(R.drawable.ic_rss_feed);
 
         Resources resources = viewHolder.itemView.getResources();
-        if (itemWithFeed.getColor() != 0) {
+
+        if (itemWithFeed.getBgColor() != 0) {
+            viewHolder.feedName.setTextColor(itemWithFeed.getBgColor());
+            Utils.setDrawableColor(viewHolder.dateLayout.getBackground(), itemWithFeed.getBgColor());
+
+        } else if (itemWithFeed.getColor() != 0) {
             viewHolder.feedName.setTextColor(itemWithFeed.getColor());
             Utils.setDrawableColor(viewHolder.dateLayout.getBackground(), itemWithFeed.getColor());
-        } else
-            viewHolder.feedName.setTextColor(resources.getColor(android.R.color.tab_indicator_text));
 
-        if (itemWithFeed.getBgColor() != 0)
-            Utils.setDrawableColor(viewHolder.dateLayout.getBackground(), itemWithFeed.getBgColor());
-        else if (itemWithFeed.getBgColor() == 0 && itemWithFeed.getColor() == 0)
+        } else if (itemWithFeed.getBgColor() == 0 && itemWithFeed.getColor() == 0) {
+            viewHolder.feedName.setTextColor(resources.getColor(android.R.color.tab_indicator_text));
             Utils.setDrawableColor(viewHolder.dateLayout.getBackground(),
                     ContextCompat.getColor(viewHolder.itemView.getContext(), R.color.colorPrimary));
+        }
 
-        int minutes = (int)Math.round(itemWithFeed.getItem().getReadTime());
+        int minutes = (int) Math.round(itemWithFeed.getItem().getReadTime());
         if (minutes < 1)
             viewHolder.itemReadTime.setText(resources.getString(R.string.read_time_lower_than_1));
         else if (minutes > 1)
@@ -160,7 +163,6 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
         viewHolder.setReadState(itemWithFeed.getItem().isRead());
         viewHolder.setSelected(selection.contains(viewHolder.getAdapterPosition()));
     }
-
 
 
     @Override
@@ -241,6 +243,7 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
 
     public interface OnItemClickListener {
         void onItemClick(ItemWithFeed itemWithFeed, int position);
+
         void onItemLongClick(ItemWithFeed itemWithFeed, int position);
     }
 
@@ -291,7 +294,7 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
             itemFolderName = itemView.findViewById(R.id.item_folder_name);
             dateLayout = itemView.findViewById(R.id.item_date_layout);
 
-            alphaViews = new View[] {
+            alphaViews = new View[]{
                     dateLayout,
                     itemFolderName,
                     feedIcon,
