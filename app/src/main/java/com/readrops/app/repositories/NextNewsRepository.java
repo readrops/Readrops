@@ -55,9 +55,8 @@ public class NextNewsRepository extends ARepository {
                 account.setDisplayedName(user.getDisplayName());
                 account.setCurrentAccount(true);
 
-                database.accountDao().insert(account);
+                account.setId((int) database.accountDao().insert(account));
                 emitter.onSuccess(true);
-
             } else
                 emitter.onSuccess(false);
         });

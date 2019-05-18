@@ -81,9 +81,11 @@ public class AddAccountActivity extends AppCompatActivity {
                                 startActivity(intent);
 
                                 finish();
-                            } else
+                            } else {
+                                binding.addAccountValidate.setEnabled(true);
                                 Toast.makeText(AddAccountActivity.this, "Impossible to login",
-                                        Toast.LENGTH_SHORT).show();
+                                                                        Toast.LENGTH_LONG).show();
+                            }
                         }
 
                         @Override
