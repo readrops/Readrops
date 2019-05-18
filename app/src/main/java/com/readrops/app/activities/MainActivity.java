@@ -32,9 +32,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
 import com.bumptech.glide.util.ViewPreloadSizeProvider;
 import com.github.clans.fab.FloatingActionMenu;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.readrops.app.R;
@@ -69,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private MainItemListAdapter adapter;
     private SwipeRefreshLayout refreshLayout;
 
+    private Toolbar toolbar;
     private Drawer drawer;
     private FloatingActionMenu actionMenu;
 
@@ -95,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = findViewById(R.id.toolbar_main);
+        toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
 
@@ -125,15 +129,34 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         account = getIntent().getParcelableExtra("account");
         if (account != null) {
+            buildDrawer();
             refreshLayout.setRefreshing(true);
             onRefresh();
+
         } else {
-            viewModel.getCurrentAccount().observe(this, account1 -> account = account1);
+            viewModel.getCurrentAccount().observe(this, account1 -> {
+                account = account1;
+                buildDrawer();
+            });
         }
+    }
+
+    private void buildDrawer() {
+        ProfileDrawerItem profileItem = new ProfileDrawerItem()
+                .withName(account.getDisplayedName())
+                .withEmail(account.getAccountName());
+
+        AccountHeader header = new AccountHeaderBuilder()
+                .withActivity(this)
+                .addProfiles(profileItem)
+                .withCurrentProfileHiddenInList(true)
+                .withTextColorRes(R.color.colorPrimary)
+                .build();
 
         drawer = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(toolbar)
+                .withAccountHeader(header)
                 .withOnDrawerItemClickListener((view, position, drawerItem) -> {
                     handleDrawerClick(drawerItem);
                     return true;
