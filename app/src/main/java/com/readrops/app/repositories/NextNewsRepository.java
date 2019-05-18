@@ -99,6 +99,7 @@ public class NextNewsRepository extends ARepository {
                     timings.addSplit("insert items");
                     timings.dumpToLog();
 
+                    account.setLastModified(lastModified);
                     database.accountDao().updateLastModified(account.getId(), lastModified);
                     database.itemDao().resetReadChanges();
 
