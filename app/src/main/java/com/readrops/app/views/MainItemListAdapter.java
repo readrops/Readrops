@@ -205,6 +205,11 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
         notifyDataSetChanged();
     }
 
+    public void unselectAll() {
+        selection.clear();
+        notifyDataSetChanged();
+    }
+
     public List<ItemWithFeed> getSelectedItems() {
         List<ItemWithFeed> items = new ArrayList<>();
 

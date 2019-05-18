@@ -265,8 +265,14 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                                 setReadState(false);
                                 break;
                             case R.id.item_select_all:
-                                adapter.selectAll();
-                                allItemsSelected = true;
+                                if (allItemsSelected) {
+                                    adapter.unselectAll();
+                                    allItemsSelected = false;
+                                    actionMode.finish();
+                                } else {
+                                    adapter.selectAll();
+                                    allItemsSelected = true;
+                                }
                                 break;
                         }
 
