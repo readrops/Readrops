@@ -12,13 +12,17 @@ public final class SharedPreferencesManager {
     }
 
     public static void writeValue(Context context, SharedPrefKey key, Object value) {
+        writeValue(context, key.toString(), value);
+    }
+
+    public static void writeValue(Context context, String key, Object value) {
         SharedPreferences sharedPref = getSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPref.edit();
 
         if (value instanceof Boolean)
-            editor.putBoolean(key.toString(), (Boolean) value);
+            editor.putBoolean(key, (Boolean) value);
         else if (value instanceof String)
-            editor.putString(key.toString(), (String) value);
+            editor.putString(key, (String) value);
 
         editor.apply();
     }
@@ -34,6 +38,10 @@ public final class SharedPreferencesManager {
     }
 
     public static String readString(Context context, SharedPrefKey key) {
+        return readString(context, key.toString());
+    }
+
+    public static String readString(Context context, String key) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         return sharedPreferences.getString(key.toString(), null);
     }

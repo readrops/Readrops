@@ -1,12 +1,15 @@
 package com.readrops.app.database.entities;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity
-public class Account {
+public class Account implements Parcelable {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
@@ -15,6 +18,9 @@ public class Account {
 
     @ColumnInfo(name = "account_name")
     private String accountName;
+
+    @ColumnInfo(name = "displayed_name")
+    private String displayedName;
 
     @ColumnInfo(name = "account_type")
     private AccountType accountType;
@@ -41,6 +47,30 @@ public class Account {
         this.accountType = accountType;
     }
 
+    protected Account(Parcel in) {
+        id = in.readInt();
+        url = in.readString();
+        accountName = in.readString();
+        accountType = getAccountTypeFromCode(in.readInt());
+        displayedName = in.readString();
+        lastModified = in.readLong();
+        currentAccount = in.readByte() != 0;
+        login = in.readString();
+        password = in.readString();
+    }
+
+    public static final Creator<Account> CREATOR = new Creator<Account>() {
+        @Override
+        public Account createFromParcel(Parcel in) {
+            return new Account(in);
+        }
+
+        @Override
+        public Account[] newArray(int size) {
+            return new Account[size];
+        }
+    };
+
     public int getId() {
         return id;
     }
@@ -63,6 +93,14 @@ public class Account {
 
     public void setAccountName(String accountName) {
         this.accountName = accountName;
+    }
+
+    public String getDisplayedName() {
+        return displayedName;
+    }
+
+    public void setDisplayedName(String displayedName) {
+        this.displayedName = displayedName;
     }
 
     public AccountType getAccountType() {
@@ -105,6 +143,32 @@ public class Account {
         this.password = password;
     }
 
+    public String getLoginKey() {
+        return accountType.name() + "_login_" + id ;
+    }
+
+    public String getPasswordKey() {
+        return accountType.name() + "_password_" + id;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(url);
+        dest.writeString(accountName);
+        dest.writeInt(accountType.code);
+        dest.writeString(displayedName);
+        dest.writeLong(lastModified);
+        dest.writeByte((byte) (currentAccount ? 1 : 0));
+        dest.writeString(login);
+        dest.writeString(password);
+    }
+
     public enum AccountType {
         LOCAL(0),
         NEXTCLOUD_NEWS(1),
@@ -120,5 +184,18 @@ public class Account {
         AccountType(int code) {
             this.code =  code;
         }
+    }
+
+    public static AccountType getAccountTypeFromCode(int code) {
+        if (code == AccountType.LOCAL.getCode())
+            return AccountType.LOCAL;
+        else if (code == AccountType.NEXTCLOUD_NEWS.getCode())
+            return AccountType.NEXTCLOUD_NEWS;
+        else if (code == AccountType.FEEDLY.getCode())
+            return AccountType.FEEDLY;
+        else if (code ==  AccountType.FRESHRSS.getCode())
+            return AccountType.FRESHRSS;
+
+        return null;
     }
 }

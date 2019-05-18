@@ -1,16 +1,8 @@
 package com.readrops.app.activities;
 
 import android.annotation.SuppressLint;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import androidx.annotation.NonNull;
-import com.google.android.material.textfield.TextInputEditText;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.ItemTouchHelper;
-
 import android.util.Patterns;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -20,13 +12,21 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.textfield.TextInputEditText;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.adapters.ItemAdapter;
 import com.readrops.app.R;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.utils.FeedInsertionResult;
-import com.readrops.app.utils.Utils;
 import com.readrops.app.utils.ParsingResult;
+import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.AddFeedsViewModel;
 
 import java.util.ArrayList;
@@ -166,10 +166,10 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         String url = feedInput.getText().toString().trim();
 
         if (url.isEmpty()) {
-            feedInput.setError(getString(R.string.add_feed_empty_field));
+            feedInput.setError(getString(R.string.empty_field));
             return false;
         } else if (!Patterns.WEB_URL.matcher(url).matches()) {
-            feedInput.setError(getString(R.string.add_feed_wrong_url));
+            feedInput.setError(getString(R.string.wrong_url));
             return false;
         } else
             return true;

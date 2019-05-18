@@ -48,11 +48,6 @@ public abstract class Database extends RoomDatabase {
 
             Folder folder = new Folder("reserved");
             new Thread(() -> database.folderDao().insert(folder)).start();
-
-            Account account = new Account("", "Nextcloud News",
-                    Account.AccountType.NEXTCLOUD_NEWS);
-
-            new Thread(() -> database.accountDao().insert(account)).start();
         }
 
         @Override

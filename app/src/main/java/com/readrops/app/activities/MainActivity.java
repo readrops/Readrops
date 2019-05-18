@@ -113,8 +113,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 adapter.submitList(itemWithFeeds);
         });
 
-        viewModel.getAccounts().observe(this, accounts -> account = accounts.get(0));
-
         refreshLayout = findViewById(R.id.swipe_refresh_layout);
         refreshLayout.setOnRefreshListener(this);
 
@@ -125,10 +123,17 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         feedCount = 0;
         initRecyclerView();
 
+        account = getIntent().getParcelableExtra("account");
+        if (account != null) {
+            refreshLayout.setRefreshing(true);
+            onRefresh();
+        } else {
+            viewModel.getCurrentAccount().observe(this, account1 -> account = account1);
+        }
+
         drawer = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(toolbar)
-                .withShowDrawerOnFirstLaunch(true)
                 .withOnDrawerItemClickListener((view, position, drawerItem) -> {
                     handleDrawerClick(drawerItem);
                     return true;
@@ -437,6 +442,12 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
     private void sync(List<Feed> feeds) {
+        if (account.getLogin() == null)
+            account.setLogin(SharedPreferencesManager.readString(this, account.getLoginKey()));
+
+        if (account.getPassword() == null)
+            account.setPassword(SharedPreferencesManager.readString(this, account.getPasswordKey()));
+
         viewModel.sync(feeds, account)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

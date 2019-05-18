@@ -8,6 +8,7 @@ import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeeds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolders;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItemIds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItems;
+import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
 import com.readrops.readropslibrary.utils.HttpManager;
 
 import java.io.IOException;
@@ -32,6 +33,20 @@ public class NextNewsAPI {
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(httpManager.getOkHttpClient())
                 .build();
+    }
+
+    public NextNewsUser login(Credentials credentials) throws IOException {
+        HttpManager httpManager = new HttpManager(credentials);
+        Retrofit retrofit = getConfiguredRetrofitInstance(httpManager);
+
+        api = retrofit.create(NextNewsService.class);
+
+        Response<NextNewsUser> response = api.getUser().execute();
+
+        if (!response.isSuccessful())
+            return null;
+
+        return response.body();
     }
 
     public SyncResult sync(@NonNull Credentials credentials, @NonNull SyncType syncType, @Nullable SyncData data) throws IOException {

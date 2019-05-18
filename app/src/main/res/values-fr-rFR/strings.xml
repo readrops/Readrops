@@ -11,8 +11,8 @@
     <string name="add_feed_title">Ajouter un flux</string>
     <string name="feed_url">Adresse du flux</string>
     <string name="validate">Valider</string>
-    <string name="add_feed_empty_field">Le champ ne peut pas être vide</string>
-    <string name="add_feed_wrong_url">La valeur n\'est pas une adresse web valide</string>
+    <string name="empty_field">Le champ ne peut pas être vide</string>
+    <string name="wrong_url">La valeur n\'est pas une adresse web valide</string>
     <string name="add_feed_no_result">Aucune adresse de flux trouvée</string>
     <string name="add_feed_connexion_error">Erreur de connexion au site</string>
     <string name="add_feed_unknownhost_error">Site inconnu</string>
@@ -50,5 +50,9 @@
     <string name="unread">Marquer comme non lu</string>
     <string name="read">Marquer comme lu</string>
     <string name="select_all">Tout sélectionner</string>
+    <string name="account_url">Url du compte</string>
+    <string name="account_name">Nom du compte</string>
+    <string name="login">Identifiant</string>
+    <string name="password">Mot de passe</string>
 
 </resources>

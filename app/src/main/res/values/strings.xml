@@ -12,8 +12,8 @@
     <string name="add_feed_title">Add feed</string>
     <string name="feed_url">Feed url</string>
     <string name="validate">Validate</string>
-    <string name="add_feed_empty_field">Field can\'t be empty</string>
-    <string name="add_feed_wrong_url">Input is not a valid URL</string>
+    <string name="empty_field">Field can\'t be empty</string>
+    <string name="wrong_url">Input is not a valid URL</string>
     <string name="add_feed_no_result">No feed url found</string>
     <string name="add_feed_connexion_error">Connection error</string>
     <string name="add_feed_unknownhost_error">Unknown host</string>
@@ -52,4 +52,9 @@
     <string name="unread">Mark as non read</string>
     <string name="read">Mark as read</string>
     <string name="select_all">Select all</string>
+    <string name="account_url">Account url</string>
+    <string name="account_name">Account name</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="nextcloud_news" translatable="false">Nextcloud News</string>
 </resources>

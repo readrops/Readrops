@@ -20,7 +20,7 @@ import com.readrops.readropslibrary.services.nextcloudnews.SyncResult;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItem;
-import com.readrops.readropslibrary.utils.LibUtils;
+import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
 
 import org.joda.time.LocalDateTime;
 
@@ -40,6 +40,27 @@ public class NextNewsRepository extends ARepository {
 
     public NextNewsRepository(Application application) {
         super(application);
+    }
+
+    @Override
+    public Single<Boolean> login(Account account) {
+        return Single.create(emitter -> {
+            NextNewsAPI newsAPI = new NextNewsAPI();
+
+            Credentials credentials = new Credentials(account.getLogin(), account.getPassword(),
+                    account.getUrl());
+            NextNewsUser user = newsAPI.login(credentials);
+
+            if (user != null) {
+                account.setDisplayedName(user.getDisplayName());
+                account.setCurrentAccount(true);
+
+                database.accountDao().insert(account);
+                emitter.onSuccess(true);
+
+            } else
+                emitter.onSuccess(false);
+        });
     }
 
     @Override
@@ -63,7 +84,8 @@ public class NextNewsRepository extends ARepository {
                     syncData.setUnreadItems(database.itemDao().getUnreadChanges());
                 }
 
-                Credentials credentials = new Credentials("", LibUtils.NEXTCLOUD_PASSWORD, account.getUrl());
+                Credentials credentials = new Credentials(account.getLogin(), account.getPassword(),
+                        account.getUrl());
                 SyncResult syncResult = newsAPI.sync(credentials, syncType, syncData);
 
                 if (!syncResult.isError()) {

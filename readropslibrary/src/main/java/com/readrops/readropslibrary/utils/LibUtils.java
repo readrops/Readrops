@@ -5,8 +5,6 @@ import java.util.Scanner;
 
 public final class LibUtils {
 
-    public static final String NEXTCLOUD_PASSWORD = "";
-
     public static final String RSS_DEFAULT_CONTENT_TYPE = "application/rss+xml";
     public static final String RSS_TEXT_CONTENT_TYPE = "text/xml";
     public static final String RSS_APPLICATION_CONTENT_TYPE = "application/xml";

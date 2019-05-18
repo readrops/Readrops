@@ -15,6 +15,9 @@ public interface AccountDao {
     @Query("Select * from Account")
     LiveData<List<Account>> selectAll();
 
+    @Query("Select * from Account Where current_account = 1")
+    LiveData<Account> selectCurrentAccount();
+
     @Query("Select * from Account Where id = :id")
     Account selectById(int id);
 

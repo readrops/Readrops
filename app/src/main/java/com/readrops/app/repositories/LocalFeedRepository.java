@@ -50,6 +50,11 @@ public class LocalFeedRepository extends ARepository {
     }
 
     @Override
+    public Single<Boolean> login(Account account) {
+        return null;
+    }
+
+    @Override
     public Observable<Feed> sync(@Nullable List<Feed> feeds, Account account) {
         return Observable.create(emitter -> {
             List<Feed> feedList;

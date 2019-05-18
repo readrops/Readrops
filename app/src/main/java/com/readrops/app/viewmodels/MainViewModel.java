@@ -130,8 +130,8 @@ public class MainViewModel extends AndroidViewModel {
         });
     }
 
-    public LiveData<List<Account>> getAccounts() {
-        return db.accountDao().selectAll();
+    public LiveData<Account> getCurrentAccount() {
+        return db.accountDao().selectCurrentAccount();
     }
 
     public Completable setItemReadState(int itemId, boolean read, boolean readChanged) {
