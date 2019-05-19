@@ -2,8 +2,6 @@ package com.readrops.app.utils;
 
 import android.content.Context;
 
-import androidx.annotation.ColorInt;
-
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.ExpandableBadgeDrawerItem;
@@ -90,11 +88,13 @@ public class DrawerManager {
         PrimaryDrawerItem articles = new PrimaryDrawerItem()
                 .withName(context.getString(R.string.articles))
                 .withIcon(context.getDrawable(R.drawable.ic_rss_feed_grey))
+                .withSelectable(true)
                 .withIdentifier(ARTICLES_ITEM_ID);
 
         PrimaryDrawerItem toReadLater = new PrimaryDrawerItem()
                 .withName(context.getString(R.string.read_later))
                 .withIcon(context.getDrawable(R.drawable.ic_read_later_grey))
+                .withSelectable(true)
                 .withIdentifier(READ_LATER_ID);
 
         drawer.addItem(articles);

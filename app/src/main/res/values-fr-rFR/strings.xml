@@ -54,5 +54,7 @@
     <string name="account_name">Nom du compte</string>
     <string name="login">Identifiant</string>
     <string name="password">Mot de passe</string>
+    <string name="account_settings">Paramètres du compte</string>
+    <string name="add_account">Ajouter un compte</string>
 
 </resources>

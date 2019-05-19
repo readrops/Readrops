@@ -9,6 +9,7 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -38,6 +39,7 @@ import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileSettingDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.readrops.app.R;
@@ -64,9 +66,11 @@ import io.reactivex.schedulers.Schedulers;
 public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
+
     public static final int ADD_FEED_REQUEST = 1;
     public static final int MANAGE_FEEDS_REQUEST = 2;
     public static final int ITEM_REQUEST = 3;
+    public static final int ADD_ACCOUNT_REQUEST = 4;
 
     private RecyclerView recyclerView;
     private MainItemListAdapter adapter;
@@ -143,20 +147,40 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     private void buildDrawer() {
         ProfileDrawerItem profileItem = new ProfileDrawerItem()
+                .withIcon(R.drawable.ic_nextcloud_news)
                 .withName(account.getDisplayedName())
                 .withEmail(account.getAccountName());
 
+        ProfileSettingDrawerItem profileSettingsItem = new ProfileSettingDrawerItem()
+                .withName(getString(R.string.account_settings))
+                .withIcon(R.drawable.ic_account);
+
+        ProfileSettingDrawerItem addAccountSettingsItem = new ProfileSettingDrawerItem()
+                .withName(getString(R.string.add_account))
+                .withIcon(R.drawable.ic_add_account_grey)
+                .withOnDrawerItemClickListener((view, position, drawerItem) -> {
+                    Intent intent = new Intent(this, AddAccountActivity.class);
+                    startActivityForResult(intent, ADD_ACCOUNT_REQUEST);
+
+                    return true;
+                });
+
         AccountHeader header = new AccountHeaderBuilder()
                 .withActivity(this)
-                .addProfiles(profileItem)
+                .addProfiles(profileItem, profileSettingsItem, addAccountSettingsItem)
+                .withDividerBelowHeader(false)
+                .withAlternativeProfileHeaderSwitching(true)
                 .withCurrentProfileHiddenInList(true)
-                .withTextColorRes(R.color.colorPrimary)
+                .withTextColorRes(R.color.colorBackground)
+                .withHeaderBackground(R.drawable.header_background)
+                .withHeaderBackgroundScaleType(ImageView.ScaleType.CENTER_CROP)
                 .build();
 
         drawer = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withAccountHeader(header)
+                .withSelectedItem(DrawerManager.ARTICLES_ITEM_ID)
                 .withOnDrawerItemClickListener((view, position, drawerItem) -> {
                     handleDrawerClick(drawerItem);
                     return true;
