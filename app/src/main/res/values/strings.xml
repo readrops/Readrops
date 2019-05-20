@@ -59,4 +59,5 @@
     <string name="nextcloud_news" translatable="false">Nextcloud News</string>
     <string name="account_settings">Account settings</string>
     <string name="add_account">Add account</string>
+    <string name="no_feed">No feed</string>
 </resources>

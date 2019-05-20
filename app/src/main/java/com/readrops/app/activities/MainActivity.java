@@ -85,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private MainViewModel viewModel;
     private DrawerManager drawerManager;
 
+    private RelativeLayout emptyListLayout;
     private RelativeLayout syncProgressLayout;
     private TextView syncProgress;
     private ProgressBar syncProgressBar;
@@ -107,6 +108,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         setSupportActionBar(toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
 
+        emptyListLayout = findViewById(R.id.empty_list_layout);
+
         actionMenu = findViewById(R.id.fab_menu);
         viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
@@ -116,6 +119,11 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         viewModel.invalidate();
         viewModel.getItemsWithFeed().observe(this, itemWithFeeds -> {
             allItems = itemWithFeeds;
+
+            if (itemWithFeeds.size() > 0)
+                emptyListLayout.setVisibility(View.GONE);
+            else
+                emptyListLayout.setVisibility(View.VISIBLE);
 
             if (!refreshLayout.isRefreshing())
                 adapter.submitList(itemWithFeeds);
