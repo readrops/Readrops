@@ -60,4 +60,6 @@
     <string name="account_settings">Account settings</string>
     <string name="add_account">Add account</string>
     <string name="no_feed">No feed</string>
+    <string name="choose_account">Choose an account</string>
+    <string name="local_account">Local account</string>
 </resources>

@@ -26,4 +26,7 @@ public interface AccountDao {
 
     @Query("Update Account set last_modified = :lastModified Where id = :accountId")
     void updateLastModified(int accountId, long lastModified);
+
+    @Query("Update Account set current_account = 0 Where id Not In (:accountId)")
+    void setCurrentAccountsToFalse(int accountId);
 }

@@ -15,6 +15,7 @@ import com.readrops.app.database.entities.Account;
 import com.readrops.app.databinding.ActivityAddAccountBinding;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.viewmodels.AccountViewModel;
+import com.readrops.app.views.AccountType;
 
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -26,7 +27,7 @@ public class AddAccountActivity extends AppCompatActivity {
     private ActivityAddAccountBinding binding;
     private AccountViewModel viewModel;
 
-    private Account.AccountType accountType;
+    private AccountType accountType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +36,10 @@ public class AddAccountActivity extends AppCompatActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_account);
         viewModel = ViewModelProviders.of(this).get(AccountViewModel.class);
 
-        accountType = Account.AccountType.NEXTCLOUD_NEWS;
+        accountType = getIntent().getParcelableExtra("accountType");
+
+        binding.providerImage.setImageResource(accountType.getLogoId());
+        binding.providerName.setText(accountType.getName());
 
         binding.addAccountSkip.setOnClickListener(v -> {
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
@@ -44,7 +48,7 @@ public class AddAccountActivity extends AppCompatActivity {
             finish();
         });
 
-        binding.addAccountName.setText(accountType.name().replace("_", " "));
+        binding.addAccountName.setText(accountType.getName());
     }
 
     public void createAccount(View view) {
@@ -54,7 +58,7 @@ public class AddAccountActivity extends AppCompatActivity {
             String login = binding.addAccountLogin.getText().toString().trim();
             String password = binding.addAccountPassword.getText().toString().trim();
 
-            Account account = new Account(url, name, accountType);
+            Account account = new Account(url, name, accountType.getAccountType());
             account.setLogin(login);
             account.setPassword(password);
 
@@ -77,14 +81,14 @@ public class AddAccountActivity extends AppCompatActivity {
                                 saveLoginPassword(account);
 
                                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                intent.putExtra("account", account);
+                                intent.putExtra(MainActivity.ACCOUNT_KEY, account);
                                 startActivity(intent);
 
                                 finish();
                             } else {
                                 binding.addAccountValidate.setEnabled(true);
                                 Toast.makeText(AddAccountActivity.this, "Impossible to login",
-                                                                        Toast.LENGTH_LONG).show();
+                                        Toast.LENGTH_LONG).show();
                             }
                         }
 
@@ -92,7 +96,7 @@ public class AddAccountActivity extends AppCompatActivity {
                         public void onError(Throwable e) {
                             binding.addAccountLoading.setVisibility(View.GONE);
                             binding.addAccountValidate.setEnabled(true);
-                            Toast.makeText(AddAccountActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(AddAccountActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     });
         }

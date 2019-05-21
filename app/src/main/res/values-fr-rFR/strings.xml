@@ -57,5 +57,7 @@
     <string name="account_settings">Paramètres du compte</string>
     <string name="add_account">Ajouter un compte</string>
     <string name="no_feed">Aucun flux</string>
+    <string name="choose_account">Choisir un compte</string>
+    <string name="local_account">Compte local</string>
 
 </resources>

@@ -3,10 +3,13 @@ package com.readrops.app.database.entities;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.DrawableRes;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
+
+import com.readrops.app.R;
 
 @Entity
 public class Account implements Parcelable {
@@ -197,5 +200,16 @@ public class Account implements Parcelable {
             return AccountType.FRESHRSS;
 
         return null;
+    }
+
+    public static @DrawableRes int getLogoFromAccountType(AccountType accountType) {
+        switch (accountType) {
+            case LOCAL:
+                return R.drawable.ic_readrops;
+            case NEXTCLOUD_NEWS:
+                return R.drawable.ic_nextcloud_news;
+            default:
+                return R.drawable.ic_readrops;
+        }
     }
 }

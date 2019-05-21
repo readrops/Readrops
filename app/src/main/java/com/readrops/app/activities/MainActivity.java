@@ -72,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     public static final int ITEM_REQUEST = 3;
     public static final int ADD_ACCOUNT_REQUEST = 4;
 
+    public static final String ACCOUNT_KEY = "account";
+
     private RecyclerView recyclerView;
     private MainItemListAdapter adapter;
     private SwipeRefreshLayout refreshLayout;
@@ -139,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         feedCount = 0;
         initRecyclerView();
 
-        account = getIntent().getParcelableExtra("account");
+        account = getIntent().getParcelableExtra(ACCOUNT_KEY);
         if (account != null) {
             buildDrawer();
             refreshLayout.setRefreshing(true);
@@ -155,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     private void buildDrawer() {
         ProfileDrawerItem profileItem = new ProfileDrawerItem()
-                .withIcon(R.drawable.ic_nextcloud_news)
+                .withIcon(Account.getLogoFromAccountType(account.getAccountType()))
                 .withName(account.getDisplayedName())
                 .withEmail(account.getAccountName());
 
