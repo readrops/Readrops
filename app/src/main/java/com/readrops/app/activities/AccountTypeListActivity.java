@@ -44,6 +44,7 @@ public class AccountTypeListActivity extends AppCompatActivity {
         adapter = new AccountTypeListAdapter(accountType -> {
             if (!(accountType.getAccountType() == Account.AccountType.LOCAL)) {
                 Intent intent = new Intent(getApplicationContext(), AddAccountActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
                 intent.putExtra("accountType", accountType);
 
                 startActivity(intent);

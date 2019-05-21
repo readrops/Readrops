@@ -178,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 .withName(getString(R.string.add_account))
                 .withIcon(R.drawable.ic_add_account_grey)
                 .withOnDrawerItemClickListener((view, position, drawerItem) -> {
-                    Intent intent = new Intent(this, AddAccountActivity.class);
+                    Intent intent = new Intent(this, AccountTypeListActivity.class);
                     startActivityForResult(intent, ADD_ACCOUNT_REQUEST);
 
                     return true;
@@ -508,6 +508,17 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             }
         } else if (requestCode == MANAGE_FEEDS_REQUEST) {
             updateDrawerFeeds();
+        } else if (requestCode == ADD_ACCOUNT_REQUEST) {
+            Account newAccount = data.getParcelableExtra(ACCOUNT_KEY);
+
+            if (newAccount != null) {
+                account = newAccount;
+
+                viewModel.setRepository(account.getAccountType(), getApplication());
+                refreshLayout.setRefreshing(true);
+                onRefresh();
+                buildDrawer();
+            }
         }
 
         super.onActivityResult(requestCode, resultCode, data);

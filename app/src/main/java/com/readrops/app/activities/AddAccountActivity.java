@@ -28,6 +28,7 @@ public class AddAccountActivity extends AppCompatActivity {
     private AccountViewModel viewModel;
 
     private AccountType accountType;
+    private boolean forwardResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +38,9 @@ public class AddAccountActivity extends AppCompatActivity {
         viewModel = ViewModelProviders.of(this).get(AccountViewModel.class);
 
         accountType = getIntent().getParcelableExtra("accountType");
+
+        int flag = getIntent().getFlags();
+        forwardResult = flag == Intent.FLAG_ACTIVITY_FORWARD_RESULT;
 
         binding.providerImage.setImageResource(accountType.getLogoId());
         binding.providerName.setText(accountType.getName());
@@ -80,9 +84,17 @@ public class AddAccountActivity extends AppCompatActivity {
                             if (success) {
                                 saveLoginPassword(account);
 
-                                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                intent.putExtra(MainActivity.ACCOUNT_KEY, account);
-                                startActivity(intent);
+                                if (forwardResult) {
+                                    Intent intent = new Intent();
+                                    intent.putExtra(MainActivity.ACCOUNT_KEY, account);
+                                    setResult(RESULT_OK, intent);
+                                    finish();
+
+                                } else {
+                                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                    intent.putExtra(MainActivity.ACCOUNT_KEY, account);
+                                    startActivity(intent);
+                                }
 
                                 finish();
                             } else {
