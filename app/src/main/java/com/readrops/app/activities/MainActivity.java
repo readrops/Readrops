@@ -9,7 +9,6 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -33,13 +32,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
 import com.bumptech.glide.util.ViewPreloadSizeProvider;
 import com.github.clans.fab.FloatingActionMenu;
-import com.mikepenz.materialdrawer.AccountHeader;
-import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
-import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
-import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
-import com.mikepenz.materialdrawer.model.ProfileSettingDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.readrops.app.R;
@@ -54,6 +48,7 @@ import com.readrops.app.viewmodels.MainViewModel;
 import com.readrops.app.views.MainItemListAdapter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -99,7 +94,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     private ActionMode actionMode;
 
-    private Account account;
+    private Account currentAccount;
+    private List<Account> accounts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,73 +137,53 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         feedCount = 0;
         initRecyclerView();
 
-        account = getIntent().getParcelableExtra(ACCOUNT_KEY);
-        if (account != null) { // new inserted account
-            buildDrawer();
+        drawerManager = new DrawerManager(this, toolbar, (view, position, drawerItem) -> {
+            handleDrawerClick(drawerItem);
+
+            return true;
+        });
+
+        drawerManager.setHeaderListener((view, profile, current) -> {
+            int id = (int) profile.getIdentifier();
+
+            switch (id) {
+                case DrawerManager.ADD_ACCOUNT_ID:
+                    Intent intent = new Intent(this, AccountTypeListActivity.class);
+                    startActivityForResult(intent, ADD_ACCOUNT_REQUEST);
+                    break;
+                case DrawerManager.ACCOUNT_SETTINGS_ID:
+                    break;
+            }
+
+            return true;
+        });
+
+        currentAccount = getIntent().getParcelableExtra(ACCOUNT_KEY);
+
+        if (currentAccount != null) { // first account created
+            drawer = drawerManager.buildDrawer(Collections.singletonList(currentAccount));
+            viewModel.setRepository(currentAccount.getAccountType(), getApplication());
+
             refreshLayout.setRefreshing(true);
             onRefresh();
 
-            viewModel.setCurrentAccountsToFalse(account.getId())
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe();
-
-            viewModel.setRepository(account.getAccountType(), getApplication());
-
         } else { // last current account
-            viewModel.getCurrentAccount().observe(this, account1 -> {
-                account = account1;
-                viewModel.setRepository(account.getAccountType(), getApplication());
+            viewModel.getAllAccounts().observe(this, accounts -> {
+                this.accounts = accounts;
 
-                buildDrawer();
+                for (Account account1 : accounts) {
+                    if (account1.isCurrentAccount()) {
+                        currentAccount = account1;
+                        break;
+                    }
+                }
+
+                viewModel.setRepository(currentAccount.getAccountType(), getApplication());
+
+                drawerManager.buildDrawer(accounts);
+                updateDrawerFeeds();
             });
         }
-    }
-
-    private void buildDrawer() {
-        ProfileDrawerItem profileItem = new ProfileDrawerItem()
-                .withIcon(Account.getLogoFromAccountType(account.getAccountType()))
-                .withName(account.getDisplayedName())
-                .withEmail(account.getAccountName());
-
-        ProfileSettingDrawerItem profileSettingsItem = new ProfileSettingDrawerItem()
-                .withName(getString(R.string.account_settings))
-                .withIcon(R.drawable.ic_account);
-
-        ProfileSettingDrawerItem addAccountSettingsItem = new ProfileSettingDrawerItem()
-                .withName(getString(R.string.add_account))
-                .withIcon(R.drawable.ic_add_account_grey)
-                .withOnDrawerItemClickListener((view, position, drawerItem) -> {
-                    Intent intent = new Intent(this, AccountTypeListActivity.class);
-                    startActivityForResult(intent, ADD_ACCOUNT_REQUEST);
-
-                    return true;
-                });
-
-        AccountHeader header = new AccountHeaderBuilder()
-                .withActivity(this)
-                .addProfiles(profileItem, profileSettingsItem, addAccountSettingsItem)
-                .withDividerBelowHeader(false)
-                .withAlternativeProfileHeaderSwitching(true)
-                .withCurrentProfileHiddenInList(true)
-                .withTextColorRes(R.color.colorBackground)
-                .withHeaderBackground(R.drawable.header_background)
-                .withHeaderBackgroundScaleType(ImageView.ScaleType.CENTER_CROP)
-                .build();
-
-        drawer = new DrawerBuilder()
-                .withActivity(this)
-                .withToolbar(toolbar)
-                .withAccountHeader(header)
-                .withSelectedItem(DrawerManager.ARTICLES_ITEM_ID)
-                .withOnDrawerItemClickListener((view, position, drawerItem) -> {
-                    handleDrawerClick(drawerItem);
-                    return true;
-                })
-                .build();
-
-        drawerManager = new DrawerManager(drawer);
-        updateDrawerFeeds();
     }
 
     private void handleDrawerClick(IDrawerItem drawerItem) {
@@ -243,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 .subscribe(new DisposableSingleObserver<Map<Folder, List<Feed>>>() {
                     @Override
                     public void onSuccess(Map<Folder, List<Feed>> folderListHashMap) {
-                        drawerManager.updateDrawer(getApplicationContext(), folderListHashMap);
+                        drawerManager.updateDrawer(folderListHashMap);
                     }
 
                     @Override
@@ -367,10 +343,10 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             GlideApp.with(this).clear(vh.getItemImage());
         });
 
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        DividerItemDecoration decoration = new DividerItemDecoration(this, ((LinearLayoutManager) layoutManager).getOrientation());
+        DividerItemDecoration decoration = new DividerItemDecoration(this, layoutManager.getOrientation());
         recyclerView.addItemDecoration(decoration);
 
         recyclerView.setAdapter(adapter);
@@ -499,39 +475,48 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == ADD_FEED_REQUEST && resultCode == RESULT_OK) {
-            ArrayList<Feed> feeds = data.getParcelableArrayListExtra("feedIds");
+            if (data != null) {
+                ArrayList<Feed> feeds = data.getParcelableArrayListExtra("feedIds");
 
-            if (feeds != null && feeds.size() > 0) {
-                refreshLayout.setRefreshing(true);
-                feedNb = feeds.size();
-                sync(feeds);
+                if (feeds != null && feeds.size() > 0) {
+                    refreshLayout.setRefreshing(true);
+                    feedNb = feeds.size();
+                    sync(feeds);
+                }
             }
+
         } else if (requestCode == MANAGE_FEEDS_REQUEST) {
             updateDrawerFeeds();
+
         } else if (requestCode == ADD_ACCOUNT_REQUEST) {
-            Account newAccount = data.getParcelableExtra(ACCOUNT_KEY);
 
-            if (newAccount != null) {
-                account = newAccount;
+            if (data != null) {
+                Account newAccount = data.getParcelableExtra(ACCOUNT_KEY);
 
-                viewModel.setRepository(account.getAccountType(), getApplication());
-                refreshLayout.setRefreshing(true);
-                onRefresh();
-                buildDrawer();
+                if (newAccount != null) {
+                    currentAccount = newAccount;
+
+                    viewModel.setRepository(currentAccount.getAccountType(), getApplication());
+                    refreshLayout.setRefreshing(true);
+                    onRefresh();
+
+                    //drawerManager.
+                }
             }
+
         }
 
         super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void sync(List<Feed> feeds) {
-        if (account.getLogin() == null)
-            account.setLogin(SharedPreferencesManager.readString(this, account.getLoginKey()));
+        if (currentAccount.getLogin() == null)
+            currentAccount.setLogin(SharedPreferencesManager.readString(this, currentAccount.getLoginKey()));
 
-        if (account.getPassword() == null)
-            account.setPassword(SharedPreferencesManager.readString(this, account.getPasswordKey()));
+        if (currentAccount.getPassword() == null)
+            currentAccount.setPassword(SharedPreferencesManager.readString(this, currentAccount.getPasswordKey()));
 
-        viewModel.sync(feeds, account)
+        viewModel.sync(feeds, currentAccount)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Feed>() {
@@ -586,7 +571,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
     private boolean isAccountLocal() {
-        return account.getAccountType() == Account.AccountType.LOCAL;
+        return currentAccount.getAccountType() == Account.AccountType.LOCAL;
     }
 
     @Override

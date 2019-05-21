@@ -1,14 +1,23 @@
 package com.readrops.app.utils;
 
-import android.content.Context;
+import android.app.Activity;
+import android.widget.ImageView;
 
+import androidx.appcompat.widget.Toolbar;
+
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.ExpandableBadgeDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileSettingDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.readrops.app.R;
+import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 
@@ -22,16 +31,46 @@ public class DrawerManager {
 
     public static final int ARTICLES_ITEM_ID = 1;
     public static final int READ_LATER_ID = 2;
+    public static final int ACCOUNT_SETTINGS_ID = 3;
+    public static final int ADD_ACCOUNT_ID = 4;
 
+    private Activity activity;
+    private Toolbar toolbar;
     private Drawer drawer;
 
-    public DrawerManager(Drawer drawer) {
-        this.drawer = drawer;
+    private AccountHeader header;
+    private Drawer.OnDrawerItemClickListener listener;
+    private AccountHeader.OnAccountHeaderListener headerListener;
+
+    public DrawerManager(Activity activity, Toolbar toolbar, Drawer.OnDrawerItemClickListener listener) {
+        this.activity = activity;
+        this.listener = listener;
+        this.toolbar = toolbar;
     }
 
-    public void updateDrawer(Context context, Map<Folder, List<Feed>> folderListMap) {
+    public void setHeaderListener(AccountHeader.OnAccountHeaderListener headerListener) {
+        this.headerListener = headerListener;
+    }
+
+    public Drawer buildDrawer(List<Account> accounts) {
+        createAccountHeader(accounts);
+
+        drawer = new DrawerBuilder()
+                .withActivity(activity)
+                .withToolbar(toolbar)
+                .withAccountHeader(header)
+                .withSelectedItem(DrawerManager.ARTICLES_ITEM_ID)
+                .withOnDrawerItemClickListener(listener)
+                .build();
+
+        addDefaultPlaces();
+
+        return drawer;
+    }
+
+    public void updateDrawer(Map<Folder, List<Feed>> folderListMap) {
         drawer.removeAllItems();
-        addDefaultPlaces(context);
+        addDefaultPlaces();
 
         List<SecondaryDrawerItem> feedsWithoutFolder = new ArrayList<>();
 
@@ -40,7 +79,7 @@ public class DrawerManager {
                 ExpandableBadgeDrawerItem badgeDrawerItem = new ExpandableBadgeDrawerItem()
                         .withName(folder.getName())
                         .withIdentifier(folder.getId())
-                        .withIcon(context.getDrawable(R.drawable.ic_folder_grey));
+                        .withIcon(activity.getDrawable(R.drawable.ic_folder_grey));
 
                 List<IDrawerItem> secondaryDrawerItems = new ArrayList<>();
                 int expandableUnreadCount = 0;
@@ -52,7 +91,7 @@ public class DrawerManager {
                     SecondaryDrawerItem secondaryDrawerItem = new SecondaryDrawerItem()
                             .withName(feed.getName())
                             .withBadge(String.valueOf(feed.getUnreadCount()))
-                            .withIcon(color != 0 ? drawableWithColor(color) : drawableWithColor(context.getResources().getColor(R.color.colorPrimary)))
+                            .withIcon(color != 0 ? drawableWithColor(color) : drawableWithColor(activity.getResources().getColor(R.color.colorPrimary)))
                             .withIdentifier(feed.getId());
 
                     secondaryDrawerItems.add(secondaryDrawerItem);
@@ -70,7 +109,7 @@ public class DrawerManager {
                     SecondaryDrawerItem primaryDrawerItem = new SecondaryDrawerItem()
                             .withName(feed.getName())
                             .withBadge(String.valueOf(feed.getUnreadCount()))
-                            .withIcon(color != 0 ? drawableWithColor(color) : drawableWithColor(context.getResources().getColor(R.color.colorPrimary)))
+                            .withIcon(color != 0 ? drawableWithColor(color) : drawableWithColor(activity.getResources().getColor(R.color.colorPrimary)))
                             .withIdentifier(feed.getId());
 
                     feedsWithoutFolder.add(primaryDrawerItem);
@@ -84,16 +123,54 @@ public class DrawerManager {
         }
     }
 
-    private void addDefaultPlaces(Context context) {
+    private void createAccountHeader(List<Account> accounts) {
+        ProfileDrawerItem[] profileItems = new ProfileDrawerItem[accounts.size()];
+
+        for (int i = 0; i < accounts.size(); i++) {
+            Account account = accounts.get(i);
+
+            ProfileDrawerItem profileItem = new ProfileDrawerItem()
+                    .withIcon(Account.getLogoFromAccountType(account.getAccountType()))
+                    .withName(account.getDisplayedName())
+                    .withEmail(account.getAccountName());
+
+            profileItems[i] = profileItem;
+        }
+
+        ProfileSettingDrawerItem profileSettingsItem = new ProfileSettingDrawerItem()
+                .withName(activity.getString(R.string.account_settings))
+                .withIcon(R.drawable.ic_account)
+                .withIdentifier(ACCOUNT_SETTINGS_ID);
+
+        ProfileSettingDrawerItem addAccountSettingsItem = new ProfileSettingDrawerItem()
+                .withName(activity.getString(R.string.add_account))
+                .withIcon(R.drawable.ic_add_account_grey)
+                .withIdentifier(ADD_ACCOUNT_ID);
+
+        header = new AccountHeaderBuilder()
+                .withActivity(activity)
+                .addProfiles(profileItems)
+                .addProfiles(profileSettingsItem, addAccountSettingsItem)
+                .withDividerBelowHeader(false)
+                .withAlternativeProfileHeaderSwitching(true)
+                .withCurrentProfileHiddenInList(true)
+                .withTextColorRes(R.color.colorBackground)
+                .withHeaderBackground(R.drawable.header_background)
+                .withHeaderBackgroundScaleType(ImageView.ScaleType.CENTER_CROP)
+                .withOnAccountHeaderListener(headerListener)
+                .build();
+    }
+
+    private void addDefaultPlaces() {
         PrimaryDrawerItem articles = new PrimaryDrawerItem()
-                .withName(context.getString(R.string.articles))
-                .withIcon(context.getDrawable(R.drawable.ic_rss_feed_grey))
+                .withName(activity.getString(R.string.articles))
+                .withIcon(activity.getDrawable(R.drawable.ic_rss_feed_grey))
                 .withSelectable(true)
                 .withIdentifier(ARTICLES_ITEM_ID);
 
         PrimaryDrawerItem toReadLater = new PrimaryDrawerItem()
-                .withName(context.getString(R.string.read_later))
-                .withIcon(context.getDrawable(R.drawable.ic_read_later_grey))
+                .withName(activity.getString(R.string.read_later))
+                .withIcon(activity.getDrawable(R.drawable.ic_read_later_grey))
                 .withSelectable(true)
                 .withIdentifier(READ_LATER_ID);
 

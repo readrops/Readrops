@@ -146,6 +146,10 @@ public class MainViewModel extends AndroidViewModel {
         return db.accountDao().selectCurrentAccount();
     }
 
+    public LiveData<List<Account>> getAllAccounts() {
+        return db.accountDao().selectAll();
+    }
+
     public Completable setCurrentAccountsToFalse(int accountId) {
         return Completable.create(emitter -> {
             db.accountDao().setCurrentAccountsToFalse(accountId);
