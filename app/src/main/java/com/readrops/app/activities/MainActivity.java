@@ -142,14 +142,23 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         initRecyclerView();
 
         account = getIntent().getParcelableExtra(ACCOUNT_KEY);
-        if (account != null) {
+        if (account != null) { // new inserted account
             buildDrawer();
             refreshLayout.setRefreshing(true);
             onRefresh();
 
-        } else {
+            viewModel.setCurrentAccountsToFalse(account.getId())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe();
+
+            viewModel.setRepository(account.getAccountType(), getApplication());
+
+        } else { // last current account
             viewModel.getCurrentAccount().observe(this, account1 -> {
                 account = account1;
+                viewModel.setRepository(account.getAccountType(), getApplication());
+
                 buildDrawer();
             });
         }
@@ -517,7 +526,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 .subscribe(new Observer<Feed>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        if (isAccountLocal()) {
+                        if (isAccountLocal() && feedNb > 0) {
                             syncProgressLayout.setVisibility(View.VISIBLE);
                             syncProgressBar.setProgress(0);
                         }
@@ -525,7 +534,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
                     @Override
                     public void onNext(Feed feed) {
-                        if (isAccountLocal()) {
+                        if (isAccountLocal() && feedNb > 0) {
                             syncProgress.setText(getString(R.string.updating_feed, feed.getName()));
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                                 syncProgressBar.setProgress((feedCount * 100) / feedNb, true);
@@ -546,7 +555,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
                     @Override
                     public void onComplete() {
-                        if (isAccountLocal()) {
+                        if (isAccountLocal() && feedNb > 0) {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
                                 syncProgressBar.setProgress(100, true);
                             else

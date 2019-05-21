@@ -17,6 +17,7 @@ import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.repositories.ARepository;
+import com.readrops.app.repositories.LocalFeedRepository;
 import com.readrops.app.repositories.NextNewsRepository;
 
 import java.util.ArrayList;
@@ -49,6 +50,17 @@ public class MainViewModel extends AndroidViewModel {
         db = Database.getInstance(application);
 
         itemsWithFeed = new MediatorLiveData<>();
+    }
+
+    public void setRepository(Account.AccountType accountType, Application application) {
+        switch (accountType) {
+            case LOCAL:
+                repository = new LocalFeedRepository(application);
+                break;
+            case NEXTCLOUD_NEWS:
+                repository = new NextNewsRepository(application);
+                break;
+        }
     }
 
     private void buildPagedList() {
@@ -132,6 +144,13 @@ public class MainViewModel extends AndroidViewModel {
 
     public LiveData<Account> getCurrentAccount() {
         return db.accountDao().selectCurrentAccount();
+    }
+
+    public Completable setCurrentAccountsToFalse(int accountId) {
+        return Completable.create(emitter -> {
+            db.accountDao().setCurrentAccountsToFalse(accountId);
+            emitter.onComplete();
+        });
     }
 
     public Completable setItemReadState(int itemId, boolean read, boolean readChanged) {
