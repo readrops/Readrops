@@ -29,4 +29,10 @@ public interface AccountDao {
 
     @Query("Update Account set current_account = 0 Where id Not In (:accountId)")
     void setCurrentAccountsToFalse(int accountId);
+
+    @Query("Select count(*) From Account Where account_type = :accounType")
+    Integer getAccountCountByType(int accounType);
+
+    @Query("Select count(*) From Account")
+    Integer getAccountCount();
 }

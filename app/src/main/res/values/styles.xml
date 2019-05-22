@@ -17,6 +17,10 @@
         <item name="windowActionModeOverlay">true</item>
     </style>
 
+    <style name="SplashTheme" parent="AppTheme.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+    </style>
+
     <style name="TextAppearance.Design.CollapsingToolbar.Expanded.Custom" parent="TextAppearance.Design.CollapsingToolbar.Expanded">
         <item name="android:textSize">12sp</item>
         <item name="android:color">@color/colorBackground</item>

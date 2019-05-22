@@ -35,4 +35,12 @@ public class AccountViewModel extends AndroidViewModel {
         });
 
     }
+
+    public Single<Integer> getAccountCountByAccountType(int accountTypeCode) {
+        return Single.create(emitter -> emitter.onSuccess(database.accountDao().getAccountCountByType(accountTypeCode)));
+    }
+
+    public Single<Integer> getAccountCount() {
+        return Single.create(emitter -> emitter.onSuccess(database.accountDao().getAccountCount()));
+    }
 }
