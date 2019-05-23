@@ -10,9 +10,10 @@ public class ItemsListQueryBuilder {
 
     private String [] columns = {"Item.id", "title", "clean_description", "image_link", "pub_date", "read",
             "read_changed", "read_it_later", "Feed.name", "text_color", "background_color", "icon_url", "read_time",
-            "Feed.id as feedId", "Folder.id as folder_id", "Folder.name as folder_name"};
+            "Feed.id as feedId", "Feed.account_id", "Folder.id as folder_id", "Folder.name as folder_name"};
 
-    private String SELECT_ALL_JOIN = "Item Inner Join Feed, Folder on Item.feed_id = Feed.id And Folder.id = Feed.folder_id";
+    private String SELECT_ALL_JOIN = "Item Inner Join Feed, Folder on Item.feed_id = " +
+            "Feed.id And Folder.id = Feed.folder_id";
 
     private String ORDER_BY_ASC = "Item.id DESC";
 
@@ -20,8 +21,10 @@ public class ItemsListQueryBuilder {
 
     private SupportSQLiteQueryBuilder queryBuilder;
 
-    private boolean showReaditems;
+    private boolean showReadItems;
     private int filterFeedId;
+    private int accountId;
+
     private MainViewModel.FilterType filterType;
     private MainActivity.ListSortType sortType;
 
@@ -30,9 +33,11 @@ public class ItemsListQueryBuilder {
     }
 
     private String buildWhereClause() {
-        StringBuilder stringBuilder = new StringBuilder(50);
+        StringBuilder stringBuilder = new StringBuilder(80);
 
-        if (!showReaditems)
+        stringBuilder.append("Feed.account_id = " + accountId + " And ");
+
+        if (!showReadItems)
             stringBuilder.append("read = 0 And ");
 
         switch (filterType) {
@@ -68,12 +73,12 @@ public class ItemsListQueryBuilder {
        return queryBuilder.create();
     }
 
-    public boolean showReaditems() {
-        return showReaditems;
+    public boolean showReadItems() {
+        return showReadItems;
     }
 
-    public void setShowReaditems(boolean showReaditems) {
-        this.showReaditems = showReaditems;
+    public void setShowReadItems(boolean showReadItems) {
+        this.showReadItems = showReadItems;
     }
 
     public int getFilterFeedId() {
@@ -98,5 +103,13 @@ public class ItemsListQueryBuilder {
 
     public void setSortType(MainActivity.ListSortType sortType) {
         this.sortType = sortType;
+    }
+
+    public int getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(int accountId) {
+        this.accountId = accountId;
     }
 }

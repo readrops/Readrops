@@ -4,6 +4,7 @@ import android.app.Application;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.annotation.NonNull;
 
+import com.readrops.app.database.entities.Account;
 import com.readrops.app.repositories.LocalFeedRepository;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.HtmlParser;
@@ -25,8 +26,8 @@ public class AddFeedsViewModel extends AndroidViewModel {
         repository = new LocalFeedRepository(application);
     }
 
-    public Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results) {
-        return repository.addFeeds(results);
+    public Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results, Account account) {
+        return repository.addFeeds(results, account);
     }
 
     public Single<List<ParsingResult>> parseUrl(String url) {

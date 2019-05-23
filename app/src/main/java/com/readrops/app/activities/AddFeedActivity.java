@@ -23,6 +23,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.adapters.ItemAdapter;
 import com.readrops.app.R;
+import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.ParsingResult;
@@ -232,7 +233,8 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
                 feedsToInsert.add(result);
         }
 
-        viewModel.addFeeds(feedsToInsert)
+        // TODO : choose the right account
+        viewModel.addFeeds(feedsToInsert, new Account())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new DisposableSingleObserver<List<FeedInsertionResult>>() {

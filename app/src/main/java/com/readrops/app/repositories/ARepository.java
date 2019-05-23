@@ -40,7 +40,7 @@ public abstract class ARepository {
 
     public abstract Observable<Feed> sync(List<Feed> feeds, Account account);
 
-    public abstract Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results);
+    public abstract Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results, Account account);
 
     public abstract void updateFeedWithFolder(FeedWithFolder feedWithFolder);
 

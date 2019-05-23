@@ -89,10 +89,10 @@ public class NextNewsRepository extends ARepository {
 
                 if (!syncResult.isError()) {
                     TimingLogger timings = new TimingLogger(TAG, "sync");
-                    insertFolders(syncResult.getFolders());
+                    insertFolders(syncResult.getFolders(), account);
                     timings.addSplit("insert folders");
 
-                    insertFeeds(syncResult.getFeeds());
+                    insertFeeds(syncResult.getFeeds(), account);
                     timings.addSplit("insert feeds");
 
                     insertItems(syncResult.getItems(), syncType == NextNewsAPI.SyncType.INITIAL_SYNC);
@@ -115,7 +115,7 @@ public class NextNewsRepository extends ARepository {
     }
 
     @Override
-    public Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results) {
+    public Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results, Account account) {
         return null;
     }
 
@@ -134,13 +134,14 @@ public class NextNewsRepository extends ARepository {
         return null;
     }
 
-    private void insertFeeds(List<NextNewsFeed> feeds) {
+    private void insertFeeds(List<NextNewsFeed> feeds, Account account) {
         List<Feed> newFeeds = new ArrayList<>();
 
         for (NextNewsFeed nextNewsFeed : feeds) {
 
             if (!database.feedDao().remoteFeedExists(nextNewsFeed.getId())) {
-                Feed feed = FeedMatcher.nextNewsFeedToFeed(nextNewsFeed);
+                Feed feed = FeedMatcher.nextNewsFeedToFeed(nextNewsFeed, account);
+
 
                 // if the Nextcloud feed has a folder, it is already inserted, so we have to get its local id
                 if (nextNewsFeed.getFolderId() != 0) {
@@ -169,7 +170,7 @@ public class NextNewsRepository extends ARepository {
                 .subscribe();
     }
 
-    private void insertFolders(List<NextNewsFolder> folders) {
+    private void insertFolders(List<NextNewsFolder> folders, Account account) {
         List<Folder> newFolders = new ArrayList<>();
 
         for (NextNewsFolder nextNewsFolder : folders) {
@@ -177,6 +178,7 @@ public class NextNewsRepository extends ARepository {
             if (!database.folderDao().remoteFolderExists(nextNewsFolder.getId())) {
                 Folder folder = new Folder(nextNewsFolder.getName());
                 folder.setRemoteId(nextNewsFolder.getId());
+                folder.setAccountId(account.getId());
 
                 newFolders.add(folder);
             }

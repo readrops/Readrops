@@ -18,7 +18,10 @@ import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
 
 import org.jsoup.Jsoup;
 
-@Entity(foreignKeys = @ForeignKey(entity = Folder.class, parentColumns = "id", childColumns = "folder_id", onDelete = ForeignKey.SET_NULL))
+@Entity(foreignKeys = {@ForeignKey(entity = Folder.class, parentColumns = "id",
+        childColumns = "folder_id", onDelete = ForeignKey.SET_NULL),
+    @ForeignKey(entity = Account.class, parentColumns = "id", childColumns = "account_id",
+            onDelete = ForeignKey.CASCADE)})
 public class Feed implements Parcelable {
 
     @PrimaryKey(autoGenerate = true)
@@ -52,6 +55,9 @@ public class Feed implements Parcelable {
     private int folderId;
 
     private int remoteId;
+
+    @ColumnInfo(name = "account_id", index = true)
+    private int accountId;
 
     @Ignore
     private int unreadCount;
@@ -205,6 +211,14 @@ public class Feed implements Parcelable {
 
     public void setRemoteId(int remoteId) {
         this.remoteId = remoteId;
+    }
+
+    public int getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(int accountId) {
+        this.accountId = accountId;
     }
 
     public static Feed feedFromRSS(RSSFeed rssFeed) {

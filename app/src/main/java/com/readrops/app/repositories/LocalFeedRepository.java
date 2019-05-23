@@ -108,7 +108,7 @@ public class LocalFeedRepository extends ARepository {
     }
 
     @Override
-    public Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results) {
+    public Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results, Account account) {
          return Single.create(emitter -> {
              List<FeedInsertionResult> insertionResults = new ArrayList<>();
 
@@ -120,7 +120,7 @@ public class LocalFeedRepository extends ARepository {
                      RSSQueryResult queryResult = rssNet.queryUrl(parsingResult.getUrl(), new HashMap<>());
 
                      if (queryResult != null && queryResult.getException() == null) {
-                        Feed feed = insertFeed(queryResult.getFeed(), queryResult.getRssType());
+                        Feed feed = insertFeed(queryResult.getFeed(), queryResult.getRssType(), account);
                         if (feed != null) {
                             insertionResult.setFeed(feed);
                             insertionResults.add(insertionResult);
@@ -197,7 +197,7 @@ public class LocalFeedRepository extends ARepository {
         insertItems(items, dbFeed);
     }
 
-    private Feed insertFeed(AFeed feed, RSSQuery.RSSType type) throws IOException {
+    private Feed insertFeed(AFeed feed, RSSQuery.RSSType type, Account account) throws IOException {
         Feed dbFeed = null;
         switch (type) {
             case RSS_2:
@@ -215,6 +215,7 @@ public class LocalFeedRepository extends ARepository {
             return null; // feed already inserted
 
         setFavIconUtils(dbFeed);
+        dbFeed.setAccountId(account.getId());
 
         // we need empty headers to query the feed just after, without any 304 result
         dbFeed.setEtag(null);

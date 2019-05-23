@@ -103,14 +103,23 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         toolbar.setTitleTextColor(Color.WHITE);
 
         emptyListLayout = findViewById(R.id.empty_list_layout);
+        refreshLayout = findViewById(R.id.swipe_refresh_layout);
+        refreshLayout.setOnRefreshListener(this);
+
+        syncProgressLayout = findViewById(R.id.sync_progress_layout);
+        syncProgress = findViewById(R.id.sync_progress_text_view);
+        syncProgressBar = findViewById(R.id.sync_progress_bar);
 
         actionMenu = findViewById(R.id.fab_menu);
+
+        feedCount = 0;
+        initRecyclerView();
+
         viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
         viewModel.setShowReadItems(SharedPreferencesManager.readBoolean(this,
                 SharedPreferencesManager.SharedPrefKey.SHOW_READ_ARTICLES));
 
-        viewModel.invalidate();
         viewModel.getItemsWithFeed().observe(this, itemWithFeeds -> {
             allItems = itemWithFeeds;
 
@@ -122,16 +131,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             if (!refreshLayout.isRefreshing())
                 adapter.submitList(itemWithFeeds);
         });
-
-        refreshLayout = findViewById(R.id.swipe_refresh_layout);
-        refreshLayout.setOnRefreshListener(this);
-
-        syncProgressLayout = findViewById(R.id.sync_progress_layout);
-        syncProgress = findViewById(R.id.sync_progress_text_view);
-        syncProgressBar = findViewById(R.id.sync_progress_bar);
-
-        feedCount = 0;
-        initRecyclerView();
 
         drawerManager = new DrawerManager(this, toolbar, (view, position, drawerItem) -> {
             handleDrawerClick(drawerItem);
@@ -177,10 +176,12 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         } else { // last current account
             viewModel.getAllAccounts().observe(this, accounts -> {
-                viewModel.setAccounts(accounts);
+                if (viewModel.getCurrentAccount() == null) {
+                    viewModel.setAccounts(accounts);
 
-                drawer = drawerManager.buildDrawer(accounts);
-                updateDrawerFeeds();
+                    drawer = drawerManager.buildDrawer(accounts);
+                    updateDrawerFeeds();
+                }
             });
         }
     }

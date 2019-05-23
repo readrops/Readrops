@@ -29,8 +29,8 @@ import static com.readrops.app.utils.Utils.drawableWithColor;
 
 public class DrawerManager {
 
-    public static final int ARTICLES_ITEM_ID = -1;
-    public static final int READ_LATER_ID = -2;
+    public static final int ARTICLES_ITEM_ID = -5;
+    public static final int READ_LATER_ID = -6;
     public static final int ACCOUNT_SETTINGS_ID = -3;
     public static final int ADD_ACCOUNT_ID = -4;
 

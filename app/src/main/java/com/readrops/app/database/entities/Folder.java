@@ -3,11 +3,14 @@ package com.readrops.app.database.entities;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
-@Entity
+@Entity(foreignKeys = @ForeignKey(entity = Account.class, parentColumns = "id",
+        childColumns = "account_id", onDelete = ForeignKey.CASCADE))
 public class Folder implements Parcelable,  Comparable<Folder> {
 
     @PrimaryKey(autoGenerate = true)
@@ -16,6 +19,9 @@ public class Folder implements Parcelable,  Comparable<Folder> {
     private String name;
 
     private int remoteId;
+
+    @ColumnInfo(name = "account_id", index = true)
+    private int accountId;
 
     public Folder() {
 
@@ -55,6 +61,14 @@ public class Folder implements Parcelable,  Comparable<Folder> {
 
     public void setRemoteId(int remoteId) {
         this.remoteId = remoteId;
+    }
+
+    public int getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(int accountId) {
+        this.accountId = accountId;
     }
 
     public static final Creator<Folder> CREATOR = new Creator<Folder>() {

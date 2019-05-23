@@ -91,11 +91,11 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     public void setShowReadItems(boolean showReadItems) {
-        queryBuilder.setShowReaditems(showReadItems);
+        queryBuilder.setShowReadItems(showReadItems);
     }
 
     public boolean showReadItems() {
-        return queryBuilder.showReaditems();
+        return queryBuilder.showReadItems();
     }
 
     public void setFilterType(FilterType filterType) {
@@ -132,7 +132,7 @@ public class MainViewModel extends AndroidViewModel {
 
     public Single<Map<Folder, List<Feed>>> getFoldersWithFeeds() {
         return Single.create(emitter -> {
-            List<Folder> folders = db.folderDao().getFolders();
+            List<Folder> folders = db.folderDao().getFolders(currentAccount.getId());
             Map<Folder, List<Feed>> foldersWithFeeds = new TreeMap<>(Folder::compareTo);
 
             for (Folder folder : folders) {
@@ -186,6 +186,8 @@ public class MainViewModel extends AndroidViewModel {
     public void setCurrentAccount(Account currentAccount) {
         this.currentAccount = currentAccount;
         setRepository(currentAccount.getAccountType());
+        queryBuilder.setAccountId(currentAccount.getId());
+        buildPagedList();
 
         // set the new account as the current one
         Completable setCurrentAccount = Completable.create(emitter -> {
@@ -211,6 +213,8 @@ public class MainViewModel extends AndroidViewModel {
             if (account1.isCurrentAccount()) {
                 currentAccount = account1;
                 setRepository(currentAccount.getAccountType());
+                queryBuilder.setAccountId(currentAccount.getId());
+                buildPagedList();
                 break;
             }
         }

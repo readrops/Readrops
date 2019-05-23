@@ -47,7 +47,7 @@ public abstract class Database extends RoomDatabase {
             super.onCreate(db);
 
             Folder folder = new Folder("reserved");
-            new Thread(() -> database.folderDao().insert(folder)).start();
+            //new Thread(() -> database.folderDao().insert(folder)).start();
         }
 
         @Override
