@@ -28,9 +28,9 @@ public interface FolderDao {
     @Delete
     void delete(Folder folder);
 
-    @Query("Select id From Folder Where remoteId = :remoteId")
-    int getRemoteFolderLocalId(int remoteId);
+    @Query("Select id From Folder Where remoteId = :remoteId And account_id = :accountId")
+    int getRemoteFolderLocalId(int remoteId, int accountId);
 
-    @Query("Select case When :remoteId In (Select remoteId from Folder) Then 1 else 0 end")
-    boolean remoteFolderExists(int remoteId);
+    @Query("Select case When remoteId = :remoteId And account_id = :accountId Then 1 else 0 end From Folder")
+    boolean remoteFolderExists(int remoteId, int accountId);
 }

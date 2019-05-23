@@ -29,8 +29,8 @@ public interface FeedDao {
     @Query("Select case When :feedUrl In (Select url from Feed) Then 'true' else 'false' end")
     String feedExists(String feedUrl);
 
-    @Query("Select case When :remoteId In (Select remoteId from Feed) Then 1 else 0 end")
-    boolean remoteFeedExists(int remoteId);
+    @Query("Select case When remoteId = :remoteId And account_id = :accountId Then 1 else 0 end From Feed")
+    boolean remoteFeedExists(int remoteId, int accountId);
 
     @Query("Select count(*) from Feed")
     int getFeedCount();
@@ -38,8 +38,8 @@ public interface FeedDao {
     @Query("Select * from Feed Where url = :feedUrl")
     Feed getFeedByUrl(String feedUrl);
 
-    @Query("Select * from Feed Where remoteId = :remoteId")
-    Feed getFeedByRemoteId(int remoteId);
+    @Query("Select * from Feed Where remoteId = :remoteId And account_id = :accountId")
+    Feed getFeedByRemoteId(int remoteId, int accountId);
 
     @Query("Select * from Feed Where folder_id = :folderId")
     List<Feed> getFeedsByFolder(int folderId);

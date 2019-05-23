@@ -95,7 +95,7 @@ public class NextNewsRepository extends ARepository {
                     insertFeeds(syncResult.getFeeds(), account);
                     timings.addSplit("insert feeds");
 
-                    insertItems(syncResult.getItems(), syncType == NextNewsAPI.SyncType.INITIAL_SYNC);
+                    insertItems(syncResult.getItems(), account);
                     timings.addSplit("insert items");
                     timings.dumpToLog();
 
@@ -139,13 +139,13 @@ public class NextNewsRepository extends ARepository {
 
         for (NextNewsFeed nextNewsFeed : feeds) {
 
-            if (!database.feedDao().remoteFeedExists(nextNewsFeed.getId())) {
+            if (!database.feedDao().remoteFeedExists(nextNewsFeed.getId(), account.getId())) {
                 Feed feed = FeedMatcher.nextNewsFeedToFeed(nextNewsFeed, account);
 
 
                 // if the Nextcloud feed has a folder, it is already inserted, so we have to get its local id
                 if (nextNewsFeed.getFolderId() != 0) {
-                    int folderId = database.folderDao().getRemoteFolderLocalId(nextNewsFeed.getFolderId());
+                    int folderId = database.folderDao().getRemoteFolderLocalId(nextNewsFeed.getFolderId(), account.getId());
 
                     if (folderId != 0)
                         feed.setFolderId(folderId);
@@ -175,7 +175,7 @@ public class NextNewsRepository extends ARepository {
 
         for (NextNewsFolder nextNewsFolder : folders) {
 
-            if (!database.folderDao().remoteFolderExists(nextNewsFolder.getId())) {
+            if (!database.folderDao().remoteFolderExists(nextNewsFolder.getId(), account.getId())) {
                 Folder folder = new Folder(nextNewsFolder.getName());
                 folder.setRemoteId(nextNewsFolder.getId());
                 folder.setAccountId(account.getId());
@@ -187,26 +187,17 @@ public class NextNewsRepository extends ARepository {
         database.folderDao().insert(newFolders);
     }
 
-    private void insertItems(List<NextNewsItem> items, boolean initialSync) {
+    private void insertItems(List<NextNewsItem> items, Account account) {
         List<Item> newItems = new ArrayList<>();
 
         for (NextNewsItem nextNewsItem : items) {
+            Feed feed = database.feedDao().getFeedByRemoteId(nextNewsItem.getFeedId(), account.getId());
+            Item item = ItemMatcher.nextNewsItemToItem(nextNewsItem, feed);
 
-            if (!initialSync) {
-                if (database.itemDao().remoteItemExists(nextNewsItem.getId()))
-                    continue; // skip the current item if it exists in the db
-            }
+            item.setReadTime(Utils.readTimeFromString(item.getContent()));
 
-            try {
-                Feed feed = database.feedDao().getFeedByRemoteId(nextNewsItem.getFeedId());
-                Item item = ItemMatcher.nextNewsItemToItem(nextNewsItem, feed);
+            newItems.add(item);
 
-                item.setReadTime(Utils.readTimeFromString(item.getContent()));
-
-                newItems.add(item);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
 
         Collections.sort(newItems, Item::compareTo);
