@@ -145,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     switch (id) {
                         case DrawerManager.ADD_ACCOUNT_ID:
                             Intent intent = new Intent(this, AccountTypeListActivity.class);
+                            intent.putExtra("fromMainActivity", true);
                             startActivityForResult(intent, ADD_ACCOUNT_REQUEST);
                             break;
                         case DrawerManager.ACCOUNT_SETTINGS_ID:

@@ -41,10 +41,15 @@ public class AccountTypeListActivity extends AppCompatActivity {
         binding.accountTypeRecyclerview.setLayoutManager(new LinearLayoutManager(this));
         binding.accountTypeRecyclerview.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
 
+        boolean fromMainActivity = getIntent().getBooleanExtra("fromMainActivity", false);
+
         adapter = new AccountTypeListAdapter(accountType -> {
             if (!(accountType.getAccountType() == Account.AccountType.LOCAL)) {
                 Intent intent = new Intent(getApplicationContext(), AddAccountActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
+
+                if (fromMainActivity)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
+
                 intent.putExtra("accountType", accountType);
 
                 startActivity(intent);
