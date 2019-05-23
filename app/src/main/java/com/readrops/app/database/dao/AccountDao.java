@@ -28,7 +28,10 @@ public interface AccountDao {
     void updateLastModified(int accountId, long lastModified);
 
     @Query("Update Account set current_account = 0 Where id Not In (:accountId)")
-    void setCurrentAccountsToFalse(int accountId);
+    void deselectOldCurrentAccount(int accountId);
+
+    @Query("Update Account set current_account = 1 Where id = :accountId")
+    void setCurrentAccount(int accountId);
 
     @Query("Select count(*) From Account Where account_type = :accounType")
     Integer getAccountCountByType(int accounType);

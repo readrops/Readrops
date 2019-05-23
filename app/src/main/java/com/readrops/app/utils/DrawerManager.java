@@ -29,10 +29,10 @@ import static com.readrops.app.utils.Utils.drawableWithColor;
 
 public class DrawerManager {
 
-    public static final int ARTICLES_ITEM_ID = 1;
-    public static final int READ_LATER_ID = 2;
-    public static final int ACCOUNT_SETTINGS_ID = 3;
-    public static final int ADD_ACCOUNT_ID = 4;
+    public static final int ARTICLES_ITEM_ID = -1;
+    public static final int READ_LATER_ID = -2;
+    public static final int ACCOUNT_SETTINGS_ID = -3;
+    public static final int ADD_ACCOUNT_ID = -4;
 
     private Activity activity;
     private Toolbar toolbar;
@@ -125,15 +125,15 @@ public class DrawerManager {
 
     private void createAccountHeader(List<Account> accounts) {
         ProfileDrawerItem[] profileItems = new ProfileDrawerItem[accounts.size()];
+        int currentAccountId = 1;
 
         for (int i = 0; i < accounts.size(); i++) {
             Account account = accounts.get(i);
 
-            ProfileDrawerItem profileItem = new ProfileDrawerItem()
-                    .withIcon(Account.getLogoFromAccountType(account.getAccountType()))
-                    .withName(account.getDisplayedName())
-                    .withEmail(account.getAccountName());
+            if (account.isCurrentAccount())
+                currentAccountId = account.getId();
 
+            ProfileDrawerItem profileItem = createProfileItem(account);
             profileItems[i] = profileItem;
         }
 
@@ -159,6 +159,16 @@ public class DrawerManager {
                 .withHeaderBackgroundScaleType(ImageView.ScaleType.CENTER_CROP)
                 .withOnAccountHeaderListener(headerListener)
                 .build();
+
+        header.setActiveProfile(currentAccountId);
+    }
+
+    private ProfileDrawerItem createProfileItem(Account account) {
+        return new ProfileDrawerItem()
+                .withIcon(Account.getLogoFromAccountType(account.getAccountType()))
+                .withName(account.getDisplayedName())
+                .withEmail(account.getAccountName())
+                .withIdentifier(account.getId());
     }
 
     private void addDefaultPlaces() {
@@ -177,5 +187,17 @@ public class DrawerManager {
         drawer.addItem(articles);
         drawer.addItem(toReadLater);
         drawer.addItem(new DividerDrawerItem());
+    }
+
+    public void addAccount(Account account) {
+        ProfileDrawerItem profileItem = createProfileItem(account);
+
+        header.addProfiles(profileItem);
+        header.setActiveProfile(profileItem.getIdentifier());
+    }
+
+    public void resetItems() {
+        drawer.removeAllItems();
+        addDefaultPlaces();
     }
 }

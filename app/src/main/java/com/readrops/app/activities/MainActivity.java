@@ -48,7 +48,6 @@ import com.readrops.app.viewmodels.MainViewModel;
 import com.readrops.app.views.MainItemListAdapter;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -93,9 +92,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private boolean allItemsSelected;
 
     private ActionMode actionMode;
-
-    private Account currentAccount;
-    private List<Account> accounts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,43 +140,46 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         });
 
         drawerManager.setHeaderListener((view, profile, current) -> {
-            int id = (int) profile.getIdentifier();
+                if (!current) {
+                    int id = (int) profile.getIdentifier();
 
-            switch (id) {
-                case DrawerManager.ADD_ACCOUNT_ID:
-                    Intent intent = new Intent(this, AccountTypeListActivity.class);
-                    startActivityForResult(intent, ADD_ACCOUNT_REQUEST);
-                    break;
-                case DrawerManager.ACCOUNT_SETTINGS_ID:
-                    break;
-            }
-
-            return true;
-        });
-
-        currentAccount = getIntent().getParcelableExtra(ACCOUNT_KEY);
-
-        if (currentAccount != null) { // first account created
-            drawer = drawerManager.buildDrawer(Collections.singletonList(currentAccount));
-            viewModel.setRepository(currentAccount.getAccountType(), getApplication());
-
-            refreshLayout.setRefreshing(true);
-            onRefresh();
-
-        } else { // last current account
-            viewModel.getAllAccounts().observe(this, accounts -> {
-                this.accounts = accounts;
-
-                for (Account account1 : accounts) {
-                    if (account1.isCurrentAccount()) {
-                        currentAccount = account1;
-                        break;
+                    switch (id) {
+                        case DrawerManager.ADD_ACCOUNT_ID:
+                            Intent intent = new Intent(this, AccountTypeListActivity.class);
+                            startActivityForResult(intent, ADD_ACCOUNT_REQUEST);
+                            break;
+                        case DrawerManager.ACCOUNT_SETTINGS_ID:
+                            break;
+                        default:
+                            viewModel.setCurrentAccount(id);
+                            updateDrawerFeeds();
+                            break;
                     }
                 }
 
-                viewModel.setRepository(currentAccount.getAccountType(), getApplication());
+                return true;
+            });
 
-                drawerManager.buildDrawer(accounts);
+        Account currentAccount = getIntent().getParcelableExtra(ACCOUNT_KEY);
+
+        if (currentAccount != null) { // first account created
+            List<Account> accounts = new ArrayList<>();
+            accounts.add(currentAccount);
+
+            viewModel.setAccounts(accounts);
+
+            drawer = drawerManager.buildDrawer(accounts);
+
+            if (!viewModel.isAccountLocal()) {
+                refreshLayout.setRefreshing(true);
+                onRefresh();
+            }
+
+        } else { // last current account
+            viewModel.getAllAccounts().observe(this, accounts -> {
+                viewModel.setAccounts(accounts);
+
+                drawer = drawerManager.buildDrawer(accounts);
                 updateDrawerFeeds();
             });
         }
@@ -494,13 +493,15 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 Account newAccount = data.getParcelableExtra(ACCOUNT_KEY);
 
                 if (newAccount != null) {
-                    currentAccount = newAccount;
+                    viewModel.addAccount(newAccount);
 
-                    viewModel.setRepository(currentAccount.getAccountType(), getApplication());
-                    refreshLayout.setRefreshing(true);
-                    onRefresh();
+                    if (!viewModel.isAccountLocal()) {
+                        refreshLayout.setRefreshing(true);
+                        onRefresh();
+                    }
 
-                    //drawerManager.
+                    drawerManager.resetItems();
+                    drawerManager.addAccount(newAccount);
                 }
             }
 
@@ -510,19 +511,20 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
     private void sync(List<Feed> feeds) {
-        if (currentAccount.getLogin() == null)
-            currentAccount.setLogin(SharedPreferencesManager.readString(this, currentAccount.getLoginKey()));
+        Account account = viewModel.getCurrentAccount();
+        if (account.getLogin() == null)
+            account.setLogin(SharedPreferencesManager.readString(this, account.getLoginKey()));
 
-        if (currentAccount.getPassword() == null)
-            currentAccount.setPassword(SharedPreferencesManager.readString(this, currentAccount.getPasswordKey()));
+        if (viewModel.getCurrentAccount().getPassword() == null)
+            account.setPassword(SharedPreferencesManager.readString(this, account.getPasswordKey()));
 
-        viewModel.sync(feeds, currentAccount)
+        viewModel.sync(feeds, account)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Feed>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        if (isAccountLocal() && feedNb > 0) {
+                        if (viewModel.isAccountLocal() && feedNb > 0) {
                             syncProgressLayout.setVisibility(View.VISIBLE);
                             syncProgressBar.setProgress(0);
                         }
@@ -530,7 +532,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
                     @Override
                     public void onNext(Feed feed) {
-                        if (isAccountLocal() && feedNb > 0) {
+                        if (viewModel.isAccountLocal() && feedNb > 0) {
                             syncProgress.setText(getString(R.string.updating_feed, feed.getName()));
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                                 syncProgressBar.setProgress((feedCount * 100) / feedNb, true);
@@ -551,7 +553,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
                     @Override
                     public void onComplete() {
-                        if (isAccountLocal() && feedNb > 0) {
+                        if (viewModel.isAccountLocal() && feedNb > 0) {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
                                 syncProgressBar.setProgress(100, true);
                             else
@@ -570,9 +572,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 });
     }
 
-    private boolean isAccountLocal() {
-        return currentAccount.getAccountType() == Account.AccountType.LOCAL;
-    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

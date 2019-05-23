@@ -21,6 +21,7 @@ import com.readrops.app.repositories.LocalFeedRepository;
 import com.readrops.app.repositories.NextNewsRepository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -28,6 +29,8 @@ import java.util.TreeMap;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainViewModel extends AndroidViewModel {
 
@@ -37,6 +40,9 @@ public class MainViewModel extends AndroidViewModel {
     private Database db;
 
     private ItemsListQueryBuilder queryBuilder;
+
+    private Account currentAccount;
+    private List<Account> accounts;
 
     public MainViewModel(@NonNull Application application) {
         super(application);
@@ -52,13 +58,15 @@ public class MainViewModel extends AndroidViewModel {
         itemsWithFeed = new MediatorLiveData<>();
     }
 
-    public void setRepository(Account.AccountType accountType, Application application) {
+    //region main query
+
+    private void setRepository(Account.AccountType accountType) {
         switch (accountType) {
             case LOCAL:
-                repository = new LocalFeedRepository(application);
+                repository = new LocalFeedRepository(getApplication());
                 break;
             case NEXTCLOUD_NEWS:
-                repository = new NextNewsRepository(application);
+                repository = new NextNewsRepository(getApplication());
                 break;
         }
     }
@@ -69,10 +77,10 @@ public class MainViewModel extends AndroidViewModel {
 
         lastFetch = new LivePagedListBuilder<>(db.itemDao().selectAll(queryBuilder.getQuery()),
                 new PagedList.Config.Builder()
-                .setPageSize(40)
-                .setPrefetchDistance(80)
-                .setEnablePlaceholders(false)
-                .build())
+                        .setPageSize(40)
+                        .setPrefetchDistance(80)
+                        .setEnablePlaceholders(false)
+                        .build())
                 .build();
 
         itemsWithFeed.addSource(lastFetch, itemWithFeeds -> itemsWithFeed.setValue(itemWithFeeds));
@@ -109,7 +117,7 @@ public class MainViewModel extends AndroidViewModel {
     public void setFilterFeedId(int filterFeedId) {
         queryBuilder.setFilterFeedId(filterFeedId);
     }
-    
+
     public MediatorLiveData<PagedList<ItemWithFeed>> getItemsWithFeed() {
         return itemsWithFeed;
     }
@@ -142,20 +150,80 @@ public class MainViewModel extends AndroidViewModel {
         });
     }
 
-    public LiveData<Account> getCurrentAccount() {
-        return db.accountDao().selectCurrentAccount();
-    }
+    //endregion
+
+    //region Account
 
     public LiveData<List<Account>> getAllAccounts() {
         return db.accountDao().selectAll();
     }
 
-    public Completable setCurrentAccountsToFalse(int accountId) {
+    private Completable deselectOldCurrentAccount(int accountId) {
         return Completable.create(emitter -> {
-            db.accountDao().setCurrentAccountsToFalse(accountId);
+            db.accountDao().deselectOldCurrentAccount(accountId);
             emitter.onComplete();
         });
     }
+
+    private Account getAccount(int id) {
+        for (Account account : accounts) {
+            if (account.getId() == id)
+                return account;
+        }
+
+        return null;
+    }
+
+    public void addAccount(Account account) {
+        accounts.add(account);
+        setCurrentAccount(account);
+    }
+
+    public Account getCurrentAccount() {
+        return currentAccount;
+    }
+
+    public void setCurrentAccount(Account currentAccount) {
+        this.currentAccount = currentAccount;
+        setRepository(currentAccount.getAccountType());
+
+        // set the new account as the current one
+        Completable setCurrentAccount = Completable.create(emitter -> {
+            db.accountDao().setCurrentAccount(currentAccount.getId());
+            emitter.onComplete();
+        });
+
+        Completable.concat(Arrays.asList(setCurrentAccount, deselectOldCurrentAccount(currentAccount.getId())))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe();
+    }
+
+    public void setCurrentAccount(int id) {
+        setCurrentAccount(getAccount(id));
+    }
+
+
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
+
+        for (Account account1 : accounts) {
+            if (account1.isCurrentAccount()) {
+                currentAccount = account1;
+                setRepository(currentAccount.getAccountType());
+                break;
+            }
+        }
+    }
+
+    public boolean isAccountLocal() {
+        return currentAccount.getAccountType() == Account.AccountType.LOCAL;
+    }
+
+    //endregion
+
+
+    //region Item read state
 
     public Completable setItemReadState(int itemId, boolean read, boolean readChanged) {
         return Completable.create(emitter -> {
@@ -197,4 +265,6 @@ public class MainViewModel extends AndroidViewModel {
         READ_IT_LATER_FILTER,
         NO_FILTER
     }
+
+    //endregion
 }
