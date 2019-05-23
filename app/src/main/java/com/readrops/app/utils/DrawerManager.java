@@ -1,10 +1,16 @@
 package com.readrops.app.utils;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -93,6 +99,21 @@ public class DrawerManager {
                             .withBadge(String.valueOf(feed.getUnreadCount()))
                             .withIcon(color != 0 ? drawableWithColor(color) : drawableWithColor(activity.getResources().getColor(R.color.colorPrimary)))
                             .withIdentifier(feed.getId());
+
+                    Glide.with(activity)
+                            .load(feed.getIconUrl())
+                            .into(new CustomTarget<Drawable>() {
+                                @Override
+                                public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                                    secondaryDrawerItem.withIcon(resource);
+                                }
+
+                                @Override
+                                public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                                }
+                            });
+
 
                     secondaryDrawerItems.add(secondaryDrawerItem);
                 }
