@@ -31,6 +31,8 @@ public class AccountTypeListActivity extends AppCompatActivity {
     private AccountTypeListAdapter adapter;
     private AccountViewModel viewModel;
 
+    private boolean fromMainActivity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,7 +43,7 @@ public class AccountTypeListActivity extends AppCompatActivity {
         binding.accountTypeRecyclerview.setLayoutManager(new LinearLayoutManager(this));
         binding.accountTypeRecyclerview.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
 
-        boolean fromMainActivity = getIntent().getBooleanExtra("fromMainActivity", false);
+        fromMainActivity = getIntent().getBooleanExtra("fromMainActivity", false);
 
         adapter = new AccountTypeListAdapter(accountType -> {
             if (!(accountType.getAccountType() == Account.AccountType.LOCAL)) {
@@ -89,10 +91,17 @@ public class AccountTypeListActivity extends AppCompatActivity {
                     public void onSuccess(Long id) {
                         account.setId(id.intValue());
 
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        intent.putExtra(MainActivity.ACCOUNT_KEY, account);
+                        if (fromMainActivity) {
+                            Intent intent = new Intent();
+                            intent.putExtra(MainActivity.ACCOUNT_KEY, account);
+                            setResult(RESULT_OK, intent);
+                        } else {
+                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            intent.putExtra(MainActivity.ACCOUNT_KEY, account);
 
-                        startActivity(intent);
+                            startActivity(intent);
+                        }
+
                         finish();
                     }
 
