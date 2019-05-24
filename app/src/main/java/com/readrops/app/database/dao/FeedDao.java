@@ -29,7 +29,7 @@ public interface FeedDao {
     @Query("Select case When :feedUrl In (Select url from Feed) Then 'true' else 'false' end")
     String feedExists(String feedUrl);
 
-    @Query("Select case When remoteId = :remoteId And account_id = :accountId Then 1 else 0 end From Feed")
+    @Query("Select case When :remoteId In (Select remoteId from Feed) And :accountId In (Select account_id From Feed) Then 1 else 0 end")
     boolean remoteFeedExists(int remoteId, int accountId);
 
     @Query("Select count(*) from Feed")

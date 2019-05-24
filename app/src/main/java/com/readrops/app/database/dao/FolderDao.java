@@ -31,6 +31,6 @@ public interface FolderDao {
     @Query("Select id From Folder Where remoteId = :remoteId And account_id = :accountId")
     int getRemoteFolderLocalId(int remoteId, int accountId);
 
-    @Query("Select case When remoteId = :remoteId And account_id = :accountId Then 1 else 0 end From Folder")
+    @Query("Select case When :remoteId In (Select remoteId From Folder) And :accountId In (Select account_id From Folder)Then 1 else 0 end")
     boolean remoteFolderExists(int remoteId, int accountId);
 }
