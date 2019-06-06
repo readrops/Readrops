@@ -95,7 +95,7 @@ public class NextNewsRepository extends ARepository {
                     insertFeeds(syncResult.getFeeds(), account);
                     timings.addSplit("insert feeds");
 
-                    insertItems(syncResult.getItems(), account);
+                    insertItems(syncResult.getItems(), account, syncType == NextNewsAPI.SyncType.INITIAL_SYNC);
                     timings.addSplit("insert items");
                     timings.dumpToLog();
 
@@ -187,17 +187,22 @@ public class NextNewsRepository extends ARepository {
         database.folderDao().insert(newFolders);
     }
 
-    private void insertItems(List<NextNewsItem> items, Account account) {
+    private void insertItems(List<NextNewsItem> items, Account account, boolean initialSync) {
         List<Item> newItems = new ArrayList<>();
 
         for (NextNewsItem nextNewsItem : items) {
+
+            if (!initialSync) {
+                if (database.itemDao().remoteItemExists(nextNewsItem.getId()))
+                    break;
+            }
+
             Feed feed = database.feedDao().getFeedByRemoteId(nextNewsItem.getFeedId(), account.getId());
             Item item = ItemMatcher.nextNewsItemToItem(nextNewsItem, feed);
 
             item.setReadTime(Utils.readTimeFromString(item.getContent()));
 
             newItems.add(item);
-
         }
 
         Collections.sort(newItems, Item::compareTo);
