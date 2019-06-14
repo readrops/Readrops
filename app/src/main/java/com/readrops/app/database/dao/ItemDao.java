@@ -25,8 +25,8 @@ public interface ItemDao {
     @Query("Select case When :guid In (Select guid from Item) Then 'true' else 'false' end")
     String guidExist(String guid);
 
-    @Query("Select case When :remoteId In (Select remoteId from Item) Then 1 else 0 end")
-    boolean remoteItemExists(int remoteId);
+    @Query("Select case When :remoteId In (Select remoteId from Item) And :feedId In (Select feed_id From Item) Then 1 else 0 end")
+    boolean remoteItemExists(int remoteId, int feedId);
 
     @Insert
     long insert(Item item);

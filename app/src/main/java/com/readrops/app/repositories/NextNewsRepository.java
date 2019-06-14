@@ -192,12 +192,14 @@ public class NextNewsRepository extends ARepository {
 
         for (NextNewsItem nextNewsItem : items) {
 
-            if (!initialSync) {
-                if (database.itemDao().remoteItemExists(nextNewsItem.getId()))
+            Feed feed = database.feedDao().getFeedByRemoteId(nextNewsItem.getFeedId(), account.getId());
+
+            if (!initialSync && feed != null) {
+
+                if (database.itemDao().remoteItemExists(nextNewsItem.getId(), feed.getId()))
                     break;
             }
 
-            Feed feed = database.feedDao().getFeedByRemoteId(nextNewsItem.getFeedId(), account.getId());
             Item item = ItemMatcher.nextNewsItemToItem(nextNewsItem, feed);
 
             item.setReadTime(Utils.readTimeFromString(item.getContent()));
