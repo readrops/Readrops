@@ -497,6 +497,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 if (newAccount != null) {
                     viewModel.addAccount(newAccount);
 
+                    adapter.clearData();
+
                     if (!viewModel.isAccountLocal()) {
                         refreshLayout.setRefreshing(true);
                         onRefresh();

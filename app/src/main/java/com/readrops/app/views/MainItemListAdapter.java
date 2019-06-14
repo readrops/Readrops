@@ -220,6 +220,10 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
         return items;
     }
 
+    public void clearData() {
+        submitList(null);
+    }
+
     public ItemWithFeed getItemWithFeed(int i) {
         return getItem(i);
     }
