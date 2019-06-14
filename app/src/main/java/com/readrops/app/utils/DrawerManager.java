@@ -186,7 +186,7 @@ public class DrawerManager {
 
     private ProfileDrawerItem createProfileItem(Account account) {
         return new ProfileDrawerItem()
-                .withIcon(Account.getLogoFromAccountType(account.getAccountType()))
+                .withIcon(account.getAccountType().getIconRes())
                 .withName(account.getDisplayedName())
                 .withEmail(account.getAccountName())
                 .withIdentifier(account.getId());

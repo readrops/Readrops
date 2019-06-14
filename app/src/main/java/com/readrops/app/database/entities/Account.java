@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.StringRes;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
@@ -172,20 +173,62 @@ public class Account implements Parcelable {
         dest.writeString(password);
     }
 
-    public enum AccountType {
-        LOCAL(0),
-        NEXTCLOUD_NEWS(1),
-        FEEDLY(2),
-        FRESHRSS(3);
+    public enum AccountType implements Parcelable {
+        LOCAL(0, R.drawable.ic_readrops, R.string.local_account),
+        NEXTCLOUD_NEWS(1, R.drawable.ic_nextcloud_news, R.string.nextcloud_news),
+        FEEDLY(2, 0, 0),
+        FRESHRSS(3, 0, 0);
 
-        private int code;
+        private int code; // TODO see for using ordinal()
+        private @DrawableRes int iconRes;
+        private @StringRes int name;
+
+        AccountType(Parcel in) {
+            code = in.readInt();
+            iconRes = in.readInt();
+            name = in.readInt();
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeInt(code);
+            dest.writeInt(iconRes);
+            dest.writeInt(name);
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        public static final Creator<AccountType> CREATOR = new Creator<AccountType>() {
+            @Override
+            public AccountType createFromParcel(Parcel in) {
+                return AccountType.values()[in.readInt()];
+            }
+
+            @Override
+            public AccountType[] newArray(int size) {
+                return new AccountType[size];
+            }
+        };
 
         public int getCode() {
             return code;
         }
 
-        AccountType(int code) {
+        public int getIconRes() {
+            return iconRes;
+        }
+
+        public int getName() {
+            return name;
+        }
+
+        AccountType(int code, @DrawableRes int iconRes, @StringRes int name) {
             this.code =  code;
+            this.iconRes = iconRes;
+            this.name = name;
         }
     }
 
@@ -200,16 +243,5 @@ public class Account implements Parcelable {
             return AccountType.FRESHRSS;
 
         return null;
-    }
-
-    public static @DrawableRes int getLogoFromAccountType(AccountType accountType) {
-        switch (accountType) {
-            case LOCAL:
-                return R.drawable.ic_readrops;
-            case NEXTCLOUD_NEWS:
-                return R.drawable.ic_nextcloud_news;
-            default:
-                return R.drawable.ic_readrops;
-        }
     }
 }

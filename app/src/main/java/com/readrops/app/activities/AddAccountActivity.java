@@ -15,7 +15,6 @@ import com.readrops.app.database.entities.Account;
 import com.readrops.app.databinding.ActivityAddAccountBinding;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.viewmodels.AccountViewModel;
-import com.readrops.app.views.AccountType;
 
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -27,7 +26,7 @@ public class AddAccountActivity extends AppCompatActivity {
     private ActivityAddAccountBinding binding;
     private AccountViewModel viewModel;
 
-    private AccountType accountType;
+    private Account.AccountType accountType;
     private boolean forwardResult;
 
     @Override
@@ -42,7 +41,7 @@ public class AddAccountActivity extends AppCompatActivity {
         int flag = getIntent().getFlags();
         forwardResult = flag == Intent.FLAG_ACTIVITY_FORWARD_RESULT;
 
-        binding.providerImage.setImageResource(accountType.getLogoId());
+        binding.providerImage.setImageResource(accountType.getIconRes());
         binding.providerName.setText(accountType.getName());
 
         binding.addAccountSkip.setOnClickListener(v -> {
@@ -62,7 +61,7 @@ public class AddAccountActivity extends AppCompatActivity {
             String login = binding.addAccountLogin.getText().toString().trim();
             String password = binding.addAccountPassword.getText().toString().trim();
 
-            Account account = new Account(url, name, accountType.getAccountType());
+            Account account = new Account(url, name, accountType);
             account.setLogin(login);
             account.setPassword(password);
 
