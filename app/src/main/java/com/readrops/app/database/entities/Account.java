@@ -55,7 +55,7 @@ public class Account implements Parcelable {
         id = in.readInt();
         url = in.readString();
         accountName = in.readString();
-        accountType = getAccountTypeFromCode(in.readInt());
+        accountType = AccountType.values()[in.readInt()];
         displayedName = in.readString();
         lastModified = in.readLong();
         currentAccount = in.readByte() != 0;
@@ -165,7 +165,7 @@ public class Account implements Parcelable {
         dest.writeInt(id);
         dest.writeString(url);
         dest.writeString(accountName);
-        dest.writeInt(accountType.code);
+        dest.writeInt(accountType.ordinal());
         dest.writeString(displayedName);
         dest.writeLong(lastModified);
         dest.writeByte((byte) (currentAccount ? 1 : 0));
@@ -174,24 +174,21 @@ public class Account implements Parcelable {
     }
 
     public enum AccountType implements Parcelable {
-        LOCAL(0, R.drawable.ic_readrops, R.string.local_account),
-        NEXTCLOUD_NEWS(1, R.drawable.ic_nextcloud_news, R.string.nextcloud_news),
-        FEEDLY(2, 0, 0),
-        FRESHRSS(3, 0, 0);
+        LOCAL(R.drawable.ic_readrops, R.string.local_account),
+        NEXTCLOUD_NEWS(R.drawable.ic_nextcloud_news, R.string.nextcloud_news),
+        FEEDLY(0, 0),
+        FRESHRSS(0, 0);
 
-        private int code; // TODO see for using ordinal()
         private @DrawableRes int iconRes;
         private @StringRes int name;
 
         AccountType(Parcel in) {
-            code = in.readInt();
             iconRes = in.readInt();
             name = in.readInt();
         }
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            dest.writeInt(code);
             dest.writeInt(iconRes);
             dest.writeInt(name);
         }
@@ -213,10 +210,6 @@ public class Account implements Parcelable {
             }
         };
 
-        public int getCode() {
-            return code;
-        }
-
         public int getIconRes() {
             return iconRes;
         }
@@ -225,23 +218,9 @@ public class Account implements Parcelable {
             return name;
         }
 
-        AccountType(int code, @DrawableRes int iconRes, @StringRes int name) {
-            this.code =  code;
+        AccountType(@DrawableRes int iconRes, @StringRes int name) {
             this.iconRes = iconRes;
             this.name = name;
         }
-    }
-
-    public static AccountType getAccountTypeFromCode(int code) {
-        if (code == AccountType.LOCAL.getCode())
-            return AccountType.LOCAL;
-        else if (code == AccountType.NEXTCLOUD_NEWS.getCode())
-            return AccountType.NEXTCLOUD_NEWS;
-        else if (code == AccountType.FEEDLY.getCode())
-            return AccountType.FEEDLY;
-        else if (code ==  AccountType.FRESHRSS.getCode())
-            return AccountType.FRESHRSS;
-
-        return null;
     }
 }
