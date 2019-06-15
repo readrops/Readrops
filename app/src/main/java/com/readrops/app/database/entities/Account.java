@@ -182,15 +182,9 @@ public class Account implements Parcelable {
         private @DrawableRes int iconRes;
         private @StringRes int name;
 
-        AccountType(Parcel in) {
-            iconRes = in.readInt();
-            name = in.readInt();
-        }
-
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            dest.writeInt(iconRes);
-            dest.writeInt(name);
+            dest.writeInt(ordinal());
         }
 
         @Override
