@@ -67,9 +67,13 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
             Item item = itemWithFeed.getItem();
             Item item1 = t1.getItem();
 
+            boolean folder = false;
+            if (itemWithFeed.getFolder() != null && t1.getFolder() != null)
+                folder = itemWithFeed.getFolder().getName().equals(t1.getFolder().getName());
+
             return item.getTitle().equals(item1.getTitle()) &&
                     itemWithFeed.getFeedName().equals(t1.getFeedName()) &&
-                    itemWithFeed.getFolder().getName().equals(t1.getFolder().getName()) &&
+                    folder &&
                     item.isRead() == item1.isRead() &&
                     item.isReadItLater() == item1.isReadItLater() &&
                     itemWithFeed.getColor() == t1.getColor() &&
@@ -155,7 +159,7 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
         else
             viewHolder.itemReadTime.setText(resources.getString(R.string.read_time_one_minute));
 
-        if (itemWithFeed.getFolder().getId() != 1)
+        if (itemWithFeed.getFolder() != null)
             viewHolder.itemFolderName.setText(itemWithFeed.getFolder().getName());
         else
             viewHolder.itemFolderName.setText(resources.getString(R.string.no_folder));

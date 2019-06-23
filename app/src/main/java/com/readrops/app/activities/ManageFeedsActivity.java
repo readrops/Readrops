@@ -1,30 +1,28 @@
 package com.readrops.app.activities;
 
-import androidx.lifecycle.ViewModelProvider;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.ItemTouchHelper;
-
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.readrops.app.R;
 import com.readrops.app.database.entities.Folder;
+import com.readrops.app.database.pojo.FeedWithFolder;
+import com.readrops.app.viewmodels.ManageFeedsViewModel;
 import com.readrops.app.views.EditFeedDialog;
 import com.readrops.app.views.FeedsAdapter;
-import com.readrops.app.viewmodels.ManageFeedsViewModel;
-import com.readrops.app.R;
-import com.readrops.app.database.pojo.FeedWithFolder;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableCompletableObserver;
@@ -137,6 +135,8 @@ public class ManageFeedsActivity extends AppCompatActivity {
                 .positiveText(R.string.validate)
                 .input(R.string.folder, 0, (dialog, input) -> {
                     Folder folder = new Folder(input.toString());
+                    folder.setAccountId(1); // TODO add account support for creating folders
+
                     viewModel.addFolder(folder)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())

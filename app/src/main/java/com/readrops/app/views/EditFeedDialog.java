@@ -2,18 +2,18 @@ package com.readrops.app.views;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import androidx.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.google.android.material.textfield.TextInputEditText;
-import androidx.fragment.app.DialogFragment;
-
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProviders;
+
+import com.google.android.material.textfield.TextInputEditText;
 import com.readrops.app.R;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
@@ -60,11 +60,10 @@ public class EditFeedDialog extends DialogFragment implements AdapterView.OnItem
 
         viewModel.getFolders().observe(this, folders -> {
             values = new TreeMap<>(String::compareTo);
+            values.put(getString(R.string.no_folder), 0);
+
             for (Folder folder : folders) {
-                if (folder.getId() != 1)
-                    values.put(folder.getName(), folder.getId());
-                else
-                    values.put(getString(R.string.no_folder), 1);
+                values.put(folder.getName(), folder.getId());
             }
 
             ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
@@ -74,7 +73,7 @@ public class EditFeedDialog extends DialogFragment implements AdapterView.OnItem
             folder.setAdapter(adapter);
             folder.setOnItemSelectedListener(this);
 
-            if (!feedWithFolder.getFolder().getName().equals("reserved"))
+            if (feedWithFolder.getFolder() != null)
                 folder.setSelection(adapter.getPosition(feedWithFolder.getFolder().getName()));
             else
                 folder.setSelection(adapter.getPosition(getString(R.string.no_folder)));
@@ -95,7 +94,9 @@ public class EditFeedDialog extends DialogFragment implements AdapterView.OnItem
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String folderName = (String)parent.getAdapter().getItem(position);
-        feedWithFolder.getFeed().setFolderId(values.get(folderName));
+        int folderId = values.get(folderName);
+
+        feedWithFolder.getFeed().setFolderId(folderId == 0 ? null : folderId);
     }
 
     @Override

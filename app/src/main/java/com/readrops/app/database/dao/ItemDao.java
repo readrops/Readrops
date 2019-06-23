@@ -22,8 +22,8 @@ public interface ItemDao {
     @RawQuery(observedEntities = {Item.class, Folder.class, Feed.class})
     PageKeyedDataSource.Factory<Integer, ItemWithFeed> selectAll(SupportSQLiteQuery query);
 
-    @Query("Select case When :guid In (Select guid from Item) Then 'true' else 'false' end")
-    String guidExist(String guid);
+    @Query("Select case When :guid In (Select guid From Item Inner Join Feed on Item.feed_id = Feed.id and account_id = :accountId) Then 1 else 0 end")
+    boolean itemExists(String guid, int accountId);
 
     @Query("Select case When :remoteId In (Select remoteId from Item) And :feedId In (Select feed_id From Item) Then 1 else 0 end")
     boolean remoteItemExists(int remoteId, int feedId);
@@ -58,8 +58,7 @@ public interface ItemDao {
 
     @Query("Select title, Item.description, content, link, pub_date, image_link, author, read, text_color, " +
             "background_color, read_time, Feed.name, Feed.id as feedId, siteUrl, Folder.id as folder_id, " +
-            "Folder.name as folder_name from Item Inner Join Feed, Folder on Item.feed_id = Feed.id And Item.id = :id " +
-            "And Folder.id = Feed.folder_id")
+            "Folder.name as folder_name from Item, Feed Left Join Folder on Folder.id = Feed.folder_id And Item.feed_id = Feed.id Where Item.id = :id")
     LiveData<ItemWithFeed> getItemById(int id);
 
     @Query("Select remoteId From Item Where read_changed = 1 And read = 1")

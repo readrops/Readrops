@@ -12,8 +12,8 @@ public class ItemsListQueryBuilder {
             "read_changed", "read_it_later", "Feed.name", "text_color", "background_color", "icon_url", "read_time",
             "Feed.id as feedId", "Feed.account_id", "Folder.id as folder_id", "Folder.name as folder_name"};
 
-    private String SELECT_ALL_JOIN = "Item Inner Join Feed, Folder on Item.feed_id = " +
-            "Feed.id And Folder.id = Feed.folder_id";
+    private String SELECT_ALL_JOIN = "Item, Feed LEFT JOIN Folder on Folder.id = Feed.folder_id " +
+            "And Item.feed_id = Feed.id";
 
     private String ORDER_BY_ASC = "Item.id DESC";
 

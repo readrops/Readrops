@@ -1,18 +1,16 @@
 package com.readrops.app.views;
 
-import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.AsyncListDiffer;
-import androidx.recyclerview.widget.ListAdapter;
-import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.readrops.app.R;
@@ -22,9 +20,6 @@ import com.readrops.app.utils.GlideApp;
 import java.util.List;
 
 public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.ViewHolder> {
-
-    public static final String FEED_NAME_KEY = "name";
-    public static final String FOLDER_NAME_KEY = "folderName";
 
     private ManageFeedsListener listener;
 
@@ -36,26 +31,18 @@ public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.ViewH
 
         @Override
         public boolean areContentsTheSame(@NonNull FeedWithFolder feedWithFolder, @NonNull FeedWithFolder t1) {
+            boolean folder = false;
+            if (feedWithFolder.getFolder() != null && t1.getFolder() != null)
+                folder = feedWithFolder.getFolder().getName().equals(t1.getFolder().getName());
+
             return feedWithFolder.getFeed().getName().equals(t1.getFeed().getName())
-                    && feedWithFolder.getFolder().getName().equals(t1.getFolder().getName());
+                    && folder;
         }
 
         @Nullable
         @Override
         public Object getChangePayload(@NonNull FeedWithFolder oldItem, @NonNull FeedWithFolder newItem) {
-            Bundle bundle = new Bundle();
-
-            if (!oldItem.getFeed().getName().equals(newItem.getFeed().getName()))
-                bundle.putString(FeedsAdapter.FEED_NAME_KEY, newItem.getFeed().getName());
-
-            if (!oldItem.getFolder().getName().equals(newItem.getFolder().getName()))
-                bundle.putString(FeedsAdapter.FOLDER_NAME_KEY, newItem.getFolder().getName());
-
-            if (bundle.size() > 0)
-                return bundle;
-            else
-                return null;
-
+            return newItem;
         }
     };
 
@@ -97,7 +84,7 @@ public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.ViewH
         } else
             viewHolder.feedDescription.setVisibility(View.GONE);
 
-        if (feedWithFolder.getFolder().getId() != 1)
+        if (feedWithFolder.getFolder() != null)
             viewHolder.folderName.setText(feedWithFolder.getFolder().getName());
         else
             viewHolder.folderName.setText(viewHolder.itemView.getResources().getString(R.string.no_folder));
@@ -113,18 +100,15 @@ public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.ViewH
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull List<Object> payloads) {
         if (!payloads.isEmpty()) {
-            Bundle bundle = (Bundle) payloads.get(0);
+            FeedWithFolder feedWithFolder = (FeedWithFolder) payloads.get(0);
 
-            if (bundle.getString(FEED_NAME_KEY) != null) {
-                holder.feedName.setText(bundle.getString(FEED_NAME_KEY));
-            }
+            holder.feedName.setText(feedWithFolder.getFeed().getName());
 
-            if (bundle.getString(FOLDER_NAME_KEY) != null) {
-                if (getItem(position).getFolder().getId() != 1)
-                    holder.folderName.setText(bundle.getString(FOLDER_NAME_KEY));
-                else
-                    holder.folderName.setText(holder.itemView.getContext().getString(R.string.no_folder));
-            }
+            if (feedWithFolder.getFolder() != null)
+                holder.folderName.setText(feedWithFolder.getFolder().getName());
+            else
+                holder.folderName.setText(holder.itemView.getContext().getString(R.string.no_folder));
+
         } else
             onBindViewHolder(holder, position);
     }

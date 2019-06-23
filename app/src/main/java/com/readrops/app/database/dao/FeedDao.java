@@ -14,8 +14,8 @@ import java.util.List;
 @Dao
 public interface FeedDao {
 
-    @Query("Select * from Feed order by name ASC")
-    List<Feed> getAllFeeds();
+    @Query("Select * from Feed Where account_id = :accountId order by name ASC")
+    List<Feed> getAllFeeds(int accountId);
 
     @Insert
     long insert(Feed feed);
@@ -48,17 +48,17 @@ public interface FeedDao {
     void updateHeaders(String etag, String lastModified, int feedId);
 
     @Query("Update Feed set folder_id = :folderId Where id = :feedId")
-    void updateFeedFolder(int feedId, int folderId);
+    void updateFeedFolder(int feedId, Integer folderId);
 
     @Query("Update Feed set name = :feedName, url = :feedUrl, folder_id = :folderId Where id = :feedId")
-    void updateFeedFields(int feedId, String feedName, String feedUrl, int folderId);
+    void updateFeedFields(int feedId, String feedName, String feedUrl, Integer folderId);
 
     @Query("Update Feed set text_color = :textColor, background_color = :bgColor Where id = :feedId")
     void updateColors(int feedId, int textColor, int bgColor);
 
     @Query("Select Feed.name as feed_name, Feed.id as feed_id, Folder.name as folder_name, Folder.id as folder_id," +
             "Feed.description as feed_description, Feed.icon_url as feed_icon_url, Feed.url as feed_url, Feed.folder_id as feed_folder_id" +
-            ", Feed.siteUrl as feed_siteUrl from Feed Inner Join Folder on Feed.folder_id = Folder.id Order by Feed.name")
+            ", Feed.siteUrl as feed_siteUrl from Feed Left Join Folder on Feed.folder_id = Folder.id Order by Feed.name")
     LiveData<List<FeedWithFolder>> getAllFeedsWithFolder();
 
     @Query("Select * From Feed Where id in (:ids)")

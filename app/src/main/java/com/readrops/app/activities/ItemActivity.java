@@ -1,16 +1,10 @@
 package com.readrops.app.activities;
 
-import androidx.lifecycle.ViewModelProvider;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +12,13 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.readrops.app.R;
 import com.readrops.app.database.entities.Item;
 import com.readrops.app.database.pojo.ItemWithFeed;
@@ -123,7 +124,7 @@ public class ItemActivity extends AppCompatActivity {
         else
             toolbarLayout.setTitle(itemWithFeed.getFeedName());
 
-        if (itemWithFeed.getFolder().getId() != 1) {
+        if (itemWithFeed.getFolder() != null) {
             toolbar.setSubtitle(itemWithFeed.getFolder().getName());
             toolbar.setSubtitleTextColor(Color.WHITE);
         }
