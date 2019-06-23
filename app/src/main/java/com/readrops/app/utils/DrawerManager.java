@@ -91,28 +91,9 @@ public class DrawerManager {
                 int expandableUnreadCount = 0;
 
                 for (Feed feed : folderListMap.get(folder)) {
-                    int color = feed.getTextColor();
                     expandableUnreadCount += feed.getUnreadCount();
 
-                    SecondaryDrawerItem secondaryDrawerItem = new SecondaryDrawerItem()
-                            .withName(feed.getName())
-                            .withBadge(String.valueOf(feed.getUnreadCount()))
-                            .withIcon(color != 0 ? drawableWithColor(color) : drawableWithColor(activity.getResources().getColor(R.color.colorPrimary)))
-                            .withIdentifier(feed.getId());
-
-                    Glide.with(activity)
-                            .load(feed.getIconUrl())
-                            .into(new CustomTarget<Drawable>() {
-                                @Override
-                                public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                                    secondaryDrawerItem.withIcon(resource);
-                                }
-
-                                @Override
-                                public void onLoadCleared(@Nullable Drawable placeholder) {
-
-                                }
-                            });
+                    SecondaryDrawerItem secondaryDrawerItem = createSecondaryItem(feed);
 
 
                     secondaryDrawerItems.add(secondaryDrawerItem);
@@ -127,11 +108,7 @@ public class DrawerManager {
                 for (Feed feed : folderListMap.get(folder)) {
                     int color = feed.getTextColor();
 
-                    SecondaryDrawerItem primaryDrawerItem = new SecondaryDrawerItem()
-                            .withName(feed.getName())
-                            .withBadge(String.valueOf(feed.getUnreadCount()))
-                            .withIcon(color != 0 ? drawableWithColor(color) : drawableWithColor(activity.getResources().getColor(R.color.colorPrimary)))
-                            .withIdentifier(feed.getId());
+                    SecondaryDrawerItem primaryDrawerItem = createSecondaryItem(feed);
 
                     feedsWithoutFolder.add(primaryDrawerItem);
                 }
@@ -190,6 +167,32 @@ public class DrawerManager {
                 .withName(account.getDisplayedName())
                 .withEmail(account.getAccountName())
                 .withIdentifier(account.getId());
+    }
+
+    private SecondaryDrawerItem createSecondaryItem(Feed feed) {
+        int color = feed.getTextColor();
+
+        SecondaryDrawerItem secondaryDrawerItem = new SecondaryDrawerItem()
+                .withName(feed.getName())
+                .withBadge(String.valueOf(feed.getUnreadCount()))
+                .withIcon(color != 0 ? drawableWithColor(color) : drawableWithColor(activity.getResources().getColor(R.color.colorPrimary)))
+                .withIdentifier(feed.getId());
+
+        Glide.with(activity)
+                .load(feed.getIconUrl())
+                .into(new CustomTarget<Drawable>() {
+                    @Override
+                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                        secondaryDrawerItem.withIcon(resource);
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                    }
+                });
+
+        return secondaryDrawerItem;
     }
 
     private void addDefaultPlaces() {
