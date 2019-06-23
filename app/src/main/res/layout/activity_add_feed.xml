@@ -33,8 +33,8 @@
                     android:id="@+id/add_feed_text_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/feed_url"
-                    android:drawableEnd="@drawable/ic_cancel_grey"/>
+                    android:drawableEnd="@drawable/ic_cancel_grey"
+                    android:hint="@string/feed_url" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -83,17 +83,26 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <Spinner
+            android:id="@+id/add_feed_account_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/add_feed_main_layout" />
+
         <Button
             android:id="@+id/add_feed_ok"
             style="@style/GenericButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:enabled="true"
             android:text="@string/validate"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.6"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/add_feed_main_layout" />
+            app:layout_constraintTop_toBottomOf="@id/add_feed_account_spinner" />
 
         <ProgressBar
             android:id="@+id/add_feed_insert_progressbar"

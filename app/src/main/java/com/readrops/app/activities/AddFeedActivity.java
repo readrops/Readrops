@@ -7,8 +7,10 @@ import android.util.Patterns;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,8 +29,10 @@ import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.ParsingResult;
+import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.AddFeedsViewModel;
+import com.readrops.app.views.AccountArrayAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +52,9 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
 
     private ProgressBar feedInsertionProgressBar;
     private RecyclerView insertionResultsRecyclerView;
+
+    private Spinner accountSpinner;
+    private AccountArrayAdapter arrayAdapter;
 
     private ItemAdapter<ParsingResult> parseItemsAdapter;
     private ItemAdapter<FeedInsertionResult> insertionResultsAdapter;
@@ -69,6 +76,7 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         resultsTextView = findViewById(R.id.add_feed_results_text_view);
         feedInsertionProgressBar = findViewById(R.id.add_feed_insert_progressbar);
         insertionResultsRecyclerView = findViewById(R.id.add_feed_inserted_results_recyclerview);
+        accountSpinner = findViewById(R.id.add_feed_account_spinner);
 
         load.setOnClickListener(this);
         validate.setOnClickListener(this);
@@ -144,6 +152,25 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         RecyclerView.LayoutManager layoutManager1 = new LinearLayoutManager(this);
         insertionResultsRecyclerView.setAdapter(FastAdapter.with(insertionResultsAdapter));
         insertionResultsRecyclerView.setLayoutManager(layoutManager1);
+
+        viewModel.getAccounts().observe(this, accounts -> {
+            arrayAdapter = new AccountArrayAdapter(this, accounts);
+            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+            accountSpinner.setAdapter(arrayAdapter);
+
+            accountSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
+        });
 
         feedsToUpdate = new ArrayList<>();
     }
@@ -233,8 +260,12 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
                 feedsToInsert.add(result);
         }
 
-        // TODO : choose the right account
-        viewModel.addFeeds(feedsToInsert, new Account())
+        Account account = (Account) accountSpinner.getSelectedItem();
+
+        account.setLogin(SharedPreferencesManager.readString(this, account.getLoginKey()));
+        account.setPassword(SharedPreferencesManager.readString(this, account.getPasswordKey()));
+
+        viewModel.addFeeds(feedsToInsert, account)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new DisposableSingleObserver<List<FeedInsertionResult>>() {
@@ -245,7 +276,7 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
 
                     @Override
                     public void onError(Throwable e) {
-
+                        Toast.makeText(AddFeedActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }

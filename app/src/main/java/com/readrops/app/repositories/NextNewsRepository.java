@@ -1,6 +1,7 @@
 package com.readrops.app.repositories;
 
 import android.app.Application;
+import android.database.sqlite.SQLiteConstraintException;
 import android.util.TimingLogger;
 
 import com.readrops.app.database.entities.Account;
@@ -18,9 +19,11 @@ import com.readrops.readropslibrary.services.nextcloudnews.NextNewsAPI;
 import com.readrops.readropslibrary.services.nextcloudnews.SyncData;
 import com.readrops.readropslibrary.services.nextcloudnews.SyncResult;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeed;
+import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeeds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItem;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
+import com.readrops.readropslibrary.utils.UnknownFormatException;
 
 import org.joda.time.LocalDateTime;
 
@@ -116,7 +119,41 @@ public class NextNewsRepository extends ARepository {
 
     @Override
     public Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results, Account account) {
-        return null;
+        return Single.create(emitter -> {
+            List<FeedInsertionResult> feedInsertionResults = new ArrayList<>();
+            NextNewsAPI newsAPI = new NextNewsAPI();
+
+            for (ParsingResult result : results) {
+                FeedInsertionResult insertionResult = new FeedInsertionResult();
+
+                try {
+                    Credentials credentials = new Credentials(account.getLogin(), account.getPassword(), account.getUrl());
+                    NextNewsFeeds nextNewsFeeds = newsAPI.createFeed(credentials, result.getUrl(), 0);
+
+                    if (nextNewsFeeds != null) {
+                        List<Feed> newFeeds = insertFeeds(nextNewsFeeds.getFeeds(), account);
+
+                        // there is always only one object in the list, see nextcloud news api doc
+                        insertionResult.setFeed(newFeeds.get(0));
+                    } else
+                        insertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.UNKNOWN_ERROR);
+
+                } catch (Exception e) {
+                    if (e instanceof IOException)
+                        insertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.NETWORK_ERROR);
+                    else if (e instanceof UnknownFormatException)
+                        insertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.FORMAT_ERROR);
+                    else if (e instanceof SQLiteConstraintException)
+                        insertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.DB_ERROR);
+                    else
+                        insertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.UNKNOWN_ERROR);
+                }
+
+                feedInsertionResults.add(insertionResult);
+            }
+
+            emitter.onSuccess(feedInsertionResults);
+        });
     }
 
     @Override
@@ -134,7 +171,7 @@ public class NextNewsRepository extends ARepository {
         return null;
     }
 
-    private void insertFeeds(List<NextNewsFeed> feeds, Account account) {
+    private List<Feed> insertFeeds(List<NextNewsFeed> feeds, Account account) {
         List<Feed> newFeeds = new ArrayList<>();
 
         for (NextNewsFeed nextNewsFeed : feeds) {
@@ -142,14 +179,14 @@ public class NextNewsRepository extends ARepository {
             if (!database.feedDao().remoteFeedExists(nextNewsFeed.getId(), account.getId())) {
                 Feed feed = FeedMatcher.nextNewsFeedToFeed(nextNewsFeed, account);
 
-
                 // if the Nextcloud feed has a folder, it is already inserted, so we have to get its local id
                 if (nextNewsFeed.getFolderId() != 0) {
                     int folderId = database.folderDao().getRemoteFolderLocalId(nextNewsFeed.getFolderId(), account.getId());
 
                     if (folderId != 0)
                         feed.setFolderId(folderId);
-                }
+                } else
+                    feed.setFolderId(null);
 
                 newFeeds.add(feed);
             }
@@ -168,6 +205,8 @@ public class NextNewsRepository extends ARepository {
                 .doOnNext(feed1 -> database.feedDao().updateColors(feed1.getId(),
                         feed1.getTextColor(), feed1.getBackgroundColor()))
                 .subscribe();
+
+        return insertedFeeds;
     }
 
     private void insertFolders(List<NextNewsFolder> folders, Account account) {

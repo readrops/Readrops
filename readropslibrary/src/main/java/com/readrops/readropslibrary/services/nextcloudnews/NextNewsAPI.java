@@ -10,6 +10,8 @@ import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItemIds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItems;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
 import com.readrops.readropslibrary.utils.HttpManager;
+import com.readrops.readropslibrary.utils.LibUtils;
+import com.readrops.readropslibrary.utils.UnknownFormatException;
 
 import java.io.IOException;
 
@@ -35,11 +37,15 @@ public class NextNewsAPI {
                 .build();
     }
 
-    public NextNewsUser login(Credentials credentials) throws IOException {
+    private NextNewsService createAPI(@NonNull Credentials credentials) {
         HttpManager httpManager = new HttpManager(credentials);
         Retrofit retrofit = getConfiguredRetrofitInstance(httpManager);
 
-        api = retrofit.create(NextNewsService.class);
+        return retrofit.create(NextNewsService.class);
+    }
+
+    public NextNewsUser login(Credentials credentials) throws IOException {
+        api = createAPI(credentials);
 
         Response<NextNewsUser> response = api.getUser().execute();
 
@@ -49,11 +55,24 @@ public class NextNewsAPI {
         return response.body();
     }
 
-    public SyncResult sync(@NonNull Credentials credentials, @NonNull SyncType syncType, @Nullable SyncData data) throws IOException {
-        HttpManager httpManager = new HttpManager(credentials);
-        Retrofit retrofit = getConfiguredRetrofitInstance(httpManager);
+    public @Nullable NextNewsFeeds createFeed(Credentials credentials, String url, int folderId)
+            throws IOException, UnknownFormatException {
+        api = createAPI(credentials);
 
-        api = retrofit.create(NextNewsService.class);
+        Response<NextNewsFeeds> response = api.createFeed(url, folderId).execute();
+
+        if (!response.isSuccessful()) {
+            if (response.code() == LibUtils.UNPROCESSABLE_CODE)
+                throw new UnknownFormatException();
+            else
+                return null;
+        }
+
+        return response.body();
+    }
+
+    public SyncResult sync(@NonNull Credentials credentials, @NonNull SyncType syncType, @Nullable SyncData data) throws IOException {
+        api = createAPI(credentials);
 
         SyncResult syncResult = new SyncResult();
         switch (syncType) {

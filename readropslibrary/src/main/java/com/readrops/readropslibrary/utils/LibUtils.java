@@ -18,6 +18,8 @@ public final class LibUtils {
     public static final String LAST_MODIFIED_HEADER = "Last-Modified";
     public static final String IF_MODIFIED_HEADER = "If-Modified-Since";
 
+    public static final int UNPROCESSABLE_CODE = 422;
+
     public static String inputStreamToString(InputStream input) {
         Scanner scanner = new Scanner(input).useDelimiter("\\A");
         return scanner.hasNext() ? scanner.next() : "";

@@ -1,11 +1,11 @@
 package com.readrops.app.utils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
-
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.items.AbstractItem;

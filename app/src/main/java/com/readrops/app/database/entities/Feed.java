@@ -20,8 +20,8 @@ import org.jsoup.Jsoup;
 
 @Entity(foreignKeys = {@ForeignKey(entity = Folder.class, parentColumns = "id",
         childColumns = "folder_id", onDelete = ForeignKey.SET_NULL),
-    @ForeignKey(entity = Account.class, parentColumns = "id", childColumns = "account_id",
-            onDelete = ForeignKey.CASCADE)})
+        @ForeignKey(entity = Account.class, parentColumns = "id", childColumns = "account_id",
+                onDelete = ForeignKey.CASCADE)})
 public class Feed implements Parcelable {
 
     @PrimaryKey(autoGenerate = true)
@@ -38,10 +38,12 @@ public class Feed implements Parcelable {
     private String lastUpdated;
 
     @ColumnInfo(name = "text_color")
-    private @ColorInt int textColor;
+    private @ColorInt
+    int textColor;
 
     @ColumnInfo(name = "background_color")
-    private @ColorInt int backgroundColor;
+    private @ColorInt
+    int backgroundColor;
 
     @ColumnInfo(name = "icon_url")
     private String iconUrl;
@@ -52,7 +54,7 @@ public class Feed implements Parcelable {
     private String lastModified;
 
     @ColumnInfo(name = "folder_id", index = true)
-    private int folderId;
+    private Integer folderId; // nullable foreign key so Integer instead of int
 
     private int remoteId;
 
@@ -149,7 +151,8 @@ public class Feed implements Parcelable {
         this.lastUpdated = lastUpdated;
     }
 
-    public @ColorInt int getTextColor() {
+    public @ColorInt
+    int getTextColor() {
         return textColor;
     }
 
@@ -157,7 +160,8 @@ public class Feed implements Parcelable {
         this.textColor = textColor;
     }
 
-    public @ColorInt int getBackgroundColor() {
+    public @ColorInt
+    int getBackgroundColor() {
         return backgroundColor;
     }
 
@@ -189,11 +193,11 @@ public class Feed implements Parcelable {
         this.lastModified = lastModified;
     }
 
-    public int getFolderId() {
+    public Integer getFolderId() {
         return folderId;
     }
 
-    public void setFolderId(int folderId) {
+    public void setFolderId(Integer folderId) {
         this.folderId = folderId;
     }
 
@@ -234,9 +238,7 @@ public class Feed implements Parcelable {
         feed.setEtag(rssFeed.getEtag());
         feed.setLastModified(rssFeed.getLastModified());
 
-        // as sqlite doesn't support null foreign keys, a default folder is linked to the feed
-        // This default folder was inserted at room db creation (see Database.java)
-        feed.setFolderId(1);
+        feed.setFolderId(null);
 
         return feed;
     }
@@ -254,7 +256,7 @@ public class Feed implements Parcelable {
         feed.setEtag(atomFeed.getEtag());
         feed.setLastModified(atomFeed.getLastModified());
 
-        feed.setFolderId(1);
+        feed.setFolderId(null);
 
         return feed;
     }
@@ -266,13 +268,12 @@ public class Feed implements Parcelable {
         feed.setUrl(jsonFeed.getFeedUrl());
         feed.setSiteUrl(jsonFeed.getHomePageUrl());
         feed.setDescription(jsonFeed.getDescription());
-        //feed.setLastUpdated(jsonFeed.); maybe later ?
 
         feed.setEtag(jsonFeed.getEtag());
         feed.setLastModified(jsonFeed.getLastModified());
         feed.setIconUrl(jsonFeed.getFaviconUrl());
 
-        feed.setFolderId(1);
+        feed.setFolderId(null);
 
         return feed;
     }

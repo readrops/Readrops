@@ -3,9 +3,13 @@ package com.readrops.app.viewmodels;
 import android.app.Application;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
 
+import com.readrops.app.database.Database;
 import com.readrops.app.database.entities.Account;
+import com.readrops.app.repositories.ARepository;
 import com.readrops.app.repositories.LocalFeedRepository;
+import com.readrops.app.repositories.NextNewsRepository;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.HtmlParser;
 import com.readrops.app.utils.ParsingResult;
@@ -18,15 +22,25 @@ import io.reactivex.Single;
 
 public class AddFeedsViewModel extends AndroidViewModel {
 
-    private LocalFeedRepository repository;
+    private ARepository repository;
+    private Database database;
 
     public AddFeedsViewModel(@NonNull Application application) {
         super(application);
 
-        repository = new LocalFeedRepository(application);
+        database = Database.getInstance(application);
     }
 
     public Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results, Account account) {
+        switch (account.getAccountType()) {
+            case LOCAL:
+                repository = new LocalFeedRepository(getApplication());
+                break;
+            case NEXTCLOUD_NEWS:
+                repository = new NextNewsRepository(getApplication());
+                break;
+        }
+
         return repository.addFeeds(results, account);
     }
 
@@ -44,5 +58,9 @@ public class AddFeedsViewModel extends AndroidViewModel {
 
             emitter.onSuccess(results);
         });
+    }
+
+    public LiveData<List<Account>> getAccounts() {
+        return database.accountDao().selectAll();
     }
 }
