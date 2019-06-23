@@ -81,7 +81,7 @@ public class DrawerManager {
         List<SecondaryDrawerItem> feedsWithoutFolder = new ArrayList<>();
 
         for (Folder folder : folderListMap.keySet()) {
-            if (folder.getId() != 1) {
+            if (folder.getId() != 0) {
                 ExpandableBadgeDrawerItem badgeDrawerItem = new ExpandableBadgeDrawerItem()
                         .withName(folder.getName())
                         .withIdentifier(folder.getId())
@@ -106,8 +106,6 @@ public class DrawerManager {
                 }
             } else { // no folder case, items to add after the folders
                 for (Feed feed : folderListMap.get(folder)) {
-                    int color = feed.getTextColor();
-
                     SecondaryDrawerItem primaryDrawerItem = createSecondaryItem(feed);
 
                     feedsWithoutFolder.add(primaryDrawerItem);

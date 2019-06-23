@@ -26,14 +26,14 @@ public interface FeedDao {
     @Query("Delete From Feed Where id = :feedId")
     void delete(int feedId);
 
-    @Query("Select case When :feedUrl In (Select url from Feed) Then 'true' else 'false' end")
-    String feedExists(String feedUrl);
+    @Query("Select case When :feedUrl In (Select url from Feed Where account_id = :accountId) Then 1 else 0 end")
+    boolean feedExists(String feedUrl, int accountId);
 
-    @Query("Select case When :remoteId In (Select remoteId from Feed) And :accountId In (Select account_id From Feed) Then 1 else 0 end")
+    @Query("Select case When :remoteId In (Select remoteId from Feed Where account_id = :accountId) Then 1 else 0 end")
     boolean remoteFeedExists(int remoteId, int accountId);
 
-    @Query("Select count(*) from Feed")
-    int getFeedCount();
+    @Query("Select count(*) from Feed Where account_id = :accountId")
+    int getFeedCount(int accountId);
 
     @Query("Select * from Feed Where url = :feedUrl")
     Feed getFeedByUrl(String feedUrl);
@@ -43,6 +43,9 @@ public interface FeedDao {
 
     @Query("Select * from Feed Where folder_id = :folderId")
     List<Feed> getFeedsByFolder(int folderId);
+
+    @Query("Select * from Feed Where account_id = :accountId And folder_id is null")
+    List<Feed> getFeedsWithoutFolder(int accountId);
 
     @Query("Update Feed set etag = :etag, last_modified = :lastModified Where id = :feedId")
     void updateHeaders(String etag, String lastModified, int feedId);

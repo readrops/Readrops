@@ -127,7 +127,7 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     public Single<Integer> getFeedCount() {
-        return repository.getFeedCount();
+        return repository.getFeedCount(currentAccount.getId());
     }
 
     public Single<Map<Folder, List<Feed>>> getFoldersWithFeeds() {
@@ -145,6 +145,10 @@ public class MainViewModel extends AndroidViewModel {
 
                 foldersWithFeeds.put(folder, feeds);
             }
+
+            Folder noFolder = new Folder("no folder");
+            noFolder.setId(0);
+            foldersWithFeeds.put(noFolder, db.feedDao().getFeedsWithoutFolder(currentAccount.getId()));
 
             emitter.onSuccess(foldersWithFeeds);
         });

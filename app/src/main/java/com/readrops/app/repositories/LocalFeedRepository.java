@@ -2,27 +2,26 @@ package com.readrops.app.repositories;
 
 import android.accounts.NetworkErrorException;
 import android.app.Application;
-import androidx.paging.PageKeyedDataSource;
+
 import androidx.annotation.Nullable;
 
 import com.readrops.app.database.entities.Account;
-import com.readrops.app.database.entities.Folder;
-import com.readrops.app.database.pojo.FeedWithFolder;
-import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.database.entities.Feed;
+import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.Item;
+import com.readrops.app.database.pojo.FeedWithFolder;
 import com.readrops.app.utils.FeedInsertionResult;
-import com.readrops.app.utils.Utils;
 import com.readrops.app.utils.HtmlParser;
 import com.readrops.app.utils.ParsingResult;
-import com.readrops.readropslibrary.utils.LibUtils;
-import com.readrops.readropslibrary.utils.UnknownFormatException;
+import com.readrops.app.utils.Utils;
 import com.readrops.readropslibrary.localfeed.AFeed;
 import com.readrops.readropslibrary.localfeed.RSSQuery;
 import com.readrops.readropslibrary.localfeed.RSSQueryResult;
 import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
 import com.readrops.readropslibrary.localfeed.json.JSONFeed;
 import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
+import com.readrops.readropslibrary.utils.LibUtils;
+import com.readrops.readropslibrary.utils.UnknownFormatException;
 
 import org.jsoup.Jsoup;
 
@@ -42,8 +41,6 @@ public class LocalFeedRepository extends ARepository {
 
     private static final String TAG = LocalFeedRepository.class.getSimpleName();
 
-    private PageKeyedDataSource.Factory<Integer, ItemWithFeed> itemsWhithFeed;
-
     public LocalFeedRepository(Application application) {
         super(application);
 
@@ -60,7 +57,7 @@ public class LocalFeedRepository extends ARepository {
             List<Feed> feedList;
 
             if (feeds == null || feeds.size() == 0)
-                feedList = database.feedDao().getAllFeeds();
+                feedList = database.feedDao().getAllFeeds(account.getId());
             else
                 feedList = new ArrayList<>(feeds);
 
@@ -211,7 +208,7 @@ public class LocalFeedRepository extends ARepository {
                 break;
         }
 
-        if (Boolean.valueOf(database.feedDao().feedExists(dbFeed.getUrl())))
+        if (database.feedDao().feedExists(dbFeed.getUrl(), account.getId()))
             return null; // feed already inserted
 
         setFavIconUtils(dbFeed);
@@ -229,7 +226,7 @@ public class LocalFeedRepository extends ARepository {
         List<Item> itemsToInsert = new ArrayList<>();
 
         for (Item dbItem : items) {
-            if (!Boolean.valueOf(database.itemDao().guidExist(dbItem.getGuid()))) {
+            if (!database.itemDao().itemExists(dbItem.getGuid(), feed.getAccountId())) {
                 if (dbItem.getDescription() != null) {
                     dbItem.setCleanDescription(Jsoup.parse(dbItem.getDescription()).text());
 

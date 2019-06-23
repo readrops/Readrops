@@ -63,10 +63,8 @@ public abstract class ARepository {
 
     }
 
-    public Single<Integer> getFeedCount() {
-        return Single.create(emitter -> {
-           emitter.onSuccess(database.feedDao().getFeedCount());
-        });
+    public Single<Integer> getFeedCount(int accountId) {
+        return Single.create(emitter -> emitter.onSuccess(database.feedDao().getFeedCount(accountId)));
     }
 
     protected void setFavIconUtils(Feed feed) throws IOException {
