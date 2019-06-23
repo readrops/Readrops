@@ -9,7 +9,8 @@
         android:id="@+id/feed_insertion_result_icon"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        tools:src="@drawable/ic_check_green"/>
 
     <TextView
         android:id="@+id/feed_insertion_result_text_view"
