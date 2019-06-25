@@ -62,4 +62,6 @@
     <string name="no_feed">No feed</string>
     <string name="choose_account">Choose an account</string>
     <string name="local_account">Local account</string>
+    <string name="freshrss" translatable="false">Freshrss</string>
+    <string name="feedly" translatable="false">Feedly</string>
 </resources>

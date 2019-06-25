@@ -176,8 +176,8 @@ public class Account implements Parcelable {
     public enum AccountType implements Parcelable {
         LOCAL(R.drawable.ic_readrops, R.string.local_account),
         NEXTCLOUD_NEWS(R.drawable.ic_nextcloud_news, R.string.nextcloud_news),
-        FEEDLY(0, 0),
-        FRESHRSS(0, 0);
+        FEEDLY(R.drawable.ic_feedly, R.string.feedly),
+        FRESHRSS(R.drawable.ic_freshrss, R.string.freshrss);
 
         private @DrawableRes int iconRes;
         private @StringRes int name;
@@ -204,11 +204,11 @@ public class Account implements Parcelable {
             }
         };
 
-        public int getIconRes() {
+        public @DrawableRes int getIconRes() {
             return iconRes;
         }
 
-        public int getName() {
+        public @StringRes int getName() {
             return name;
         }
 
