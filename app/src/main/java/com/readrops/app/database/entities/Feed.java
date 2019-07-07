@@ -87,7 +87,10 @@ public class Feed implements Parcelable {
         iconUrl = in.readString();
         etag = in.readString();
         lastModified = in.readString();
-        folderId = in.readInt();
+
+        int parcelFolderId = in.readInt();
+        folderId = parcelFolderId == 0 ? null : parcelFolderId;
+
         remoteId = in.readInt();
     }
 
@@ -297,7 +300,7 @@ public class Feed implements Parcelable {
         dest.writeString(iconUrl);
         dest.writeString(etag);
         dest.writeString(lastModified);
-        dest.writeInt(folderId);
+        dest.writeInt(folderId == null ? 0 : folderId);
         dest.writeInt(remoteId);
     }
 }
