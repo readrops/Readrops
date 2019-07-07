@@ -58,7 +58,7 @@ public interface ItemDao {
 
     @Query("Select title, Item.description, content, link, pub_date, image_link, author, read, text_color, " +
             "background_color, read_time, Feed.name, Feed.id as feedId, siteUrl, Folder.id as folder_id, " +
-            "Folder.name as folder_name from Item, Feed Left Join Folder on Folder.id = Feed.folder_id And Item.feed_id = Feed.id Where Item.id = :id")
+            "Folder.name as folder_name from Item Inner Join Feed On Item.feed_id = Feed.id Left Join Folder on Folder.id = Feed.folder_id Where Item.id = :id")
     LiveData<ItemWithFeed> getItemById(int id);
 
     @Query("Select remoteId From Item Where read_changed = 1 And read = 1")
