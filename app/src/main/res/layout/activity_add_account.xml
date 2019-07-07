@@ -84,7 +84,9 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/add_account_login_layout"
                 android:layout_marginTop="12dp"
-                android:hint="@string/password">
+                android:hint="@string/password"
+                app:passwordToggleEnabled="true"
+                app:passwordToggleTintMode="src_atop">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/add_account_password"
