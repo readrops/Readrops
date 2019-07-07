@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private int feedNb;
     private boolean scrollToTop;
     private boolean allItemsSelected;
+    private boolean updating;
 
     private ActionMode actionMode;
 
@@ -151,8 +152,10 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                         case DrawerManager.ACCOUNT_SETTINGS_ID:
                             break;
                         default:
-                            viewModel.setCurrentAccount(id);
-                            updateDrawerFeeds();
+                            if (!updating) {
+                                viewModel.setCurrentAccount(id);
+                                updateDrawerFeeds();
+                            }
                             break;
                     }
                 }
@@ -441,6 +444,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     @Override
     public void onRefresh() {
         Log.d(TAG, "syncing started");
+        drawerManager.disableAccountSelection();
+        updating = true;
 
         viewModel.getFeedCount()
                 .subscribeOn(Schedulers.io())
@@ -571,7 +576,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                         scrollToTop = true;
                         adapter.submitList(allItems);
 
+                        drawerManager.enableAccountSelection();
                         updateDrawerFeeds(); // update drawer after syncing feeds
+                        updating = false;
                     }
                 });
     }

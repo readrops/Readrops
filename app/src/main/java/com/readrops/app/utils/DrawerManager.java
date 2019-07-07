@@ -22,6 +22,7 @@ import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileSettingDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.readrops.app.R;
 import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Feed;
@@ -182,7 +183,7 @@ public class DrawerManager {
                     @Override
                     public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
                         secondaryDrawerItem.withIcon(resource);
-                        
+
                         drawer.updateItem(secondaryDrawerItem);
                     }
 
@@ -223,5 +224,27 @@ public class DrawerManager {
     public void resetItems() {
         drawer.removeAllItems();
         addDefaultPlaces();
+    }
+
+    public void disableAccountSelection() {
+        List<IProfile> profiles = header.getProfiles();
+
+        for (IProfile profile : profiles) {
+            if (profile.getIdentifier() != header.getActiveProfile().getIdentifier() && !(profile instanceof ProfileSettingDrawerItem)) {
+                profile.withSelectable(false);
+                header.updateProfile(profile);
+            }
+        }
+    }
+
+    public void enableAccountSelection() {
+        List<IProfile> profiles = header.getProfiles();
+
+        for (IProfile profile : profiles) {
+            if (profile.getIdentifier() != header.getActiveProfile().getIdentifier() && !(profile instanceof ProfileSettingDrawerItem)) {
+                profile.withSelectable(true);
+                header.updateProfile(profile);
+            }
+        }
     }
 }
