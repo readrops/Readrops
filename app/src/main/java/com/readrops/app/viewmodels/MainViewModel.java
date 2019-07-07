@@ -148,7 +148,13 @@ public class MainViewModel extends AndroidViewModel {
 
             Folder noFolder = new Folder("no folder");
             noFolder.setId(0);
-            foldersWithFeeds.put(noFolder, db.feedDao().getFeedsWithoutFolder(currentAccount.getId()));
+
+            List<Feed> feedsWithoutFolder = db.feedDao().getFeedsWithoutFolder(currentAccount.getId());
+            for (Feed feed : feedsWithoutFolder) {
+                feed.setUnreadCount(db.itemDao().getUnreadCount(feed.getId()));
+            }
+
+            foldersWithFeeds.put(noFolder, feedsWithoutFolder);
 
             emitter.onSuccess(foldersWithFeeds);
         });

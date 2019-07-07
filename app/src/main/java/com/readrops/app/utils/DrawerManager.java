@@ -85,7 +85,7 @@ public class DrawerManager {
                 ExpandableBadgeDrawerItem badgeDrawerItem = new ExpandableBadgeDrawerItem()
                         .withName(folder.getName())
                         .withIdentifier(folder.getId())
-                        .withIcon(activity.getDrawable(R.drawable.ic_folder_grey));
+                        .withIcon(R.drawable.ic_folder_grey);
 
                 List<IDrawerItem> secondaryDrawerItems = new ArrayList<>();
                 int expandableUnreadCount = 0;
@@ -134,12 +134,12 @@ public class DrawerManager {
         }
 
         ProfileSettingDrawerItem profileSettingsItem = new ProfileSettingDrawerItem()
-                .withName(activity.getString(R.string.account_settings))
+                .withName(R.string.account_settings)
                 .withIcon(R.drawable.ic_account)
                 .withIdentifier(ACCOUNT_SETTINGS_ID);
 
         ProfileSettingDrawerItem addAccountSettingsItem = new ProfileSettingDrawerItem()
-                .withName(activity.getString(R.string.add_account))
+                .withName(R.string.add_account)
                 .withIcon(R.drawable.ic_add_account_grey)
                 .withIdentifier(ADD_ACCOUNT_ID);
 
@@ -182,6 +182,8 @@ public class DrawerManager {
                     @Override
                     public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
                         secondaryDrawerItem.withIcon(resource);
+                        
+                        drawer.updateItem(secondaryDrawerItem);
                     }
 
                     @Override
@@ -195,14 +197,14 @@ public class DrawerManager {
 
     private void addDefaultPlaces() {
         PrimaryDrawerItem articles = new PrimaryDrawerItem()
-                .withName(activity.getString(R.string.articles))
-                .withIcon(activity.getDrawable(R.drawable.ic_rss_feed_grey))
+                .withName(R.string.articles)
+                .withIcon(R.drawable.ic_rss_feed_grey)
                 .withSelectable(true)
                 .withIdentifier(ARTICLES_ITEM_ID);
 
         PrimaryDrawerItem toReadLater = new PrimaryDrawerItem()
-                .withName(activity.getString(R.string.read_later))
-                .withIcon(activity.getDrawable(R.drawable.ic_read_later_grey))
+                .withName(R.string.read_later)
+                .withIcon(R.drawable.ic_read_later_grey)
                 .withSelectable(true)
                 .withIdentifier(READ_LATER_ID);
 
