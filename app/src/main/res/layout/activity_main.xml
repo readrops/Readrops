@@ -108,36 +108,14 @@
         </RelativeLayout>
 
 
-        <com.github.clans.fab.FloatingActionMenu
-            android:id="@+id/fab_menu"
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_feed_fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
-            android:layout_margin="12dp"
-            app:menu_colorNormal="@color/colorPrimary"
-            app:menu_icon="@drawable/fab_add">
-
-            <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/add_feed_fab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="openAddFeedActivity"
-                android:src="@drawable/ic_insert_link_white"
-                app:fab_colorNormal="@color/colorPrimary"
-                app:fab_label="@string/add_feed_item"
-                app:fab_size="mini" />
-
-            <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/add_folder_fab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="addFolder"
-                android:src="@drawable/ic_folder_white"
-                app:fab_colorNormal="@color/colorPrimary"
-                app:fab_label="@string/add_folder"
-                app:fab_size="mini" />
-
-        </com.github.clans.fab.FloatingActionMenu>
+            android:onClick="openAddFeedActivity"
+            android:src="@drawable/ic_add_white"
+            android:layout_margin="16dp"/>
 
     </FrameLayout>
 

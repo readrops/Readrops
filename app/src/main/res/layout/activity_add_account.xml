@@ -114,15 +114,6 @@
                 android:visibility="gone"
                 tools:visibility="visible" />
 
-            <TextView
-                android:id="@+id/add_account_skip"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/add_account_loading"
-                android:layout_centerInParent="true"
-                android:layout_marginTop="8dp"
-                android:text="Skip" />
-
         </RelativeLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

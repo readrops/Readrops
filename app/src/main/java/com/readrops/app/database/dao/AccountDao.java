@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.readrops.app.database.entities.Account;
 
@@ -23,6 +24,9 @@ public interface AccountDao {
 
     @Insert
     long insert(Account account);
+
+    @Update
+    void update(Account account);
 
     @Query("Update Account set last_modified = :lastModified Where id = :accountId")
     void updateLastModified(int accountId, long lastModified);

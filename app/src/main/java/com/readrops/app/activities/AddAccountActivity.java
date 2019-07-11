@@ -16,6 +16,7 @@ import com.readrops.app.databinding.ActivityAddAccountBinding;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.viewmodels.AccountViewModel;
 
+import io.reactivex.CompletableObserver;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -23,11 +24,15 @@ import io.reactivex.schedulers.Schedulers;
 
 public class AddAccountActivity extends AppCompatActivity {
 
+    public static final String EDIT_ACCOUNT = "EDIT_ACCOUNT";
+
     private ActivityAddAccountBinding binding;
     private AccountViewModel viewModel;
 
     private Account.AccountType accountType;
-    private boolean forwardResult;
+    private boolean forwardResult, editAccount;
+
+    private Account accountToEdit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,17 +46,17 @@ public class AddAccountActivity extends AppCompatActivity {
         int flag = getIntent().getFlags();
         forwardResult = flag == Intent.FLAG_ACTIVITY_FORWARD_RESULT;
 
-        binding.providerImage.setImageResource(accountType.getIconRes());
-        binding.providerName.setText(accountType.getName());
+        accountToEdit = getIntent().getParcelableExtra(EDIT_ACCOUNT);
 
-        binding.addAccountSkip.setOnClickListener(v -> {
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(intent);
+        if (accountToEdit != null) {
+            editAccount = true;
+            fillFields();
+        } else {
+            binding.providerImage.setImageResource(accountType.getIconRes());
+            binding.providerName.setText(accountType.getName());
 
-            finish();
-        });
-
-        binding.addAccountName.setText(accountType.getName());
+            binding.addAccountName.setText(accountType.getName());
+        }
     }
 
     public void createAccount(View view) {
@@ -61,55 +66,87 @@ public class AddAccountActivity extends AppCompatActivity {
             String login = binding.addAccountLogin.getText().toString().trim();
             String password = binding.addAccountPassword.getText().toString().trim();
 
-            Account account = new Account(url, name, accountType);
-            account.setLogin(login);
-            account.setPassword(password);
 
-            viewModel.login(account)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new SingleObserver<Boolean>() {
+            if (editAccount) {
+                accountToEdit.setUrl(url);
+                accountToEdit.setAccountName(name);
+                accountToEdit.setLogin(login);
+                accountToEdit.setPassword(password);
 
-                        @Override
-                        public void onSubscribe(Disposable d) {
-                            binding.addAccountLoading.setVisibility(View.VISIBLE);
-                            binding.addAccountValidate.setEnabled(false);
-                        }
-
-                        @Override
-                        public void onSuccess(Boolean success) {
-                            binding.addAccountLoading.setVisibility(View.GONE);
-
-                            if (success) {
-                                saveLoginPassword(account);
-
-                                if (forwardResult) {
-                                    Intent intent = new Intent();
-                                    intent.putExtra(MainActivity.ACCOUNT_KEY, account);
-                                    setResult(RESULT_OK, intent);
-                                    finish();
-
-                                } else {
-                                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                    intent.putExtra(MainActivity.ACCOUNT_KEY, account);
-                                    startActivity(intent);
-                                }
-
-                                finish();
-                            } else {
-                                binding.addAccountValidate.setEnabled(true);
-                                Toast.makeText(AddAccountActivity.this, "Impossible to login",
-                                        Toast.LENGTH_LONG).show();
+                viewModel.update(accountToEdit)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new CompletableObserver() {
+                            @Override
+                            public void onSubscribe(Disposable d) {
+                                binding.addAccountLoading.setVisibility(View.VISIBLE);
+                                binding.addAccountValidate.setEnabled(false);
                             }
-                        }
 
-                        @Override
-                        public void onError(Throwable e) {
-                            binding.addAccountLoading.setVisibility(View.GONE);
-                            binding.addAccountValidate.setEnabled(true);
-                            Toast.makeText(AddAccountActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    });
+                            @Override
+                            public void onComplete() {
+                                finish();
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                binding.addAccountLoading.setVisibility(View.GONE);
+                                binding.addAccountValidate.setEnabled(true);
+                                Toast.makeText(AddAccountActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        });
+            } else {
+                Account account = new Account(url, name, accountType);
+                account.setLogin(login);
+                account.setPassword(password);
+
+                viewModel.login(account)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new SingleObserver<Boolean>() {
+
+                            @Override
+                            public void onSubscribe(Disposable d) {
+                                binding.addAccountLoading.setVisibility(View.VISIBLE);
+                                binding.addAccountValidate.setEnabled(false);
+                            }
+
+                            @Override
+                            public void onSuccess(Boolean success) {
+                                binding.addAccountLoading.setVisibility(View.GONE);
+
+                                if (success) {
+                                    saveLoginPassword(account);
+
+                                    if (forwardResult) {
+                                        Intent intent = new Intent();
+                                        intent.putExtra(MainActivity.ACCOUNT_KEY, account);
+                                        setResult(RESULT_OK, intent);
+                                        finish();
+
+                                    } else {
+                                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                        intent.putExtra(MainActivity.ACCOUNT_KEY, account);
+                                        startActivity(intent);
+                                    }
+
+                                    finish();
+                                } else {
+                                    binding.addAccountValidate.setEnabled(true);
+                                    Toast.makeText(AddAccountActivity.this, "Impossible to login",
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                binding.addAccountLoading.setVisibility(View.GONE);
+                                binding.addAccountValidate.setEnabled(true);
+                                Toast.makeText(AddAccountActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        });
+            }
+
         }
     }
 
@@ -148,5 +185,15 @@ public class AddAccountActivity extends AppCompatActivity {
 
         account.setLogin(null);
         account.setPassword(null);
+    }
+
+    private void fillFields() {
+        binding.providerImage.setImageResource(accountToEdit.getAccountType().getIconRes());
+        binding.providerName.setText(accountToEdit.getAccountType().getName());
+
+        binding.addAccountUrl.setText(accountToEdit.getUrl());
+        binding.addAccountName.setText(accountToEdit.getAccountName());
+        binding.addAccountLogin.setText(SharedPreferencesManager.readString(this, accountToEdit.getLoginKey()));
+        binding.addAccountPassword.setText(SharedPreferencesManager.readString(this, accountToEdit.getPasswordKey()));
     }
 }

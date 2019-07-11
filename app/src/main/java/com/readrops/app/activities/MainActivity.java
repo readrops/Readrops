@@ -31,7 +31,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
 import com.bumptech.glide.util.ViewPreloadSizeProvider;
-import com.github.clans.fab.FloatingActionMenu;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
@@ -74,7 +73,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     private Toolbar toolbar;
     private Drawer drawer;
-    private FloatingActionMenu actionMenu;
 
     private PagedList<ItemWithFeed> allItems;
 
@@ -110,8 +108,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         syncProgressLayout = findViewById(R.id.sync_progress_layout);
         syncProgress = findViewById(R.id.sync_progress_text_view);
         syncProgressBar = findViewById(R.id.sync_progress_bar);
-
-        actionMenu = findViewById(R.id.fab_menu);
+        syncProgressBar = findViewById(R.id.sync_progress_bar);
 
         feedCount = 0;
         initRecyclerView();
@@ -158,6 +155,10 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                             }
                             break;
                     }
+                } else {
+                    Intent intent = new Intent(this, AccountSettingsActivity.class);
+                    intent.putExtra(AccountSettingsActivity.ACCOUNT, viewModel.getCurrentAccount());
+                    startActivity(intent);
                 }
 
                 return true;
@@ -465,17 +466,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
     public void openAddFeedActivity(View view) {
-        actionMenu.close(true);
-
         Intent intent = new Intent(this, AddFeedActivity.class);
         startActivityForResult(intent, ADD_FEED_REQUEST);
-    }
-
-    public void addFolder(View view) {
-        actionMenu.close(true);
-
-        Intent intent = new Intent(this, ManageFeedsActivity.class);
-        startActivityForResult(intent, MANAGE_FEEDS_REQUEST);
     }
 
     @Override

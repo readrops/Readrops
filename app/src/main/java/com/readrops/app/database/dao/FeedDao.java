@@ -61,8 +61,8 @@ public interface FeedDao {
 
     @Query("Select Feed.name as feed_name, Feed.id as feed_id, Folder.name as folder_name, Folder.id as folder_id," +
             "Feed.description as feed_description, Feed.icon_url as feed_icon_url, Feed.url as feed_url, Feed.folder_id as feed_folder_id" +
-            ", Feed.siteUrl as feed_siteUrl from Feed Left Join Folder on Feed.folder_id = Folder.id Order by Feed.name")
-    LiveData<List<FeedWithFolder>> getAllFeedsWithFolder();
+            ", Feed.siteUrl as feed_siteUrl from Feed Left Join Folder on Feed.folder_id = Folder.id Where Feed.account_id = :accountId Order by Feed.name")
+    LiveData<List<FeedWithFolder>> getAllFeedsWithFolder(int accountId);
 
     @Query("Select * From Feed Where id in (:ids)")
     List<Feed> selectFromIdList(long[] ids);

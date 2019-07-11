@@ -11,13 +11,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.readrops.app.R;
+import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.FeedWithFolder;
 import com.readrops.app.viewmodels.ManageFeedsViewModel;
@@ -30,18 +31,27 @@ import io.reactivex.schedulers.Schedulers;
 
 public class ManageFeedsActivity extends AppCompatActivity {
 
+    public static final String ACCOUNT = "ACCOUNT";
+
     private RecyclerView recyclerView;
     private FeedsAdapter adapter;
 
     private ManageFeedsViewModel viewModel;
+
+    private Account account;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_feeds);
 
+        account = getIntent().getParcelableExtra(ACCOUNT);
+
+        viewModel = ViewModelProviders.of(this).get(ManageFeedsViewModel.class);
+        viewModel.setAccount(account);
+
         recyclerView = findViewById(R.id.feeds_recyclerview);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         adapter = new FeedsAdapter(new FeedsAdapter.ManageFeedsListener() {
             @Override
@@ -88,10 +98,7 @@ public class ManageFeedsActivity extends AppCompatActivity {
 
         }).attachToRecyclerView(recyclerView);
 
-        viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(ManageFeedsViewModel.class);
-        viewModel.getFeedsWithFolder().observe(this, feedWithFolders -> {
-            adapter.submitList(feedWithFolders);
-        });
+        viewModel.getFeedsWithFolder().observe(this, feedWithFolders -> adapter.submitList(feedWithFolders));
     }
 
     private void deleteFolder(int feedId, int position) {

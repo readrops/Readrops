@@ -10,6 +10,7 @@ import com.readrops.app.database.entities.Account;
 import com.readrops.app.repositories.ARepository;
 import com.readrops.app.repositories.NextNewsRepository;
 
+import io.reactivex.Completable;
 import io.reactivex.Single;
 
 public class AccountViewModel extends AndroidViewModel {
@@ -34,6 +35,13 @@ public class AccountViewModel extends AndroidViewModel {
             emitter.onSuccess(id);
         });
 
+    }
+
+    public Completable update(Account account) {
+        return Completable.create(emitter -> {
+            database.accountDao().update(account);
+            emitter.onComplete();
+        });
     }
 
     public Single<Integer> getAccountCountByAccountType(int accountTypeCode) {

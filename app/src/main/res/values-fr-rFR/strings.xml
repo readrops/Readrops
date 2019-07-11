@@ -59,5 +59,7 @@
     <string name="no_feed">Aucun flux</string>
     <string name="choose_account">Choisir un compte</string>
     <string name="local_account">Compte local</string>
+    <string name="feeds">Flux</string>
+    <string name="account">Compte</string>
 
 </resources>

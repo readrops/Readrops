@@ -64,4 +64,6 @@
     <string name="local_account">Local account</string>
     <string name="freshrss" translatable="false">Freshrss</string>
     <string name="feedly" translatable="false">Feedly</string>
+    <string name="feeds">Feeds</string>
+    <string name="account">Account</string>
 </resources>

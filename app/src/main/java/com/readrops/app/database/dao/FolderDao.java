@@ -13,8 +13,8 @@ import java.util.List;
 @Dao
 public interface FolderDao {
 
-    @Query("Select * from Folder Order By name ASC")
-    LiveData<List<Folder>> getAllFolders();
+    @Query("Select * from Folder Where account_id = :accountId Order By name ASC")
+    LiveData<List<Folder>> getAllFolders(int accountId);
 
     @Query("Select * from Folder Where account_id = :accountId Order By name ASC")
     List<Folder> getFolders(int accountId);

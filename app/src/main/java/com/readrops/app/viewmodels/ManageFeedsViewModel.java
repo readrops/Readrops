@@ -6,9 +6,12 @@ import androidx.lifecycle.LiveData;
 import androidx.annotation.NonNull;
 
 import com.readrops.app.database.Database;
+import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.FeedWithFolder;
+import com.readrops.app.repositories.ARepository;
 import com.readrops.app.repositories.LocalFeedRepository;
+import com.readrops.app.repositories.NextNewsRepository;
 
 import java.util.List;
 
@@ -19,15 +22,28 @@ public class ManageFeedsViewModel extends AndroidViewModel {
     private Database db;
     private LiveData<List<FeedWithFolder>> feedsWithFolder;
     private LiveData<List<Folder>> folders;
-    private LocalFeedRepository repository;
+    private ARepository repository;
+
+    private Account account;
 
     public ManageFeedsViewModel(@NonNull Application application) {
         super(application);
-        db = Database.getInstance(application);
-        repository = new LocalFeedRepository(application);
 
-        feedsWithFolder = db.feedDao().getAllFeedsWithFolder();
-        folders = db.folderDao().getAllFolders();
+        db = Database.getInstance(application);
+    }
+
+    private void setup() {
+        switch (account.getAccountType()) {
+            case LOCAL:
+                repository = new LocalFeedRepository(getApplication());
+                break;
+            case NEXTCLOUD_NEWS:
+                repository = new NextNewsRepository(getApplication());
+                break;
+        }
+
+        feedsWithFolder = db.feedDao().getAllFeedsWithFolder(account.getId());
+        folders = db.folderDao().getAllFolders(account.getId());
     }
 
     public LiveData<List<FeedWithFolder>> getFeedsWithFolder() {
@@ -36,6 +52,15 @@ public class ManageFeedsViewModel extends AndroidViewModel {
 
     public void updateFeedWithFolder(FeedWithFolder feedWithFolder) {
         repository.updateFeedWithFolder(feedWithFolder);
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
+        setup();
     }
 
     public LiveData<List<Folder>> getFolders() {
