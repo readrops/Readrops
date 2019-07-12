@@ -15,6 +15,7 @@ import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.holder.ImageHolder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.ExpandableBadgeDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
@@ -83,9 +84,10 @@ public class DrawerManager {
 
         for (Folder folder : folderListMap.keySet()) {
             if (folder.getId() != 0) {
+                // no identifier for badge items, but if needed, be aware of not getting conflicts
+                // with secondary item identifiers (folder and feed ids can be the same)
                 ExpandableBadgeDrawerItem badgeDrawerItem = new ExpandableBadgeDrawerItem()
                         .withName(folder.getName())
-                        .withIdentifier(folder.getId())
                         .withIcon(R.drawable.ic_folder_grey);
 
                 List<IDrawerItem> secondaryDrawerItems = new ArrayList<>();
@@ -95,8 +97,6 @@ public class DrawerManager {
                     expandableUnreadCount += feed.getUnreadCount();
 
                     SecondaryDrawerItem secondaryDrawerItem = createSecondaryItem(feed);
-
-
                     secondaryDrawerItems.add(secondaryDrawerItem);
                 }
 
@@ -177,14 +177,13 @@ public class DrawerManager {
                 .withIcon(color != 0 ? drawableWithColor(color) : drawableWithColor(activity.getResources().getColor(R.color.colorPrimary)))
                 .withIdentifier(feed.getId());
 
+
         Glide.with(activity)
                 .load(feed.getIconUrl())
                 .into(new CustomTarget<Drawable>() {
                     @Override
                     public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                        secondaryDrawerItem.withIcon(resource);
-
-                        drawer.updateItem(secondaryDrawerItem);
+                        drawer.updateIcon(secondaryDrawerItem.getIdentifier(), new ImageHolder(resource));
                     }
 
                     @Override

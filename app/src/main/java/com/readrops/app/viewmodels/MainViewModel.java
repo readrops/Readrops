@@ -147,7 +147,6 @@ public class MainViewModel extends AndroidViewModel {
             }
 
             Folder noFolder = new Folder("no folder");
-            noFolder.setId(0);
 
             List<Feed> feedsWithoutFolder = db.feedDao().getFeedsWithoutFolder(currentAccount.getId());
             for (Feed feed : feedsWithoutFolder) {
