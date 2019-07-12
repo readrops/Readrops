@@ -177,7 +177,6 @@ public class DrawerManager {
                 .withIcon(color != 0 ? drawableWithColor(color) : drawableWithColor(activity.getResources().getColor(R.color.colorPrimary)))
                 .withIdentifier(feed.getId());
 
-
         Glide.with(activity)
                 .load(feed.getIconUrl())
                 .into(new CustomTarget<Drawable>() {

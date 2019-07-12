@@ -23,8 +23,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:text="@string/feeds" />
+                android:text="@string/feeds_and_folders" />
         </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@drawable/cell_separator"
+            app:layout_constraintBottom_toTopOf="@id/account_settings_account"
+            app:layout_constraintTop_toBottomOf="@id/account_settings_feeds" />
 
         <RelativeLayout
             android:id="@+id/account_settings_account"

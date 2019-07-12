@@ -24,6 +24,8 @@ public class AccountSettingsActivity extends AppCompatActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_account_settings);
         Account account = getIntent().getParcelableExtra(ACCOUNT);
 
+        setTitle(account.getAccountName());
+
         binding.accountSettingsFeeds.setOnClickListener(v -> {
             Intent intent = new Intent(getApplication(), ManageFeedsActivity.class);
             intent.putExtra(ManageFeedsActivity.ACCOUNT, account);
