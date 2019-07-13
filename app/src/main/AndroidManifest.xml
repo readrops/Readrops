@@ -33,9 +33,10 @@
             android:name=".activities.AddAccountActivity"
             android:label="@string/add_account" />
         <activity
-            android:name=".activities.ManageFeedsActivity"
+            android:name=".activities.ManageFeedsFoldersActivity"
             android:label="@string/manage_feeds_folders"
-            android:parentActivityName=".activities.MainActivity" />
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.MainActivity"
             android:label="@string/articles"

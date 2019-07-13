@@ -1,15 +1,19 @@
-package com.readrops.app.activities;
+package com.readrops.app.fragments;
+
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -18,9 +22,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.readrops.app.R;
+import com.readrops.app.activities.AccountSettingsActivity;
 import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.FeedWithFolder;
+import com.readrops.app.databinding.FragmentFeedsBinding;
 import com.readrops.app.viewmodels.ManageFeedsViewModel;
 import com.readrops.app.views.EditFeedDialog;
 import com.readrops.app.views.FeedsAdapter;
@@ -29,29 +35,58 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.schedulers.Schedulers;
 
-public class ManageFeedsActivity extends AppCompatActivity {
+import static android.content.Context.VIBRATOR_SERVICE;
+import static com.readrops.app.activities.ManageFeedsFoldersActivity.ACCOUNT;
 
-    public static final String ACCOUNT = "ACCOUNT";
 
-    private RecyclerView recyclerView;
+public class FeedsFragment extends Fragment {
+
     private FeedsAdapter adapter;
-
     private ManageFeedsViewModel viewModel;
-
     private Account account;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_manage_feeds);
+    private FragmentFeedsBinding binding;
 
-        account = getIntent().getParcelableExtra(ACCOUNT);
+    public FeedsFragment() {
+        // Required empty public constructor
+    }
+
+    public static FeedsFragment newInstance(Account account) {
+        FeedsFragment fragment = new FeedsFragment();
+        Bundle args = new Bundle();
+
+        args.putParcelable(AccountSettingsActivity.ACCOUNT, account);
+        fragment.setArguments(args);
+
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        account = getArguments().getParcelable(ACCOUNT);
 
         viewModel = ViewModelProviders.of(this).get(ManageFeedsViewModel.class);
         viewModel.setAccount(account);
 
-        recyclerView = findViewById(R.id.feeds_recyclerview);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        viewModel.getFeedsWithFolder().observe(this, feedWithFolders -> adapter.submitList(feedWithFolders));
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_feeds, container, false);
+
+        return binding.getRoot();
+    }
+
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        binding.feedsRecyclerview.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         adapter = new FeedsAdapter(new FeedsAdapter.ManageFeedsListener() {
             @Override
@@ -61,7 +96,7 @@ public class ManageFeedsActivity extends AppCompatActivity {
 
             @Override
             public void onOpenLink(FeedWithFolder feedWithFolder) {
-                Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+                Vibrator vibrator = (Vibrator) getActivity().getSystemService(VIBRATOR_SERVICE);
                 vibrator.vibrate(50);
 
                 Intent urlIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(feedWithFolder.getFeed().getSiteUrl()));
@@ -69,7 +104,7 @@ public class ManageFeedsActivity extends AppCompatActivity {
             }
         });
 
-        recyclerView.setAdapter(adapter);
+        binding.feedsRecyclerview.setAdapter(adapter);
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
@@ -96,13 +131,11 @@ public class ManageFeedsActivity extends AppCompatActivity {
                 return true;
             }
 
-        }).attachToRecyclerView(recyclerView);
-
-        viewModel.getFeedsWithFolder().observe(this, feedWithFolders -> adapter.submitList(feedWithFolders));
+        }).attachToRecyclerView(binding.feedsRecyclerview);
     }
 
     private void deleteFolder(int feedId, int position) {
-        new MaterialDialog.Builder(this)
+        new MaterialDialog.Builder(getContext())
                 .title(getString(R.string.delete_feed))
                 .positiveText(getString(R.string.validate))
                 .negativeText(getString(R.string.cancel))
@@ -112,12 +145,12 @@ public class ManageFeedsActivity extends AppCompatActivity {
                         .subscribe(new DisposableCompletableObserver() {
                             @Override
                             public void onComplete() {
-                                Toast.makeText(getApplication(), "feed deleted", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getContext(), "feed deleted", Toast.LENGTH_LONG).show();
                             }
 
                             @Override
                             public void onError(Throwable e) {
-                                Toast.makeText(getApplication(), "error on feed deletion", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getContext(), "error on feed deletion", Toast.LENGTH_LONG).show();
                             }
                         }))
                 .onNegative(((dialog, which) -> adapter.notifyItemChanged(position)))
@@ -129,20 +162,21 @@ public class ManageFeedsActivity extends AppCompatActivity {
 
         Bundle bundle = new Bundle();
         bundle.putParcelable("feedWithFolder", feedWithFolder);
+        bundle.putParcelable(ACCOUNT, account);
         editFeedDialog.setArguments(bundle);
 
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
         transaction.add(editFeedDialog, "").commit();
     }
 
 
     private void addFolder() {
-        new MaterialDialog.Builder(this)
+        new MaterialDialog.Builder(getActivity())
                 .title(R.string.add_folder)
                 .positiveText(R.string.validate)
                 .input(R.string.folder, 0, (dialog, input) -> {
                     Folder folder = new Folder(input.toString());
-                    folder.setAccountId(1); // TODO add account support for creating folders
+                    folder.setAccountId(account.getId());
 
                     viewModel.addFolder(folder)
                             .subscribeOn(Schedulers.io())
@@ -150,41 +184,15 @@ public class ManageFeedsActivity extends AppCompatActivity {
                             .subscribe(new DisposableCompletableObserver() {
                                 @Override
                                 public void onComplete() {
-                                    Toast.makeText(getApplication(), "folder inserted", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getContext(), "folder inserted", Toast.LENGTH_LONG).show();
                                 }
 
                                 @Override
                                 public void onError(Throwable e) {
-                                    Toast.makeText(getApplication(), "error on folder insertion", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getContext(), "error on folder insertion", Toast.LENGTH_LONG).show();
                                 }
                             });
                 })
                 .show();
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.feeds_menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-            case R.id.add_folder:
-                addFolder();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        finish();
-        super.onBackPressed();
     }
 }

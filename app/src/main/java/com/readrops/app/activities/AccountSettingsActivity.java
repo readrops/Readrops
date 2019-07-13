@@ -27,8 +27,8 @@ public class AccountSettingsActivity extends AppCompatActivity {
         setTitle(account.getAccountName());
 
         binding.accountSettingsFeeds.setOnClickListener(v -> {
-            Intent intent = new Intent(getApplication(), ManageFeedsActivity.class);
-            intent.putExtra(ManageFeedsActivity.ACCOUNT, account);
+            Intent intent = new Intent(getApplication(), ManageFeedsFoldersActivity.class);
+            intent.putExtra(ManageFeedsFoldersActivity.ACCOUNT, account);
             startActivity(intent);
         });
 

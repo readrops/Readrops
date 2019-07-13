@@ -15,6 +15,8 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.readrops.app.R;
+import com.readrops.app.activities.ManageFeedsFoldersActivity;
+import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.FeedWithFolder;
@@ -30,16 +32,21 @@ public class EditFeedDialog extends DialogFragment implements AdapterView.OnItem
     private TextInputEditText feedUrl;
     private Spinner folder;
 
-    Map<String, Integer> values;
+    private Map<String, Integer> values;
 
     private FeedWithFolder feedWithFolder;
+    private Account account;
     private ManageFeedsViewModel viewModel;
 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         viewModel = ViewModelProviders.of(getActivity()).get(ManageFeedsViewModel.class);
+
         feedWithFolder = getArguments().getParcelable("feedWithFolder");
+        account = getArguments().getParcelable(ManageFeedsFoldersActivity.ACCOUNT);
+
+        viewModel.setAccount(account);
 
         View v = getActivity().getLayoutInflater().inflate(R.layout.edit_feed_layout, null);
 
@@ -52,8 +59,6 @@ public class EditFeedDialog extends DialogFragment implements AdapterView.OnItem
 
                     viewModel.updateFeedWithFolder(feedWithFolder);
                 });
-
-
 
         builder.setView(v);
         fillData(v);
