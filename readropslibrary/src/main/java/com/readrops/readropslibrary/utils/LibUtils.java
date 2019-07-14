@@ -18,7 +18,10 @@ public final class LibUtils {
     public static final String LAST_MODIFIED_HEADER = "Last-Modified";
     public static final String IF_MODIFIED_HEADER = "If-Modified-Since";
 
-    public static final int UNPROCESSABLE_CODE = 422;
+    public static final int HTTP_UNPROCESSABLE = 422;
+    public static final int HTTP_NOT_FOUND = 404;
+    public static final int HTTP_CONFLICT = 409;
+
 
     public static String inputStreamToString(InputStream input) {
         Scanner scanner = new Scanner(input).useDelimiter("\\A");

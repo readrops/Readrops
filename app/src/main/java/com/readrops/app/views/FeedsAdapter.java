@@ -87,7 +87,7 @@ public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.ViewH
         if (feedWithFolder.getFolder() != null)
             viewHolder.folderName.setText(feedWithFolder.getFolder().getName());
         else
-            viewHolder.folderName.setText(viewHolder.itemView.getResources().getString(R.string.no_folder));
+            viewHolder.folderName.setText(R.string.no_folder);
 
         viewHolder.itemView.setOnClickListener(v -> listener.onEdit(getItem(i)));
         viewHolder.itemView.setOnLongClickListener(v -> {
@@ -107,7 +107,7 @@ public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.ViewH
             if (feedWithFolder.getFolder() != null)
                 holder.folderName.setText(feedWithFolder.getFolder().getName());
             else
-                holder.folderName.setText(holder.itemView.getContext().getString(R.string.no_folder));
+                holder.folderName.setText(R.string.no_folder);
 
         } else
             onBindViewHolder(holder, position);

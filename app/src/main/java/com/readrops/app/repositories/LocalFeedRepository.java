@@ -178,7 +178,7 @@ public class LocalFeedRepository extends ARepository {
     }
 
     @Override
-    public Completable deleteFolder(Folder folder) {
+    public Completable deleteFolder(Folder folder, Account account) {
         return Completable.create(emitter -> {
             database.folderDao().delete(folder);
             emitter.onComplete();

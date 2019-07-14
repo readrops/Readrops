@@ -153,16 +153,16 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
 
         int minutes = (int) Math.round(itemWithFeed.getItem().getReadTime());
         if (minutes < 1)
-            viewHolder.itemReadTime.setText(resources.getString(R.string.read_time_lower_than_1));
+            viewHolder.itemReadTime.setText(R.string.read_time_lower_than_1);
         else if (minutes > 1)
             viewHolder.itemReadTime.setText(resources.getString(R.string.read_time, String.valueOf(minutes)));
         else
-            viewHolder.itemReadTime.setText(resources.getString(R.string.read_time_one_minute));
+            viewHolder.itemReadTime.setText(R.string.read_time_one_minute);
 
         if (itemWithFeed.getFolder() != null)
             viewHolder.itemFolderName.setText(itemWithFeed.getFolder().getName());
         else
-            viewHolder.itemFolderName.setText(resources.getString(R.string.no_folder));
+            viewHolder.itemFolderName.setText(R.string.no_folder);
 
         viewHolder.setReadState(itemWithFeed.getItem().isRead());
         viewHolder.setSelected(selection.contains(viewHolder.getAdapterPosition()));

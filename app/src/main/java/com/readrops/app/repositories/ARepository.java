@@ -50,7 +50,7 @@ public abstract class ARepository {
 
     public abstract Completable updateFolder(Folder folder, Account account);
 
-    public abstract Completable deleteFolder(Folder folder);
+    public abstract Completable deleteFolder(Folder folder, Account account);
 
     public abstract Completable changeFeedFolder(Feed feed, Folder newFolder);
 

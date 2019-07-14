@@ -76,7 +76,7 @@ public class ManageFeedsFoldersViewModel extends AndroidViewModel {
     }
 
     public Completable deleteFolder(Folder folder) {
-        return repository.deleteFolder(folder);
+        return repository.deleteFolder(folder, account);
     }
 
     public Completable deleteFeed(int feedId) {

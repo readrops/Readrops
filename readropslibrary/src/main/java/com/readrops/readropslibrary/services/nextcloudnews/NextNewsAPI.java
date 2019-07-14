@@ -1,14 +1,18 @@
 package com.readrops.readropslibrary.services.nextcloudnews;
 
+import android.content.res.Resources;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.readrops.readropslibrary.services.NextNewsService;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeeds;
+import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolders;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItemIds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItems;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
+import com.readrops.readropslibrary.utils.ConflictException;
 import com.readrops.readropslibrary.utils.HttpManager;
 import com.readrops.readropslibrary.utils.LibUtils;
 import com.readrops.readropslibrary.utils.UnknownFormatException;
@@ -62,7 +66,7 @@ public class NextNewsAPI {
         Response<NextNewsFeeds> response = api.createFeed(url, folderId).execute();
 
         if (!response.isSuccessful()) {
-            if (response.code() == LibUtils.UNPROCESSABLE_CODE)
+            if (response.code() == LibUtils.HTTP_UNPROCESSABLE)
                 throw new UnknownFormatException();
             else
                 return null;
@@ -150,6 +154,55 @@ public class NextNewsAPI {
 
         if (!unreadItemsResponse.isSuccessful())
             syncResult.setError(true);
+    }
+
+    public  @Nullable NextNewsFolders createFolder(Credentials credentials, NextNewsFolder folder) throws IOException, UnknownFormatException, ConflictException {
+        api = createAPI(credentials);
+
+        Response<NextNewsFolders> foldersResponse = api.createFolder(folder).execute();
+
+        if (foldersResponse.isSuccessful())
+            return foldersResponse.body();
+        else if (foldersResponse.code() == LibUtils.HTTP_UNPROCESSABLE)
+            throw new UnknownFormatException();
+        else if (foldersResponse.code() == LibUtils.HTTP_CONFLICT)
+            throw new ConflictException();
+        else
+            return null;
+    }
+
+    public boolean deleteFolder(Credentials credentials, NextNewsFolder folder) throws IOException {
+        api = createAPI(credentials);
+
+        Response response = api.deleteFolder(folder.getId()).execute();
+
+        if (response.isSuccessful())
+            return true;
+        else if (response.code() == LibUtils.HTTP_NOT_FOUND)
+            throw new Resources.NotFoundException();
+        else
+            return false;
+    }
+
+    public boolean renameFolder(Credentials credentials, NextNewsFolder folder) throws IOException, UnknownFormatException, ConflictException {
+        api = createAPI(credentials);
+
+        Response response = api.renameFolder(folder.getId(), folder).execute();
+
+        if (response.isSuccessful())
+            return true;
+        else {
+            switch (response.code()) {
+                case LibUtils.HTTP_NOT_FOUND:
+                    throw new Resources.NotFoundException();
+                case LibUtils.HTTP_UNPROCESSABLE:
+                    throw new UnknownFormatException();
+                case LibUtils.HTTP_CONFLICT:
+                    throw new ConflictException();
+                default:
+                    return false;
+            }
+        }
     }
 
     public enum SyncType {

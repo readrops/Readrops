@@ -21,6 +21,7 @@ import com.readrops.readropslibrary.services.nextcloudnews.SyncResult;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeeds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
+import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolders;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItem;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
 import com.readrops.readropslibrary.utils.UnknownFormatException;
@@ -169,30 +170,62 @@ public class NextNewsRepository extends ARepository {
     @Override
     public Completable addFolder(Folder folder, Account account) {
         return Completable.create(emitter -> {
-            database.folderDao().insert(folder);
-            emitter.onComplete();
+            NextNewsAPI api = new NextNewsAPI();
 
-            //TODO : remote insert
+            try {
+                Credentials credentials = new Credentials(account.getLogin(), account.getPassword(), account.getUrl());
+                NextNewsFolders folders = api.createFolder(credentials, new NextNewsFolder(folder.getId(), folder.getName()));
+
+                if (folders != null)
+                    insertFolders(folders.getFolders(), account);
+                else
+                    emitter.onError(new Exception());
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
+
+            emitter.onComplete();
         });
     }
 
     @Override
     public Completable updateFolder(Folder folder, Account account) {
         return Completable.create(emitter -> {
-            database.folderDao().update(folder);
-            emitter.onComplete();
+            NextNewsAPI api = new NextNewsAPI();
 
-            //TODO : remote update
+            try {
+                Credentials credentials = new Credentials(account.getLogin(), account.getPassword(), account.getUrl());
+
+                if (api.renameFolder(credentials, new NextNewsFolder(folder.getId(), folder.getName())))
+                    emitter.onComplete();
+                else
+                    emitter.onError(new Exception());
+
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
+
+            emitter.onComplete();
         });
     }
 
     @Override
-    public Completable deleteFolder(Folder folder) {
+    public Completable deleteFolder(Folder folder, Account account) {
         return Completable.create(emitter -> {
-            database.folderDao().delete(folder);
-            emitter.onComplete();
+            NextNewsAPI api = new NextNewsAPI();
 
-            //TODO : remote update
+            try {
+                Credentials credentials = new Credentials(account.getLogin(), account.getPassword(), account.getUrl());
+                if (api.deleteFolder(credentials, new NextNewsFolder(folder.getId(), folder.getName())))
+                    emitter.onComplete();
+                else
+                    emitter.onError(new Exception());
+
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
+
+            emitter.onComplete();
         });
     }
 

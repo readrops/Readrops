@@ -1,6 +1,7 @@
 package com.readrops.readropslibrary.services;
 
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeeds;
+import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolders;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItemIds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItems;
@@ -39,4 +40,13 @@ public interface NextNewsService {
 
     @POST("feeds")
     Call<NextNewsFeeds> createFeed(@Query("url") String url, @Query("folderId") int folderId);
+
+    @POST("folders")
+    Call<NextNewsFolders> createFolder(@Body NextNewsFolder folder);
+
+    @POST("folders/{folderId}")
+    Call<ResponseBody> deleteFolder(@Path("folderId") int folderId);
+
+    @PUT("folders/{folderId}")
+    Call<ResponseBody> renameFolder(@Path("folderId") int folderId, @Body NextNewsFolder folder);
 }
