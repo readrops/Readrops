@@ -62,5 +62,9 @@
     <string name="feeds_and_folders">Flux et dossiers</string>
     <string name="account">Compte</string>
     <string name="manage_feeds_folders">Gérer les flux et dossiers</string>
+    <string name="folders">Dossiers</string>
+    <string name="feeds">Flux</string>
+    <string name="edit_folder">Modifier le dossier</string>
+    <string name="delete_folder">Supprimer le dossier ?</string>
 
 </resources>

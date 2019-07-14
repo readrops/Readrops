@@ -67,4 +67,8 @@
     <string name="feeds_and_folders">Feeds and folders</string>
     <string name="account">Account</string>
     <string name="manage_feeds_folders">Manage feeds and folders</string>
+    <string name="folders">Folders</string>
+    <string name="feeds">Feeds</string>
+    <string name="edit_folder">Edit folder</string>
+    <string name="delete_folder">Delete folder ?</string>
 </resources>

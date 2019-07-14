@@ -24,10 +24,9 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.readrops.app.R;
 import com.readrops.app.activities.AccountSettingsActivity;
 import com.readrops.app.database.entities.Account;
-import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.FeedWithFolder;
 import com.readrops.app.databinding.FragmentFeedsBinding;
-import com.readrops.app.viewmodels.ManageFeedsViewModel;
+import com.readrops.app.viewmodels.ManageFeedsFoldersViewModel;
 import com.readrops.app.views.EditFeedDialog;
 import com.readrops.app.views.FeedsAdapter;
 
@@ -42,7 +41,7 @@ import static com.readrops.app.activities.ManageFeedsFoldersActivity.ACCOUNT;
 public class FeedsFragment extends Fragment {
 
     private FeedsAdapter adapter;
-    private ManageFeedsViewModel viewModel;
+    private ManageFeedsFoldersViewModel viewModel;
     private Account account;
 
     private FragmentFeedsBinding binding;
@@ -67,7 +66,7 @@ public class FeedsFragment extends Fragment {
 
         account = getArguments().getParcelable(ACCOUNT);
 
-        viewModel = ViewModelProviders.of(this).get(ManageFeedsViewModel.class);
+        viewModel = ViewModelProviders.of(this).get(ManageFeedsFoldersViewModel.class);
         viewModel.setAccount(account);
 
         viewModel.getFeedsWithFolder().observe(this, feedWithFolders -> adapter.submitList(feedWithFolders));
@@ -106,10 +105,10 @@ public class FeedsFragment extends Fragment {
 
         binding.feedsRecyclerview.setAdapter(adapter);
 
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
             @Override
             public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-                int swipeFlags = ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
+                int swipeFlags = ItemTouchHelper.RIGHT;
 
                 return makeMovementFlags(0, swipeFlags);
             }
@@ -121,7 +120,7 @@ public class FeedsFragment extends Fragment {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-                deleteFolder(adapter.getItemAt(viewHolder.getAdapterPosition()).getFeed().getId(),
+                deleteFeed(adapter.getItemAt(viewHolder.getAdapterPosition()).getFeed().getId(),
                         viewHolder.getAdapterPosition());
 
             }
@@ -134,7 +133,7 @@ public class FeedsFragment extends Fragment {
         }).attachToRecyclerView(binding.feedsRecyclerview);
     }
 
-    private void deleteFolder(int feedId, int position) {
+    private void deleteFeed(int feedId, int position) {
         new MaterialDialog.Builder(getContext())
                 .title(getString(R.string.delete_feed))
                 .positiveText(getString(R.string.validate))
@@ -167,32 +166,5 @@ public class FeedsFragment extends Fragment {
 
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
         transaction.add(editFeedDialog, "").commit();
-    }
-
-
-    private void addFolder() {
-        new MaterialDialog.Builder(getActivity())
-                .title(R.string.add_folder)
-                .positiveText(R.string.validate)
-                .input(R.string.folder, 0, (dialog, input) -> {
-                    Folder folder = new Folder(input.toString());
-                    folder.setAccountId(account.getId());
-
-                    viewModel.addFolder(folder)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(new DisposableCompletableObserver() {
-                                @Override
-                                public void onComplete() {
-                                    Toast.makeText(getContext(), "folder inserted", Toast.LENGTH_LONG).show();
-                                }
-
-                                @Override
-                                public void onError(Throwable e) {
-                                    Toast.makeText(getContext(), "error on folder insertion", Toast.LENGTH_LONG).show();
-                                }
-                            });
-                })
-                .show();
     }
 }

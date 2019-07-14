@@ -46,22 +46,13 @@ public abstract class ARepository {
 
     public abstract Completable deleteFeed(int feedId);
 
-    public abstract Completable addFolder(Folder folder);
+    public abstract Completable addFolder(Folder folder, Account account);
 
-    public Completable deleteFolder(Folder folder) {
-        return Completable.create(emitter -> {
-            database.folderDao().delete(folder);
-            emitter.onComplete();
-        });
-    }
+    public abstract Completable updateFolder(Folder folder, Account account);
 
-    public Completable changeFeedFolder(Feed feed, Folder newFolder) {
-        return Completable.create(emitter -> {
-            database.feedDao().updateFeedFolder(feed.getId(), newFolder.getId());
-            emitter.onComplete();
-        });
+    public abstract Completable deleteFolder(Folder folder);
 
-    }
+    public abstract Completable changeFeedFolder(Feed feed, Folder newFolder);
 
     public Single<Integer> getFeedCount(int accountId) {
         return Single.create(emitter -> emitter.onSuccess(database.feedDao().getFeedCount(accountId)));

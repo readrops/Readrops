@@ -17,7 +17,7 @@ import java.util.List;
 
 import io.reactivex.Completable;
 
-public class ManageFeedsViewModel extends AndroidViewModel {
+public class ManageFeedsFoldersViewModel extends AndroidViewModel {
 
     private Database db;
     private LiveData<List<FeedWithFolder>> feedsWithFolder;
@@ -26,7 +26,7 @@ public class ManageFeedsViewModel extends AndroidViewModel {
 
     private Account account;
 
-    public ManageFeedsViewModel(@NonNull Application application) {
+    public ManageFeedsFoldersViewModel(@NonNull Application application) {
         super(application);
 
         db = Database.getInstance(application);
@@ -68,7 +68,15 @@ public class ManageFeedsViewModel extends AndroidViewModel {
     }
 
     public Completable addFolder(Folder folder) {
-        return repository.addFolder(folder);
+        return repository.addFolder(folder, account);
+    }
+
+    public Completable updateFolder(Folder folder) {
+        return repository.updateFolder(folder, account);
+    }
+
+    public Completable deleteFolder(Folder folder) {
+        return repository.deleteFolder(folder);
     }
 
     public Completable deleteFeed(int feedId) {

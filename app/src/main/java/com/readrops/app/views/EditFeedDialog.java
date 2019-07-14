@@ -20,7 +20,7 @@ import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.FeedWithFolder;
-import com.readrops.app.viewmodels.ManageFeedsViewModel;
+import com.readrops.app.viewmodels.ManageFeedsFoldersViewModel;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -36,12 +36,12 @@ public class EditFeedDialog extends DialogFragment implements AdapterView.OnItem
 
     private FeedWithFolder feedWithFolder;
     private Account account;
-    private ManageFeedsViewModel viewModel;
+    private ManageFeedsFoldersViewModel viewModel;
 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        viewModel = ViewModelProviders.of(getActivity()).get(ManageFeedsViewModel.class);
+        viewModel = ViewModelProviders.of(getActivity()).get(ManageFeedsFoldersViewModel.class);
 
         feedWithFolder = getArguments().getParcelable("feedWithFolder");
         account = getArguments().getParcelable(ManageFeedsFoldersActivity.ACCOUNT);

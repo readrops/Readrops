@@ -162,9 +162,33 @@ public class LocalFeedRepository extends ARepository {
     }
 
     @Override
-    public Completable addFolder(Folder folder) {
+    public Completable addFolder(Folder folder, Account account) {
         return Completable.create(emitter -> {
             database.folderDao().insert(folder);
+            emitter.onComplete();
+        });
+    }
+
+    @Override
+    public Completable updateFolder(Folder folder, Account account) {
+        return Completable.create(emitter -> {
+            database.folderDao().update(folder);
+            emitter.onComplete();
+        });
+    }
+
+    @Override
+    public Completable deleteFolder(Folder folder) {
+        return Completable.create(emitter -> {
+            database.folderDao().delete(folder);
+            emitter.onComplete();
+        });
+    }
+
+    @Override
+    public Completable changeFeedFolder(Feed feed, Folder newFolder) {
+        return Completable.create(emitter -> {
+            database.feedDao().updateFeedFolder(feed.getId(), newFolder.getId());
             emitter.onComplete();
         });
     }

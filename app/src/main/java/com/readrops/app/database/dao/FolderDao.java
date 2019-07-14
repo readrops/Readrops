@@ -5,6 +5,7 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.readrops.app.database.entities.Folder;
 
@@ -24,6 +25,9 @@ public interface FolderDao {
 
     @Insert
     long[] insert(List<Folder> folders);
+
+    @Update
+    void update(Folder folder);
 
     @Delete
     void delete(Folder folder);
