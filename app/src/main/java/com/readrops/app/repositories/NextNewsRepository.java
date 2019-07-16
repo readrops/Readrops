@@ -174,7 +174,7 @@ public class NextNewsRepository extends ARepository {
 
             try {
                 Credentials credentials = new Credentials(account.getLogin(), account.getPassword(), account.getUrl());
-                NextNewsFolders folders = api.createFolder(credentials, new NextNewsFolder(folder.getId(), folder.getName()));
+                NextNewsFolders folders = api.createFolder(credentials, new NextNewsFolder(folder.getRemoteId(), folder.getName()));
 
                 if (folders != null)
                     insertFolders(folders.getFolders(), account);
@@ -196,10 +196,11 @@ public class NextNewsRepository extends ARepository {
             try {
                 Credentials credentials = new Credentials(account.getLogin(), account.getPassword(), account.getUrl());
 
-                if (api.renameFolder(credentials, new NextNewsFolder(folder.getId(), folder.getName())))
+                if (api.renameFolder(credentials, new NextNewsFolder(folder.getRemoteId(), folder.getName()))) {
+                    database.folderDao().update(folder);
                     emitter.onComplete();
-                else
-                    emitter.onError(new Exception());
+                } else
+                    emitter.onError(new Exception("Unknown error"));
 
             } catch (Exception e) {
                 emitter.onError(e);
@@ -216,10 +217,12 @@ public class NextNewsRepository extends ARepository {
 
             try {
                 Credentials credentials = new Credentials(account.getLogin(), account.getPassword(), account.getUrl());
-                if (api.deleteFolder(credentials, new NextNewsFolder(folder.getId(), folder.getName())))
+
+                if (api.deleteFolder(credentials, new NextNewsFolder(folder.getRemoteId(), folder.getName()))) {
+                    database.folderDao().delete(folder);
                     emitter.onComplete();
-                else
-                    emitter.onError(new Exception());
+                } else
+                    emitter.onError(new Exception("Unknown error"));
 
             } catch (Exception e) {
                 emitter.onError(e);

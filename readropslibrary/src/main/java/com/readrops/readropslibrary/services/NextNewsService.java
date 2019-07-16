@@ -10,6 +10,7 @@ import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -44,7 +45,7 @@ public interface NextNewsService {
     @POST("folders")
     Call<NextNewsFolders> createFolder(@Body NextNewsFolder folder);
 
-    @POST("folders/{folderId}")
+    @DELETE("folders/{folderId}")
     Call<ResponseBody> deleteFolder(@Path("folderId") int folderId);
 
     @PUT("folders/{folderId}")
