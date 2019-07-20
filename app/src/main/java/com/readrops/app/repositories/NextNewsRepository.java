@@ -8,13 +8,11 @@ import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.Item;
-import com.readrops.app.database.pojo.FeedWithFolder;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.FeedMatcher;
 import com.readrops.app.utils.ItemMatcher;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.utils.Utils;
-import com.readrops.readropslibrary.services.nextcloudnews.Credentials;
 import com.readrops.readropslibrary.services.nextcloudnews.NextNewsAPI;
 import com.readrops.readropslibrary.services.nextcloudnews.SyncData;
 import com.readrops.readropslibrary.services.nextcloudnews.SyncResult;
@@ -23,6 +21,7 @@ import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeeds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolders;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItem;
+import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsRenameFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
 import com.readrops.readropslibrary.utils.UnknownFormatException;
 
@@ -36,7 +35,6 @@ import java.util.List;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.schedulers.Schedulers;
 
 public class NextNewsRepository extends ARepository {
 
@@ -50,10 +48,7 @@ public class NextNewsRepository extends ARepository {
     public Single<Boolean> login(Account account) {
         return Single.create(emitter -> {
             NextNewsAPI newsAPI = new NextNewsAPI();
-
-            Credentials credentials = new Credentials(account.getLogin(), account.getPassword(),
-                    account.getUrl());
-            NextNewsUser user = newsAPI.login(credentials);
+            NextNewsUser user = newsAPI.login(account.toCredentials());
 
             if (user != null) {
                 account.setDisplayedName(user.getDisplayName());
@@ -87,9 +82,7 @@ public class NextNewsRepository extends ARepository {
                     syncData.setUnreadItems(database.itemDao().getUnreadChanges());
                 }
 
-                Credentials credentials = new Credentials(account.getLogin(), account.getPassword(),
-                        account.getUrl());
-                SyncResult syncResult = newsAPI.sync(credentials, syncType, syncData);
+                SyncResult syncResult = newsAPI.sync(account.toCredentials(), syncType, syncData);
 
                 if (!syncResult.isError()) {
                     TimingLogger timings = new TimingLogger(TAG, "sync");
@@ -128,8 +121,7 @@ public class NextNewsRepository extends ARepository {
                 FeedInsertionResult insertionResult = new FeedInsertionResult();
 
                 try {
-                    Credentials credentials = new Credentials(account.getLogin(), account.getPassword(), account.getUrl());
-                    NextNewsFeeds nextNewsFeeds = newsAPI.createFeed(credentials, result.getUrl(), 0);
+                    NextNewsFeeds nextNewsFeeds = newsAPI.createFeed(account.toCredentials(), result.getUrl(), 0);
 
                     if (nextNewsFeeds != null) {
                         List<Feed> newFeeds = insertFeeds(nextNewsFeeds.getFeeds(), account);
@@ -158,13 +150,54 @@ public class NextNewsRepository extends ARepository {
     }
 
     @Override
-    public void updateFeedWithFolder(FeedWithFolder feedWithFolder) {
+    public Completable updateFeed(Feed feed, Account account) {
+        return Completable.create(emitter -> {
+            NextNewsAPI api = new NextNewsAPI();
 
+            Folder folder = feed.getFolderId() == null ? null : database.folderDao().select(feed.getFolderId());
+
+            NextNewsRenameFeed newsRenameFeed = new NextNewsRenameFeed(feed.getRemoteId(), feed.getName());
+
+            NextNewsFeed newsFeed;
+            if (folder != null)
+                newsFeed = new NextNewsFeed(feed.getRemoteId(), folder.getRemoteId());
+            else
+                newsFeed = new NextNewsFeed(feed.getRemoteId(), 0); // 0 for no folder
+
+            try {
+                if (api.renameFeed(account.toCredentials(), newsRenameFeed) &&
+                        api.changeFeedFolder(account.toCredentials(), newsFeed)) {
+                    if (folder != null)
+                        database.feedDao().updateFeedFields(feed.getId(), feed.getName(), feed.getUrl(), folder.getId());
+                    else
+                        database.feedDao().updateFeedFields(feed.getId(), feed.getName(), feed.getUrl(), null);
+                } else
+                    emitter.onError(new Exception("Unknown error"));
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
+
+            emitter.onComplete();
+        });
     }
 
     @Override
-    public Completable deleteFeed(int feedId) {
-        return null;
+    public Completable deleteFeed(Feed feed, Account account) {
+        return Completable.create(emitter -> {
+            NextNewsAPI api = new NextNewsAPI();
+
+            try {
+                if (api.deleteFeed(account.toCredentials(), feed.getRemoteId())) {
+                    database.feedDao().delete(feed.getId());
+                    emitter.onComplete();
+                } else
+                    emitter.onError(new Exception("Unknown error"));
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
+
+            emitter.onComplete();
+        });
     }
 
     @Override
@@ -173,13 +206,12 @@ public class NextNewsRepository extends ARepository {
             NextNewsAPI api = new NextNewsAPI();
 
             try {
-                Credentials credentials = new Credentials(account.getLogin(), account.getPassword(), account.getUrl());
-                NextNewsFolders folders = api.createFolder(credentials, new NextNewsFolder(folder.getRemoteId(), folder.getName()));
+                NextNewsFolders folders = api.createFolder(account.toCredentials(), new NextNewsFolder(folder.getRemoteId(), folder.getName()));
 
                 if (folders != null)
                     insertFolders(folders.getFolders(), account);
                 else
-                    emitter.onError(new Exception());
+                    emitter.onError(new Exception("Unknown error"));
             } catch (Exception e) {
                 emitter.onError(e);
             }
@@ -194,9 +226,7 @@ public class NextNewsRepository extends ARepository {
             NextNewsAPI api = new NextNewsAPI();
 
             try {
-                Credentials credentials = new Credentials(account.getLogin(), account.getPassword(), account.getUrl());
-
-                if (api.renameFolder(credentials, new NextNewsFolder(folder.getRemoteId(), folder.getName()))) {
+                if (api.renameFolder(account.toCredentials(), new NextNewsFolder(folder.getRemoteId(), folder.getName()))) {
                     database.folderDao().update(folder);
                     emitter.onComplete();
                 } else
@@ -216,9 +246,7 @@ public class NextNewsRepository extends ARepository {
             NextNewsAPI api = new NextNewsAPI();
 
             try {
-                Credentials credentials = new Credentials(account.getLogin(), account.getPassword(), account.getUrl());
-
-                if (api.deleteFolder(credentials, new NextNewsFolder(folder.getRemoteId(), folder.getName()))) {
+                if (api.deleteFolder(account.toCredentials(), new NextNewsFolder(folder.getRemoteId(), folder.getName()))) {
                     database.folderDao().delete(folder);
                     emitter.onComplete();
                 } else
@@ -230,11 +258,6 @@ public class NextNewsRepository extends ARepository {
 
             emitter.onComplete();
         });
-    }
-
-    @Override
-    public Completable changeFeedFolder(Feed feed, Folder newFolder) {
-        return null;
     }
 
     private List<Feed> insertFeeds(List<NextNewsFeed> feeds, Account account) {
@@ -261,16 +284,7 @@ public class NextNewsRepository extends ARepository {
         long[] ids = database.feedDao().insert(newFeeds);
 
         List<Feed> insertedFeeds = database.feedDao().selectFromIdList(ids);
-        Observable.<Feed>create(emitter -> {
-            for (Feed feed : insertedFeeds) {
-                setFavIconUtils(feed);
-                emitter.onNext(feed);
-            }
-        }).subscribeOn(Schedulers.computation())
-                .observeOn(Schedulers.io())
-                .doOnNext(feed1 -> database.feedDao().updateColors(feed1.getId(),
-                        feed1.getTextColor(), feed1.getBackgroundColor()))
-                .subscribe();
+        setFaviconUtils(insertedFeeds);
 
         return insertedFeeds;
     }

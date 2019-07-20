@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 
 import com.readrops.app.database.Database;
 import com.readrops.app.database.entities.Account;
+import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.FeedWithFolder;
 import com.readrops.app.repositories.ARepository;
@@ -50,8 +51,8 @@ public class ManageFeedsFoldersViewModel extends AndroidViewModel {
         return feedsWithFolder;
     }
 
-    public void updateFeedWithFolder(FeedWithFolder feedWithFolder) {
-        repository.updateFeedWithFolder(feedWithFolder);
+    public Completable updateFeedWithFolder(Feed feed) {
+        return repository.updateFeed(feed, account);
     }
 
     public Account getAccount() {
@@ -79,7 +80,7 @@ public class ManageFeedsFoldersViewModel extends AndroidViewModel {
         return repository.deleteFolder(folder, account);
     }
 
-    public Completable deleteFeed(int feedId) {
-        return repository.deleteFeed(feedId);
+    public Completable deleteFeed(Feed feed) {
+        return repository.deleteFeed(feed, account);
     }
 }

@@ -59,9 +59,9 @@ public interface FeedDao {
     @Query("Update Feed set text_color = :textColor, background_color = :bgColor Where id = :feedId")
     void updateColors(int feedId, int textColor, int bgColor);
 
-    @Query("Select Feed.name as feed_name, Feed.id as feed_id, Folder.name as folder_name, Folder.id as folder_id," +
+    @Query("Select Feed.name as feed_name, Feed.id as feed_id, Folder.name as folder_name, Folder.id as folder_id, Folder.remoteId as folder_remoteId," +
             "Feed.description as feed_description, Feed.icon_url as feed_icon_url, Feed.url as feed_url, Feed.folder_id as feed_folder_id" +
-            ", Feed.siteUrl as feed_siteUrl from Feed Left Join Folder on Feed.folder_id = Folder.id Where Feed.account_id = :accountId Order by Feed.name")
+            ", Feed.siteUrl as feed_siteUrl, Feed.remoteId as feed_remoteId from Feed Left Join Folder on Feed.folder_id = Folder.id Where Feed.account_id = :accountId Order by Feed.name")
     LiveData<List<FeedWithFolder>> getAllFeedsWithFolder(int accountId);
 
     @Query("Select * From Feed Where id in (:ids)")

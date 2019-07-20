@@ -11,6 +11,7 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.readrops.app.R;
+import com.readrops.readropslibrary.services.nextcloudnews.Credentials;
 
 @Entity
 public class Account implements Parcelable {
@@ -216,5 +217,9 @@ public class Account implements Parcelable {
             this.iconRes = iconRes;
             this.name = name;
         }
+    }
+
+    public Credentials toCredentials() {
+        return new Credentials(login, password, url);
     }
 }

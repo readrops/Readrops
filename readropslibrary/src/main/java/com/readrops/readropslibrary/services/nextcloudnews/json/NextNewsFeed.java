@@ -22,6 +22,14 @@ public class NextNewsFeed {
 
     private boolean pinned;
 
+    public NextNewsFeed() {
+    }
+
+    public NextNewsFeed(int id, int folderId) {
+        this.id = id;
+        this.folderId = folderId;
+    }
+
     public int getId() {
         return id;
     }
@@ -49,6 +57,8 @@ public class NextNewsFeed {
     public String getFaviconLink() {
         return faviconLink;
     }
+
+
 
     public void setFaviconLink(String faviconLink) {
         this.faviconLink = faviconLink;

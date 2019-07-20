@@ -26,6 +26,9 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+
 public class EditFeedDialog extends DialogFragment implements AdapterView.OnItemSelectedListener {
 
     private TextInputEditText feedName;
@@ -51,13 +54,16 @@ public class EditFeedDialog extends DialogFragment implements AdapterView.OnItem
         View v = getActivity().getLayoutInflater().inflate(R.layout.edit_feed_layout, null);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
-                .setTitle(getString(R.string.edit_feed))
-                .setPositiveButton(getString(R.string.validate), (dialog, which) -> {
+                .setTitle(R.string.edit_feed)
+                .setPositiveButton(R.string.validate, (dialog, which) -> {
                     Feed feed = feedWithFolder.getFeed();
                     feed.setName(feedName.getText().toString().trim());
                     feed.setUrl(feedUrl.getText().toString().trim());
 
-                    viewModel.updateFeedWithFolder(feedWithFolder);
+                    viewModel.updateFeedWithFolder(feed)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe();
                 });
 
         builder.setView(v);
@@ -98,7 +104,7 @@ public class EditFeedDialog extends DialogFragment implements AdapterView.OnItem
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        String folderName = (String)parent.getAdapter().getItem(position);
+        String folderName = (String) parent.getAdapter().getItem(position);
         int folderId = values.get(folderName);
 
         feedWithFolder.getFeed().setFolderId(folderId == 0 ? null : folderId);

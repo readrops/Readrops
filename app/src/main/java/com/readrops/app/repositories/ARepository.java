@@ -10,7 +10,6 @@ import com.readrops.app.database.Database;
 import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
-import com.readrops.app.database.pojo.FeedWithFolder;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.HtmlParser;
 import com.readrops.app.utils.ParsingResult;
@@ -24,6 +23,7 @@ import java.util.concurrent.Executors;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 
 public abstract class ARepository {
 
@@ -42,9 +42,9 @@ public abstract class ARepository {
 
     public abstract Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results, Account account);
 
-    public abstract void updateFeedWithFolder(FeedWithFolder feedWithFolder);
+    public abstract Completable updateFeed(Feed feed, Account account);
 
-    public abstract Completable deleteFeed(int feedId);
+    public abstract Completable deleteFeed(Feed feed, Account account);
 
     public abstract Completable addFolder(Folder folder, Account account);
 
@@ -52,10 +52,21 @@ public abstract class ARepository {
 
     public abstract Completable deleteFolder(Folder folder, Account account);
 
-    public abstract Completable changeFeedFolder(Feed feed, Folder newFolder);
-
     public Single<Integer> getFeedCount(int accountId) {
         return Single.create(emitter -> emitter.onSuccess(database.feedDao().getFeedCount(accountId)));
+    }
+
+    protected void setFaviconUtils(List<Feed> feeds) {
+        Observable.<Feed>create(emitter -> {
+            for (Feed feed : feeds) {
+                setFavIconUtils(feed);
+                emitter.onNext(feed);
+            }
+        }).subscribeOn(Schedulers.computation())
+                .observeOn(Schedulers.io())
+                .doOnNext(feed1 -> database.feedDao().updateColors(feed1.getId(),
+                        feed1.getTextColor(), feed1.getBackgroundColor()))
+                .subscribe();
     }
 
     protected void setFavIconUtils(Feed feed) throws IOException {

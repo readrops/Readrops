@@ -22,6 +22,7 @@ import com.readrops.app.activities.ManageFeedsFoldersActivity;
 import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.databinding.FragmentFoldersBinding;
+import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.viewmodels.ManageFeedsFoldersViewModel;
 import com.readrops.app.views.FoldersAdapter;
 
@@ -56,6 +57,11 @@ public class FoldersFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         account = getArguments().getParcelable(ManageFeedsFoldersActivity.ACCOUNT);
+
+        if (account.getLogin() == null)
+            account.setLogin(SharedPreferencesManager.readString(getContext(), account.getLoginKey()));
+        if (account.getPassword() == null)
+            account.setPassword(SharedPreferencesManager.readString(getContext(), account.getPasswordKey()));
 
         adapter = new FoldersAdapter(this::editFolder);
         viewModel = ViewModelProviders.of(this).get(ManageFeedsFoldersViewModel.class);

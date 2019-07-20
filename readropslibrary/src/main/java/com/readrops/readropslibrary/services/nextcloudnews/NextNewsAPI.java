@@ -6,11 +6,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.readrops.readropslibrary.services.NextNewsService;
+import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeeds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolders;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItemIds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItems;
+import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsRenameFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
 import com.readrops.readropslibrary.utils.ConflictException;
 import com.readrops.readropslibrary.utils.HttpManager;
@@ -18,6 +20,8 @@ import com.readrops.readropslibrary.utils.LibUtils;
 import com.readrops.readropslibrary.utils.UnknownFormatException;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -59,7 +63,8 @@ public class NextNewsAPI {
         return response.body();
     }
 
-    public @Nullable NextNewsFeeds createFeed(Credentials credentials, String url, int folderId)
+    public @Nullable
+    NextNewsFeeds createFeed(Credentials credentials, String url, int folderId)
             throws IOException, UnknownFormatException {
         api = createAPI(credentials);
 
@@ -156,7 +161,8 @@ public class NextNewsAPI {
             syncResult.setError(true);
     }
 
-    public  @Nullable NextNewsFolders createFolder(Credentials credentials, NextNewsFolder folder) throws IOException, UnknownFormatException, ConflictException {
+    public @Nullable
+    NextNewsFolders createFolder(Credentials credentials, NextNewsFolder folder) throws IOException, UnknownFormatException, ConflictException {
         api = createAPI(credentials);
 
         Response<NextNewsFolders> foldersResponse = api.createFolder(folder).execute();
@@ -203,6 +209,48 @@ public class NextNewsAPI {
                     return false;
             }
         }
+    }
+
+    public boolean deleteFeed(Credentials credentials, int feedId) throws IOException {
+        api = createAPI(credentials);
+
+        Response response = api.deleteFeed(feedId).execute();
+
+        if (response.isSuccessful())
+            return true;
+        else if (response.code() == LibUtils.HTTP_NOT_FOUND)
+            throw new Resources.NotFoundException();
+        else
+            return false;
+    }
+
+    public boolean changeFeedFolder(Credentials credentials, NextNewsFeed feed) throws IOException {
+        api = createAPI(credentials);
+
+        Map<String, Integer> folderIdMap = new HashMap<>();
+        folderIdMap.put("folderId", feed.getFolderId());
+
+        Response response = api.changeFeedFolder(feed.getId(), folderIdMap).execute();
+
+        if (response.isSuccessful())
+            return true;
+        else if (response.code() == LibUtils.HTTP_NOT_FOUND)
+            throw new Resources.NotFoundException();
+        else
+            return false;
+    }
+
+    public boolean renameFeed(Credentials credentials, NextNewsRenameFeed feed) throws IOException {
+        api = createAPI(credentials);
+
+        Response response = api.renameFeed(feed.getId(), feed).execute();
+
+        if (response.isSuccessful())
+            return true;
+        else if (response.code() == LibUtils.HTTP_NOT_FOUND)
+            throw new Resources.NotFoundException();
+        else
+            return false;
     }
 
     public enum SyncType {

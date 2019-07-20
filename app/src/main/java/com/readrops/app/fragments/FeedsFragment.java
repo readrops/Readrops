@@ -24,8 +24,10 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.readrops.app.R;
 import com.readrops.app.activities.AccountSettingsActivity;
 import com.readrops.app.database.entities.Account;
+import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.pojo.FeedWithFolder;
 import com.readrops.app.databinding.FragmentFeedsBinding;
+import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.viewmodels.ManageFeedsFoldersViewModel;
 import com.readrops.app.views.EditFeedDialog;
 import com.readrops.app.views.FeedsAdapter;
@@ -65,6 +67,11 @@ public class FeedsFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         account = getArguments().getParcelable(ACCOUNT);
+
+        if (account.getLogin() == null)
+            account.setLogin(SharedPreferencesManager.readString(getContext(), account.getLoginKey()));
+        if (account.getPassword() == null)
+            account.setPassword(SharedPreferencesManager.readString(getContext(), account.getPasswordKey()));
 
         viewModel = ViewModelProviders.of(this).get(ManageFeedsFoldersViewModel.class);
         viewModel.setAccount(account);
@@ -120,7 +127,7 @@ public class FeedsFragment extends Fragment {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-                deleteFeed(adapter.getItemAt(viewHolder.getAdapterPosition()).getFeed().getId(),
+                deleteFeed(adapter.getItemAt(viewHolder.getAdapterPosition()).getFeed(),
                         viewHolder.getAdapterPosition());
 
             }
@@ -133,12 +140,12 @@ public class FeedsFragment extends Fragment {
         }).attachToRecyclerView(binding.feedsRecyclerview);
     }
 
-    private void deleteFeed(int feedId, int position) {
+    private void deleteFeed(Feed feed, int position) {
         new MaterialDialog.Builder(getContext())
-                .title(getString(R.string.delete_feed))
-                .positiveText(getString(R.string.validate))
-                .negativeText(getString(R.string.cancel))
-                .onPositive((dialog, which) -> viewModel.deleteFeed(feedId)
+                .title(R.string.delete_feed)
+                .positiveText(R.string.validate)
+                .negativeText(R.string.cancel)
+                .onPositive((dialog, which) -> viewModel.deleteFeed(feed)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new DisposableCompletableObserver() {
@@ -149,6 +156,7 @@ public class FeedsFragment extends Fragment {
 
                             @Override
                             public void onError(Throwable e) {
+                                adapter.notifyItemChanged(position);
                                 Toast.makeText(getContext(), "error on feed deletion", Toast.LENGTH_LONG).show();
                             }
                         }))

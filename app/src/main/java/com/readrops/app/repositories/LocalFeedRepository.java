@@ -9,7 +9,6 @@ import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.Item;
-import com.readrops.app.database.pojo.FeedWithFolder;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.HtmlParser;
 import com.readrops.app.utils.ParsingResult;
@@ -146,17 +145,17 @@ public class LocalFeedRepository extends ARepository {
     }
 
     @Override
-    public void updateFeedWithFolder(FeedWithFolder feedWithFolder) {
-        executor.execute(() -> {
-            Feed feed = feedWithFolder.getFeed();
+    public Completable updateFeed(Feed feed, Account account) {
+        return Completable.create(emitter -> {
             database.feedDao().updateFeedFields(feed.getId(), feed.getName(), feed.getUrl(), feed.getFolderId());
+            emitter.onComplete();
         });
     }
 
     @Override
-    public Completable deleteFeed(int feedId) {
+    public Completable deleteFeed(Feed feed, Account account) {
         return Completable.create(emitter -> {
-            database.feedDao().delete(feedId);
+            database.feedDao().delete(feed.getId());
             emitter.onComplete();
         });
     }
@@ -181,14 +180,6 @@ public class LocalFeedRepository extends ARepository {
     public Completable deleteFolder(Folder folder, Account account) {
         return Completable.create(emitter -> {
             database.folderDao().delete(folder);
-            emitter.onComplete();
-        });
-    }
-
-    @Override
-    public Completable changeFeedFolder(Feed feed, Folder newFolder) {
-        return Completable.create(emitter -> {
-            database.feedDao().updateFeedFolder(feed.getId(), newFolder.getId());
             emitter.onComplete();
         });
     }

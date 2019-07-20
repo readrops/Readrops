@@ -5,7 +5,10 @@ import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolders;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItemIds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItems;
+import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsRenameFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
+
+import java.util.Map;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -41,6 +44,15 @@ public interface NextNewsService {
 
     @POST("feeds")
     Call<NextNewsFeeds> createFeed(@Query("url") String url, @Query("folderId") int folderId);
+
+    @DELETE("feeds/{feedId}")
+    Call<Void> deleteFeed(@Path("feedId") int feedId);
+
+    @PUT("feeds/{feedId}/move")
+    Call<ResponseBody> changeFeedFolder(@Path("feedId") int feedId, @Body Map<String, Integer> folderIdMap);
+
+    @PUT("feeds/{feedId}/rename")
+    Call<ResponseBody> renameFeed(@Path("feedId") int feedId, @Body NextNewsRenameFeed feed);
 
     @POST("folders")
     Call<NextNewsFolders> createFolder(@Body NextNewsFolder folder);
