@@ -2,6 +2,7 @@ package com.readrops.app.database.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
@@ -27,6 +28,9 @@ public interface AccountDao {
 
     @Update
     void update(Account account);
+
+    @Delete
+    void delete(Account account);
 
     @Query("Update Account set last_modified = :lastModified Where id = :accountId")
     void updateLastModified(int accountId, long lastModified);

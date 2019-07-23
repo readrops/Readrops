@@ -71,4 +71,6 @@
     <string name="feeds">Feeds</string>
     <string name="edit_folder">Edit folder</string>
     <string name="delete_folder">Delete folder ?</string>
+    <string name="delete_account">Delete account</string>
+    <string name="delete_account_question">Delete account ?</string>
 </resources>

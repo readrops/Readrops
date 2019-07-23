@@ -212,11 +212,33 @@ public class DrawerManager {
         drawer.addItem(new DividerDrawerItem());
     }
 
-    public void addAccount(Account account) {
+    public void addAccount(Account account, boolean currentProfile) {
         ProfileDrawerItem profileItem = createProfileItem(account);
 
         header.addProfiles(profileItem);
-        header.setActiveProfile(profileItem.getIdentifier());
+
+        if (currentProfile)
+            header.setActiveProfile(profileItem.getIdentifier());
+    }
+
+    public void updateHeader(List<Account> accounts) {
+        header.clear();
+
+        for (Account account : accounts) {
+            addAccount(account, account.isCurrentAccount());
+        }
+    }
+
+    public int getNumberOfProfiles() {
+        List<IProfile> profiles = header.getProfiles();
+
+        int number = 0;
+        for (IProfile profile : profiles) {
+            if (profile instanceof ProfileDrawerItem)
+                number++;
+        }
+
+        return number;
     }
 
     public void resetItems() {

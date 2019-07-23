@@ -46,6 +46,7 @@ import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.viewmodels.MainViewModel;
 import com.readrops.app.views.MainItemListAdapter;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -137,58 +138,58 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         });
 
         drawerManager.setHeaderListener((view, profile, current) -> {
-                if (!current) {
-                    int id = (int) profile.getIdentifier();
+            if (!current) {
+                int id = (int) profile.getIdentifier();
 
-                    switch (id) {
-                        case DrawerManager.ADD_ACCOUNT_ID:
-                            Intent intent = new Intent(this, AccountTypeListActivity.class);
-                            intent.putExtra("fromMainActivity", true);
-                            startActivityForResult(intent, ADD_ACCOUNT_REQUEST);
-                            break;
-                        case DrawerManager.ACCOUNT_SETTINGS_ID:
-                            break;
-                        default:
-                            if (!updating) {
-                                viewModel.setCurrentAccount(id);
-                                updateDrawerFeeds();
-                            }
-                            break;
-                    }
-                } else {
-                    Intent intent = new Intent(this, AccountSettingsActivity.class);
-                    intent.putExtra(AccountSettingsActivity.ACCOUNT, viewModel.getCurrentAccount());
-                    startActivity(intent);
+                switch (id) {
+                    case DrawerManager.ADD_ACCOUNT_ID:
+                        Intent intent = new Intent(this, AccountTypeListActivity.class);
+                        intent.putExtra("fromMainActivity", true);
+                        startActivityForResult(intent, ADD_ACCOUNT_REQUEST);
+                        break;
+                    case DrawerManager.ACCOUNT_SETTINGS_ID:
+                        break;
+                    default:
+                        if (!updating) {
+                            viewModel.setCurrentAccount(id);
+                            updateDrawerFeeds();
+                        }
+                        break;
                 }
-
-                return true;
-            });
-
-        Account currentAccount = getIntent().getParcelableExtra(ACCOUNT_KEY);
-
-        if (currentAccount != null) { // first account created
-            List<Account> accounts = new ArrayList<>();
-            accounts.add(currentAccount);
-
-            viewModel.setAccounts(accounts);
-
-            drawer = drawerManager.buildDrawer(accounts);
-
-            if (!viewModel.isAccountLocal()) {
-                refreshLayout.setRefreshing(true);
-                onRefresh();
+            } else {
+                Intent intent = new Intent(this, AccountSettingsActivity.class);
+                intent.putExtra(AccountSettingsActivity.ACCOUNT, viewModel.getCurrentAccount());
+                startActivity(intent);
             }
 
-        } else { // last current account
-            viewModel.getAllAccounts().observe(this, accounts -> {
-                if (viewModel.getCurrentAccount() == null) {
-                    viewModel.setAccounts(accounts);
+            return true;
+        });
 
-                    drawer = drawerManager.buildDrawer(accounts);
-                    updateDrawerFeeds();
-                }
-            });
-        }
+        Account currentAccount = getIntent().getParcelableExtra(MainActivity.ACCOUNT_KEY);
+        WeakReference<Account> accountWeakReference = new WeakReference<>(currentAccount);
+
+        viewModel.getAllAccounts().observe(this, accounts -> {
+            viewModel.setAccounts(accounts);
+
+            if (drawer == null) {
+                drawer = drawerManager.buildDrawer(accounts);
+                updateDrawerFeeds();
+            } else if (accounts.size() < drawerManager.getNumberOfProfiles() && accounts.size() > 0) {
+                drawerManager.updateHeader(accounts);
+                updateDrawerFeeds();
+            } else if (accounts.size() == 0) {
+                Intent intent = new Intent(this, AccountTypeListActivity.class);
+                startActivity(intent);
+                finish();
+            }
+
+            if (accountWeakReference.get() != null && !(accountWeakReference.get().getAccountType() == Account.AccountType.LOCAL)) {
+                refreshLayout.setRefreshing(true);
+                onRefresh();
+                accountWeakReference.clear();
+            }
+
+        });
     }
 
     private void handleDrawerClick(IDrawerItem drawerItem) {
@@ -502,7 +503,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     }
 
                     drawerManager.resetItems();
-                    drawerManager.addAccount(newAccount);
+                    drawerManager.addAccount(newAccount, true);
                 }
             }
 
@@ -574,7 +575,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     }
                 });
     }
-
 
 
     @Override

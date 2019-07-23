@@ -218,14 +218,23 @@ public class MainViewModel extends AndroidViewModel {
     public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
 
+        boolean currentAccountExists = false;
+
         for (Account account1 : accounts) {
             if (account1.isCurrentAccount()) {
                 currentAccount = account1;
+                currentAccountExists = true;
+
                 setRepository(currentAccount.getAccountType());
                 queryBuilder.setAccountId(currentAccount.getId());
                 buildPagedList();
                 break;
             }
+        }
+
+        if (!currentAccountExists && accounts.size() > 0) {
+            setCurrentAccount(accounts.get(0));
+            accounts.get(0).setCurrentAccount(true);
         }
     }
 

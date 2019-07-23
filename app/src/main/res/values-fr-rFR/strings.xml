@@ -66,5 +66,7 @@
     <string name="feeds">Flux</string>
     <string name="edit_folder">Modifier le dossier</string>
     <string name="delete_folder">Supprimer le dossier ?</string>
+    <string name="delete_account">Supprimer le compte</string>
+    <string name="delete_account_question">Supprimer le compte ?</string>
 
 </resources>

@@ -44,6 +44,13 @@ public class AccountViewModel extends AndroidViewModel {
         });
     }
 
+    public Completable delete(Account account) {
+        return Completable.create(emitter -> {
+            database.accountDao().delete(account);
+            emitter.onComplete();
+        });
+    }
+
     public Single<Integer> getAccountCountByAccountType(int accountTypeCode) {
         return Single.create(emitter -> emitter.onSuccess(database.accountDao().getAccountCountByType(accountTypeCode)));
     }

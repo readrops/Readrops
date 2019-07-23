@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -149,7 +150,7 @@ public class Account implements Parcelable {
     }
 
     public String getLoginKey() {
-        return accountType.name() + "_login_" + id ;
+        return accountType.name() + "_login_" + id;
     }
 
     public String getPasswordKey() {
@@ -180,8 +181,10 @@ public class Account implements Parcelable {
         FEEDLY(R.drawable.ic_feedly, R.string.feedly),
         FRESHRSS(R.drawable.ic_freshrss, R.string.freshrss);
 
-        private @DrawableRes int iconRes;
-        private @StringRes int name;
+        private @DrawableRes
+        int iconRes;
+        private @StringRes
+        int name;
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
@@ -205,11 +208,13 @@ public class Account implements Parcelable {
             }
         };
 
-        public @DrawableRes int getIconRes() {
+        public @DrawableRes
+        int getIconRes() {
             return iconRes;
         }
 
-        public @StringRes int getName() {
+        public @StringRes
+        int getName() {
             return name;
         }
 
@@ -221,5 +226,15 @@ public class Account implements Parcelable {
 
     public Credentials toCredentials() {
         return new Credentials(login, password, url);
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj == null)
+            return false;
+        else if (!(obj instanceof Account))
+            return false;
+        else
+            return this.id == ((Account) obj).getId();
     }
 }
