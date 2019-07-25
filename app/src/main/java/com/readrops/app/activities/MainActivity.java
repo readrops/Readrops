@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private boolean updating;
 
     private ActionMode actionMode;
+    private Disposable syncDisposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -530,6 +531,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 .subscribe(new Observer<Feed>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        syncDisposable = d;
+
                         if (viewModel.isAccountLocal() && feedNb > 0) {
                             syncProgressLayout.setVisibility(View.VISIBLE);
                             syncProgressBar.setProgress(0);
@@ -637,6 +640,14 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     return true;
                 })
                 .show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (syncDisposable != null && !syncDisposable.isDisposed())
+            syncDisposable.dispose();
+
+        super.onDestroy();
     }
 
     public enum ListSortType {
