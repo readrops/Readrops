@@ -30,8 +30,7 @@ import com.readrops.app.databinding.FragmentFeedsBinding;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.ManageFeedsFoldersViewModel;
-import com.readrops.app.views.EditFeedDialog;
-import com.readrops.app.views.FeedsAdapter;
+import com.readrops.app.adapters.FeedsAdapter;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableCompletableObserver;

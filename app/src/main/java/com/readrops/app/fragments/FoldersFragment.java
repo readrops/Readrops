@@ -25,7 +25,7 @@ import com.readrops.app.databinding.FragmentFoldersBinding;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.ManageFeedsFoldersViewModel;
-import com.readrops.app.views.FoldersAdapter;
+import com.readrops.app.adapters.FoldersAdapter;
 import com.readrops.readropslibrary.utils.ConflictException;
 import com.readrops.readropslibrary.utils.UnknownFormatException;
 

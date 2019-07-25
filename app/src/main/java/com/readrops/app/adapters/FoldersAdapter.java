@@ -1,4 +1,4 @@
-package com.readrops.app.views;
+package com.readrops.app.adapters;
 
 import android.text.TextUtils;
 import android.view.LayoutInflater;

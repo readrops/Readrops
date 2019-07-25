@@ -1,4 +1,4 @@
-package com.readrops.app.views;
+package com.readrops.app.fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

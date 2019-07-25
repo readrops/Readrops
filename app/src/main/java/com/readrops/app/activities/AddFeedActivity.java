@@ -32,7 +32,7 @@ import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.AddFeedsViewModel;
-import com.readrops.app.views.AccountArrayAdapter;
+import com.readrops.app.adapters.AccountArrayAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

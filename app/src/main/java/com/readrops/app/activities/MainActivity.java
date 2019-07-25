@@ -45,7 +45,7 @@ import com.readrops.app.utils.GlideApp;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.MainViewModel;
-import com.readrops.app.views.MainItemListAdapter;
+import com.readrops.app.adapters.MainItemListAdapter;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;

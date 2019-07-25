@@ -1,4 +1,4 @@
-package com.readrops.app.views;
+package com.readrops.app.adapters;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
