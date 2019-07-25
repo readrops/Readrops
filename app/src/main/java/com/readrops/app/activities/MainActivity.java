@@ -69,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     public static final String ACCOUNT_KEY = "account";
 
+    private static final String SYNCING_KEY = "SYNCING";
+
     private RecyclerView recyclerView;
     private MainItemListAdapter adapter;
     private SwipeRefreshLayout refreshLayout;
@@ -191,6 +193,10 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 refreshLayout.setRefreshing(true);
                 onRefresh();
                 accountWeakReference.clear();
+            } else if (currentAccount == null && savedInstanceState != null && savedInstanceState.getBoolean(SYNCING_KEY)) {
+                refreshLayout.setRefreshing(true);
+                onRefresh();
+                savedInstanceState.clear();
             }
 
         });
@@ -648,6 +654,14 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             syncDisposable.dispose();
 
         super.onDestroy();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if (refreshLayout.isRefreshing())
+            outState.putBoolean(SYNCING_KEY, true);
+
+        super.onSaveInstanceState(outState);
     }
 
     public enum ListSortType {
