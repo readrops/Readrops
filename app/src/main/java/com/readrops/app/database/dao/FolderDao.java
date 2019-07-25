@@ -29,15 +29,24 @@ public interface FolderDao {
     @Update
     void update(Folder folder);
 
+    @Query("Update Folder set name = :name Where remoteId = :remoteFolderId And account_id = :accountId")
+    void updateName(int remoteFolderId, int accountId, String name);
+
     @Delete
     void delete(Folder folder);
 
     @Query("Select id From Folder Where remoteId = :remoteId And account_id = :accountId")
     int getRemoteFolderLocalId(int remoteId, int accountId);
 
-    @Query("Select case When :remoteId In (Select remoteId From Folder) And :accountId In (Select account_id From Folder)Then 1 else 0 end")
+    @Query("Select case When :remoteId In (Select remoteId From Folder Where account_id = :accountId) Then 1 else 0 end")
     boolean remoteFolderExists(int remoteId, int accountId);
 
     @Query("Select * from Folder Where id = :folderId")
     Folder select(int folderId);
+
+    @Query("Select remoteId From Folder Where account_id = :accountId")
+    List<Long> getFolderRemoteIdsOfAccount(int accountId);
+
+    @Query("Delete From Folder Where id in (:ids)")
+    void deleteByIds(List<Long> ids);
 }

@@ -17,12 +17,6 @@ public interface AccountDao {
     @Query("Select * from Account")
     LiveData<List<Account>> selectAll();
 
-    @Query("Select * from Account Where current_account = 1")
-    LiveData<Account> selectCurrentAccount();
-
-    @Query("Select * from Account Where id = :id")
-    Account selectById(int id);
-
     @Insert
     long insert(Account account);
 
@@ -41,8 +35,8 @@ public interface AccountDao {
     @Query("Update Account set current_account = 1 Where id = :accountId")
     void setCurrentAccount(int accountId);
 
-    @Query("Select count(*) From Account Where account_type = :accounType")
-    Integer getAccountCountByType(int accounType);
+    @Query("Select count(*) From Account Where account_type = :accountType")
+    Integer getAccountCountByType(int accountType);
 
     @Query("Select count(*) From Account")
     Integer getAccountCount();

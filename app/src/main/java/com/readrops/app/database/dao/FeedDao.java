@@ -50,11 +50,11 @@ public interface FeedDao {
     @Query("Update Feed set etag = :etag, last_modified = :lastModified Where id = :feedId")
     void updateHeaders(String etag, String lastModified, int feedId);
 
-    @Query("Update Feed set folder_id = :folderId Where id = :feedId")
-    void updateFeedFolder(int feedId, Integer folderId);
-
     @Query("Update Feed set name = :feedName, url = :feedUrl, folder_id = :folderId Where id = :feedId")
     void updateFeedFields(int feedId, String feedName, String feedUrl, Integer folderId);
+
+    @Query("Update Feed set name = :name, folder_id = :folderId Where remoteId = :remoteFeedId And account_id = :accountId")
+    void updateNameAndFolder(int remoteFeedId, int accountId, String name, Integer folderId);
 
     @Query("Update Feed set text_color = :textColor, background_color = :bgColor Where id = :feedId")
     void updateColors(int feedId, int textColor, int bgColor);
@@ -66,5 +66,11 @@ public interface FeedDao {
 
     @Query("Select * From Feed Where id in (:ids)")
     List<Feed> selectFromIdList(long[] ids);
+
+    @Query("Select remoteId From Feed Where account_id = :accountId")
+    List<Long> getFeedRemoteIdsOfAccount(int accountId);
+
+    @Query("Delete from Feed Where id in (:ids)")
+    void deleteByIds(List<Long> ids);
 }
 

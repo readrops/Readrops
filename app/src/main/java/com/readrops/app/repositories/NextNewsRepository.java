@@ -104,7 +104,7 @@ public class NextNewsRepository extends ARepository {
                 } else
                     emitter.onError(new Throwable());
 
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 emitter.onError(e);
             }
@@ -263,10 +263,13 @@ public class NextNewsRepository extends ARepository {
     private List<Feed> insertFeeds(List<NextNewsFeed> feeds, Account account) {
         List<Feed> newFeeds = new ArrayList<>();
 
+        // get remote feeds ids in local
+        List<Long> accountFeedIds = database.feedDao().getFeedRemoteIdsOfAccount(account.getId());
+
         for (NextNewsFeed nextNewsFeed : feeds) {
+            Feed feed = FeedMatcher.nextNewsFeedToFeed(nextNewsFeed, account);
 
             if (!database.feedDao().remoteFeedExists(nextNewsFeed.getId(), account.getId())) {
-                Feed feed = FeedMatcher.nextNewsFeedToFeed(nextNewsFeed, account);
 
                 // if the Nextcloud feed has a folder, it is already inserted, so we have to get its local id
                 if (nextNewsFeed.getFolderId() != 0) {
@@ -278,19 +281,36 @@ public class NextNewsRepository extends ARepository {
                     feed.setFolderId(null);
 
                 newFeeds.add(feed);
+            } else { // update feed
+                Integer folderId = nextNewsFeed.getId() == 0 ? null :
+                        database.folderDao().getRemoteFolderLocalId(nextNewsFeed.getFolderId(), account.getId());
+                database.feedDao().updateNameAndFolder(nextNewsFeed.getId(), account.getId(),
+                        nextNewsFeed.getTitle(), folderId);
+
+                accountFeedIds.remove((long) nextNewsFeed.getId()); // the feeds exists in the server, so no need to keep its id
             }
         }
 
-        long[] ids = database.feedDao().insert(newFeeds);
+        // delete all feeds which were not returned by the server, so which do not exist in it
+        if (!accountFeedIds.isEmpty())
+            database.feedDao().deleteByIds(accountFeedIds);
 
-        List<Feed> insertedFeeds = database.feedDao().selectFromIdList(ids);
-        setFaviconUtils(insertedFeeds);
+        List<Feed> insertedFeeds = new ArrayList<>();
+        if (!newFeeds.isEmpty()) {
+            long[] newFeedIds = database.feedDao().insert(newFeeds);
+
+            insertedFeeds.addAll(database.feedDao().selectFromIdList(newFeedIds));
+            setFaviconUtils(insertedFeeds);
+        }
+
 
         return insertedFeeds;
     }
 
     private void insertFolders(List<NextNewsFolder> folders, Account account) {
         List<Folder> newFolders = new ArrayList<>();
+
+        List<Long> accountFolderIds = database.folderDao().getFolderRemoteIdsOfAccount(account.getId());
 
         for (NextNewsFolder nextNewsFolder : folders) {
 
@@ -300,27 +320,33 @@ public class NextNewsRepository extends ARepository {
                 folder.setAccountId(account.getId());
 
                 newFolders.add(folder);
+            } else {
+                database.folderDao().updateName(nextNewsFolder.getId(), account.getId(),
+                        nextNewsFolder.getName());
+                accountFolderIds.remove((long) nextNewsFolder.getId());
             }
+
         }
 
-        database.folderDao().insert(newFolders);
+        if (!accountFolderIds.isEmpty())
+            database.folderDao().deleteByIds(accountFolderIds);
+
+        if (!newFolders.isEmpty())
+            database.folderDao().insert(newFolders);
     }
 
     private void insertItems(List<NextNewsItem> items, Account account, boolean initialSync) {
         List<Item> newItems = new ArrayList<>();
 
         for (NextNewsItem nextNewsItem : items) {
-
             Feed feed = database.feedDao().getFeedByRemoteId(nextNewsItem.getFeedId(), account.getId());
 
             if (!initialSync && feed != null) {
-
                 if (database.itemDao().remoteItemExists(nextNewsItem.getId(), feed.getId()))
                     break;
             }
 
             Item item = ItemMatcher.nextNewsItemToItem(nextNewsItem, feed);
-
             item.setReadTime(Utils.readTimeFromString(item.getContent()));
 
             newItems.add(item);
