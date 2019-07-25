@@ -10,9 +10,12 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.util.DisplayMetrics;
+import android.view.View;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.InputStream;
 import java.util.Locale;
@@ -90,4 +93,16 @@ public final class Utils {
         return drawable;
     }
 
+
+    public static void showSnackBarWithAction(View root, String message, String action, View.OnClickListener listener) {
+        Snackbar snackbar = Snackbar.make(root, message, Snackbar.LENGTH_LONG);
+        snackbar.setAction(action, listener);
+
+        snackbar.show();
+    }
+
+    public static void showSnackbar(View root, String message) {
+        Snackbar snackbar = Snackbar.make(root, message, Snackbar.LENGTH_LONG);
+        snackbar.show();
+    }
 }

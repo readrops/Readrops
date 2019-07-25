@@ -14,6 +14,7 @@ import com.readrops.app.R;
 import com.readrops.app.database.entities.Account;
 import com.readrops.app.databinding.ActivityAddAccountBinding;
 import com.readrops.app.utils.SharedPreferencesManager;
+import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.AccountViewModel;
 
 import io.reactivex.CompletableObserver;
@@ -92,7 +93,8 @@ public class AddAccountActivity extends AppCompatActivity {
                             public void onError(Throwable e) {
                                 binding.addAccountLoading.setVisibility(View.GONE);
                                 binding.addAccountValidate.setEnabled(true);
-                                Toast.makeText(AddAccountActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+
+                                Utils.showSnackbar(binding.addAccountRoot, e.getMessage());
                             }
                         });
             } else {
@@ -142,7 +144,8 @@ public class AddAccountActivity extends AppCompatActivity {
                             public void onError(Throwable e) {
                                 binding.addAccountLoading.setVisibility(View.GONE);
                                 binding.addAccountValidate.setEnabled(true);
-                                Toast.makeText(AddAccountActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+
+                                Utils.showSnackbar(binding.addAccountRoot, e.getMessage());
                             }
                         });
             }

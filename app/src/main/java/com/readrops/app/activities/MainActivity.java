@@ -12,12 +12,12 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.paging.PagedList;
@@ -43,6 +43,7 @@ import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.utils.DrawerManager;
 import com.readrops.app.utils.GlideApp;
 import com.readrops.app.utils.SharedPreferencesManager;
+import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.MainViewModel;
 import com.readrops.app.views.MainItemListAdapter;
 
@@ -71,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private RecyclerView recyclerView;
     private MainItemListAdapter adapter;
     private SwipeRefreshLayout refreshLayout;
+    private ConstraintLayout rootLayout;
 
     private Toolbar toolbar;
     private Drawer drawer;
@@ -105,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         emptyListLayout = findViewById(R.id.empty_list_layout);
         refreshLayout = findViewById(R.id.swipe_refresh_layout);
         refreshLayout.setOnRefreshListener(this);
+        rootLayout = findViewById(R.id.main_root);
 
         syncProgressLayout = findViewById(R.id.sync_progress_layout);
         syncProgress = findViewById(R.id.sync_progress_text_view);
@@ -230,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
                     @Override
                     public void onError(Throwable e) {
-                        Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Utils.showSnackbar(rootLayout, e.getMessage());
                     }
                 });
     }
@@ -262,8 +265,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                             !itemWithFeed.getItem().isReadChanged())
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .doOnError(throwable -> Toast.makeText(getApplicationContext(),
-                                    "Error when updating in db", Toast.LENGTH_LONG).show())
+                            .doOnError(throwable -> Utils.showSnackbar(rootLayout, throwable.getMessage()))
                             .subscribe();
 
                     itemWithFeed.getItem().setRead(true);
@@ -379,6 +381,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                             !itemWithFeed.getItem().isReadChanged())
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
+                            .doOnError(throwable -> Utils.showSnackbar(rootLayout, throwable.getMessage()))
                             .subscribe();
 
                     itemWithFeed.getItem().setRead(!itemWithFeed.getItem().isRead());
@@ -388,6 +391,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     viewModel.setItemReadItLater((int) adapter.getItemId(viewHolder.getAdapterPosition()))
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
+                            .doOnError(throwable -> Utils.showSnackbar(rootLayout, throwable.getMessage()))
                             .subscribe();
 
                     if (viewModel.getFilterType() == MainViewModel.FilterType.READ_IT_LATER_FILTER)
@@ -426,6 +430,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             viewModel.setAllItemsReadState(read)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
+                    .doOnError(throwable -> Utils.showSnackbar(rootLayout, throwable.getMessage()))
                     .subscribe();
 
             allItemsSelected = false;
@@ -433,8 +438,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             viewModel.setItemsReadState(adapter.getSelectedItems(), read)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnError(throwable -> Toast.makeText(getApplicationContext(),
-                            "Error when updating in db", Toast.LENGTH_LONG).show())
+                    .doOnError(throwable -> Utils.showSnackbar(rootLayout, throwable.getMessage()))
                     .subscribe();
         }
 
@@ -461,7 +465,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
                     @Override
                     public void onError(Throwable e) {
-                        Toast.makeText(getApplicationContext(), "error on getting feeds number", Toast.LENGTH_LONG).show();
+                        Utils.showSnackbar(rootLayout, e.getMessage());
                     }
                 });
     }
@@ -550,7 +554,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                         e.printStackTrace();
                         refreshLayout.setRefreshing(false);
                         syncProgressLayout.setVisibility(View.GONE);
-                        Toast.makeText(getApplication(), e.getMessage(), Toast.LENGTH_LONG).show();
+
+                        Utils.showSnackbar(rootLayout, e.getMessage());
                     }
 
                     @Override
@@ -617,7 +622,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         int index = viewModel.getSortType() == ListSortType.OLDEST_TO_NEWEST ? 1 : 0;
 
         new MaterialDialog.Builder(this)
-                .title(getString(R.string.filter))
+                .title(R.string.filter)
                 .items(R.array.filter_items)
                 .itemsCallbackSingleChoice(index, (dialog, itemView, which, text) -> {
                     String[] items = getResources().getStringArray(R.array.filter_items);

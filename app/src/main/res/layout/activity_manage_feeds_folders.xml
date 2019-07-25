@@ -5,6 +5,7 @@
     tools:context=".activities.ManageFeedsFoldersActivity">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/manage_feeds_folders_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

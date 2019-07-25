@@ -68,5 +68,11 @@
     <string name="delete_folder">Supprimer le dossier ?</string>
     <string name="delete_account">Supprimer le compte</string>
     <string name="delete_account_question">Supprimer le compte ?</string>
+    <string name="feed_deleted">Le flux %1$s a été supprimé</string>
+    <string name="feed_doesnt_exist">Le flux %1$s n\'existe pas sur le serveur</string>
+    <string name="error_occured">Une erreur s\'est produite</string>
+    <string name="folder_already_exists">Le dossier existe déjà</string>
+    <string name="folder_bad_format">Mauvais format pour le nouveau dossier</string>
+    <string name="folder_doesnt_exist">Le dossier n\'existe pas sur le serveur</string>
 
 </resources>

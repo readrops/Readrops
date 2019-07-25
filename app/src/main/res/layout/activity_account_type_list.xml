@@ -5,6 +5,7 @@
     tools:context=".activities.AccountTypeListActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/account_type_list_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

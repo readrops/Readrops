@@ -12,10 +12,10 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.widget.NestedScrollView;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -50,6 +50,8 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
     private RecyclerView parseResultsRecyclerView;
     private TextView resultsTextView;
 
+    private NestedScrollView rootLayout;
+
     private ProgressBar feedInsertionProgressBar;
     private RecyclerView insertionResultsRecyclerView;
 
@@ -77,6 +79,8 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         feedInsertionProgressBar = findViewById(R.id.add_feed_insert_progressbar);
         insertionResultsRecyclerView = findViewById(R.id.add_feed_inserted_results_recyclerview);
         accountSpinner = findViewById(R.id.add_feed_account_spinner);
+
+        rootLayout = findViewById(R.id.add_feed_root);
 
         load.setOnClickListener(this);
         validate.setOnClickListener(this);
@@ -232,7 +236,7 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
 
                     @Override
                     public void onError(Throwable e) {
-                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                        Utils.showSnackbar(rootLayout, e.getMessage());
                         progressBar.setVisibility(View.GONE);
                     }
                 });
@@ -276,7 +280,7 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
 
                     @Override
                     public void onError(Throwable e) {
-                        Toast.makeText(AddFeedActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Utils.showSnackbar(rootLayout, e.getMessage());
                     }
                 });
     }

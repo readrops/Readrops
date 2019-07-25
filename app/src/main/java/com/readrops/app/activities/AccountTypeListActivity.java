@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
@@ -15,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.readrops.app.R;
 import com.readrops.app.database.entities.Account;
 import com.readrops.app.databinding.ActivityAccountTypeListBinding;
+import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.AccountViewModel;
 import com.readrops.app.views.AccountTypeListAdapter;
 
@@ -102,7 +102,7 @@ public class AccountTypeListActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(Throwable e) {
-                        Toast.makeText(AccountTypeListActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                        Utils.showSnackbar(binding.accountTypeListRoot, e.getMessage());
                     }
                 });
     }

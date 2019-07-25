@@ -73,4 +73,10 @@
     <string name="delete_folder">Delete folder ?</string>
     <string name="delete_account">Delete account</string>
     <string name="delete_account_question">Delete account ?</string>
+    <string name="feed_deleted">The feed %1$s has been deleted</string>
+    <string name="feed_doesnt_exist">The feed %1$s doesn\'t exist on the server</string>
+    <string name="error_occured">An error occured</string>
+    <string name="folder_already_exists">The folder already exists</string>
+    <string name="folder_bad_format">Bad format for the new folder</string>
+    <string name="folder_doesnt_exist">The folder doesn\'t exist on the server</string>
 </resources>

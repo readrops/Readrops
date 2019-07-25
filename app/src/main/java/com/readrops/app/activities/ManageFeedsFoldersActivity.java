@@ -4,7 +4,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,10 +21,12 @@ import com.readrops.app.database.entities.Folder;
 import com.readrops.app.databinding.ActivityManageFeedsFoldersBinding;
 import com.readrops.app.fragments.FeedsFragment;
 import com.readrops.app.fragments.FoldersFragment;
+import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.ManageFeedsFoldersViewModel;
+import com.readrops.readropslibrary.utils.ConflictException;
+import com.readrops.readropslibrary.utils.UnknownFormatException;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.schedulers.Schedulers;
 
 public class ManageFeedsFoldersActivity extends AppCompatActivity {
@@ -113,17 +114,18 @@ public class ManageFeedsFoldersActivity extends AppCompatActivity {
                     viewModel.addFolder(folder)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(new DisposableCompletableObserver() {
-                                @Override
-                                public void onComplete() {
-                                    Toast.makeText(getApplicationContext(), "folder inserted", Toast.LENGTH_LONG).show();
-                                }
+                            .doOnError(throwable -> {
+                                String message;
+                                if (throwable instanceof ConflictException)
+                                    message = getString(R.string.folder_already_exists);
+                                else if (throwable instanceof UnknownFormatException)
+                                    message = getString(R.string.folder_bad_format);
+                                else
+                                    message = getString(R.string.error_occured);
 
-                                @Override
-                                public void onError(Throwable e) {
-                                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-                                }
-                            });
+                                Utils.showSnackbar(binding.manageFeedsFoldersRoot, message);
+                            })
+                            .subscribe();
                 })
                 .show();
     }

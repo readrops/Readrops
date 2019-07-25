@@ -2,7 +2,6 @@ package com.readrops.app.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
@@ -45,7 +44,7 @@ public class SplashActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(Throwable e) {
-                        Toast.makeText(SplashActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                        
                     }
                 });
     }

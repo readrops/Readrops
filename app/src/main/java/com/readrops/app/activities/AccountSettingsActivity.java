@@ -3,7 +3,6 @@ package com.readrops.app.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
@@ -13,6 +12,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.readrops.app.R;
 import com.readrops.app.database.entities.Account;
 import com.readrops.app.databinding.ActivityAccountSettingsBinding;
+import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.AccountViewModel;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -72,7 +72,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
 
                             @Override
                             public void onError(Throwable e) {
-                                Toast.makeText(AccountSettingsActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                Utils.showSnackbar(binding.accountSettingsRoot, e.getMessage());
                             }
                         })))
                 .show();

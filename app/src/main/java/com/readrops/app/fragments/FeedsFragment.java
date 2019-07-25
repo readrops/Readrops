@@ -2,13 +2,13 @@ package com.readrops.app.fragments;
 
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,6 +28,7 @@ import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.pojo.FeedWithFolder;
 import com.readrops.app.databinding.FragmentFeedsBinding;
 import com.readrops.app.utils.SharedPreferencesManager;
+import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.ManageFeedsFoldersViewModel;
 import com.readrops.app.views.EditFeedDialog;
 import com.readrops.app.views.FeedsAdapter;
@@ -151,13 +152,21 @@ public class FeedsFragment extends Fragment {
                         .subscribe(new DisposableCompletableObserver() {
                             @Override
                             public void onComplete() {
-                                Toast.makeText(getContext(), "feed deleted", Toast.LENGTH_LONG).show();
+                                Utils.showSnackbar(binding.feedsRoot,
+                                        getString(R.string.feed_deleted, feed.getName()));
                             }
 
                             @Override
                             public void onError(Throwable e) {
                                 adapter.notifyItemChanged(position);
-                                Toast.makeText(getContext(), "error on feed deletion", Toast.LENGTH_LONG).show();
+
+                                String message;
+                                if (e instanceof Resources.NotFoundException)
+                                    message = getString(R.string.feed_doesnt_exist, feed.getName());
+                                else
+                                    message = getString(R.string.error_occured);
+
+                                Utils.showSnackbar(binding.feedsRoot, message);
                             }
                         }))
                 .onNegative(((dialog, which) -> adapter.notifyItemChanged(position)))

@@ -1,11 +1,11 @@
 package com.readrops.app.fragments;
 
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,11 +23,13 @@ import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.databinding.FragmentFoldersBinding;
 import com.readrops.app.utils.SharedPreferencesManager;
+import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.ManageFeedsFoldersViewModel;
 import com.readrops.app.views.FoldersAdapter;
+import com.readrops.readropslibrary.utils.ConflictException;
+import com.readrops.readropslibrary.utils.UnknownFormatException;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.schedulers.Schedulers;
 
 public class FoldersFragment extends Fragment {
@@ -108,17 +110,20 @@ public class FoldersFragment extends Fragment {
                     viewModel.updateFolder(folder)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(new DisposableCompletableObserver() {
-                                @Override
-                                public void onComplete() {
+                            .doOnError(throwable -> {
+                                String message;
+                                if (throwable instanceof ConflictException)
+                                    message = getString(R.string.folder_already_exists);
+                                else if (throwable instanceof UnknownFormatException)
+                                    message = getString(R.string.folder_bad_format);
+                                else if (throwable instanceof Resources.NotFoundException)
+                                    message = getString(R.string.folder_doesnt_exist);
+                                else
+                                    message = getString(R.string.error_occured);
 
-                                }
-
-                                @Override
-                                public void onError(Throwable e) {
-                                    Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
-                                }
-                            });
+                                Utils.showSnackbar(binding.foldersRoot, message);
+                            })
+                            .subscribe();
                 })
                 .show();
     }
@@ -131,17 +136,16 @@ public class FoldersFragment extends Fragment {
                 .onPositive((dialog, which) -> viewModel.deleteFolder(folder)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new DisposableCompletableObserver() {
-                            @Override
-                            public void onComplete() {
+                        .doOnError(throwable -> {
+                            String message;
+                            if (throwable instanceof Resources.NotFoundException)
+                                message = getString(R.string.folder_doesnt_exist);
+                            else
+                                message = throwable.getMessage();
 
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
-                            }
-                        }))
+                            Utils.showSnackbar(binding.foldersRoot, message);
+                        })
+                        .subscribe())
                 .onNegative((dialog, which) -> adapter.notifyItemChanged(position))
                 .show();
     }

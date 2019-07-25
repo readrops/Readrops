@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.MainActivity">
@@ -18,7 +19,6 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
-
 
         <RelativeLayout
             android:id="@+id/sync_progress_layout"
@@ -71,8 +71,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scrollbars="vertical"
-                tools:listitem="@layout/image_item"
                 tools:itemCount="3"
+                tools:listitem="@layout/image_item"
                 tools:visibility="visible" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
@@ -113,9 +113,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
             android:onClick="openAddFeedActivity"
-            android:src="@drawable/ic_add_white"
-            android:layout_margin="16dp"/>
+            android:src="@drawable/ic_add_white" />
 
     </FrameLayout>
 
