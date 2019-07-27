@@ -460,21 +460,24 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         drawerManager.disableAccountSelection();
         updating = true;
 
-        viewModel.getFeedCount()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DisposableSingleObserver<Integer>() {
-                    @Override
-                    public void onSuccess(Integer integer) {
-                        feedNb = integer;
-                        sync(null);
-                    }
+        if (viewModel.isAccountLocal()) {
+            viewModel.getFeedCount()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new DisposableSingleObserver<Integer>() {
+                        @Override
+                        public void onSuccess(Integer integer) {
+                            feedNb = integer;
+                            sync(null);
+                        }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        Utils.showSnackbar(rootLayout, e.getMessage());
-                    }
-                });
+                        @Override
+                        public void onError(Throwable e) {
+                            Utils.showSnackbar(rootLayout, e.getMessage());
+                        }
+                    });
+        } else
+            sync(null);
     }
 
     public void openAddFeedActivity(View view) {
@@ -498,8 +501,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         } else if (requestCode == MANAGE_FEEDS_REQUEST) {
             updateDrawerFeeds();
 
-        } else if (requestCode == ADD_ACCOUNT_REQUEST) {
-
+        } else if (requestCode == ADD_ACCOUNT_REQUEST && resultCode == RESULT_OK) {
             if (data != null) {
                 Account newAccount = data.getParcelableExtra(ACCOUNT_KEY);
 
@@ -523,7 +525,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void sync(List<Feed> feeds) {
+    private void sync(@Nullable List<Feed> feeds) {
         Account account = viewModel.getCurrentAccount();
         if (account.getLogin() == null)
             account.setLogin(SharedPreferencesManager.readString(this, account.getLoginKey()));
