@@ -39,7 +39,6 @@ public class DrawerManager {
 
     public static final int ARTICLES_ITEM_ID = -5;
     public static final int READ_LATER_ID = -6;
-    public static final int ACCOUNT_SETTINGS_ID = -3;
     public static final int ADD_ACCOUNT_ID = -4;
 
     private Activity activity;
@@ -134,11 +133,6 @@ public class DrawerManager {
             profileItems[i] = profileItem;
         }
 
-        ProfileSettingDrawerItem profileSettingsItem = new ProfileSettingDrawerItem()
-                .withName(R.string.account_settings)
-                .withIcon(R.drawable.ic_account)
-                .withIdentifier(ACCOUNT_SETTINGS_ID);
-
         ProfileSettingDrawerItem addAccountSettingsItem = new ProfileSettingDrawerItem()
                 .withName(R.string.add_account)
                 .withIcon(R.drawable.ic_add_account_grey)
@@ -147,7 +141,7 @@ public class DrawerManager {
         header = new AccountHeaderBuilder()
                 .withActivity(activity)
                 .addProfiles(profileItems)
-                .addProfiles(profileSettingsItem, addAccountSettingsItem)
+                .addProfiles(addAccountSettingsItem)
                 .withDividerBelowHeader(false)
                 .withAlternativeProfileHeaderSwitching(true)
                 .withCurrentProfileHiddenInList(true)

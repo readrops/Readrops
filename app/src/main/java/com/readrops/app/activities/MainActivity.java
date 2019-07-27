@@ -153,8 +153,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                         intent.putExtra("fromMainActivity", true);
                         startActivityForResult(intent, ADD_ACCOUNT_REQUEST);
                         break;
-                    case DrawerManager.ACCOUNT_SETTINGS_ID:
-                        break;
                     default:
                         if (!updating) {
                             viewModel.setCurrentAccount(id);
