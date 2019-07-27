@@ -52,7 +52,6 @@ public class MainViewModel extends AndroidViewModel {
         queryBuilder.setFilterType(FilterType.NO_FILTER);
         queryBuilder.setSortType(MainActivity.ListSortType.NEWEST_TO_OLDEST);
 
-        repository = new NextNewsRepository(application);
         db = Database.getInstance(application);
 
         itemsWithFeed = new MediatorLiveData<>();

@@ -2,11 +2,9 @@ package com.readrops.app.database;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
-import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.readrops.app.database.dao.AccountDao;
 import com.readrops.app.database.dao.FeedDao;
@@ -35,22 +33,8 @@ public abstract class Database extends RoomDatabase {
     public static Database getInstance(Context context) {
         if (database == null)
             database = Room.databaseBuilder(context, Database.class, "readrops-db")
-                    .addCallback(roomCallback)
                     .build();
 
         return database;
     }
-
-    public static RoomDatabase.Callback roomCallback = new RoomDatabase.Callback() {
-        @Override
-        public void onCreate(@NonNull SupportSQLiteDatabase db) {
-            super.onCreate(db);
-        }
-
-        @Override
-        public void onOpen(@NonNull SupportSQLiteDatabase db) {
-            super.onOpen(db);
-        }
-    };
-
 }

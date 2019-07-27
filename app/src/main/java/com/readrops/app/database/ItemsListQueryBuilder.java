@@ -35,14 +35,14 @@ public class ItemsListQueryBuilder {
     private String buildWhereClause() {
         StringBuilder stringBuilder = new StringBuilder(80);
 
-        stringBuilder.append("Feed.account_id = " + accountId + " And ");
+        stringBuilder.append("Feed.account_id = ").append(accountId).append(" And ");
 
         if (!showReadItems)
             stringBuilder.append("read = 0 And ");
 
         switch (filterType) {
             case FEED_FILTER:
-                stringBuilder.append("feed_id = " + filterFeedId + " And read_it_later = 0");
+                stringBuilder.append("feed_id = ").append(filterFeedId).append(" And read_it_later = 0");
                 break;
             case READ_IT_LATER_FILTER:
                 stringBuilder.append("read_it_later = 1");

@@ -43,7 +43,7 @@ public final class SharedPreferencesManager {
 
     public static String readString(Context context, String key) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
-        return sharedPreferences.getString(key.toString(), null);
+        return sharedPreferences.getString(key, null);
     }
 
     public enum SharedPrefKey {

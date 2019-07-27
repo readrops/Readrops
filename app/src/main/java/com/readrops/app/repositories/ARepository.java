@@ -17,8 +17,6 @@ import com.readrops.app.utils.Utils;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -27,12 +25,9 @@ import io.reactivex.schedulers.Schedulers;
 
 public abstract class ARepository {
 
-    protected Executor executor;
-
     protected Database database;
 
     protected ARepository(Application application) {
-        executor = Executors.newSingleThreadExecutor();
         this.database = Database.getInstance(application);
     }
 
