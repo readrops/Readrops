@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
@@ -114,8 +113,7 @@ public class AddAccountActivity extends AppCompatActivity {
                                     finish();
                                 } else {
                                     binding.addAccountValidate.setEnabled(true);
-                                    Toast.makeText(AddAccountActivity.this, "Impossible to login",
-                                            Toast.LENGTH_LONG).show();
+                                    Utils.showSnackbar(binding.addAccountRoot, getString(R.string.login_failed));
                                 }
                             }
 
