@@ -44,11 +44,6 @@
     <string name="read_later">To read later</string>
     <string name="show_read_articles">Show read articles</string>
     <string name="filter">Filter</string>
-
-    <string-array name="filter_items">
-        <item>Newest to oldest</item>
-        <item>Oldest to newsest</item>
-    </string-array>
     <string name="unread">Mark as non read</string>
     <string name="read">Mark as read</string>
     <string name="select_all">Select all</string>
@@ -81,4 +76,6 @@
     <string name="folder_doesnt_exist">The folder doesn\'t exist on the server</string>
 
     <string name="credentials">Credentials</string>
+    <string name="filter_newest">Newest to oldest</string>
+    <string name="filter_oldest">Oldest to newsest</string>
 </resources>

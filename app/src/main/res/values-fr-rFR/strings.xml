@@ -42,11 +42,6 @@
     <string name="read_later">A lire plus tard</string>
     <string name="show_read_articles">Afficher les articles lus</string>
     <string name="filter">Filtrer</string>
-
-    <string-array name="filter_items">
-        <item>Du plus récent au plus ancien</item>
-        <item>Du plus ancien au plus récent</item>
-    </string-array>
     <string name="unread">Marquer comme non lu</string>
     <string name="read">Marquer comme lu</string>
     <string name="select_all">Tout sélectionner</string>
@@ -75,5 +70,7 @@
     <string name="folder_bad_format">Mauvais format pour le nouveau dossier</string>
     <string name="folder_doesnt_exist">Le dossier n\'existe pas sur le serveur</string>
     <string name="credentials">Identifiants</string>
+    <string name="filter_newest">Du plus récent au plus ancien</string>
+    <string name="filter_oldest">Du plus ancien au plus récent</string>
 
 </resources>
