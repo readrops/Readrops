@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 finish();
             }
 
-            if (accountWeakReference.get() != null && !(accountWeakReference.get().getAccountType() == Account.AccountType.LOCAL)) {
+            if (accountWeakReference.get() != null && !accountWeakReference.get().isLocal()) {
                 refreshLayout.setRefreshing(true);
                 onRefresh();
                 accountWeakReference.clear();

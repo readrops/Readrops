@@ -238,7 +238,7 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     public boolean isAccountLocal() {
-        return currentAccount.getAccountType() == Account.AccountType.LOCAL;
+        return currentAccount.isLocal();
     }
 
     //endregion

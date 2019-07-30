@@ -228,6 +228,10 @@ public class Account implements Parcelable {
         return new Credentials(login, password, url);
     }
 
+    public boolean isLocal() {
+        return accountType == AccountType.LOCAL;
+    }
+
     @Override
     public boolean equals(@Nullable Object obj) {
         if (obj == null)

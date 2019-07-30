@@ -63,7 +63,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
         });
 
         credentialsPref.setOnPreferenceClickListener(preference -> {
-            if (account.getAccountType() != Account.AccountType.LOCAL) {
+            if (!account.isLocal()) {
                 Intent intent = new Intent(getContext(), AddAccountActivity.class);
                 intent.putExtra(AddAccountActivity.EDIT_ACCOUNT, account);
                 startActivity(intent);
