@@ -22,15 +22,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.readrops.app.R;
-import com.readrops.app.activities.AccountSettingsActivity;
+import com.readrops.app.adapters.FeedsAdapter;
 import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.pojo.FeedWithFolder;
 import com.readrops.app.databinding.FragmentFeedsBinding;
+import com.readrops.app.fragments.settings.AccountSettingsFragment;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.ManageFeedsFoldersViewModel;
-import com.readrops.app.adapters.FeedsAdapter;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableCompletableObserver;
@@ -56,7 +56,7 @@ public class FeedsFragment extends Fragment {
         FeedsFragment fragment = new FeedsFragment();
         Bundle args = new Bundle();
 
-        args.putParcelable(AccountSettingsActivity.ACCOUNT, account);
+        args.putParcelable(AccountSettingsFragment.ACCOUNT, account);
         fragment.setArguments(args);
 
         return fragment;

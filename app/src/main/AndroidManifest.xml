@@ -17,9 +17,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity
-            android:name=".activities.AccountSettingsActivity"
-            android:parentActivityName=".activities.MainActivity" />
+        <activity android:name=".activities.SettingsActivity"></activity>
         <activity
             android:name=".activities.SplashActivity"
             android:theme="@style/SplashTheme">

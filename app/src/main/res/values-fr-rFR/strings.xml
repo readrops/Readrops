@@ -74,5 +74,6 @@
     <string name="folder_already_exists">Le dossier existe déjà</string>
     <string name="folder_bad_format">Mauvais format pour le nouveau dossier</string>
     <string name="folder_doesnt_exist">Le dossier n\'existe pas sur le serveur</string>
+    <string name="credentials">Identifiants</string>
 
 </resources>

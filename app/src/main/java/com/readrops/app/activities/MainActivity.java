@@ -40,6 +40,7 @@ import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.ItemWithFeed;
+import com.readrops.app.fragments.settings.AccountSettingsFragment;
 import com.readrops.app.utils.DrawerManager;
 import com.readrops.app.utils.GlideApp;
 import com.readrops.app.utils.SharedPreferencesManager;
@@ -161,8 +162,10 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                         break;
                 }
             } else {
-                Intent intent = new Intent(this, AccountSettingsActivity.class);
-                intent.putExtra(AccountSettingsActivity.ACCOUNT, viewModel.getCurrentAccount());
+                Intent intent = new Intent(this, SettingsActivity.class);
+                intent.putExtra(SettingsActivity.SETTINGS_KEY,
+                        SettingsActivity.SettingsKey.ACCOUNT_SETTINGS.ordinal());
+                intent.putExtra(AccountSettingsFragment.ACCOUNT, viewModel.getCurrentAccount());
                 startActivity(intent);
             }
 
