@@ -37,8 +37,6 @@ public class Folder implements Parcelable,  Comparable<Folder> {
         name = in.readString();
     }
 
-
-
     public int getId() {
         return id;
     }

@@ -1,6 +1,5 @@
 package com.readrops.app.utils;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -9,7 +8,6 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
-import android.util.DisplayMetrics;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
@@ -31,7 +29,7 @@ public final class Utils {
 
     public static final String HTTPS_PREFIX = "https://";
 
-    public static final int AVERAGE_WORDS_PER_MINUTE = 250;
+    private static final int AVERAGE_WORDS_PER_MINUTE = 250;
 
     public static Bitmap getImageFromUrl(String url) {
         try {
@@ -52,18 +50,10 @@ public final class Utils {
         }
     }
 
-    public static int getDeviceWidth(Activity activity) {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-
-        return displayMetrics.widthPixels;
-    }
-
     public static double readTimeFromString(String value) {
         int nbWords = value.split("\\s+").length;
-        double minutes = (double) nbWords / AVERAGE_WORDS_PER_MINUTE;
 
-        return minutes;
+        return (double) nbWords / AVERAGE_WORDS_PER_MINUTE;
     }
 
     public static String getCssColor(@ColorInt int color) {

@@ -170,7 +170,7 @@ public class ItemActivity extends AppCompatActivity {
             actionButton.setBackgroundTintList(ColorStateList.valueOf(itemWithFeed.getColor()));
         }
 
-        webView.setItem(itemWithFeed, Utils.getDeviceWidth(this));
+        webView.setItem(itemWithFeed);
     }
 
     @Override

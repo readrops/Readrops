@@ -18,7 +18,6 @@ import org.jsoup.select.Elements;
 public class ReadropsWebView extends WebView {
 
     private ItemWithFeed itemWithFeed;
-    private int width;
 
     public ReadropsWebView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -26,9 +25,8 @@ public class ReadropsWebView extends WebView {
         init();
     }
 
-    public void setItem(ItemWithFeed itemWithFeed, int width) {
+    public void setItem(ItemWithFeed itemWithFeed) {
         this.itemWithFeed = itemWithFeed;
-        this.width = width;
         loadData(getText(), LibUtils.HTML_CONTENT_TYPE, "UTF-8");
     }
 
