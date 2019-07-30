@@ -17,6 +17,7 @@ import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.AccountViewModel;
 
+import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -74,35 +75,13 @@ public class AddAccountActivity extends AppCompatActivity {
                 accountToEdit.setLogin(login);
                 accountToEdit.setPassword(password);
 
-                viewModel.update(accountToEdit)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new CompletableObserver() {
-                            @Override
-                            public void onSubscribe(Disposable d) {
-                                binding.addAccountLoading.setVisibility(View.VISIBLE);
-                                binding.addAccountValidate.setEnabled(false);
-                            }
-
-                            @Override
-                            public void onComplete() {
-                                finish();
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                binding.addAccountLoading.setVisibility(View.GONE);
-                                binding.addAccountValidate.setEnabled(true);
-
-                                Utils.showSnackbar(binding.addAccountRoot, e.getMessage());
-                            }
-                        });
+                updateAccount();
             } else {
                 Account account = new Account(url, name, accountType);
                 account.setLogin(login);
                 account.setPassword(password);
 
-                viewModel.login(account)
+                viewModel.login(account, true)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new SingleObserver<Boolean>() {
@@ -198,5 +177,46 @@ public class AddAccountActivity extends AppCompatActivity {
         binding.addAccountName.setText(accountToEdit.getAccountName());
         binding.addAccountLogin.setText(SharedPreferencesManager.readString(this, accountToEdit.getLoginKey()));
         binding.addAccountPassword.setText(SharedPreferencesManager.readString(this, accountToEdit.getPasswordKey()));
+    }
+
+    private void updateAccount() {
+        viewModel.login(accountToEdit, false)
+                .doOnError(throwable -> Utils.showSnackbar(binding.addAccountRoot, throwable.getMessage()))
+                .flatMapCompletable(b -> {
+                    if (b) {
+                        saveLoginPassword(accountToEdit);
+                        return viewModel.update(accountToEdit);
+                    } else {
+                        runOnUiThread(() -> {
+                            binding.addAccountLoading.setVisibility(View.GONE);
+                            binding.addAccountValidate.setEnabled(true);
+                            Utils.showSnackbar(binding.addAccountRoot, getString(R.string.login_failed));
+                        });
+
+                        return Completable.never();
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        binding.addAccountLoading.setVisibility(View.VISIBLE);
+                        binding.addAccountValidate.setEnabled(false);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        finish();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        binding.addAccountLoading.setVisibility(View.GONE);
+                        binding.addAccountValidate.setEnabled(true);
+
+                        Utils.showSnackbar(binding.addAccountRoot, e.getMessage());
+                    }
+                });
     }
 }

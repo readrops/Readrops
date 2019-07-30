@@ -25,8 +25,8 @@ public class AccountViewModel extends AndroidViewModel {
         database = Database.getInstance(application);
     }
 
-    public Single<Boolean> login(Account account) {
-        return repository.login(account);
+    public Single<Boolean> login(Account account, boolean insert) {
+        return repository.login(account, insert);
     }
 
     public Single<Long> insert(Account account) {

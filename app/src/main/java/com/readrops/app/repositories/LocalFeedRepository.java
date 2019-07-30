@@ -46,7 +46,7 @@ public class LocalFeedRepository extends ARepository {
     }
 
     @Override
-    public Single<Boolean> login(Account account) {
+    public Single<Boolean> login(Account account, boolean insert) {
         return null;
     }
 

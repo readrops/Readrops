@@ -31,7 +31,7 @@ public abstract class ARepository {
         this.database = Database.getInstance(application);
     }
 
-    public abstract Single<Boolean> login(Account account);
+    public abstract Single<Boolean> login(Account account, boolean insert);
 
     public abstract Observable<Feed> sync(List<Feed> feeds, Account account);
 

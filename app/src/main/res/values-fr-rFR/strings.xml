@@ -72,5 +72,6 @@
     <string name="credentials">Identifiants</string>
     <string name="filter_newest">Du plus récent au plus ancien</string>
     <string name="filter_oldest">Du plus ancien au plus récent</string>
+    <string name="login_failed">La connexion a échoué. Veuillez vérifier vos identifiants</string>
 
 </resources>

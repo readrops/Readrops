@@ -45,7 +45,7 @@ public class NextNewsRepository extends ARepository {
     }
 
     @Override
-    public Single<Boolean> login(Account account) {
+    public Single<Boolean> login(Account account, boolean insert) {
         return Single.create(emitter -> {
             NextNewsAPI newsAPI = new NextNewsAPI();
             NextNewsUser user = newsAPI.login(account.toCredentials());
@@ -54,7 +54,8 @@ public class NextNewsRepository extends ARepository {
                 account.setDisplayedName(user.getDisplayName());
                 account.setCurrentAccount(true);
 
-                account.setId((int) database.accountDao().insert(account));
+                if (insert)
+                    account.setId((int) database.accountDao().insert(account));
                 emitter.onSuccess(true);
             } else
                 emitter.onSuccess(false);
