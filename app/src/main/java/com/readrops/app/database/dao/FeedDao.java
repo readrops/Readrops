@@ -3,74 +3,107 @@ package com.readrops.app.database.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
-import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Transaction;
 
+import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.pojo.FeedWithFolder;
+import com.readrops.app.utils.FeedMatcher;
+import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeed;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Dao
-public interface FeedDao {
+public abstract class FeedDao implements BaseDao<Feed> {
 
     @Query("Select * from Feed Where account_id = :accountId order by name ASC")
-    List<Feed> getAllFeeds(int accountId);
-
-    @Insert
-    long insert(Feed feed);
-
-    @Insert
-    long[] insert(List<Feed> feeds);
+    public abstract List<Feed> getAllFeeds(int accountId);
 
     @Query("Delete From Feed Where id = :feedId")
-    void delete(int feedId);
+    public abstract void delete(int feedId);
 
     @Query("Select case When :feedUrl In (Select url from Feed Where account_id = :accountId) Then 1 else 0 end")
-    boolean feedExists(String feedUrl, int accountId);
+    public abstract boolean feedExists(String feedUrl, int accountId);
 
     @Query("Select case When :remoteId In (Select remoteId from Feed Where account_id = :accountId) Then 1 else 0 end")
-    boolean remoteFeedExists(int remoteId, int accountId);
+    public abstract boolean remoteFeedExists(int remoteId, int accountId);
 
     @Query("Select count(*) from Feed Where account_id = :accountId")
-    int getFeedCount(int accountId);
+    public abstract int getFeedCount(int accountId);
 
     @Query("Select * from Feed Where url = :feedUrl")
-    Feed getFeedByUrl(String feedUrl);
+    public abstract Feed getFeedByUrl(String feedUrl);
 
-    @Query("Select * from Feed Where remoteId = :remoteId And account_id = :accountId")
-    Feed getFeedByRemoteId(int remoteId, int accountId);
+    @Query("Select id from Feed Where remoteId = :remoteId And account_id = :accountId")
+    public abstract int getFeedIdByRemoteId(int remoteId, int accountId);
 
     @Query("Select * from Feed Where folder_id = :folderId")
-    List<Feed> getFeedsByFolder(int folderId);
+    public abstract List<Feed> getFeedsByFolder(int folderId);
 
     @Query("Select * from Feed Where account_id = :accountId And folder_id is null")
-    List<Feed> getFeedsWithoutFolder(int accountId);
+    public abstract List<Feed> getFeedsWithoutFolder(int accountId);
 
     @Query("Update Feed set etag = :etag, last_modified = :lastModified Where id = :feedId")
-    void updateHeaders(String etag, String lastModified, int feedId);
+    public abstract void updateHeaders(String etag, String lastModified, int feedId);
 
     @Query("Update Feed set name = :feedName, url = :feedUrl, folder_id = :folderId Where id = :feedId")
-    void updateFeedFields(int feedId, String feedName, String feedUrl, Integer folderId);
+    public abstract void updateFeedFields(int feedId, String feedName, String feedUrl, Integer folderId);
 
     @Query("Update Feed set name = :name, folder_id = :folderId Where remoteId = :remoteFeedId And account_id = :accountId")
-    void updateNameAndFolder(int remoteFeedId, int accountId, String name, Integer folderId);
+    public abstract void updateNameAndFolder(int remoteFeedId, int accountId, String name, Integer folderId);
 
     @Query("Update Feed set text_color = :textColor, background_color = :bgColor Where id = :feedId")
-    void updateColors(int feedId, int textColor, int bgColor);
+    public abstract void updateColors(int feedId, int textColor, int bgColor);
 
     @Query("Select Feed.name as feed_name, Feed.id as feed_id, Folder.name as folder_name, Folder.id as folder_id, Folder.remoteId as folder_remoteId," +
             "Feed.description as feed_description, Feed.icon_url as feed_icon_url, Feed.url as feed_url, Feed.folder_id as feed_folder_id" +
             ", Feed.siteUrl as feed_siteUrl, Feed.remoteId as feed_remoteId from Feed Left Join Folder on Feed.folder_id = Folder.id Where Feed.account_id = :accountId Order by Feed.name")
-    LiveData<List<FeedWithFolder>> getAllFeedsWithFolder(int accountId);
+    public abstract LiveData<List<FeedWithFolder>> getAllFeedsWithFolder(int accountId);
 
     @Query("Select * From Feed Where id in (:ids)")
-    List<Feed> selectFromIdList(long[] ids);
+    public abstract List<Feed> selectFromIdList(List<Long> ids);
 
     @Query("Select remoteId From Feed Where account_id = :accountId")
-    List<Long> getFeedRemoteIdsOfAccount(int accountId);
+    public abstract List<Long> getFeedRemoteIdsOfAccount(int accountId);
 
     @Query("Delete from Feed Where id in (:ids)")
-    void deleteByIds(List<Long> ids);
+    public abstract void deleteByIds(List<Long> ids);
+
+    @Query("Select id From Folder Where remoteId = :remoteId And account_id = :accountId")
+    abstract int getRemoteFolderLocalId(int remoteId, int accountId);
+
+    /**
+     * Insert, update and delete feeds, by account
+     * @param nextNewsFeeds feeds to insert or update
+     * @param account owner of the feeds
+     * @return the list of the inserted feeds ids
+     */
+    @Transaction
+    public List<Long> upsert(List<NextNewsFeed> nextNewsFeeds, Account account) {
+        List<Long> accountFeedIds = getFeedRemoteIdsOfAccount(account.getId());
+        List<Feed> feedsToInsert = new ArrayList<>();
+
+        for (NextNewsFeed nextNewsFeed : nextNewsFeeds) {
+            Feed feed = FeedMatcher.nextNewsFeedToFeed(nextNewsFeed, account);
+            Integer folderId = nextNewsFeed.getId() == 0 ? null : getRemoteFolderLocalId(nextNewsFeed.getFolderId(), account.getId());
+
+            if (remoteFeedExists(nextNewsFeed.getId(), account.getId())) {
+                updateNameAndFolder(nextNewsFeed.getId(), account.getId(), nextNewsFeed.getTitle(), folderId);
+
+                accountFeedIds.remove((long) nextNewsFeed.getId());
+            } else {
+                feed.setFolderId(folderId);
+
+                feedsToInsert.add(feed);
+            }
+        }
+
+        if (!accountFeedIds.isEmpty())
+            deleteByIds(accountFeedIds);
+
+        return insert(feedsToInsert);
+    }
 }
 

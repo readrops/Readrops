@@ -1,6 +1,5 @@
 package com.readrops.app.utils;
 
-import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Item;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItem;
 
@@ -9,7 +8,7 @@ import org.joda.time.LocalDateTime;
 
 public final class ItemMatcher {
 
-    public static Item nextNewsItemToItem(NextNewsItem nextNewsItem, Feed feed) {
+    public static Item nextNewsItemToItem(NextNewsItem nextNewsItem, int feedId) {
         Item item = new Item();
 
         item.setRemoteId(nextNewsItem.getId());
@@ -29,7 +28,7 @@ public final class ItemMatcher {
         item.setGuid(nextNewsItem.getGuid());
         item.setRead(!nextNewsItem.isUnread());
 
-        item.setFeedId(feed.getId());
+        item.setFeedId(feedId);
 
         return item;
     }
