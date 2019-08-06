@@ -8,7 +8,6 @@ import android.webkit.WebView;
 
 import com.readrops.app.R;
 import com.readrops.app.database.pojo.ItemWithFeed;
-import com.readrops.readropslibrary.utils.LibUtils;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -27,7 +26,7 @@ public class ReadropsWebView extends WebView {
 
     public void setItem(ItemWithFeed itemWithFeed) {
         this.itemWithFeed = itemWithFeed;
-        loadData(getText(), LibUtils.HTML_CONTENT_TYPE, "UTF-8");
+        loadData(getText(), "text/html; charset=utf-8", "UTF-8");
     }
 
     @SuppressLint("SetJavaScriptEnabled")
