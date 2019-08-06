@@ -148,6 +148,9 @@ public class NextNewsAPI {
     }
 
     private void putModifiedItems(SyncData data, SyncResult syncResult) throws IOException {
+        if (data.getReadItems().size() == 0 && data.getUnreadItems().size() == 0)
+            return;
+
         Response readItemsResponse = api.setArticlesState(StateType.READ.name().toLowerCase(),
                 new NextNewsItemIds(data.getReadItems())).execute();
 
