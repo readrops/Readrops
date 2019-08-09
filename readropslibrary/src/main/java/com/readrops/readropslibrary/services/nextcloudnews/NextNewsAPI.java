@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.readrops.readropslibrary.services.API;
-import com.readrops.readropslibrary.services.Credentials;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeeds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
@@ -29,7 +28,7 @@ public class NextNewsAPI extends API<NextNewsService> {
 
     private static final String TAG = NextNewsAPI.class.getSimpleName();
 
-    public NextNewsAPI(Credentials credentials) {
+    public NextNewsAPI(NextNewsCredentials credentials) {
         super(credentials, NextNewsService.class, NextNewsService.END_POINT);
     }
 

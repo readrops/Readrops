@@ -12,7 +12,7 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.readrops.app.R;
-import com.readrops.readropslibrary.services.nextcloudnews.Credentials;
+import com.readrops.readropslibrary.services.nextcloudnews.NextNewsCredentials;
 
 @Entity
 public class Account implements Parcelable {
@@ -224,8 +224,8 @@ public class Account implements Parcelable {
         }
     }
 
-    public Credentials toCredentials() {
-        return new Credentials(login, password, url);
+    public NextNewsCredentials toNextNewsCredentials() {
+        return new NextNewsCredentials(login, password, url);
     }
 
     public boolean isLocal() {
