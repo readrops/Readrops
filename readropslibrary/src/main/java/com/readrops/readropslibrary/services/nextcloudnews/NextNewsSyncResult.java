@@ -6,7 +6,7 @@ import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItem;
 
 import java.util.List;
 
-public class SyncResult {
+public class NextNewsSyncResult {
 
     private List<NextNewsFolder> folders;
 
@@ -16,7 +16,8 @@ public class SyncResult {
 
     private boolean error;
 
-    public SyncResult() {
+    public NextNewsSyncResult() {
+        // empty constructor
     }
 
     public List<NextNewsFolder> getFolders() {

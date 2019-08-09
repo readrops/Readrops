@@ -1,4 +1,4 @@
-package com.readrops.readropslibrary.services;
+package com.readrops.readropslibrary.services.nextcloudnews;
 
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeeds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
@@ -22,7 +22,7 @@ import retrofit2.http.Query;
 
 public interface NextNewsService {
 
-    String ENDPOINT = "/index.php/apps/news/api/v1-2/";
+    String END_POINT = "/index.php/apps/news/api/v1-2/";
 
     @GET("user")
     Call<NextNewsUser> getUser();

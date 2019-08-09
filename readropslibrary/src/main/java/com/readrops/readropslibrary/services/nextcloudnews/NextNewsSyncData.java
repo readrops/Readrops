@@ -3,7 +3,7 @@ package com.readrops.readropslibrary.services.nextcloudnews;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SyncData {
+public class NextNewsSyncData {
 
     private List<Integer> unreadItems;
 
@@ -15,7 +15,7 @@ public class SyncData {
 
     private long lastModified;
 
-    public SyncData() {
+    public NextNewsSyncData() {
         unreadItems = new ArrayList<>();
         readItems = new ArrayList<>();
         starredItems = new ArrayList<>();

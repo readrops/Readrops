@@ -5,7 +5,8 @@ import android.content.res.Resources;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.readrops.readropslibrary.services.NextNewsService;
+import com.readrops.readropslibrary.services.API;
+import com.readrops.readropslibrary.services.Credentials;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeeds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
@@ -15,7 +16,6 @@ import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItems;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsRenameFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
 import com.readrops.readropslibrary.utils.ConflictException;
-import com.readrops.readropslibrary.utils.HttpManager;
 import com.readrops.readropslibrary.utils.LibUtils;
 import com.readrops.readropslibrary.utils.UnknownFormatException;
 
@@ -24,37 +24,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
-public class NextNewsAPI {
+public class NextNewsAPI extends API<NextNewsService> {
 
     private static final String TAG = NextNewsAPI.class.getSimpleName();
 
-    private NextNewsService api;
-
-    public NextNewsAPI() {
-
+    public NextNewsAPI(Credentials credentials) {
+        super(credentials, NextNewsService.class, NextNewsService.END_POINT);
     }
 
-    private Retrofit getConfiguredRetrofitInstance(@NonNull HttpManager httpManager) {
-        return new Retrofit.Builder()
-                .baseUrl(httpManager.getCredentials().getUrl() + NextNewsService.ENDPOINT)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(httpManager.getOkHttpClient())
-                .build();
-    }
-
-    private NextNewsService createAPI(@NonNull Credentials credentials) {
-        HttpManager httpManager = new HttpManager(credentials);
-        Retrofit retrofit = getConfiguredRetrofitInstance(httpManager);
-
-        return retrofit.create(NextNewsService.class);
-    }
-
-    public NextNewsUser login(Credentials credentials) throws IOException {
-        api = createAPI(credentials);
-
+    public NextNewsUser login() throws IOException {
         Response<NextNewsUser> response = api.getUser().execute();
 
         if (!response.isSuccessful())
@@ -64,10 +43,8 @@ public class NextNewsAPI {
     }
 
     public @Nullable
-    NextNewsFeeds createFeed(Credentials credentials, String url, int folderId)
+    NextNewsFeeds createFeed(String url, int folderId)
             throws IOException, UnknownFormatException {
-        api = createAPI(credentials);
-
         Response<NextNewsFeeds> response = api.createFeed(url, folderId).execute();
 
         if (!response.isSuccessful()) {
@@ -80,17 +57,15 @@ public class NextNewsAPI {
         return response.body();
     }
 
-    public SyncResult sync(@NonNull Credentials credentials, @NonNull SyncType syncType, @Nullable SyncData data) throws IOException {
-        api = createAPI(credentials);
-
-        SyncResult syncResult = new SyncResult();
+    public NextNewsSyncResult sync(@NonNull SyncType syncType, @Nullable NextNewsSyncData data) throws IOException {
+        NextNewsSyncResult syncResult = new NextNewsSyncResult();
         switch (syncType) {
             case INITIAL_SYNC:
                 initialSync(syncResult);
                 break;
             case CLASSIC_SYNC:
                 if (data == null)
-                    throw new NullPointerException("SyncData can't be null");
+                    throw new NullPointerException("NextNewsSyncData can't be null");
 
                 classicSync(syncResult, data);
                 break;
@@ -99,7 +74,7 @@ public class NextNewsAPI {
         return syncResult;
     }
 
-    private void initialSync(SyncResult syncResult) throws IOException {
+    private void initialSync(NextNewsSyncResult syncResult) throws IOException {
         getFeedsAndFolders(syncResult);
 
         Response<NextNewsItems> itemsResponse = api.getItems(3, false, -1).execute();
@@ -112,7 +87,7 @@ public class NextNewsAPI {
             syncResult.setItems(itemList.getItems());
     }
 
-    private void classicSync(SyncResult syncResult, SyncData data) throws IOException {
+    private void classicSync(NextNewsSyncResult syncResult, NextNewsSyncData data) throws IOException {
         putModifiedItems(data, syncResult);
         getFeedsAndFolders(syncResult);
 
@@ -126,7 +101,7 @@ public class NextNewsAPI {
             syncResult.setItems(itemList.getItems());
     }
 
-    private void getFeedsAndFolders(SyncResult syncResult) throws IOException {
+    private void getFeedsAndFolders(NextNewsSyncResult syncResult) throws IOException {
         Response<NextNewsFeeds> feedResponse = api.getFeeds().execute();
         NextNewsFeeds feedList = feedResponse.body();
 
@@ -147,7 +122,7 @@ public class NextNewsAPI {
 
     }
 
-    private void putModifiedItems(SyncData data, SyncResult syncResult) throws IOException {
+    private void putModifiedItems(NextNewsSyncData data, NextNewsSyncResult syncResult) throws IOException {
         if (data.getReadItems().size() == 0 && data.getUnreadItems().size() == 0)
             return;
 
@@ -165,9 +140,7 @@ public class NextNewsAPI {
     }
 
     public @Nullable
-    NextNewsFolders createFolder(Credentials credentials, NextNewsFolder folder) throws IOException, UnknownFormatException, ConflictException {
-        api = createAPI(credentials);
-
+    NextNewsFolders createFolder(NextNewsFolder folder) throws IOException, UnknownFormatException, ConflictException {
         Response<NextNewsFolders> foldersResponse = api.createFolder(folder).execute();
 
         if (foldersResponse.isSuccessful())
@@ -180,9 +153,7 @@ public class NextNewsAPI {
             return null;
     }
 
-    public boolean deleteFolder(Credentials credentials, NextNewsFolder folder) throws IOException {
-        api = createAPI(credentials);
-
+    public boolean deleteFolder(NextNewsFolder folder) throws IOException {
         Response response = api.deleteFolder(folder.getId()).execute();
 
         if (response.isSuccessful())
@@ -193,9 +164,7 @@ public class NextNewsAPI {
             return false;
     }
 
-    public boolean renameFolder(Credentials credentials, NextNewsFolder folder) throws IOException, UnknownFormatException, ConflictException {
-        api = createAPI(credentials);
-
+    public boolean renameFolder(NextNewsFolder folder) throws IOException, UnknownFormatException, ConflictException {
         Response response = api.renameFolder(folder.getId(), folder).execute();
 
         if (response.isSuccessful())
@@ -214,9 +183,7 @@ public class NextNewsAPI {
         }
     }
 
-    public boolean deleteFeed(Credentials credentials, int feedId) throws IOException {
-        api = createAPI(credentials);
-
+    public boolean deleteFeed(int feedId) throws IOException {
         Response response = api.deleteFeed(feedId).execute();
 
         if (response.isSuccessful())
@@ -227,9 +194,7 @@ public class NextNewsAPI {
             return false;
     }
 
-    public boolean changeFeedFolder(Credentials credentials, NextNewsFeed feed) throws IOException {
-        api = createAPI(credentials);
-
+    public boolean changeFeedFolder(NextNewsFeed feed) throws IOException {
         Map<String, Integer> folderIdMap = new HashMap<>();
         folderIdMap.put("folderId", feed.getFolderId());
 
@@ -243,9 +208,7 @@ public class NextNewsAPI {
             return false;
     }
 
-    public boolean renameFeed(Credentials credentials, NextNewsRenameFeed feed) throws IOException {
-        api = createAPI(credentials);
-
+    public boolean renameFeed(NextNewsRenameFeed feed) throws IOException {
         Response response = api.renameFeed(feed.getId(), feed).execute();
 
         if (response.isSuccessful())
