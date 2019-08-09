@@ -1,7 +1,8 @@
 package com.readrops.readropslibrary.utils;
 
+import java.util.concurrent.TimeUnit;
+
 import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 
 public final class HttpBuilder {
 
@@ -15,6 +16,8 @@ public final class HttpBuilder {
     }
 
     private static OkHttpClient.Builder createOkHttpBuilder() {
-        return new OkHttpClient.Builder();
+        return new OkHttpClient.Builder()
+                .callTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(1, TimeUnit.HOURS);
     }
 }

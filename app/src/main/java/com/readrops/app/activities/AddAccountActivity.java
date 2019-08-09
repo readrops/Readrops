@@ -49,15 +49,23 @@ public class AddAccountActivity extends AppCompatActivity {
 
         accountToEdit = getIntent().getParcelableExtra(EDIT_ACCOUNT);
 
-        if (accountToEdit != null) {
-            editAccount = true;
-            fillFields();
-        } else {
-            binding.providerImage.setImageResource(accountType.getIconRes());
-            binding.providerName.setText(accountType.getName());
+        try {
+            if (accountToEdit != null) {
+                viewModel.setAccountType(accountToEdit.getAccountType());
+                editAccount = true;
+                fillFields();
+            } else {
+                viewModel.setAccountType(accountType);
 
-            binding.addAccountName.setText(accountType.getName());
+                binding.providerImage.setImageResource(accountType.getIconRes());
+                binding.providerName.setText(accountType.getName());
+                binding.addAccountName.setText(accountType.getName());
+            }
+        } catch (Exception e) {
+            // TODO : see how to handle this exception
+            e.printStackTrace();
         }
+
     }
 
     public void createAccount(View view) {

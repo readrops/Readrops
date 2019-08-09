@@ -70,6 +70,7 @@ public class AccountTypeListActivity extends AppCompatActivity {
 
         accountTypes.add(Account.AccountType.LOCAL);
         accountTypes.add(Account.AccountType.NEXTCLOUD_NEWS);
+        accountTypes.add(Account.AccountType.FRESHRSS);
 
         return accountTypes;
     }

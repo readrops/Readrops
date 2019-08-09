@@ -8,6 +8,7 @@ import androidx.lifecycle.AndroidViewModel;
 import com.readrops.app.database.Database;
 import com.readrops.app.database.entities.Account;
 import com.readrops.app.repositories.ARepository;
+import com.readrops.app.repositories.FreshRSSRepository;
 import com.readrops.app.repositories.NextNewsRepository;
 
 import io.reactivex.Completable;
@@ -21,8 +22,20 @@ public class AccountViewModel extends AndroidViewModel {
     public AccountViewModel(@NonNull Application application) {
         super(application);
 
-        repository = new NextNewsRepository(application);
         database = Database.getInstance(application);
+    }
+
+    public void setAccountType(Account.AccountType accountType) throws Exception {
+        switch (accountType) {
+            case NEXTCLOUD_NEWS:
+                repository = new NextNewsRepository(getApplication());
+                break;
+            case FRESHRSS:
+                repository = new FreshRSSRepository(getApplication());
+                break;
+            default:
+                throw new Exception("unknown account type");
+        }
     }
 
     public Single<Boolean> login(Account account, boolean insert) {

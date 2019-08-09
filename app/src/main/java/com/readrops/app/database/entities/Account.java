@@ -37,6 +37,8 @@ public class Account implements Parcelable {
     @ColumnInfo(name = "current_account")
     private boolean currentAccount;
 
+    private String token;
+
     @Ignore
     private String login;
 
@@ -155,6 +157,14 @@ public class Account implements Parcelable {
 
     public String getPasswordKey() {
         return accountType.name() + "_password_" + id;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     @Override

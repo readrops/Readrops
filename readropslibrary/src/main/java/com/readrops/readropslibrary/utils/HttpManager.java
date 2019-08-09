@@ -1,9 +1,8 @@
 package com.readrops.readropslibrary.utils;
 
-import com.readrops.readropslibrary.services.nextcloudnews.Credentials;
+import com.readrops.readropslibrary.services.Credentials;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -18,11 +17,15 @@ public class HttpManager {
     public HttpManager(final Credentials credentials) {
         this.credentials = credentials;
 
-        okHttpClient = HttpBuilder.getBuilder()
-                .callTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(1, TimeUnit.HOURS)
-                .addInterceptor(new AuthInterceptor())
-                .build();
+        if (credentials.getAuthorization() != null) {
+            okHttpClient = HttpBuilder.getBuilder()
+                    .addInterceptor(new AuthInterceptor())
+                    .build();
+        } else {
+            okHttpClient = HttpBuilder.getBuilder()
+                    .build();
+        }
+
     }
 
     public OkHttpClient getOkHttpClient() {
@@ -36,7 +39,7 @@ public class HttpManager {
     public class AuthInterceptor implements Interceptor {
 
         public AuthInterceptor() {
-
+            // empty constructor
         }
 
         @Override
@@ -48,7 +51,7 @@ public class HttpManager {
             // So preventively, I delete the first added header
             // TODO : find why AuthInterceptor is called twice
             request = request.newBuilder().removeHeader("Authorization")
-                    .addHeader("Authorization", credentials.getBase64())
+                    .addHeader("Authorization", credentials.getAuthorization())
                     .build();
 
             return chain.proceed(request);
