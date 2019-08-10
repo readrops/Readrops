@@ -12,6 +12,7 @@ import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.ItemMatcher;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.utils.Utils;
+import com.readrops.readropslibrary.services.SyncType;
 import com.readrops.readropslibrary.services.nextcloudnews.NextNewsAPI;
 import com.readrops.readropslibrary.services.nextcloudnews.NextNewsSyncData;
 import com.readrops.readropslibrary.services.nextcloudnews.NextNewsSyncResult;
@@ -67,16 +68,16 @@ public class NextNewsRepository extends ARepository {
             try {
                 NextNewsAPI newsAPI = new NextNewsAPI(account.toNextNewsCredentials());
                 long lastModified = LocalDateTime.now().toDateTime().getMillis();
-                NextNewsAPI.SyncType syncType;
+                SyncType syncType;
 
                 if (account.getLastModified() != 0)
-                    syncType = NextNewsAPI.SyncType.CLASSIC_SYNC;
+                    syncType = SyncType.CLASSIC_SYNC;
                 else
-                    syncType = NextNewsAPI.SyncType.INITIAL_SYNC;
+                    syncType = SyncType.INITIAL_SYNC;
 
                 NextNewsSyncData syncData = new NextNewsSyncData();
 
-                if (syncType == NextNewsAPI.SyncType.CLASSIC_SYNC) {
+                if (syncType == SyncType.CLASSIC_SYNC) {
                     syncData.setLastModified(account.getLastModified() / 1000L);
                     syncData.setReadItems(database.itemDao().getReadChanges());
                     syncData.setUnreadItems(database.itemDao().getUnreadChanges());
@@ -94,7 +95,7 @@ public class NextNewsRepository extends ARepository {
                     insertFeeds(syncResult.getFeeds(), account);
                     timings.addSplit("insert feeds");
 
-                    insertItems(syncResult.getItems(), account, syncType == NextNewsAPI.SyncType.INITIAL_SYNC);
+                    insertItems(syncResult.getItems(), account, syncType == SyncType.INITIAL_SYNC);
                     timings.addSplit("insert items");
                     timings.dumpToLog();
 

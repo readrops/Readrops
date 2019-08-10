@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.readrops.readropslibrary.services.API;
+import com.readrops.readropslibrary.services.SyncType;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeeds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
@@ -216,11 +217,6 @@ public class NextNewsAPI extends API<NextNewsService> {
             throw new Resources.NotFoundException();
         else
             return false;
-    }
-
-    public enum SyncType {
-        INITIAL_SYNC,
-        CLASSIC_SYNC
     }
 
     public enum StateType {
