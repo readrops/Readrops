@@ -56,13 +56,16 @@ public class Feed implements Parcelable {
     @ColumnInfo(name = "folder_id", index = true)
     private Integer folderId; // nullable foreign key so Integer instead of int
 
-    private int remoteId;
+    private String remoteId; // remote id can be string or int
 
     @ColumnInfo(name = "account_id", index = true)
     private int accountId;
 
     @Ignore
     private int unreadCount;
+
+    @Ignore
+    private String remoteFolderId;
 
     public Feed() {
 
@@ -91,7 +94,7 @@ public class Feed implements Parcelable {
         int parcelFolderId = in.readInt();
         folderId = parcelFolderId == 0 ? null : parcelFolderId;
 
-        remoteId = in.readInt();
+        remoteId = in.readString();
     }
 
     public static final Creator<Feed> CREATOR = new Creator<Feed>() {
@@ -212,11 +215,11 @@ public class Feed implements Parcelable {
         this.unreadCount = unreadCount;
     }
 
-    public int getRemoteId() {
+    public String getRemoteId() {
         return remoteId;
     }
 
-    public void setRemoteId(int remoteId) {
+    public void setRemoteId(String remoteId) {
         this.remoteId = remoteId;
     }
 
@@ -226,6 +229,14 @@ public class Feed implements Parcelable {
 
     public void setAccountId(int accountId) {
         this.accountId = accountId;
+    }
+
+    public String getRemoteFolderId() {
+        return remoteFolderId;
+    }
+
+    public void setRemoteFolderId(String remoteFolderId) {
+        this.remoteFolderId = remoteFolderId;
     }
 
     public static Feed feedFromRSS(RSSFeed rssFeed) {
@@ -301,6 +312,6 @@ public class Feed implements Parcelable {
         dest.writeString(etag);
         dest.writeString(lastModified);
         dest.writeInt(folderId == null ? 0 : folderId);
-        dest.writeInt(remoteId);
+        dest.writeString(remoteId);
     }
 }

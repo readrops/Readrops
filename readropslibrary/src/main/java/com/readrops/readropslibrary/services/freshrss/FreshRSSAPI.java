@@ -24,8 +24,8 @@ public class FreshRSSAPI extends API<FreshRSSService> {
     /**
      * Call token API to generate a new token from account credentials
      *
-     * @param login
-     * @param password
+     * @param login    login
+     * @param password password
      * @return the generated token
      */
     public Single<String> login(@NonNull String login, @NonNull String password) {

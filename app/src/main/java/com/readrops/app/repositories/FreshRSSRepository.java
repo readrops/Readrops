@@ -5,8 +5,12 @@ import android.app.Application;
 import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
+import com.readrops.app.database.entities.Item;
 import com.readrops.app.utils.FeedInsertionResult;
+import com.readrops.app.utils.FeedMatcher;
+import com.readrops.app.utils.ItemMatcher;
 import com.readrops.app.utils.ParsingResult;
+import com.readrops.app.utils.Utils;
 import com.readrops.readropslibrary.services.SyncType;
 import com.readrops.readropslibrary.services.freshrss.FreshRSSAPI;
 import com.readrops.readropslibrary.services.freshrss.FreshRSSCredentials;
@@ -17,6 +21,8 @@ import com.readrops.readropslibrary.services.freshrss.json.FreshRSSItem;
 
 import org.joda.time.LocalDateTime;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Completable;
@@ -67,7 +73,10 @@ public class FreshRSSRepository extends ARepository {
         return api.sync(syncType, syncData)
                 .flatMapObservable(syncResult -> {
                     insertFeeds(syncResult.getFeeds(), account);
-                    insertItems(syncResult.getItems(), account);
+                    insertItems(syncResult.getItems(), account, syncType == SyncType.INITIAL_SYNC);
+
+                    account.setLastModified(lastModified);
+                    database.accountDao().updateLastModified(account.getId(), lastModified);
 
                     return Observable.empty();
                 });
@@ -103,11 +112,42 @@ public class FreshRSSRepository extends ARepository {
         return null;
     }
 
-    private void insertFeeds(List<FreshRSSFeed> feeds, Account account) {
+    private List<Feed> insertFeeds(List<FreshRSSFeed> freshRSSFeeds, Account account) {
+        List<Feed> feeds = new ArrayList<>();
 
+        for (FreshRSSFeed freshRSSFeed : freshRSSFeeds) {
+            feeds.add(FeedMatcher.freshRSSFeedToFeed(freshRSSFeed, account));
+        }
+
+        List<Long> insertedFeedsIds = database.feedDao().feedsUpsert(feeds, account);
+
+        List<Feed> insertedFeeds = new ArrayList<>();
+        if (!insertedFeedsIds.isEmpty()) {
+            insertedFeeds.addAll(database.feedDao().selectFromIdList(insertedFeedsIds));
+            setFaviconUtils(insertedFeeds);
+        }
+
+        return insertedFeeds;
     }
 
-    private void insertItems(List<FreshRSSItem> items, Account account) {
+    private void insertItems(List<FreshRSSItem> items, Account account, boolean initialSync) {
+        List<Item> newItems = new ArrayList<>();
 
+        for (FreshRSSItem freshRSSItem : items) {
+            int feedId = database.feedDao().getFeedIdByRemoteId(String.valueOf(freshRSSItem.getOrigin().getStreamId()), account.getId());
+
+            if (!initialSync && feedId > 0) {
+                if (database.itemDao().remoteItemExists(freshRSSItem.getId(), feedId))
+                    break;
+            }
+
+            Item item = ItemMatcher.freshRSSItemtoItem(freshRSSItem, feedId);
+            item.setReadTime(Utils.readTimeFromString(item.getContent()));
+
+            newItems.add(item);
+        }
+
+        Collections.sort(newItems, Item::compareTo);
+        database.itemDao().insert(newItems);
     }
 }

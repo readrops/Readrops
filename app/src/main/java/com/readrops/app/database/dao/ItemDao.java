@@ -25,7 +25,7 @@ public abstract class ItemDao implements BaseDao<Item> {
     public abstract boolean itemExists(String guid, int accountId);
 
     @Query("Select case When :remoteId In (Select remoteId from Item) And :feedId In (Select feed_id From Item) Then 1 else 0 end")
-    public abstract boolean remoteItemExists(int remoteId, int feedId);
+    public abstract boolean remoteItemExists(String remoteId, int feedId);
 
     /**
      * Set an item read or unread
@@ -55,10 +55,10 @@ public abstract class ItemDao implements BaseDao<Item> {
     public abstract LiveData<ItemWithFeed> getItemById(int id);
 
     @Query("Select remoteId From Item Where read_changed = 1 And read = 1")
-    public abstract List<Integer> getReadChanges();
+    public abstract List<String> getReadChanges();
 
     @Query("Select remoteId From Item Where read_changed = 1 And read = 0")
-    public abstract List<Integer> getUnreadChanges();
+    public abstract List<String> getUnreadChanges();
 
     @Query("Update Item set read_changed = 0")
     public abstract void resetReadChanges();

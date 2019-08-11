@@ -4,17 +4,17 @@ import java.util.List;
 
 public class NextNewsItemIds {
 
-    private List<Integer> items;
+    private List<String> items;
 
-    public NextNewsItemIds(List<Integer> items) {
+    public NextNewsItemIds(List<String> items) {
         this.items = items;
     }
 
-    public List<Integer> getItems() {
+    public List<String> getItems() {
         return items;
     }
 
-    public void setItems(List<Integer> items) {
+    public void setItems(List<String> items) {
         this.items = items;
     }
 }

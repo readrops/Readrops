@@ -9,6 +9,7 @@ import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.Item;
 import com.readrops.app.utils.FeedInsertionResult;
+import com.readrops.app.utils.FeedMatcher;
 import com.readrops.app.utils.ItemMatcher;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.utils.Utils;
@@ -159,13 +160,13 @@ public class NextNewsRepository extends ARepository {
 
             Folder folder = feed.getFolderId() == null ? null : database.folderDao().select(feed.getFolderId());
 
-            NextNewsRenameFeed newsRenameFeed = new NextNewsRenameFeed(feed.getRemoteId(), feed.getName());
+            NextNewsRenameFeed newsRenameFeed = new NextNewsRenameFeed(Integer.parseInt(feed.getRemoteId()), feed.getName());
 
             NextNewsFeed newsFeed;
             if (folder != null)
-                newsFeed = new NextNewsFeed(feed.getRemoteId(), folder.getRemoteId());
+                newsFeed = new NextNewsFeed(Integer.parseInt(feed.getRemoteId()), folder.getRemoteId());
             else
-                newsFeed = new NextNewsFeed(feed.getRemoteId(), 0); // 0 for no folder
+                newsFeed = new NextNewsFeed(Integer.parseInt(feed.getRemoteId()), 0); // 0 for no folder
 
             try {
                 if (api.renameFeed(newsRenameFeed) && api.changeFeedFolder(newsFeed)) {
@@ -189,7 +190,7 @@ public class NextNewsRepository extends ARepository {
             NextNewsAPI api = new NextNewsAPI(account.toNextNewsCredentials());
 
             try {
-                if (api.deleteFeed(feed.getRemoteId())) {
+                if (api.deleteFeed(Integer.parseInt(feed.getRemoteId()))) {
                     database.feedDao().delete(feed.getId());
                     emitter.onComplete();
                 } else
@@ -262,8 +263,14 @@ public class NextNewsRepository extends ARepository {
         });
     }
 
-    private List<Feed> insertFeeds(List<NextNewsFeed> feeds, Account account) {
-        List<Long> insertedFeedsIds = database.feedDao().upsert(feeds, account);
+    private List<Feed> insertFeeds(List<NextNewsFeed> nextNewsFeeds, Account account) {
+        List<Feed> feeds = new ArrayList<>();
+
+        for (NextNewsFeed nextNewsFeed : nextNewsFeeds) {
+            feeds.add(FeedMatcher.nextNewsFeedToFeed(nextNewsFeed, account));
+        }
+
+        List<Long> insertedFeedsIds = database.feedDao().feedsUpsert(feeds, account);
 
         List<Feed> insertedFeeds = new ArrayList<>();
         if (!insertedFeedsIds.isEmpty()) {
@@ -282,10 +289,10 @@ public class NextNewsRepository extends ARepository {
         List<Item> newItems = new ArrayList<>();
 
         for (NextNewsItem nextNewsItem : items) {
-            int feedId = database.feedDao().getFeedIdByRemoteId(nextNewsItem.getFeedId(), account.getId());
+            int feedId = database.feedDao().getFeedIdByRemoteId(String.valueOf(nextNewsItem.getFeedId()), account.getId());
 
             if (!initialSync && feedId > 0) {
-                if (database.itemDao().remoteItemExists(nextNewsItem.getId(), feedId))
+                if (database.itemDao().remoteItemExists(String.valueOf(nextNewsItem.getId()), feedId))
                     break;
             }
 

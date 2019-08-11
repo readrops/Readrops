@@ -64,7 +64,7 @@ public class Item implements Comparable<Item> {
     @ColumnInfo(name = "read_it_later")
     private boolean readItLater;
 
-    private int remoteId;
+    private String remoteId;
 
     public int getId() {
         return id;
@@ -197,11 +197,11 @@ public class Item implements Comparable<Item> {
         this.readItLater = readItLater;
     }
 
-    public int getRemoteId() {
+    public String getRemoteId() {
         return remoteId;
     }
 
-    public void setRemoteId(int remoteId) {
+    public void setRemoteId(String remoteId) {
         this.remoteId = remoteId;
     }
 

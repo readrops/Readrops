@@ -9,8 +9,6 @@ import androidx.room.Transaction;
 import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.pojo.FeedWithFolder;
-import com.readrops.app.utils.FeedMatcher;
-import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeed;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +26,7 @@ public abstract class FeedDao implements BaseDao<Feed> {
     public abstract boolean feedExists(String feedUrl, int accountId);
 
     @Query("Select case When :remoteId In (Select remoteId from Feed Where account_id = :accountId) Then 1 else 0 end")
-    public abstract boolean remoteFeedExists(int remoteId, int accountId);
+    public abstract boolean remoteFeedExists(String remoteId, int accountId);
 
     @Query("Select count(*) from Feed Where account_id = :accountId")
     public abstract int getFeedCount(int accountId);
@@ -37,7 +35,7 @@ public abstract class FeedDao implements BaseDao<Feed> {
     public abstract Feed getFeedByUrl(String feedUrl);
 
     @Query("Select id from Feed Where remoteId = :remoteId And account_id = :accountId")
-    public abstract int getFeedIdByRemoteId(int remoteId, int accountId);
+    public abstract int getFeedIdByRemoteId(String remoteId, int accountId);
 
     @Query("Select * from Feed Where folder_id = :folderId")
     public abstract List<Feed> getFeedsByFolder(int folderId);
@@ -52,7 +50,7 @@ public abstract class FeedDao implements BaseDao<Feed> {
     public abstract void updateFeedFields(int feedId, String feedName, String feedUrl, Integer folderId);
 
     @Query("Update Feed set name = :name, folder_id = :folderId Where remoteId = :remoteFeedId And account_id = :accountId")
-    public abstract void updateNameAndFolder(int remoteFeedId, int accountId, String name, Integer folderId);
+    public abstract void updateNameAndFolder(String remoteFeedId, int accountId, String name, Integer folderId);
 
     @Query("Update Feed set text_color = :textColor, background_color = :bgColor Where id = :feedId")
     public abstract void updateColors(int feedId, int textColor, int bgColor);
@@ -66,33 +64,40 @@ public abstract class FeedDao implements BaseDao<Feed> {
     public abstract List<Feed> selectFromIdList(List<Long> ids);
 
     @Query("Select remoteId From Feed Where account_id = :accountId")
-    public abstract List<Long> getFeedRemoteIdsOfAccount(int accountId);
+    public abstract List<String> getFeedRemoteIdsOfAccount(int accountId);
 
     @Query("Delete from Feed Where id in (:ids)")
-    public abstract void deleteByIds(List<Long> ids);
+    abstract void deleteByIds(List<String> ids);
 
     @Query("Select id From Folder Where remoteId = :remoteId And account_id = :accountId")
-    abstract int getRemoteFolderLocalId(int remoteId, int accountId);
+    abstract int getRemoteFolderLocalId(String remoteId, int accountId);
 
     /**
      * Insert, update and delete feeds, by account
-     * @param nextNewsFeeds feeds to insert or update
+     *
+     * @param feeds   feeds to insert or update
      * @param account owner of the feeds
      * @return the list of the inserted feeds ids
      */
     @Transaction
-    public List<Long> upsert(List<NextNewsFeed> nextNewsFeeds, Account account) {
-        List<Long> accountFeedIds = getFeedRemoteIdsOfAccount(account.getId());
+    public List<Long> feedsUpsert(List<Feed> feeds, Account account) {
+        List<String> accountFeedIds = getFeedRemoteIdsOfAccount(account.getId());
         List<Feed> feedsToInsert = new ArrayList<>();
 
-        for (NextNewsFeed nextNewsFeed : nextNewsFeeds) {
-            Feed feed = FeedMatcher.nextNewsFeedToFeed(nextNewsFeed, account);
-            Integer folderId = nextNewsFeed.getId() == 0 ? null : getRemoteFolderLocalId(nextNewsFeed.getFolderId(), account.getId());
+        for (Feed feed : feeds) {
+            Integer folderId;
 
-            if (remoteFeedExists(nextNewsFeed.getId(), account.getId())) {
-                updateNameAndFolder(nextNewsFeed.getId(), account.getId(), nextNewsFeed.getTitle(), folderId);
+            try {
+                int remoteFolderId = Integer.parseInt(feed.getRemoteFolderId());
+                folderId = remoteFolderId == 0 ? null : getRemoteFolderLocalId(feed.getRemoteFolderId(), account.getId());
+            } catch (Exception e) {
+                folderId = feed.getRemoteFolderId() == null ? null : getRemoteFolderLocalId(feed.getRemoteFolderId(), account.getId());
+            }
 
-                accountFeedIds.remove((long) nextNewsFeed.getId());
+            if (remoteFeedExists(feed.getRemoteId(), account.getId())) {
+                updateNameAndFolder(feed.getRemoteId(), account.getId(), feed.getName(), folderId);
+
+                accountFeedIds.remove(feed.getRemoteId());
             } else {
                 feed.setFolderId(folderId);
 

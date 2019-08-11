@@ -5,9 +5,9 @@ import java.util.List;
 
 public class NextNewsSyncData {
 
-    private List<Integer> unreadItems;
+    private List<String> unreadItems;
 
-    private List<Integer> readItems;
+    private List<String> readItems;
 
     private List<Integer> starredItems;
 
@@ -22,19 +22,19 @@ public class NextNewsSyncData {
         unstarredItems = new ArrayList<>();
     }
 
-    public List<Integer> getUnreadItems() {
+    public List<String> getUnreadItems() {
         return unreadItems;
     }
 
-    public void setUnreadItems(List<Integer> unreadItems) {
+    public void setUnreadItems(List<String> unreadItems) {
         this.unreadItems = unreadItems;
     }
 
-    public List<Integer> getReadItems() {
+    public List<String> getReadItems() {
         return readItems;
     }
 
-    public void setReadItems(List<Integer> readItems) {
+    public void setReadItems(List<String> readItems) {
         this.readItems = readItems;
     }
 
