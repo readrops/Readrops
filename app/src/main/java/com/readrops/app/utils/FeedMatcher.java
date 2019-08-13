@@ -35,6 +35,7 @@ public final class FeedMatcher {
 
         newFeed.setIconUrl(feed.getIconUrl());
 
+        newFeed.setRemoteFolderId(feed.getCategories().get(0).getId());
         newFeed.setAccountId(account.getId());
         newFeed.setRemoteId(feed.getId());
 

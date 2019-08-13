@@ -11,14 +11,14 @@ import androidx.room.PrimaryKey;
 
 @Entity(foreignKeys = @ForeignKey(entity = Account.class, parentColumns = "id",
         childColumns = "account_id", onDelete = ForeignKey.CASCADE))
-public class Folder implements Parcelable,  Comparable<Folder> {
+public class Folder implements Parcelable, Comparable<Folder> {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
 
     private String name;
 
-    private int remoteId;
+    private String remoteId;
 
     @ColumnInfo(name = "account_id", index = true)
     private int accountId;
@@ -53,11 +53,11 @@ public class Folder implements Parcelable,  Comparable<Folder> {
         this.name = name;
     }
 
-    public int getRemoteId() {
+    public String getRemoteId() {
         return remoteId;
     }
 
-    public void setRemoteId(int remoteId) {
+    public void setRemoteId(String remoteId) {
         this.remoteId = remoteId;
     }
 

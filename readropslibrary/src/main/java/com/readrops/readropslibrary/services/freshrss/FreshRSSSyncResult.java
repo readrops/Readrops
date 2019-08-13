@@ -1,12 +1,15 @@
 package com.readrops.readropslibrary.services.freshrss;
 
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSFeed;
+import com.readrops.readropslibrary.services.freshrss.json.FreshRSSFolder;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FreshRSSSyncResult {
+
+    private List<FreshRSSFolder> folders;
 
     private List<FreshRSSFeed> feeds;
 
@@ -31,5 +34,13 @@ public class FreshRSSSyncResult {
 
     public void setItems(List<FreshRSSItem> items) {
         this.items = items;
+    }
+
+    public List<FreshRSSFolder> getFolders() {
+        return folders;
+    }
+
+    public void setFolders(List<FreshRSSFolder> folders) {
+        this.folders = folders;
     }
 }

@@ -164,7 +164,7 @@ public class NextNewsRepository extends ARepository {
 
             NextNewsFeed newsFeed;
             if (folder != null)
-                newsFeed = new NextNewsFeed(Integer.parseInt(feed.getRemoteId()), folder.getRemoteId());
+                newsFeed = new NextNewsFeed(Integer.parseInt(feed.getRemoteId()), Integer.parseInt(folder.getRemoteId()));
             else
                 newsFeed = new NextNewsFeed(Integer.parseInt(feed.getRemoteId()), 0); // 0 for no folder
 
@@ -209,7 +209,7 @@ public class NextNewsRepository extends ARepository {
             NextNewsAPI api = new NextNewsAPI(account.toNextNewsCredentials());
 
             try {
-                NextNewsFolders folders = api.createFolder(new NextNewsFolder(folder.getRemoteId(), folder.getName()));
+                NextNewsFolders folders = api.createFolder(new NextNewsFolder(Integer.parseInt(folder.getRemoteId()), folder.getName()));
 
                 if (folders != null)
                     insertFolders(folders.getFolders(), account);
@@ -229,7 +229,7 @@ public class NextNewsRepository extends ARepository {
             NextNewsAPI api = new NextNewsAPI(account.toNextNewsCredentials());
 
             try {
-                if (api.renameFolder(new NextNewsFolder(folder.getRemoteId(), folder.getName()))) {
+                if (api.renameFolder(new NextNewsFolder(Integer.parseInt(folder.getRemoteId()), folder.getName()))) {
                     database.folderDao().update(folder);
                     emitter.onComplete();
                 } else
@@ -249,7 +249,7 @@ public class NextNewsRepository extends ARepository {
             NextNewsAPI api = new NextNewsAPI(account.toNextNewsCredentials());
 
             try {
-                if (api.deleteFolder(new NextNewsFolder(folder.getRemoteId(), folder.getName()))) {
+                if (api.deleteFolder(new NextNewsFolder(Integer.parseInt(folder.getRemoteId()), folder.getName()))) {
                     database.folderDao().delete(folder);
                     emitter.onComplete();
                 } else
@@ -281,8 +281,18 @@ public class NextNewsRepository extends ARepository {
         return insertedFeeds;
     }
 
-    private void insertFolders(List<NextNewsFolder> folders, Account account) {
-        database.folderDao().upsert(folders, account);
+    private void insertFolders(List<NextNewsFolder> nextNewsFolders, Account account) {
+        List<Folder> folders = new ArrayList<>();
+
+        for (NextNewsFolder nextNewsFolder : nextNewsFolders) {
+            Folder folder = new Folder(nextNewsFolder.getName());
+            folder.setAccountId(account.getId());
+            folder.setRemoteId(String.valueOf(nextNewsFolder.getId()));
+
+            folders.add(folder);
+        }
+
+        database.folderDao().foldersUpsert(folders, account);
     }
 
     private void insertItems(List<NextNewsItem> items, Account account, boolean initialSync) {

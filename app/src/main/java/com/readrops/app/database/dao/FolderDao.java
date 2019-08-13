@@ -7,7 +7,6 @@ import androidx.room.Transaction;
 
 import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Folder;
-import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,41 +21,38 @@ public abstract class FolderDao implements BaseDao<Folder> {
     public abstract List<Folder> getFolders(int accountId);
 
     @Query("Update Folder set name = :name Where remoteId = :remoteFolderId And account_id = :accountId")
-    public abstract void updateName(int remoteFolderId, int accountId, String name);
+    public abstract void updateName(String remoteFolderId, int accountId, String name);
 
     @Query("Select case When :remoteId In (Select remoteId From Folder Where account_id = :accountId) Then 1 else 0 end")
-    public abstract boolean remoteFolderExists(int remoteId, int accountId);
+    abstract boolean remoteFolderExists(String remoteId, int accountId);
 
     @Query("Select * from Folder Where id = :folderId")
     public abstract Folder select(int folderId);
 
     @Query("Select remoteId From Folder Where account_id = :accountId")
-    public abstract List<Long> getFolderRemoteIdsOfAccount(int accountId);
+    public abstract List<String> getFolderRemoteIdsOfAccount(int accountId);
 
     @Query("Delete From Folder Where id in (:ids)")
-    public abstract void deleteByIds(List<Long> ids);
+    abstract void deleteByIds(List<String> ids);
 
     /**
      * Insert, update and delete folders
-     * @param nextNewsFolders folders to insert or update
+     *
+     * @param folders folders to insert or update
      * @param account owner of the feeds
      * @return the list of the inserted feeds ids
      */
     @Transaction
-    public List<Long> upsert(List<NextNewsFolder> nextNewsFolders, Account account) {
-        List<Long> accountFolderIds = getFolderRemoteIdsOfAccount(account.getId());
+    public List<Long> foldersUpsert(List<Folder> folders, Account account) {
+        List<String> accountFolderIds = getFolderRemoteIdsOfAccount(account.getId());
         List<Folder> foldersToInsert = new ArrayList<>();
 
-        for (NextNewsFolder nextNewsFolder : nextNewsFolders) {
-            if (remoteFolderExists(nextNewsFolder.getId(), account.getId())) {
-                updateName(nextNewsFolder.getId(), account.getId(), nextNewsFolder.getName());
+        for (Folder folder : folders) {
+            if (remoteFolderExists(folder.getRemoteId(), account.getId())) {
+                updateName(folder.getRemoteId(), account.getId(), folder.getName());
 
-                accountFolderIds.remove((long) nextNewsFolder.getId());
+                accountFolderIds.remove(folder.getRemoteId());
             } else {
-                Folder folder = new Folder(nextNewsFolder.getName());
-                folder.setRemoteId(nextNewsFolder.getId());
-                folder.setAccountId(account.getId());
-
                 foldersToInsert.add(folder);
             }
         }

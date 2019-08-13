@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.readrops.readropslibrary.services.API;
 import com.readrops.readropslibrary.services.SyncType;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSFeeds;
+import com.readrops.readropslibrary.services.freshrss.json.FreshRSSFolders;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSItems;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSUserInfo;
 
@@ -51,7 +52,12 @@ public class FreshRSSAPI extends API<FreshRSSService> {
     public Single<FreshRSSSyncResult> sync(@NonNull SyncType syncType, @NonNull FreshRSSSyncData syncData) {
         FreshRSSSyncResult syncResult = new FreshRSSSyncResult();
 
-        return getFeeds()
+        return getFolders()
+                .flatMap(freshRSSFolders -> {
+                    syncResult.setFolders(freshRSSFolders.getTags());
+
+                    return getFeeds();
+                })
                 .flatMap(freshRSSFeeds -> {
                     syncResult.setFeeds(freshRSSFeeds.getSubscriptions());
 
@@ -69,6 +75,10 @@ public class FreshRSSAPI extends API<FreshRSSService> {
 
                     return Single.just(syncResult);
                 });
+    }
+
+    public Single<FreshRSSFolders> getFolders() {
+        return api.getFolders();
     }
 
     public Single<FreshRSSFeeds> getFeeds() {

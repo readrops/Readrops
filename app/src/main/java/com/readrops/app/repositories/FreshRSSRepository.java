@@ -17,6 +17,7 @@ import com.readrops.readropslibrary.services.freshrss.FreshRSSCredentials;
 import com.readrops.readropslibrary.services.freshrss.FreshRSSService;
 import com.readrops.readropslibrary.services.freshrss.FreshRSSSyncData;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSFeed;
+import com.readrops.readropslibrary.services.freshrss.json.FreshRSSFolder;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSItem;
 
 import org.joda.time.LocalDateTime;
@@ -24,6 +25,7 @@ import org.joda.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -72,6 +74,7 @@ public class FreshRSSRepository extends ARepository {
 
         return api.sync(syncType, syncData)
                 .flatMapObservable(syncResult -> {
+                    insertFolders(syncResult.getFolders(), account);
                     insertFeeds(syncResult.getFeeds(), account);
                     insertItems(syncResult.getItems(), account, syncType == SyncType.INITIAL_SYNC);
 
@@ -128,6 +131,24 @@ public class FreshRSSRepository extends ARepository {
         }
 
         return insertedFeeds;
+    }
+
+    private void insertFolders(List<FreshRSSFolder> freshRSSFolders, Account account) {
+        List<Folder> folders = new ArrayList<>();
+
+        for (FreshRSSFolder freshRSSFolder : freshRSSFolders) {
+            if (freshRSSFolder.getType() != null && freshRSSFolder.getType().equals("folder")) {
+                List<Object> tokens = Collections.list(new StringTokenizer(freshRSSFolder.getId(), "/"));
+
+                Folder folder = new Folder((String) tokens.get(tokens.size() - 1));
+                folder.setRemoteId(freshRSSFolder.getId());
+                folder.setAccountId(account.getId());
+
+                folders.add(folder);
+            }
+        }
+
+        database.folderDao().foldersUpsert(folders, account);
     }
 
     private void insertItems(List<FreshRSSItem> items, Account account, boolean initialSync) {
