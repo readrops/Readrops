@@ -15,6 +15,8 @@ public class FreshRSSSyncResult {
 
     private List<FreshRSSItem> items;
 
+    private long lastUpdated;
+
     public FreshRSSSyncResult() {
         feeds = new ArrayList<>();
         items = new ArrayList<>();
@@ -34,6 +36,14 @@ public class FreshRSSSyncResult {
 
     public void setItems(List<FreshRSSItem> items) {
         this.items = items;
+    }
+
+    public long getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(long lastUpdated) {
+        this.lastUpdated = lastUpdated;
     }
 
     public List<FreshRSSFolder> getFolders() {

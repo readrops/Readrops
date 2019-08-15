@@ -72,6 +72,7 @@ public class FreshRSSAPI extends API<FreshRSSService> {
                 })
                 .flatMap(freshRSSItems -> {
                     syncResult.setItems(freshRSSItems.getItems());
+                    syncResult.setLastUpdated(freshRSSItems.getUpdated());
 
                     return Single.just(syncResult);
                 });

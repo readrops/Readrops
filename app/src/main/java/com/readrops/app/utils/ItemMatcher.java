@@ -40,7 +40,8 @@ public final class ItemMatcher {
         newItem.setTitle(item.getTitle());
         newItem.setAuthor(item.getAuthor());
 
-        newItem.setPubDate(new LocalDateTime(item.getPublished() * 1000L));
+        newItem.setPubDate(new LocalDateTime(item.getPublished() * 1000L,
+                DateTimeZone.getDefault()));
         newItem.setContent(item.getSummary().getContent());
 
         newItem.setLink(item.getAlternate().get(0).getHref());

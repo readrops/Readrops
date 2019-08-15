@@ -20,8 +20,6 @@ import com.readrops.readropslibrary.services.freshrss.json.FreshRSSFeed;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSFolder;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSItem;
 
-import org.joda.time.LocalDateTime;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -63,12 +61,11 @@ public class FreshRSSRepository extends ARepository {
         FreshRSSAPI api = new FreshRSSAPI(new FreshRSSCredentials(account.getToken(), account.getUrl()));
 
         FreshRSSSyncData syncData = new FreshRSSSyncData();
-        long lastModified = LocalDateTime.now().toDateTime().getMillis();
         SyncType syncType;
 
         if (account.getLastModified() != 0) {
             syncType = SyncType.CLASSIC_SYNC;
-            syncData.setLastModified(lastModified / 1000L);
+            syncData.setLastModified(account.getLastModified());
         } else
             syncType = SyncType.INITIAL_SYNC;
 
@@ -78,8 +75,8 @@ public class FreshRSSRepository extends ARepository {
                     insertFeeds(syncResult.getFeeds(), account);
                     insertItems(syncResult.getItems(), account, syncType == SyncType.INITIAL_SYNC);
 
-                    account.setLastModified(lastModified);
-                    database.accountDao().updateLastModified(account.getId(), lastModified);
+                    account.setLastModified(syncResult.getLastUpdated());
+                    database.accountDao().updateLastModified(account.getId(), syncResult.getLastUpdated());
 
                     return Observable.empty();
                 });
