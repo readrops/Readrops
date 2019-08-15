@@ -1,5 +1,6 @@
 package com.readrops.readropslibrary.utils;
 
+import com.readrops.readropslibrary.BuildConfig;
 import com.readrops.readropslibrary.services.Credentials;
 
 import java.io.IOException;
@@ -8,6 +9,7 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 public class HttpManager {
 
@@ -17,15 +19,19 @@ public class HttpManager {
     public HttpManager(final Credentials credentials) {
         this.credentials = credentials;
 
-        if (credentials.getAuthorization() != null) {
-            okHttpClient = HttpBuilder.getBuilder()
-                    .addInterceptor(new AuthInterceptor())
-                    .build();
-        } else {
-            okHttpClient = HttpBuilder.getBuilder()
-                    .build();
+        OkHttpClient.Builder httpBuilder = HttpBuilder.getBuilder();
+
+        if (credentials.getAuthorization() != null)
+            httpBuilder.addInterceptor(new AuthInterceptor());
+
+        if (BuildConfig.DEBUG) {
+            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
+
+            httpBuilder.addInterceptor(loggingInterceptor);
         }
 
+        okHttpClient = httpBuilder.build();
     }
 
     public OkHttpClient getOkHttpClient() {
