@@ -6,6 +6,7 @@ import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.Item;
+import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.FeedMatcher;
 import com.readrops.app.utils.ItemMatcher;
@@ -58,7 +59,7 @@ public class FreshRSSRepository extends ARepository {
 
     @Override
     public Observable<Feed> sync(List<Feed> feeds, Account account) {
-        FreshRSSAPI api = new FreshRSSAPI(new FreshRSSCredentials(account.getToken(), account.getUrl()));
+        FreshRSSAPI api = new FreshRSSAPI(account.toFreshRSSCredentials());
 
         FreshRSSSyncData syncData = new FreshRSSSyncData();
         SyncType syncType;
@@ -110,6 +111,20 @@ public class FreshRSSRepository extends ARepository {
     @Override
     public Completable deleteFolder(Folder folder, Account account) {
         return null;
+    }
+
+    public Completable markItemReadUnread(ItemWithFeed itemWithFeed, Boolean read, Account account) {
+        FreshRSSAPI api = new FreshRSSAPI(account.toFreshRSSCredentials());
+
+        if (account.getWriteToken() == null) {
+            return api.getWriteToken()
+                    .flatMapCompletable(writeToken -> api.
+                            markItemReadUnread(read, itemWithFeed.getItem().getRemoteId(), writeToken));
+        } else {
+            return api.markItemReadUnread(read, itemWithFeed.getItem().getRemoteId(), account.getWriteToken());
+        }
+
+
     }
 
     private List<Feed> insertFeeds(List<FreshRSSFeed> freshRSSFeeds, Account account) {

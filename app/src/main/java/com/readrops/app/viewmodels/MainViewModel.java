@@ -250,19 +250,25 @@ public class MainViewModel extends AndroidViewModel {
 
     //region Item read state
 
-    public Completable setItemReadState(int itemId, boolean read, boolean readChanged) {
-        return Completable.create(emitter -> {
-            db.itemDao().setReadState(itemId, read ? 1 : 0, readChanged ? 1 : 0);
+    public Completable setItemReadState(ItemWithFeed item, boolean read) {
+        Completable completable = Completable.create(emitter -> {
+            db.itemDao().setReadState(item.getItem().getId(), read ? 1 : 0, !item.getItem().isReadChanged() ? 1 : 0);
             emitter.onComplete();
         });
+
+        // TODO : temporary until a better idea comes out
+        if (currentAccount.getAccountType() == Account.AccountType.FRESHRSS) {
+            return completable.andThen(((FreshRSSRepository) repository).
+                    markItemReadUnread(item, read, currentAccount));
+        } else
+            return completable;
     }
 
     public Completable setItemsReadState(List<ItemWithFeed> items, boolean read) {
         List<Completable> completableList = new ArrayList<>();
 
         for (ItemWithFeed itemWithFeed : items) {
-            completableList.add(setItemReadState(itemWithFeed.getItem().getId(), read,
-                    !itemWithFeed.getItem().isReadChanged()));
+            completableList.add(setItemReadState(itemWithFeed, read));
         }
 
         return Completable.concat(completableList);

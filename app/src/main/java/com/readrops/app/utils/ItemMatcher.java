@@ -46,6 +46,7 @@ public final class ItemMatcher {
 
         newItem.setLink(item.getAlternate().get(0).getHref());
         newItem.setFeedId(feedId);
+        newItem.setRemoteId(item.getId());
 
         return newItem;
     }

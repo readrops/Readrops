@@ -8,8 +8,8 @@ import com.readrops.app.viewmodels.MainViewModel;
 
 public class ItemsListQueryBuilder {
 
-    private String [] columns = {"Item.id", "title", "clean_description", "image_link", "pub_date", "read",
-            "read_changed", "read_it_later", "Feed.name", "text_color", "background_color", "icon_url", "read_time",
+    private String[] columns = {"Item.id", "title", "clean_description", "image_link", "pub_date", "read",
+            "read_changed", "read_it_later", "Feed.name", "text_color", "background_color", "icon_url", "read_time", "Item.remoteId",
             "Feed.id as feedId", "Feed.account_id", "Folder.id as folder_id", "Folder.name as folder_name"};
 
     private String SELECT_ALL_JOIN = "Item INNER JOIN Feed on Item.feed_id = Feed.id " +
@@ -29,7 +29,7 @@ public class ItemsListQueryBuilder {
     private MainActivity.ListSortType sortType;
 
     public ItemsListQueryBuilder() {
-        queryBuilder =  SupportSQLiteQueryBuilder.builder(SELECT_ALL_JOIN);
+        queryBuilder = SupportSQLiteQueryBuilder.builder(SELECT_ALL_JOIN);
     }
 
     private String buildWhereClause() {
@@ -69,8 +69,7 @@ public class ItemsListQueryBuilder {
         else
             queryBuilder.orderBy(ORDER_BY_DESC);
 
-
-       return queryBuilder.create();
+        return queryBuilder.create();
     }
 
     public boolean showReadItems() {

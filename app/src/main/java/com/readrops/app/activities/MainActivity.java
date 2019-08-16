@@ -36,6 +36,7 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.readrops.app.R;
+import com.readrops.app.adapters.MainItemListAdapter;
 import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
@@ -46,7 +47,6 @@ import com.readrops.app.utils.GlideApp;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.MainViewModel;
-import com.readrops.app.adapters.MainItemListAdapter;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -269,8 +269,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     intent.putExtra(ItemActivity.IMAGE_URL, itemWithFeed.getItem().getImageLink());
                     startActivityForResult(intent, ITEM_REQUEST);
 
-                    viewModel.setItemReadState(itemWithFeed.getItem().getId(), true,
-                            !itemWithFeed.getItem().isReadChanged())
+                    viewModel.setItemReadState(itemWithFeed, true)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .doOnError(throwable -> Utils.showSnackbar(rootLayout, throwable.getMessage()))
@@ -385,8 +384,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 if (i == ItemTouchHelper.LEFT) { // set item read state
                     ItemWithFeed itemWithFeed = adapter.getItemWithFeed(viewHolder.getAdapterPosition());
 
-                    viewModel.setItemReadState(itemWithFeed.getItem().getId(), !itemWithFeed.getItem().isRead(),
-                            !itemWithFeed.getItem().isReadChanged())
+                    viewModel.setItemReadState(itemWithFeed, !itemWithFeed.getItem().isRead())
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .doOnError(throwable -> Utils.showSnackbar(rootLayout, throwable.getMessage()))

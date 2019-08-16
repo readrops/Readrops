@@ -12,6 +12,7 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.readrops.app.R;
+import com.readrops.readropslibrary.services.freshrss.FreshRSSCredentials;
 import com.readrops.readropslibrary.services.nextcloudnews.NextNewsCredentials;
 
 @Entity
@@ -38,6 +39,7 @@ public class Account implements Parcelable {
     private boolean currentAccount;
 
     private String token;
+    private String writeToken; // TODO : see if there is a better solution to store specific service account fields
 
     @Ignore
     private String login;
@@ -167,6 +169,14 @@ public class Account implements Parcelable {
         this.token = token;
     }
 
+    public String getWriteToken() {
+        return writeToken;
+    }
+
+    public void setWriteToken(String writeToken) {
+        this.writeToken = writeToken;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -236,6 +246,10 @@ public class Account implements Parcelable {
 
     public NextNewsCredentials toNextNewsCredentials() {
         return new NextNewsCredentials(login, password, url);
+    }
+
+    public FreshRSSCredentials toFreshRSSCredentials() {
+        return new FreshRSSCredentials(token, url);
     }
 
     public boolean isLocal() {

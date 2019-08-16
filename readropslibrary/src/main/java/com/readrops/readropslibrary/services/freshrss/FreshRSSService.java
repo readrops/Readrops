@@ -5,10 +5,13 @@ import com.readrops.readropslibrary.services.freshrss.json.FreshRSSFolders;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSItems;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSUserInfo;
 
+import io.reactivex.Completable;
 import io.reactivex.Single;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.http.Body;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
@@ -19,6 +22,9 @@ public interface FreshRSSService {
 
     @POST("accounts/ClientLogin")
     Single<ResponseBody> login(@Body RequestBody body);
+
+    @GET("reader/api/0/token")
+    Single<ResponseBody> getWriteToken();
 
     @GET("reader/api/0/user-info")
     Single<FreshRSSUserInfo> getUserInfo();
@@ -31,4 +37,8 @@ public interface FreshRSSService {
 
     @GET("reader/api/0/tag/list?output=json")
     Single<FreshRSSFolders> getFolders();
+
+    @FormUrlEncoded
+    @POST("reader/api/0/edit-tag")
+    Completable setItemReadState(@Field("T") String token, @Field("a") String readAction, @Field("r") String unreadAction, @Field("i") String itemId);
 }

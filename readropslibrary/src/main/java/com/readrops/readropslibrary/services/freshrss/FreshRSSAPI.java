@@ -12,6 +12,7 @@ import com.readrops.readropslibrary.services.freshrss.json.FreshRSSUserInfo;
 import java.io.StringReader;
 import java.util.Properties;
 
+import io.reactivex.Completable;
 import io.reactivex.Single;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -43,6 +44,11 @@ public class FreshRSSAPI extends API<FreshRSSService> {
 
                     return Single.just(properties.getProperty("Auth"));
                 });
+    }
+
+    public Single<String> getWriteToken() {
+        return api.getWriteToken()
+                .flatMap(responseBody -> Single.just(responseBody.string()));
     }
 
     public Single<FreshRSSUserInfo> getUserInfo() {
@@ -88,6 +94,13 @@ public class FreshRSSAPI extends API<FreshRSSService> {
 
     public Single<FreshRSSItems> getItems(String excludeTarget, Integer max, Long lastModified) {
         return api.getItems(excludeTarget, max, lastModified);
+    }
+
+    public Completable markItemReadUnread(Boolean read, String itemId, String token) {
+        if (read)
+            return api.setItemReadState(token, EXCLUDE_ITEMS.EXCLUDE_READ_ITEMS.value, null, itemId);
+        else
+            return api.setItemReadState(token, null, EXCLUDE_ITEMS.EXCLUDE_READ_ITEMS.value, itemId);
     }
 
     public enum EXCLUDE_ITEMS {
