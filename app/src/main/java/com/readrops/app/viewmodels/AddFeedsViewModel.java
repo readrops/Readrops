@@ -9,9 +9,6 @@ import androidx.lifecycle.LiveData;
 import com.readrops.app.database.Database;
 import com.readrops.app.database.entities.Account;
 import com.readrops.app.repositories.ARepository;
-import com.readrops.app.repositories.FreshRSSRepository;
-import com.readrops.app.repositories.LocalFeedRepository;
-import com.readrops.app.repositories.NextNewsRepository;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.HtmlParser;
 import com.readrops.app.utils.ParsingResult;
@@ -34,19 +31,15 @@ public class AddFeedsViewModel extends AndroidViewModel {
     }
 
     public Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results, Account account) {
-        switch (account.getAccountType()) {
-            case LOCAL:
-                repository = new LocalFeedRepository(getApplication(), account);
-                break;
-            case NEXTCLOUD_NEWS:
-                repository = new NextNewsRepository(getApplication(), account);
-                break;
-            case FRESHRSS:
-                repository = new FreshRSSRepository(getApplication(), account);
-                break;
+        try {
+            repository = ARepository.repositoryFactory(account, getApplication());
+
+            return repository.addFeeds(results);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        return repository.addFeeds(results);
+        return null;
     }
 
     public Single<List<ParsingResult>> parseUrl(String url) {

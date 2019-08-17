@@ -102,4 +102,21 @@ public abstract class ARepository {
                 feed.setBackgroundColor(palette.getMutedSwatch().getRgb());
         }
     }
+
+    public static ARepository repositoryFactory(Account account, Account.AccountType accountType, Application application) throws Exception {
+        switch (accountType) {
+            case LOCAL:
+                return new LocalFeedRepository(application, account);
+            case NEXTCLOUD_NEWS:
+                return new NextNewsRepository(application, account);
+            case FRESHRSS:
+                return new FreshRSSRepository(application, account);
+            default:
+                throw new Exception("account type not supported");
+        }
+    }
+
+    public static ARepository repositoryFactory(Account account, Application application) throws Exception {
+        return ARepository.repositoryFactory(account, account.getAccountType(), application);
+    }
 }

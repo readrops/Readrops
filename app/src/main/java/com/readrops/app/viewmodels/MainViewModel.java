@@ -17,9 +17,6 @@ import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.repositories.ARepository;
-import com.readrops.app.repositories.FreshRSSRepository;
-import com.readrops.app.repositories.LocalFeedRepository;
-import com.readrops.app.repositories.NextNewsRepository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,23 +51,16 @@ public class MainViewModel extends AndroidViewModel {
         queryBuilder.setSortType(MainActivity.ListSortType.NEWEST_TO_OLDEST);
 
         db = Database.getInstance(application);
-
         itemsWithFeed = new MediatorLiveData<>();
     }
 
     //region main query
 
-    private void setRepository(Account.AccountType accountType) {
-        switch (accountType) {
-            case LOCAL:
-                repository = new LocalFeedRepository(getApplication(), currentAccount);
-                break;
-            case NEXTCLOUD_NEWS:
-                repository = new NextNewsRepository(getApplication(), currentAccount);
-                break;
-            case FRESHRSS:
-                repository = new FreshRSSRepository(getApplication(), currentAccount);
-                break;
+    private void setRepository() {
+        try {
+            repository = ARepository.repositoryFactory(currentAccount, getApplication());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -197,7 +187,7 @@ public class MainViewModel extends AndroidViewModel {
 
     public void setCurrentAccount(Account currentAccount) {
         this.currentAccount = currentAccount;
-        setRepository(currentAccount.getAccountType());
+        setRepository();
         queryBuilder.setAccountId(currentAccount.getId());
         buildPagedList();
 
@@ -228,7 +218,7 @@ public class MainViewModel extends AndroidViewModel {
                 currentAccount = account1;
                 currentAccountExists = true;
 
-                setRepository(currentAccount.getAccountType());
+                setRepository();
                 queryBuilder.setAccountId(currentAccount.getId());
                 buildPagedList();
                 break;

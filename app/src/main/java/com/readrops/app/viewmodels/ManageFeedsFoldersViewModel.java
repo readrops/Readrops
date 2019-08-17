@@ -1,9 +1,10 @@
 package com.readrops.app.viewmodels;
 
 import android.app.Application;
+
+import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.annotation.NonNull;
 
 import com.readrops.app.database.Database;
 import com.readrops.app.database.entities.Account;
@@ -11,9 +12,6 @@ import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.FeedWithFolder;
 import com.readrops.app.repositories.ARepository;
-import com.readrops.app.repositories.FreshRSSRepository;
-import com.readrops.app.repositories.LocalFeedRepository;
-import com.readrops.app.repositories.NextNewsRepository;
 
 import java.util.List;
 
@@ -35,20 +33,14 @@ public class ManageFeedsFoldersViewModel extends AndroidViewModel {
     }
 
     private void setup() {
-        switch (account.getAccountType()) {
-            case LOCAL:
-                repository = new LocalFeedRepository(getApplication(), account);
-                break;
-            case NEXTCLOUD_NEWS:
-                repository = new NextNewsRepository(getApplication(), account);
-                break;
-            case FRESHRSS:
-                repository = new FreshRSSRepository(getApplication(), account);
-                break;
-        }
+        try {
+            repository = ARepository.repositoryFactory(account, getApplication());
 
-        feedsWithFolder = db.feedDao().getAllFeedsWithFolder(account.getId());
-        folders = db.folderDao().getAllFolders(account.getId());
+            feedsWithFolder = db.feedDao().getAllFeedsWithFolder(account.getId());
+            folders = db.folderDao().getAllFolders(account.getId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public LiveData<List<FeedWithFolder>> getFeedsWithFolder() {
