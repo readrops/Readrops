@@ -256,6 +256,10 @@ public class Account implements Parcelable {
         return accountType == AccountType.LOCAL;
     }
 
+    public boolean is(AccountType accountType) {
+        return this.accountType == accountType;
+    }
+
     @Override
     public boolean equals(@Nullable Object obj) {
         if (obj == null)

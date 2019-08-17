@@ -99,7 +99,7 @@ public class EditFeedDialog extends DialogFragment implements AdapterView.OnItem
         folder = v.findViewById(R.id.edit_feed_folder_spinner);
 
         //TODO : this is temporary and should be changed when other service APIs are implemented
-        if (account.getAccountType() == Account.AccountType.NEXTCLOUD_NEWS)
+        if (account.is(Account.AccountType.NEXTCLOUD_NEWS))
             feedUrl.setEnabled(false);
 
         feedName.setText(feedWithFolder.getFeed().getName());

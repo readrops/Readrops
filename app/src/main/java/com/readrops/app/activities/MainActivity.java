@@ -308,6 +308,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
                         menu.findItem(R.id.item_mark_read).setVisible(!itemWithFeed.getItem().isRead());
                         menu.findItem(R.id.item_mark_unread).setVisible(itemWithFeed.getItem().isRead());
+                        menu.findItem(R.id.item_select_all).setVisible(!(viewModel.getCurrentAccount()
+                                .is(Account.AccountType.FRESHRSS)));
 
                         return true;
                     }
