@@ -28,4 +28,7 @@ public abstract class AccountDao implements BaseDao<Account> {
 
     @Query("Select count(*) From Account")
     public abstract Integer getAccountCount();
+
+    @Query("Update Account set writeToken = :writeToken Where id = :accountId")
+    public abstract void updateWriteToken(int accountId, String writeToken);
 }

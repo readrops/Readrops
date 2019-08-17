@@ -121,10 +121,13 @@ public class FreshRSSRepository extends ARepository {
 
         if (account.getWriteToken() == null) {
             return api.getWriteToken()
-                    .flatMapCompletable(writeToken -> api.
-                            markItemReadUnread(read, item.getRemoteId(), writeToken));
+                    .flatMapCompletable(writeToken -> {
+                        database.accountDao().updateWriteToken(account.getId(), writeToken);
+
+                        return api.markItemReadUnread(read, item.getRemoteId(), writeToken).concatWith(super.setItemReadState(item, read));
+                    });
         } else {
-            return api.markItemReadUnread(read, item.getRemoteId(), account.getWriteToken());
+            return api.markItemReadUnread(read, item.getRemoteId(), account.getWriteToken()).concatWith(super.setItemReadState(item, read));
         }
     }
 
