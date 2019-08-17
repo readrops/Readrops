@@ -63,13 +63,13 @@ public class MainViewModel extends AndroidViewModel {
     private void setRepository(Account.AccountType accountType) {
         switch (accountType) {
             case LOCAL:
-                repository = new LocalFeedRepository(getApplication());
+                repository = new LocalFeedRepository(getApplication(), currentAccount);
                 break;
             case NEXTCLOUD_NEWS:
-                repository = new NextNewsRepository(getApplication());
+                repository = new NextNewsRepository(getApplication(), currentAccount);
                 break;
             case FRESHRSS:
-                repository = new FreshRSSRepository(getApplication());
+                repository = new FreshRSSRepository(getApplication(), currentAccount);
                 break;
         }
     }
@@ -125,8 +125,8 @@ public class MainViewModel extends AndroidViewModel {
         return itemsWithFeed;
     }
 
-    public Observable<Feed> sync(List<Feed> feeds, Account account) {
-        return repository.sync(feeds, account);
+    public Observable<Feed> sync(List<Feed> feeds) {
+        return repository.sync(feeds);
     }
 
     public Single<Integer> getFeedCount() {
@@ -250,18 +250,8 @@ public class MainViewModel extends AndroidViewModel {
 
     //region Item read state
 
-    public Completable setItemReadState(ItemWithFeed item, boolean read) {
-        Completable completable = Completable.create(emitter -> {
-            db.itemDao().setReadState(item.getItem().getId(), read ? 1 : 0, !item.getItem().isReadChanged() ? 1 : 0);
-            emitter.onComplete();
-        });
-
-        // TODO : temporary until a better idea comes out
-        if (currentAccount.getAccountType() == Account.AccountType.FRESHRSS) {
-            return completable.andThen(((FreshRSSRepository) repository).
-                    markItemReadUnread(item, read, currentAccount));
-        } else
-            return completable;
+    public Completable setItemReadState(ItemWithFeed itemWithFeed, boolean read) {
+        return repository.setItemReadState(itemWithFeed.getItem(), read);
     }
 
     public Completable setItemsReadState(List<ItemWithFeed> items, boolean read) {

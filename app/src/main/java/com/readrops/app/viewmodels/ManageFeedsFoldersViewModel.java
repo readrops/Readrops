@@ -36,10 +36,10 @@ public class ManageFeedsFoldersViewModel extends AndroidViewModel {
     private void setup() {
         switch (account.getAccountType()) {
             case LOCAL:
-                repository = new LocalFeedRepository(getApplication());
+                repository = new LocalFeedRepository(getApplication(), account);
                 break;
             case NEXTCLOUD_NEWS:
-                repository = new NextNewsRepository(getApplication());
+                repository = new NextNewsRepository(getApplication(), account);
                 break;
         }
 
@@ -52,7 +52,7 @@ public class ManageFeedsFoldersViewModel extends AndroidViewModel {
     }
 
     public Completable updateFeedWithFolder(Feed feed) {
-        return repository.updateFeed(feed, account);
+        return repository.updateFeed(feed);
     }
 
     public Account getAccount() {
@@ -69,18 +69,18 @@ public class ManageFeedsFoldersViewModel extends AndroidViewModel {
     }
 
     public Completable addFolder(Folder folder) {
-        return repository.addFolder(folder, account);
+        return repository.addFolder(folder);
     }
 
     public Completable updateFolder(Folder folder) {
-        return repository.updateFolder(folder, account);
+        return repository.updateFolder(folder);
     }
 
     public Completable deleteFolder(Folder folder) {
-        return repository.deleteFolder(folder, account);
+        return repository.deleteFolder(folder);
     }
 
     public Completable deleteFeed(Feed feed) {
-        return repository.deleteFeed(feed, account);
+        return repository.deleteFeed(feed);
     }
 }

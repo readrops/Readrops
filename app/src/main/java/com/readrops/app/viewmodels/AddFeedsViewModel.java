@@ -34,14 +34,14 @@ public class AddFeedsViewModel extends AndroidViewModel {
     public Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results, Account account) {
         switch (account.getAccountType()) {
             case LOCAL:
-                repository = new LocalFeedRepository(getApplication());
+                repository = new LocalFeedRepository(getApplication(), account);
                 break;
             case NEXTCLOUD_NEWS:
-                repository = new NextNewsRepository(getApplication());
+                repository = new NextNewsRepository(getApplication(), account);
                 break;
         }
 
-        return repository.addFeeds(results, account);
+        return repository.addFeeds(results);
     }
 
     public Single<List<ParsingResult>> parseUrl(String url) {

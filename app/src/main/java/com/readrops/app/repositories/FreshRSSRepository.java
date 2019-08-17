@@ -2,11 +2,13 @@ package com.readrops.app.repositories;
 
 import android.app.Application;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.Item;
-import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.FeedMatcher;
 import com.readrops.app.utils.ItemMatcher;
@@ -32,8 +34,8 @@ import io.reactivex.Single;
 
 public class FreshRSSRepository extends ARepository {
 
-    public FreshRSSRepository(Application application) {
-        super(application);
+    public FreshRSSRepository(@NonNull Application application, @Nullable Account account) {
+        super(application, account);
     }
 
     @Override
@@ -58,7 +60,7 @@ public class FreshRSSRepository extends ARepository {
     }
 
     @Override
-    public Observable<Feed> sync(List<Feed> feeds, Account account) {
+    public Observable<Feed> sync(List<Feed> feeds) {
         FreshRSSAPI api = new FreshRSSAPI(account.toFreshRSSCredentials());
 
         FreshRSSSyncData syncData = new FreshRSSSyncData();
@@ -84,47 +86,46 @@ public class FreshRSSRepository extends ARepository {
     }
 
     @Override
-    public Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results, Account account) {
+    public Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results) {
         return null;
     }
 
     @Override
-    public Completable updateFeed(Feed feed, Account account) {
+    public Completable updateFeed(Feed feed) {
         return null;
     }
 
     @Override
-    public Completable deleteFeed(Feed feed, Account account) {
+    public Completable deleteFeed(Feed feed) {
         return null;
     }
 
     @Override
-    public Completable addFolder(Folder folder, Account account) {
+    public Completable addFolder(Folder folder) {
         return null;
     }
 
     @Override
-    public Completable updateFolder(Folder folder, Account account) {
+    public Completable updateFolder(Folder folder) {
         return null;
     }
 
     @Override
-    public Completable deleteFolder(Folder folder, Account account) {
+    public Completable deleteFolder(Folder folder) {
         return null;
     }
 
-    public Completable markItemReadUnread(ItemWithFeed itemWithFeed, Boolean read, Account account) {
+    @Override
+    public Completable setItemReadState(Item item, boolean read) {
         FreshRSSAPI api = new FreshRSSAPI(account.toFreshRSSCredentials());
 
         if (account.getWriteToken() == null) {
             return api.getWriteToken()
                     .flatMapCompletable(writeToken -> api.
-                            markItemReadUnread(read, itemWithFeed.getItem().getRemoteId(), writeToken));
+                            markItemReadUnread(read, item.getRemoteId(), writeToken));
         } else {
-            return api.markItemReadUnread(read, itemWithFeed.getItem().getRemoteId(), account.getWriteToken());
+            return api.markItemReadUnread(read, item.getRemoteId(), account.getWriteToken());
         }
-
-
     }
 
     private List<Feed> insertFeeds(List<FreshRSSFeed> freshRSSFeeds, Account account) {

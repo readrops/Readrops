@@ -532,7 +532,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         if (viewModel.getCurrentAccount().getPassword() == null)
             account.setPassword(SharedPreferencesManager.readString(this, account.getPasswordKey()));
 
-        viewModel.sync(feeds, account)
+        viewModel.sync(feeds)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Feed>() {

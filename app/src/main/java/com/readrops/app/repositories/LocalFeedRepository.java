@@ -3,6 +3,7 @@ package com.readrops.app.repositories;
 import android.accounts.NetworkErrorException;
 import android.app.Application;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.readrops.app.database.entities.Account;
@@ -40,8 +41,8 @@ public class LocalFeedRepository extends ARepository {
 
     private static final String TAG = LocalFeedRepository.class.getSimpleName();
 
-    public LocalFeedRepository(Application application) {
-        super(application);
+    public LocalFeedRepository(@NonNull Application application, @Nullable Account account) {
+        super(application, account);
 
     }
 
@@ -51,7 +52,7 @@ public class LocalFeedRepository extends ARepository {
     }
 
     @Override
-    public Observable<Feed> sync(@Nullable List<Feed> feeds, Account account) {
+    public Observable<Feed> sync(@Nullable List<Feed> feeds) {
         return Observable.create(emitter -> {
             List<Feed> feedList;
 
@@ -104,7 +105,7 @@ public class LocalFeedRepository extends ARepository {
     }
 
     @Override
-    public Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results, Account account) {
+    public Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results) {
          return Single.create(emitter -> {
              List<FeedInsertionResult> insertionResults = new ArrayList<>();
 
@@ -116,7 +117,7 @@ public class LocalFeedRepository extends ARepository {
                      RSSQueryResult queryResult = rssNet.queryUrl(parsingResult.getUrl(), new HashMap<>());
 
                      if (queryResult != null && queryResult.getException() == null) {
-                        Feed feed = insertFeed(queryResult.getFeed(), queryResult.getRssType(), account);
+                        Feed feed = insertFeed(queryResult.getFeed(), queryResult.getRssType());
                         if (feed != null) {
                             insertionResult.setFeed(feed);
                             insertionResults.add(insertionResult);
@@ -145,7 +146,7 @@ public class LocalFeedRepository extends ARepository {
     }
 
     @Override
-    public Completable updateFeed(Feed feed, Account account) {
+    public Completable updateFeed(Feed feed) {
         return Completable.create(emitter -> {
             database.feedDao().updateFeedFields(feed.getId(), feed.getName(), feed.getUrl(), feed.getFolderId());
             emitter.onComplete();
@@ -153,7 +154,7 @@ public class LocalFeedRepository extends ARepository {
     }
 
     @Override
-    public Completable deleteFeed(Feed feed, Account account) {
+    public Completable deleteFeed(Feed feed) {
         return Completable.create(emitter -> {
             database.feedDao().delete(feed.getId());
             emitter.onComplete();
@@ -161,7 +162,7 @@ public class LocalFeedRepository extends ARepository {
     }
 
     @Override
-    public Completable addFolder(Folder folder, Account account) {
+    public Completable addFolder(Folder folder) {
         return Completable.create(emitter -> {
             database.folderDao().insert(folder);
             emitter.onComplete();
@@ -169,7 +170,7 @@ public class LocalFeedRepository extends ARepository {
     }
 
     @Override
-    public Completable updateFolder(Folder folder, Account account) {
+    public Completable updateFolder(Folder folder) {
         return Completable.create(emitter -> {
             database.folderDao().update(folder);
             emitter.onComplete();
@@ -177,7 +178,7 @@ public class LocalFeedRepository extends ARepository {
     }
 
     @Override
-    public Completable deleteFolder(Folder folder, Account account) {
+    public Completable deleteFolder(Folder folder) {
         return Completable.create(emitter -> {
             database.folderDao().delete(folder);
             emitter.onComplete();
@@ -209,7 +210,7 @@ public class LocalFeedRepository extends ARepository {
         insertItems(items, dbFeed);
     }
 
-    private Feed insertFeed(AFeed feed, RSSQuery.RSSType type, Account account) throws IOException {
+    private Feed insertFeed(AFeed feed, RSSQuery.RSSType type) throws IOException {
         Feed dbFeed = null;
         switch (type) {
             case RSS_2:

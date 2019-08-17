@@ -4,6 +4,9 @@ import android.app.Application;
 import android.database.sqlite.SQLiteConstraintException;
 import android.util.TimingLogger;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
@@ -41,8 +44,8 @@ public class NextNewsRepository extends ARepository {
 
     private static final String TAG = NextNewsRepository.class.getSimpleName();
 
-    public NextNewsRepository(Application application) {
-        super(application);
+    public NextNewsRepository(@NonNull Application application, @Nullable Account account) {
+        super(application, account);
     }
 
     @Override
@@ -64,7 +67,7 @@ public class NextNewsRepository extends ARepository {
     }
 
     @Override
-    public Observable<Feed> sync(List<Feed> feeds, Account account) {
+    public Observable<Feed> sync(List<Feed> feeds) {
         return Observable.create(emitter -> {
             try {
                 NextNewsAPI newsAPI = new NextNewsAPI(account.toNextNewsCredentials());
@@ -90,13 +93,13 @@ public class NextNewsRepository extends ARepository {
 
                 if (!syncResult.isError()) {
 
-                    insertFolders(syncResult.getFolders(), account);
+                    insertFolders(syncResult.getFolders());
                     timings.addSplit("insert folders");
 
-                    insertFeeds(syncResult.getFeeds(), account);
+                    insertFeeds(syncResult.getFeeds());
                     timings.addSplit("insert feeds");
 
-                    insertItems(syncResult.getItems(), account, syncType == SyncType.INITIAL_SYNC);
+                    insertItems(syncResult.getItems(), syncType == SyncType.INITIAL_SYNC);
                     timings.addSplit("insert items");
                     timings.dumpToLog();
 
@@ -116,7 +119,7 @@ public class NextNewsRepository extends ARepository {
     }
 
     @Override
-    public Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results, Account account) {
+    public Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results) {
         return Single.create(emitter -> {
             List<FeedInsertionResult> feedInsertionResults = new ArrayList<>();
             NextNewsAPI newsAPI = new NextNewsAPI(account.toNextNewsCredentials());
@@ -128,7 +131,7 @@ public class NextNewsRepository extends ARepository {
                     NextNewsFeeds nextNewsFeeds = newsAPI.createFeed(result.getUrl(), 0);
 
                     if (nextNewsFeeds != null) {
-                        List<Feed> newFeeds = insertFeeds(nextNewsFeeds.getFeeds(), account);
+                        List<Feed> newFeeds = insertFeeds(nextNewsFeeds.getFeeds());
 
                         // there is always only one object in the list, see nextcloud news api doc
                         insertionResult.setFeed(newFeeds.get(0));
@@ -154,7 +157,7 @@ public class NextNewsRepository extends ARepository {
     }
 
     @Override
-    public Completable updateFeed(Feed feed, Account account) {
+    public Completable updateFeed(Feed feed) {
         return Completable.create(emitter -> {
             NextNewsAPI api = new NextNewsAPI(account.toNextNewsCredentials());
 
@@ -185,7 +188,7 @@ public class NextNewsRepository extends ARepository {
     }
 
     @Override
-    public Completable deleteFeed(Feed feed, Account account) {
+    public Completable deleteFeed(Feed feed) {
         return Completable.create(emitter -> {
             NextNewsAPI api = new NextNewsAPI(account.toNextNewsCredentials());
 
@@ -204,7 +207,7 @@ public class NextNewsRepository extends ARepository {
     }
 
     @Override
-    public Completable addFolder(Folder folder, Account account) {
+    public Completable addFolder(Folder folder) {
         return Completable.create(emitter -> {
             NextNewsAPI api = new NextNewsAPI(account.toNextNewsCredentials());
 
@@ -212,7 +215,7 @@ public class NextNewsRepository extends ARepository {
                 NextNewsFolders folders = api.createFolder(new NextNewsFolder(Integer.parseInt(folder.getRemoteId()), folder.getName()));
 
                 if (folders != null)
-                    insertFolders(folders.getFolders(), account);
+                    insertFolders(folders.getFolders());
                 else
                     emitter.onError(new Exception("Unknown error"));
             } catch (Exception e) {
@@ -224,7 +227,7 @@ public class NextNewsRepository extends ARepository {
     }
 
     @Override
-    public Completable updateFolder(Folder folder, Account account) {
+    public Completable updateFolder(Folder folder) {
         return Completable.create(emitter -> {
             NextNewsAPI api = new NextNewsAPI(account.toNextNewsCredentials());
 
@@ -244,7 +247,7 @@ public class NextNewsRepository extends ARepository {
     }
 
     @Override
-    public Completable deleteFolder(Folder folder, Account account) {
+    public Completable deleteFolder(Folder folder) {
         return Completable.create(emitter -> {
             NextNewsAPI api = new NextNewsAPI(account.toNextNewsCredentials());
 
@@ -263,7 +266,7 @@ public class NextNewsRepository extends ARepository {
         });
     }
 
-    private List<Feed> insertFeeds(List<NextNewsFeed> nextNewsFeeds, Account account) {
+    private List<Feed> insertFeeds(List<NextNewsFeed> nextNewsFeeds) {
         List<Feed> feeds = new ArrayList<>();
 
         for (NextNewsFeed nextNewsFeed : nextNewsFeeds) {
@@ -281,7 +284,7 @@ public class NextNewsRepository extends ARepository {
         return insertedFeeds;
     }
 
-    private void insertFolders(List<NextNewsFolder> nextNewsFolders, Account account) {
+    private void insertFolders(List<NextNewsFolder> nextNewsFolders) {
         List<Folder> folders = new ArrayList<>();
 
         for (NextNewsFolder nextNewsFolder : nextNewsFolders) {
@@ -295,7 +298,7 @@ public class NextNewsRepository extends ARepository {
         database.folderDao().foldersUpsert(folders, account);
     }
 
-    private void insertItems(List<NextNewsItem> items, Account account, boolean initialSync) {
+    private void insertItems(List<NextNewsItem> items, boolean initialSync) {
         List<Item> newItems = new ArrayList<>();
 
         for (NextNewsItem nextNewsItem : items) {

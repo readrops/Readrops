@@ -28,10 +28,10 @@ public class AccountViewModel extends AndroidViewModel {
     public void setAccountType(Account.AccountType accountType) throws Exception {
         switch (accountType) {
             case NEXTCLOUD_NEWS:
-                repository = new NextNewsRepository(getApplication());
+                repository = new NextNewsRepository(getApplication(), null);
                 break;
             case FRESHRSS:
-                repository = new FreshRSSRepository(getApplication());
+                repository = new FreshRSSRepository(getApplication(), null);
                 break;
             default:
                 throw new Exception("unknown account type");
@@ -62,10 +62,6 @@ public class AccountViewModel extends AndroidViewModel {
             database.accountDao().delete(account);
             emitter.onComplete();
         });
-    }
-
-    public Single<Integer> getAccountCountByAccountType(int accountTypeCode) {
-        return Single.create(emitter -> emitter.onSuccess(database.accountDao().getAccountCountByType(accountTypeCode)));
     }
 
     public Single<Integer> getAccountCount() {
