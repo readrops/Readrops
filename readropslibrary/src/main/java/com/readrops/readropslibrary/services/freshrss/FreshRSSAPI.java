@@ -3,6 +3,7 @@ package com.readrops.readropslibrary.services.freshrss;
 import androidx.annotation.NonNull;
 
 import com.readrops.readropslibrary.services.API;
+import com.readrops.readropslibrary.services.Credentials;
 import com.readrops.readropslibrary.services.SyncType;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSFeeds;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSFolders;
@@ -19,7 +20,7 @@ import okhttp3.RequestBody;
 
 public class FreshRSSAPI extends API<FreshRSSService> {
 
-    public FreshRSSAPI(FreshRSSCredentials credentials) {
+    public FreshRSSAPI(Credentials credentials) {
         super(credentials, FreshRSSService.class, FreshRSSService.END_POINT);
     }
 
@@ -101,6 +102,14 @@ public class FreshRSSAPI extends API<FreshRSSService> {
             return api.setItemReadState(token, EXCLUDE_ITEMS.EXCLUDE_READ_ITEMS.value, null, itemId);
         else
             return api.setItemReadState(token, null, EXCLUDE_ITEMS.EXCLUDE_READ_ITEMS.value, itemId);
+    }
+
+    public Completable createFeed(String token, String feedUrl) {
+        return api.createOrDeleteFeed(token, "feed/" + feedUrl, "subscribe");
+    }
+
+    public Completable deleteFeed(String token, String feedUrl) {
+        return api.createOrDeleteFeed(token, "feed/" + feedUrl, "unsubscribe");
     }
 
     public enum EXCLUDE_ITEMS {

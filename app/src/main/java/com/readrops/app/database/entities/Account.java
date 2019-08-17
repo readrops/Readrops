@@ -12,6 +12,7 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.readrops.app.R;
+import com.readrops.readropslibrary.services.Credentials;
 import com.readrops.readropslibrary.services.freshrss.FreshRSSCredentials;
 import com.readrops.readropslibrary.services.nextcloudnews.NextNewsCredentials;
 
@@ -67,6 +68,8 @@ public class Account implements Parcelable {
         currentAccount = in.readByte() != 0;
         login = in.readString();
         password = in.readString();
+        token = in.readString();
+        writeToken = in.readString();
     }
 
     public static final Creator<Account> CREATOR = new Creator<Account>() {
@@ -193,6 +196,8 @@ public class Account implements Parcelable {
         dest.writeByte((byte) (currentAccount ? 1 : 0));
         dest.writeString(login);
         dest.writeString(password);
+        dest.writeString(token);
+        dest.writeString(writeToken);
     }
 
     public enum AccountType implements Parcelable {
@@ -244,12 +249,15 @@ public class Account implements Parcelable {
         }
     }
 
-    public NextNewsCredentials toNextNewsCredentials() {
-        return new NextNewsCredentials(login, password, url);
-    }
-
-    public FreshRSSCredentials toFreshRSSCredentials() {
-        return new FreshRSSCredentials(token, url);
+    public Credentials toCredentials() {
+        switch (accountType) {
+            case NEXTCLOUD_NEWS:
+                return new NextNewsCredentials(login, password, url);
+            case FRESHRSS:
+                return new FreshRSSCredentials(token, url);
+            default:
+                return null;
+        }
     }
 
     public boolean isLocal() {

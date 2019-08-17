@@ -1,13 +1,15 @@
 package com.readrops.app.viewmodels;
 
 import android.app.Application;
-import androidx.lifecycle.AndroidViewModel;
+
 import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.readrops.app.database.Database;
 import com.readrops.app.database.entities.Account;
 import com.readrops.app.repositories.ARepository;
+import com.readrops.app.repositories.FreshRSSRepository;
 import com.readrops.app.repositories.LocalFeedRepository;
 import com.readrops.app.repositories.NextNewsRepository;
 import com.readrops.app.utils.FeedInsertionResult;
@@ -38,6 +40,9 @@ public class AddFeedsViewModel extends AndroidViewModel {
                 break;
             case NEXTCLOUD_NEWS:
                 repository = new NextNewsRepository(getApplication(), account);
+                break;
+            case FRESHRSS:
+                repository = new FreshRSSRepository(getApplication(), account);
                 break;
         }
 

@@ -61,7 +61,7 @@ public class FreshRSSRepository extends ARepository {
 
     @Override
     public Observable<Feed> sync(List<Feed> feeds) {
-        FreshRSSAPI api = new FreshRSSAPI(account.toFreshRSSCredentials());
+        FreshRSSAPI api = new FreshRSSAPI(account.toCredentials());
 
         FreshRSSSyncData syncData = new FreshRSSSyncData();
         SyncType syncType;
@@ -87,7 +87,17 @@ public class FreshRSSRepository extends ARepository {
 
     @Override
     public Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results) {
-        return null;
+        FreshRSSAPI api = new FreshRSSAPI(account.toCredentials());
+
+        List<Completable> completableList = new ArrayList<>();
+
+        for (ParsingResult result : results) {
+            completableList.add(api.createFeed(account.getWriteToken(), result.getUrl()));
+        }
+
+        // TODO : see how to handle exceptions/errors like the others repositories
+        return Completable.concat(completableList)
+                .andThen(Single.just(new ArrayList<>()));
     }
 
     @Override
@@ -97,7 +107,13 @@ public class FreshRSSRepository extends ARepository {
 
     @Override
     public Completable deleteFeed(Feed feed) {
-        return null;
+        FreshRSSAPI api = new FreshRSSAPI(account.toCredentials());
+
+        return api.deleteFeed(account.getWriteToken(), feed.getUrl())
+                .andThen(Completable.create(emitter -> {
+                    database.feedDao().delete(feed.getId());
+                    emitter.onComplete();
+                }));
     }
 
     @Override
@@ -117,17 +133,19 @@ public class FreshRSSRepository extends ARepository {
 
     @Override
     public Completable setItemReadState(Item item, boolean read) {
-        FreshRSSAPI api = new FreshRSSAPI(account.toFreshRSSCredentials());
+        FreshRSSAPI api = new FreshRSSAPI(account.toCredentials());
 
         if (account.getWriteToken() == null) {
             return api.getWriteToken()
                     .flatMapCompletable(writeToken -> {
                         database.accountDao().updateWriteToken(account.getId(), writeToken);
 
-                        return api.markItemReadUnread(read, item.getRemoteId(), writeToken).concatWith(super.setItemReadState(item, read));
+                        return api.markItemReadUnread(read, item.getRemoteId(), writeToken)
+                                .concatWith(super.setItemReadState(item, read));
                     });
         } else {
-            return api.markItemReadUnread(read, item.getRemoteId(), account.getWriteToken()).concatWith(super.setItemReadState(item, read));
+            return api.markItemReadUnread(read, item.getRemoteId(), account.getWriteToken())
+                    .concatWith(super.setItemReadState(item, read));
         }
     }
 

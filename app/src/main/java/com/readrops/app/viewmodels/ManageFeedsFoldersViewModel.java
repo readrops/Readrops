@@ -11,6 +11,7 @@ import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.FeedWithFolder;
 import com.readrops.app.repositories.ARepository;
+import com.readrops.app.repositories.FreshRSSRepository;
 import com.readrops.app.repositories.LocalFeedRepository;
 import com.readrops.app.repositories.NextNewsRepository;
 
@@ -40,6 +41,9 @@ public class ManageFeedsFoldersViewModel extends AndroidViewModel {
                 break;
             case NEXTCLOUD_NEWS:
                 repository = new NextNewsRepository(getApplication(), account);
+                break;
+            case FRESHRSS:
+                repository = new FreshRSSRepository(getApplication(), account);
                 break;
         }
 

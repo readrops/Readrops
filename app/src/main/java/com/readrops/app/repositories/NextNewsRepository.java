@@ -51,7 +51,7 @@ public class NextNewsRepository extends ARepository {
     @Override
     public Single<Boolean> login(Account account, boolean insert) {
         return Single.create(emitter -> {
-            NextNewsAPI newsAPI = new NextNewsAPI(account.toNextNewsCredentials());
+            NextNewsAPI newsAPI = new NextNewsAPI(account.toCredentials());
             NextNewsUser user = newsAPI.login();
 
             if (user != null) {
@@ -70,7 +70,7 @@ public class NextNewsRepository extends ARepository {
     public Observable<Feed> sync(List<Feed> feeds) {
         return Observable.create(emitter -> {
             try {
-                NextNewsAPI newsAPI = new NextNewsAPI(account.toNextNewsCredentials());
+                NextNewsAPI newsAPI = new NextNewsAPI(account.toCredentials());
                 long lastModified = LocalDateTime.now().toDateTime().getMillis();
                 SyncType syncType;
 
@@ -122,7 +122,7 @@ public class NextNewsRepository extends ARepository {
     public Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results) {
         return Single.create(emitter -> {
             List<FeedInsertionResult> feedInsertionResults = new ArrayList<>();
-            NextNewsAPI newsAPI = new NextNewsAPI(account.toNextNewsCredentials());
+            NextNewsAPI newsAPI = new NextNewsAPI(account.toCredentials());
 
             for (ParsingResult result : results) {
                 FeedInsertionResult insertionResult = new FeedInsertionResult();
@@ -159,7 +159,7 @@ public class NextNewsRepository extends ARepository {
     @Override
     public Completable updateFeed(Feed feed) {
         return Completable.create(emitter -> {
-            NextNewsAPI api = new NextNewsAPI(account.toNextNewsCredentials());
+            NextNewsAPI api = new NextNewsAPI(account.toCredentials());
 
             Folder folder = feed.getFolderId() == null ? null : database.folderDao().select(feed.getFolderId());
 
@@ -190,7 +190,7 @@ public class NextNewsRepository extends ARepository {
     @Override
     public Completable deleteFeed(Feed feed) {
         return Completable.create(emitter -> {
-            NextNewsAPI api = new NextNewsAPI(account.toNextNewsCredentials());
+            NextNewsAPI api = new NextNewsAPI(account.toCredentials());
 
             try {
                 if (api.deleteFeed(Integer.parseInt(feed.getRemoteId()))) {
@@ -209,7 +209,7 @@ public class NextNewsRepository extends ARepository {
     @Override
     public Completable addFolder(Folder folder) {
         return Completable.create(emitter -> {
-            NextNewsAPI api = new NextNewsAPI(account.toNextNewsCredentials());
+            NextNewsAPI api = new NextNewsAPI(account.toCredentials());
 
             try {
                 NextNewsFolders folders = api.createFolder(new NextNewsFolder(Integer.parseInt(folder.getRemoteId()), folder.getName()));
@@ -229,7 +229,7 @@ public class NextNewsRepository extends ARepository {
     @Override
     public Completable updateFolder(Folder folder) {
         return Completable.create(emitter -> {
-            NextNewsAPI api = new NextNewsAPI(account.toNextNewsCredentials());
+            NextNewsAPI api = new NextNewsAPI(account.toCredentials());
 
             try {
                 if (api.renameFolder(new NextNewsFolder(Integer.parseInt(folder.getRemoteId()), folder.getName()))) {
@@ -249,7 +249,7 @@ public class NextNewsRepository extends ARepository {
     @Override
     public Completable deleteFolder(Folder folder) {
         return Completable.create(emitter -> {
-            NextNewsAPI api = new NextNewsAPI(account.toNextNewsCredentials());
+            NextNewsAPI api = new NextNewsAPI(account.toCredentials());
 
             try {
                 if (api.deleteFolder(new NextNewsFolder(Integer.parseInt(folder.getRemoteId()), folder.getName()))) {

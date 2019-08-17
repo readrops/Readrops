@@ -41,4 +41,8 @@ public interface FreshRSSService {
     @FormUrlEncoded
     @POST("reader/api/0/edit-tag")
     Completable setItemReadState(@Field("T") String token, @Field("a") String readAction, @Field("r") String unreadAction, @Field("i") String itemId);
+
+    @FormUrlEncoded
+    @POST("reader/api/0/subscription/edit")
+    Completable createOrDeleteFeed(@Field("T") String token, @Field("s") String feedUrl, @Field("ac") String action);
 }
