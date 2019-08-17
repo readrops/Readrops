@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 
 import com.readrops.app.database.entities.Account;
 import com.readrops.app.database.entities.Feed;
-import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.Item;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.HtmlParser;
@@ -33,7 +32,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
@@ -145,46 +143,6 @@ public class LocalFeedRepository extends ARepository {
         });
     }
 
-    @Override
-    public Completable updateFeed(Feed feed) {
-        return Completable.create(emitter -> {
-            database.feedDao().updateFeedFields(feed.getId(), feed.getName(), feed.getUrl(), feed.getFolderId());
-            emitter.onComplete();
-        });
-    }
-
-    @Override
-    public Completable deleteFeed(Feed feed) {
-        return Completable.create(emitter -> {
-            database.feedDao().delete(feed.getId());
-            emitter.onComplete();
-        });
-    }
-
-    @Override
-    public Completable addFolder(Folder folder) {
-        return Completable.create(emitter -> {
-            database.folderDao().insert(folder);
-            emitter.onComplete();
-        });
-    }
-
-    @Override
-    public Completable updateFolder(Folder folder) {
-        return Completable.create(emitter -> {
-            database.folderDao().update(folder);
-            emitter.onComplete();
-        });
-    }
-
-    @Override
-    public Completable deleteFolder(Folder folder) {
-        return Completable.create(emitter -> {
-            database.folderDao().delete(folder);
-            emitter.onComplete();
-        });
-    }
-
     private void insertNewItems(AFeed feed, RSSQuery.RSSType type) throws ParseException {
         Feed dbFeed = null;
         List<Item> items = null;
@@ -284,8 +242,4 @@ public class LocalFeedRepository extends ARepository {
         else
             return FeedInsertionResult.FeedInsertionError.UNKNOWN_ERROR;
     }
-
-
-
-
 }

@@ -110,10 +110,7 @@ public class FreshRSSRepository extends ARepository {
         FreshRSSAPI api = new FreshRSSAPI(account.toCredentials());
 
         return api.deleteFeed(account.getWriteToken(), feed.getUrl())
-                .andThen(Completable.create(emitter -> {
-                    database.feedDao().delete(feed.getId());
-                    emitter.onComplete();
-                }));
+                .andThen(super.deleteFeed(feed));
     }
 
     @Override
@@ -145,7 +142,7 @@ public class FreshRSSRepository extends ARepository {
                     });
         } else {
             return api.markItemReadUnread(read, item.getRemoteId(), account.getWriteToken())
-                    .concatWith(super.setItemReadState(item, read));
+                    .andThen(super.setItemReadState(item, read));
         }
     }
 

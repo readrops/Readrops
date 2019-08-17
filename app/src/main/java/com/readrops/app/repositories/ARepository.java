@@ -42,15 +42,40 @@ public abstract class ARepository {
 
     public abstract Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results);
 
-    public abstract Completable updateFeed(Feed feed);
+    public Completable updateFeed(Feed feed) {
+        return Completable.create(emitter -> {
+            database.feedDao().updateFeedFields(feed.getId(), feed.getName(), feed.getUrl(), feed.getFolderId());
+            emitter.onComplete();
+        });
+    }
 
-    public abstract Completable deleteFeed(Feed feed);
+    public Completable deleteFeed(Feed feed) {
+        return Completable.create(emitter -> {
+            database.feedDao().delete(feed.getId());
+            emitter.onComplete();
+        });
+    }
 
-    public abstract Completable addFolder(Folder folder);
+    public Completable addFolder(Folder folder) {
+        return Completable.create(emitter -> {
+            database.folderDao().insert(folder);
+            emitter.onComplete();
+        });
+    }
 
-    public abstract Completable updateFolder(Folder folder);
+    public Completable updateFolder(Folder folder) {
+        return Completable.create(emitter -> {
+            database.folderDao().update(folder);
+            emitter.onComplete();
+        });
+    }
 
-    public abstract Completable deleteFolder(Folder folder);
+    public Completable deleteFolder(Folder folder) {
+        return Completable.create(emitter -> {
+            database.folderDao().delete(folder);
+            emitter.onComplete();
+        });
+    }
 
     public Completable setItemReadState(Item item, boolean read) {
         return Completable.create(emitter -> {

@@ -162,7 +162,6 @@ public class NextNewsRepository extends ARepository {
             NextNewsAPI api = new NextNewsAPI(account.toCredentials());
 
             Folder folder = feed.getFolderId() == null ? null : database.folderDao().select(feed.getFolderId());
-
             NextNewsRenameFeed newsRenameFeed = new NextNewsRenameFeed(Integer.parseInt(feed.getRemoteId()), feed.getName());
 
             NextNewsFeed newsFeed;
@@ -173,18 +172,13 @@ public class NextNewsRepository extends ARepository {
 
             try {
                 if (api.renameFeed(newsRenameFeed) && api.changeFeedFolder(newsFeed)) {
-                    if (folder != null)
-                        database.feedDao().updateFeedFields(feed.getId(), feed.getName(), feed.getUrl(), folder.getId());
-                    else
-                        database.feedDao().updateFeedFields(feed.getId(), feed.getName(), feed.getUrl(), null);
+                    emitter.onComplete();
                 } else
-                    emitter.onError(new Exception("Unknown error"));
+                    emitter.onError(new Exception("Unknown error when updating feed"));
             } catch (Exception e) {
                 emitter.onError(e);
             }
-
-            emitter.onComplete();
-        });
+        }).andThen(super.updateFeed(feed));
     }
 
     @Override
@@ -194,7 +188,6 @@ public class NextNewsRepository extends ARepository {
 
             try {
                 if (api.deleteFeed(Integer.parseInt(feed.getRemoteId()))) {
-                    database.feedDao().delete(feed.getId());
                     emitter.onComplete();
                 } else
                     emitter.onError(new Exception("Unknown error"));
@@ -203,7 +196,7 @@ public class NextNewsRepository extends ARepository {
             }
 
             emitter.onComplete();
-        });
+        }).andThen(super.deleteFeed(feed));
     }
 
     @Override
@@ -233,7 +226,6 @@ public class NextNewsRepository extends ARepository {
 
             try {
                 if (api.renameFolder(new NextNewsFolder(Integer.parseInt(folder.getRemoteId()), folder.getName()))) {
-                    database.folderDao().update(folder);
                     emitter.onComplete();
                 } else
                     emitter.onError(new Exception("Unknown error"));
@@ -243,7 +235,7 @@ public class NextNewsRepository extends ARepository {
             }
 
             emitter.onComplete();
-        });
+        }).andThen(super.updateFolder(folder));
     }
 
     @Override
@@ -253,7 +245,6 @@ public class NextNewsRepository extends ARepository {
 
             try {
                 if (api.deleteFolder(new NextNewsFolder(Integer.parseInt(folder.getRemoteId()), folder.getName()))) {
-                    database.folderDao().delete(folder);
                     emitter.onComplete();
                 } else
                     emitter.onError(new Exception("Unknown error"));
@@ -263,7 +254,7 @@ public class NextNewsRepository extends ARepository {
             }
 
             emitter.onComplete();
-        });
+        }).andThen(super.deleteFolder(folder));
     }
 
     private List<Feed> insertFeeds(List<NextNewsFeed> nextNewsFeeds) {
