@@ -56,7 +56,7 @@ dependencies {
     implementation 'androidx.paging:paging-runtime:2.1.0'
     implementation 'androidx.paging:paging-common:2.1.0'
 
-    implementation 'joda-time:joda-time:2.9.9'
+    implementation 'joda-time:joda-time:2.10.1'
     implementation 'org.jsoup:jsoup:1.11.3'
 
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
@@ -66,4 +66,6 @@ dependencies {
     implementation 'com.mikepenz:fastadapter:3.3.1'
     implementation 'com.mikepenz:fastadapter-commons:3.3.0'
     implementation 'com.mikepenz:materialdrawer:6.1.2'
+
+    implementation 'com.facebook.stetho:stetho:1.5.1'
 }

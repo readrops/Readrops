@@ -1,5 +1,6 @@
 package com.readrops.readropslibrary.utils;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.readrops.readropslibrary.BuildConfig;
 import com.readrops.readropslibrary.services.Credentials;
 
@@ -10,7 +11,6 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.logging.HttpLoggingInterceptor;
 
 public class HttpManager {
 
@@ -35,10 +35,8 @@ public class HttpManager {
         httpBuilder.addInterceptor(new AuthInterceptor());
 
         if (BuildConfig.DEBUG) {
-            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
-
-            httpBuilder.addInterceptor(loggingInterceptor);
+            StethoInterceptor loggingInterceptor = new StethoInterceptor();
+            httpBuilder.addNetworkInterceptor(loggingInterceptor);
         }
 
         okHttpClient = httpBuilder.build();
