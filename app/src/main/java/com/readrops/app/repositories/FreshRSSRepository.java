@@ -17,7 +17,6 @@ import com.readrops.app.utils.Utils;
 import com.readrops.readropslibrary.services.SyncType;
 import com.readrops.readropslibrary.services.freshrss.FreshRSSAPI;
 import com.readrops.readropslibrary.services.freshrss.FreshRSSCredentials;
-import com.readrops.readropslibrary.services.freshrss.FreshRSSService;
 import com.readrops.readropslibrary.services.freshrss.FreshRSSSyncData;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSFeed;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSFolder;
@@ -45,7 +44,7 @@ public class FreshRSSRepository extends ARepository {
         return api.login(account.getLogin(), account.getPassword())
                 .flatMap(token -> {
                     account.setToken(token);
-                    api.buildAPI(new FreshRSSCredentials(token, account.getUrl()), FreshRSSService.class, FreshRSSService.END_POINT);
+                    api.setCredentials(new FreshRSSCredentials(token, account.getUrl()));
 
                     return api.getUserInfo();
                 })

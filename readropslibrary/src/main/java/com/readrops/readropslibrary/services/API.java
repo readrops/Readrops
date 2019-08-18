@@ -18,26 +18,26 @@ public abstract class API<T> {
     protected T api;
 
     public API(Credentials credentials, @NonNull Class<T> clazz, @NonNull String endPoint) {
-        buildAPI(credentials, clazz, endPoint);
+        api = createAPI(credentials, clazz, endPoint);
     }
 
-    protected Retrofit getConfiguredRetrofitInstance(@NonNull HttpManager httpManager, @NonNull String endPoint) {
+    protected Retrofit getConfiguredRetrofitInstance(@NonNull String endPoint) {
         return new Retrofit.Builder()
-                .baseUrl(httpManager.getCredentials().getUrl() + endPoint)
+                .baseUrl(HttpManager.getInstance().getCredentials().getUrl() + endPoint)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .client(httpManager.getOkHttpClient())
+                .client(HttpManager.getInstance().getOkHttpClient())
                 .build();
     }
 
     private T createAPI(@NonNull Credentials credentials, @NonNull Class<T> clazz, @NonNull String endPoint) {
-        HttpManager httpManager = new HttpManager(credentials);
-        Retrofit retrofit = getConfiguredRetrofitInstance(httpManager, endPoint);
+        HttpManager.getInstance().setCredentials(credentials);
+        Retrofit retrofit = getConfiguredRetrofitInstance(endPoint);
 
         return retrofit.create(clazz);
     }
 
-    public void buildAPI(@NonNull Credentials credentials, @NonNull Class<T> clazz, @NonNull String endPoint) {
-        api = createAPI(credentials, clazz, endPoint);
+    public void setCredentials(@NonNull Credentials credentials) {
+        HttpManager.getInstance().setCredentials(credentials);
     }
 }
