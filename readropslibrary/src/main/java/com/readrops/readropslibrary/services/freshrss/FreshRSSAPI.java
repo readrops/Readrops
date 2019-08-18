@@ -112,6 +112,10 @@ public class FreshRSSAPI extends API<FreshRSSService> {
         return api.createOrDeleteFeed(token, "feed/" + feedUrl, "unsubscribe");
     }
 
+    public Completable updateFeed(String token, String feedUrl, String title, String folderId) {
+        return api.updateFeed(token, "feed/" + feedUrl, title, folderId, "edit");
+    }
+
     public enum EXCLUDE_ITEMS {
         EXCLUDE_READ_ITEMS("user/-/state/com.google/read");
 

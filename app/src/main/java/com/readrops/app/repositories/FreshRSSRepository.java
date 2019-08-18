@@ -101,7 +101,15 @@ public class FreshRSSRepository extends ARepository {
 
     @Override
     public Completable updateFeed(Feed feed) {
-        return null;
+        FreshRSSAPI api = new FreshRSSAPI(account.toCredentials());
+
+        return Single.<Folder>create(emitter -> {
+            Folder folder = feed.getFolderId() == null ? null : database.folderDao().select(feed.getFolderId());
+            emitter.onSuccess(folder);
+
+        }).flatMapCompletable(folder -> api.updateFeed(account.getWriteToken(),
+                feed.getUrl(), feed.getName(), folder == null ? null : folder.getRemoteId()))
+                .andThen(super.updateFeed(feed));
     }
 
     @Override
