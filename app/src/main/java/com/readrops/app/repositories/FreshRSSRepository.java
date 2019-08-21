@@ -122,17 +122,25 @@ public class FreshRSSRepository extends ARepository {
 
     @Override
     public Completable addFolder(Folder folder) {
-        return null;
+        FreshRSSAPI api = new FreshRSSAPI(account.toCredentials());
+
+        return api.createFolder(account.getWriteToken(), folder.getName());
     }
 
     @Override
     public Completable updateFolder(Folder folder) {
-        return null;
+        FreshRSSAPI api = new FreshRSSAPI(account.toCredentials());
+
+        return api.updateFolder(account.getWriteToken(), folder.getRemoteId(), folder.getName())
+                .andThen(super.updateFolder(folder));
     }
 
     @Override
     public Completable deleteFolder(Folder folder) {
-        return null;
+        FreshRSSAPI api = new FreshRSSAPI(account.toCredentials());
+
+        return api.deleteFolder(account.getWriteToken(), folder.getRemoteId())
+                .andThen(super.deleteFolder(folder));
     }
 
     @Override
