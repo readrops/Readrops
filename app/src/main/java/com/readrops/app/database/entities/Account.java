@@ -12,6 +12,7 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.readrops.app.R;
+import com.readrops.app.database.AccountConfig;
 import com.readrops.readropslibrary.services.Credentials;
 import com.readrops.readropslibrary.services.freshrss.FreshRSSCredentials;
 import com.readrops.readropslibrary.services.nextcloudnews.NextNewsCredentials;
@@ -201,15 +202,14 @@ public class Account implements Parcelable {
     }
 
     public enum AccountType implements Parcelable {
-        LOCAL(R.drawable.ic_readrops, R.string.local_account),
-        NEXTCLOUD_NEWS(R.drawable.ic_nextcloud_news, R.string.nextcloud_news),
-        FEEDLY(R.drawable.ic_feedly, R.string.feedly),
-        FRESHRSS(R.drawable.ic_freshrss, R.string.freshrss);
+        LOCAL(R.drawable.ic_readrops, R.string.local_account, AccountConfig.LOCAL),
+        NEXTCLOUD_NEWS(R.drawable.ic_nextcloud_news, R.string.nextcloud_news, AccountConfig.NEXTNEWS),
+        FEEDLY(R.drawable.ic_feedly, R.string.feedly, null),
+        FRESHRSS(R.drawable.ic_freshrss, R.string.freshrss, AccountConfig.FRESHRSS);
 
-        private @DrawableRes
-        int iconRes;
-        private @StringRes
-        int name;
+        private @DrawableRes int iconRes;
+        private @StringRes int name;
+        private AccountConfig accountConfig;
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
@@ -243,9 +243,14 @@ public class Account implements Parcelable {
             return name;
         }
 
-        AccountType(@DrawableRes int iconRes, @StringRes int name) {
+        public AccountConfig getAccountConfig() {
+            return accountConfig;
+        }
+
+        AccountType(@DrawableRes int iconRes, @StringRes int name, AccountConfig accountConfig) {
             this.iconRes = iconRes;
             this.name = name;
+            this.accountConfig = accountConfig;
         }
     }
 

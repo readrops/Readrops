@@ -80,7 +80,9 @@ public class ManageFeedsFoldersActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.feeds_menu, menu);
+        if (account.getAccountType().getAccountConfig().isFolderCreation())
+            getMenuInflater().inflate(R.menu.feeds_menu, menu);
+        
         return super.onCreateOptionsMenu(menu);
     }
 
