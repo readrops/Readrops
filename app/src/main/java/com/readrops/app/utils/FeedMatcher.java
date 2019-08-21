@@ -2,8 +2,14 @@ package com.readrops.app.utils;
 
 import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.Feed;
+import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
+import com.readrops.readropslibrary.localfeed.json.JSONFeed;
+import com.readrops.readropslibrary.localfeed.rss.RSSChannel;
+import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeed;
+
+import org.jsoup.Jsoup;
 
 public final class FeedMatcher {
 
@@ -40,5 +46,58 @@ public final class FeedMatcher {
         newFeed.setRemoteId(feed.getId());
 
         return newFeed;
+    }
+
+    public static Feed feedFromRSS(RSSFeed rssFeed) {
+        Feed feed = new Feed();
+        RSSChannel channel = rssFeed.getChannel();
+
+        feed.setName(Jsoup.parse(channel.getTitle()).text());
+        feed.setUrl(channel.getFeedUrl());
+        feed.setSiteUrl(channel.getUrl());
+        feed.setDescription(channel.getDescription());
+        feed.setLastUpdated(channel.getLastUpdated());
+
+        feed.setEtag(rssFeed.getEtag());
+        feed.setLastModified(rssFeed.getLastModified());
+
+        feed.setFolderId(null);
+
+        return feed;
+    }
+
+    public static Feed feedFromATOM(ATOMFeed atomFeed) {
+        Feed feed = new Feed();
+
+        feed.setName(atomFeed.getTitle());
+        feed.setDescription(atomFeed.getSubtitle());
+        feed.setUrl(atomFeed.getUrl());
+        feed.setSiteUrl(atomFeed.getWebsiteUrl());
+        feed.setDescription(atomFeed.getSubtitle());
+        feed.setLastUpdated(atomFeed.getUpdated());
+
+        feed.setEtag(atomFeed.getEtag());
+        feed.setLastModified(atomFeed.getLastModified());
+
+        feed.setFolderId(null);
+
+        return feed;
+    }
+
+    public static Feed feedFromJSON(JSONFeed jsonFeed) {
+        Feed feed = new Feed();
+
+        feed.setName(jsonFeed.getTitle());
+        feed.setUrl(jsonFeed.getFeedUrl());
+        feed.setSiteUrl(jsonFeed.getHomePageUrl());
+        feed.setDescription(jsonFeed.getDescription());
+
+        feed.setEtag(jsonFeed.getEtag());
+        feed.setLastModified(jsonFeed.getLastModified());
+        feed.setIconUrl(jsonFeed.getFaviconUrl());
+
+        feed.setFolderId(null);
+
+        return feed;
     }
 }

@@ -10,7 +10,9 @@ import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Item;
 import com.readrops.app.utils.FeedInsertionResult;
+import com.readrops.app.utils.FeedMatcher;
 import com.readrops.app.utils.HtmlParser;
+import com.readrops.app.utils.ItemMatcher;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.utils.Utils;
 import com.readrops.readropslibrary.localfeed.AFeed;
@@ -150,15 +152,15 @@ public class LocalFeedRepository extends ARepository {
         switch (type) {
             case RSS_2:
                 dbFeed = database.feedDao().getFeedByUrl(((RSSFeed) feed).getChannel().getFeedUrl());
-                items = Item.itemsFromRSS(((RSSFeed) feed).getChannel().getItems(), dbFeed);
+                items = ItemMatcher.itemsFromRSS(((RSSFeed) feed).getChannel().getItems(), dbFeed);
                 break;
             case RSS_ATOM:
                 dbFeed = database.feedDao().getFeedByUrl(((ATOMFeed) feed).getUrl());
-                items = Item.itemsFromATOM(((ATOMFeed) feed).getEntries(), dbFeed);
+                items = ItemMatcher.itemsFromATOM(((ATOMFeed) feed).getEntries(), dbFeed);
                 break;
             case RSS_JSON:
                 dbFeed = database.feedDao().getFeedByUrl(((JSONFeed) feed).getFeedUrl());
-                items = Item.itemsFromJSON(((JSONFeed) feed).getItems(), dbFeed);
+                items = ItemMatcher.itemsFromJSON(((JSONFeed) feed).getItems(), dbFeed);
                 break;
         }
 
@@ -172,13 +174,13 @@ public class LocalFeedRepository extends ARepository {
         Feed dbFeed = null;
         switch (type) {
             case RSS_2:
-                dbFeed = Feed.feedFromRSS((RSSFeed) feed);
+                dbFeed = FeedMatcher.feedFromRSS((RSSFeed) feed);
                 break;
             case RSS_ATOM:
-                dbFeed = Feed.feedFromATOM((ATOMFeed) feed);
+                dbFeed = FeedMatcher.feedFromATOM((ATOMFeed) feed);
                 break;
             case RSS_JSON:
-                dbFeed = Feed.feedFromJSON((JSONFeed) feed);
+                dbFeed = FeedMatcher.feedFromJSON((JSONFeed) feed);
                 break;
         }
 
