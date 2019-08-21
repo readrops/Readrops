@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.readrops.app.R;
-import com.readrops.app.database.entities.Account;
+import com.readrops.app.database.entities.account.Account;
 
 import java.util.List;
 

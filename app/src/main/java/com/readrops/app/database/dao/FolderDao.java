@@ -5,7 +5,7 @@ import androidx.room.Dao;
 import androidx.room.Query;
 import androidx.room.Transaction;
 
-import com.readrops.app.database.entities.Account;
+import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.Folder;
 
 import java.util.ArrayList;

@@ -37,7 +37,8 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.readrops.app.R;
 import com.readrops.app.adapters.MainItemListAdapter;
-import com.readrops.app.database.entities.Account;
+import com.readrops.app.database.entities.account.Account;
+import com.readrops.app.database.entities.account.AccountType;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.ItemWithFeed;
@@ -309,7 +310,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                         menu.findItem(R.id.item_mark_read).setVisible(!itemWithFeed.getItem().isRead());
                         menu.findItem(R.id.item_mark_unread).setVisible(itemWithFeed.getItem().isRead());
                         menu.findItem(R.id.item_select_all).setVisible(!(viewModel.getCurrentAccount()
-                                .is(Account.AccountType.FRESHRSS)));
+                                .is(AccountType.FRESHRSS)));
 
                         return true;
                     }

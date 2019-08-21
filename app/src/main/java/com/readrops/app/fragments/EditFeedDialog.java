@@ -16,7 +16,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.google.android.material.textfield.TextInputEditText;
 import com.readrops.app.R;
 import com.readrops.app.activities.ManageFeedsFoldersActivity;
-import com.readrops.app.database.entities.Account;
+import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.FeedWithFolder;

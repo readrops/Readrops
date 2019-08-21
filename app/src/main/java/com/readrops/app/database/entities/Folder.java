@@ -9,6 +9,8 @@ import androidx.room.ForeignKey;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import com.readrops.app.database.entities.account.Account;
+
 @Entity(foreignKeys = @ForeignKey(entity = Account.class, parentColumns = "id",
         childColumns = "account_id", onDelete = ForeignKey.CASCADE))
 public class Folder implements Parcelable, Comparable<Folder> {

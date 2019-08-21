@@ -12,7 +12,8 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.readrops.app.R;
-import com.readrops.app.database.entities.Account;
+import com.readrops.app.database.entities.account.Account;
+import com.readrops.app.database.entities.account.AccountType;
 import com.readrops.app.databinding.ActivityAccountTypeListBinding;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.AccountViewModel;
@@ -46,7 +47,7 @@ public class AccountTypeListActivity extends AppCompatActivity {
         fromMainActivity = getIntent().getBooleanExtra("fromMainActivity", false);
 
         adapter = new AccountTypeListAdapter(accountType -> {
-            if (!(accountType == Account.AccountType.LOCAL)) {
+            if (!(accountType == AccountType.LOCAL)) {
                 Intent intent = new Intent(getApplicationContext(), AddAccountActivity.class);
 
                 if (fromMainActivity)
@@ -65,17 +66,17 @@ public class AccountTypeListActivity extends AppCompatActivity {
         adapter.setAccountTypes(getData());
     }
 
-    private List<Account.AccountType> getData() {
-        List<Account.AccountType> accountTypes = new ArrayList<>();
+    private List<AccountType> getData() {
+        List<AccountType> accountTypes = new ArrayList<>();
 
-        accountTypes.add(Account.AccountType.LOCAL);
-        accountTypes.add(Account.AccountType.NEXTCLOUD_NEWS);
-        accountTypes.add(Account.AccountType.FRESHRSS);
+        accountTypes.add(AccountType.LOCAL);
+        accountTypes.add(AccountType.NEXTCLOUD_NEWS);
+        accountTypes.add(AccountType.FRESHRSS);
 
         return accountTypes;
     }
 
-    private void createNewLocalAccount(Account.AccountType accountType) {
+    private void createNewLocalAccount(AccountType accountType) {
         Account account = new Account(null, getString(accountType.getName()), accountType);
         account.setCurrentAccount(true);
 

@@ -2,7 +2,7 @@ package com.readrops.app.database;
 
 import androidx.room.TypeConverter;
 
-import com.readrops.app.database.entities.Account;
+import com.readrops.app.database.entities.account.AccountType;
 
 import org.joda.time.LocalDateTime;
 
@@ -19,12 +19,12 @@ public class Converters {
     }
 
     @TypeConverter
-    public Account.AccountType fromAccountTypeCode(int ordinal) {
-        return Account.AccountType.values()[ordinal];
+    public AccountType fromAccountTypeCode(int ordinal) {
+        return AccountType.values()[ordinal];
     }
 
     @TypeConverter
-    public int getAccountTypeCode(Account.AccountType accountType) {
+    public int getAccountTypeCode(AccountType accountType) {
         return accountType.ordinal();
     }
 

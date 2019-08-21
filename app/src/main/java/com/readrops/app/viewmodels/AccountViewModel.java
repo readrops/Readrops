@@ -6,7 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 
 import com.readrops.app.database.Database;
-import com.readrops.app.database.entities.Account;
+import com.readrops.app.database.entities.account.Account;
+import com.readrops.app.database.entities.account.AccountType;
 import com.readrops.app.repositories.ARepository;
 
 import io.reactivex.Completable;
@@ -23,7 +24,7 @@ public class AccountViewModel extends AndroidViewModel {
         database = Database.getInstance(application);
     }
 
-    public void setAccountType(Account.AccountType accountType) throws Exception {
+    public void setAccountType(AccountType accountType) throws Exception {
         repository = ARepository.repositoryFactory(null, accountType, getApplication());
     }
 

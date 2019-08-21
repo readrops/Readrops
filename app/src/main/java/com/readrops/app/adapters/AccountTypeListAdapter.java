@@ -8,14 +8,14 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.readrops.app.R;
-import com.readrops.app.database.entities.Account;
+import com.readrops.app.database.entities.account.AccountType;
 import com.readrops.app.databinding.AccountTypeItemBinding;
 
 import java.util.List;
 
 public class AccountTypeListAdapter extends RecyclerView.Adapter<AccountTypeListAdapter.AccountTypeViewHolder> {
 
-    private List<Account.AccountType> accountTypes;
+    private List<AccountType> accountTypes;
     private OnItemClickListener listener;
 
     public AccountTypeListAdapter(OnItemClickListener listener) {
@@ -33,7 +33,7 @@ public class AccountTypeListAdapter extends RecyclerView.Adapter<AccountTypeList
 
     @Override
     public void onBindViewHolder(@NonNull AccountTypeViewHolder holder, int position) {
-        Account.AccountType accountType = accountTypes.get(position);
+        AccountType accountType = accountTypes.get(position);
 
         holder.binding.accountTypeName.setText(accountType.getName());
         holder.binding.accountTypeLogo.setImageResource(accountType.getIconRes());
@@ -46,13 +46,13 @@ public class AccountTypeListAdapter extends RecyclerView.Adapter<AccountTypeList
         return accountTypes.size();
     }
 
-    public void setAccountTypes(List<Account.AccountType> accountTypes) {
+    public void setAccountTypes(List<AccountType> accountTypes) {
         this.accountTypes = accountTypes;
         notifyDataSetChanged();
     }
 
     public interface OnItemClickListener {
-        void onItemClick(Account.AccountType accountType);
+        void onItemClick(AccountType accountType);
     }
 
     public class AccountTypeViewHolder extends RecyclerView.ViewHolder {

@@ -15,7 +15,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.readrops.app.R;
 import com.readrops.app.activities.AddAccountActivity;
 import com.readrops.app.activities.ManageFeedsFoldersActivity;
-import com.readrops.app.database.entities.Account;
+import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.viewmodels.AccountViewModel;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;

@@ -25,7 +25,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.adapters.ItemAdapter;
 import com.readrops.app.R;
-import com.readrops.app.database.entities.Account;
+import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.ParsingResult;

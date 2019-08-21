@@ -1,6 +1,6 @@
 package com.readrops.app.utils;
 
-import com.readrops.app.database.entities.Account;
+import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeed;

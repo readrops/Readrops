@@ -12,7 +12,7 @@ import androidx.paging.PagedList;
 import com.readrops.app.activities.MainActivity;
 import com.readrops.app.database.Database;
 import com.readrops.app.database.ItemsListQueryBuilder;
-import com.readrops.app.database.entities.Account;
+import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.pojo.ItemWithFeed;

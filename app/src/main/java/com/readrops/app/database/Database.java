@@ -10,7 +10,7 @@ import com.readrops.app.database.dao.AccountDao;
 import com.readrops.app.database.dao.FeedDao;
 import com.readrops.app.database.dao.FolderDao;
 import com.readrops.app.database.dao.ItemDao;
-import com.readrops.app.database.entities.Account;
+import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.Item;

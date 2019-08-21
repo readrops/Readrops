@@ -9,7 +9,8 @@ import androidx.annotation.Nullable;
 import androidx.palette.graphics.Palette;
 
 import com.readrops.app.database.Database;
-import com.readrops.app.database.entities.Account;
+import com.readrops.app.database.entities.account.Account;
+import com.readrops.app.database.entities.account.AccountType;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.Item;
@@ -128,7 +129,7 @@ public abstract class ARepository {
         }
     }
 
-    public static ARepository repositoryFactory(Account account, Account.AccountType accountType, Application application) throws Exception {
+    public static ARepository repositoryFactory(Account account, AccountType accountType, Application application) throws Exception {
         switch (accountType) {
             case LOCAL:
                 return new LocalFeedRepository(application, account);

@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.readrops.app.R;
-import com.readrops.app.database.entities.Account;
+import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.fragments.settings.AccountSettingsFragment;
 
 public class SettingsActivity extends AppCompatActivity {

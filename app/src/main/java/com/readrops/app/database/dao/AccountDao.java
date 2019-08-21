@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Query;
 
-import com.readrops.app.database.entities.Account;
+import com.readrops.app.database.entities.account.Account;
 
 import java.util.List;
 

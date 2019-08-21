@@ -16,7 +16,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.readrops.app.R;
-import com.readrops.app.database.entities.Account;
+import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.databinding.ActivityManageFeedsFoldersBinding;
 import com.readrops.app.fragments.FeedsFragment;
@@ -82,7 +82,7 @@ public class ManageFeedsFoldersActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         if (account.getAccountType().getAccountConfig().isFolderCreation())
             getMenuInflater().inflate(R.menu.feeds_menu, menu);
-        
+
         return super.onCreateOptionsMenu(menu);
     }
 

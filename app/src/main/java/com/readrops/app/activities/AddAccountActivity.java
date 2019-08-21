@@ -10,7 +10,8 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.readrops.app.R;
-import com.readrops.app.database.entities.Account;
+import com.readrops.app.database.entities.account.Account;
+import com.readrops.app.database.entities.account.AccountType;
 import com.readrops.app.databinding.ActivityAddAccountBinding;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
@@ -30,7 +31,7 @@ public class AddAccountActivity extends AppCompatActivity {
     private ActivityAddAccountBinding binding;
     private AccountViewModel viewModel;
 
-    private Account.AccountType accountType;
+    private AccountType accountType;
     private boolean forwardResult, editAccount;
 
     private Account accountToEdit;

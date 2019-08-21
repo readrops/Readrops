@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.readrops.app.R;
 import com.readrops.app.activities.ManageFeedsFoldersActivity;
-import com.readrops.app.database.entities.Account;
+import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.databinding.FragmentFoldersBinding;
 import com.readrops.app.utils.SharedPreferencesManager;
