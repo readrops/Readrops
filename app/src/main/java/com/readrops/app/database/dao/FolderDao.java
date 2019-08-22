@@ -32,7 +32,7 @@ public abstract class FolderDao implements BaseDao<Folder> {
     @Query("Select remoteId From Folder Where account_id = :accountId")
     public abstract List<String> getFolderRemoteIdsOfAccount(int accountId);
 
-    @Query("Delete From Folder Where id in (:ids)")
+    @Query("Delete From Folder Where remoteId in (:ids)")
     abstract void deleteByIds(List<String> ids);
 
     /**

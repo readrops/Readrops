@@ -205,10 +205,16 @@ public class NextNewsRepository extends ARepository {
             NextNewsAPI api = new NextNewsAPI(account.toCredentials());
 
             try {
-                NextNewsFolders folders = api.createFolder(new NextNewsFolder(Integer.parseInt(folder.getRemoteId()), folder.getName()));
+                int folderRemoteId = folder.getRemoteId() == null ? 0 : Integer.parseInt(folder.getRemoteId());
+                NextNewsFolders folders = api.createFolder(new NextNewsFolder(folderRemoteId, folder.getName()));
 
-                if (folders != null)
-                    insertFolders(folders.getFolders());
+                if (folders != null) {
+                    NextNewsFolder nextNewsFolder = folders.getFolders().get(0); // always only one item returned by the server, see doc
+
+                    folder.setName(nextNewsFolder.getName());
+                    folder.setRemoteId(String.valueOf(nextNewsFolder.getId()));
+                    database.folderDao().insert(folder);
+                }
                 else
                     emitter.onError(new Exception("Unknown error"));
             } catch (Exception e) {
