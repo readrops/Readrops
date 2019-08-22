@@ -107,38 +107,88 @@ public class FreshRSSRepository extends ARepository {
             Folder folder = feed.getFolderId() == null ? null : database.folderDao().select(feed.getFolderId());
             emitter.onSuccess(folder);
 
-        }).flatMapCompletable(folder -> api.updateFeed(account.getWriteToken(),
-                feed.getUrl(), feed.getName(), folder == null ? null : folder.getRemoteId()))
-                .andThen(super.updateFeed(feed));
+        }).flatMapCompletable(folder -> {
+            if (account.getWriteToken() == null) {
+                return api.getWriteToken()
+                        .flatMapCompletable(token -> {
+                            database.accountDao().updateWriteToken(account.getId(), token);
+
+                            return api.updateFeed(token,
+                                    feed.getUrl(), feed.getName(), folder == null ? null : folder.getRemoteId())
+                                    .andThen(super.updateFeed(feed));
+                        });
+            } else {
+                return api.updateFeed(account.getWriteToken(),
+                        feed.getUrl(), feed.getName(), folder == null ? null : folder.getRemoteId())
+                        .andThen(super.updateFeed(feed));
+            }
+        });
     }
 
     @Override
     public Completable deleteFeed(Feed feed) {
         FreshRSSAPI api = new FreshRSSAPI(account.toCredentials());
 
-        return api.deleteFeed(account.getWriteToken(), feed.getUrl())
-                .andThen(super.deleteFeed(feed));
+        if (account.getWriteToken() == null) {
+            return api.getWriteToken()
+                    .flatMapCompletable(token -> {
+                        database.accountDao().updateWriteToken(account.getId(), token);
+
+                        return api.deleteFeed(token, feed.getUrl())
+                                .andThen(super.deleteFeed(feed));
+                    });
+        } else {
+            return api.deleteFeed(account.getWriteToken(), feed.getUrl())
+                    .andThen(super.deleteFeed(feed));
+        }
     }
 
     @Override
     public Completable addFolder(Folder folder) {
         FreshRSSAPI api = new FreshRSSAPI(account.toCredentials());
 
-        return api.createFolder(account.getWriteToken(), folder.getName());
+        if (account.getWriteToken() == null) {
+            return api.getWriteToken()
+                    .flatMapCompletable(token -> {
+                        database.accountDao().updateWriteToken(account.getId(), token);
+
+                        return api.createFolder(token, folder.getName());
+                    });
+        } else
+            return api.createFolder(account.getWriteToken(), folder.getName());
     }
 
     @Override
     public Completable updateFolder(Folder folder) {
         FreshRSSAPI api = new FreshRSSAPI(account.toCredentials());
 
-        return api.updateFolder(account.getWriteToken(), folder.getRemoteId(), folder.getName())
-                .andThen(super.updateFolder(folder));
+        if (account.getWriteToken() == null) {
+            return api.getWriteToken()
+                    .flatMapCompletable(token -> {
+                        database.accountDao().updateWriteToken(account.getId(), token);
+
+                        return api.updateFolder(token, folder.getRemoteId(), folder.getName())
+                                .andThen(super.updateFolder(folder));
+                    });
+        } else {
+            return api.updateFolder(account.getWriteToken(), folder.getRemoteId(), folder.getName())
+                    .andThen(super.updateFolder(folder));
+        }
     }
 
     @Override
     public Completable deleteFolder(Folder folder) {
         FreshRSSAPI api = new FreshRSSAPI(account.toCredentials());
 
+        if (account.getWriteToken() == null) {
+            return api.getWriteToken()
+                    .flatMapCompletable(token -> {
+                        database.accountDao().updateWriteToken(account.getId(), token);
+
+                        return api.deleteFolder(token, folder.getRemoteId())
+                                .andThen(super.deleteFolder(folder));
+                    });
+        }
         return api.deleteFolder(account.getWriteToken(), folder.getRemoteId())
                 .andThen(super.deleteFolder(folder));
     }
@@ -153,7 +203,7 @@ public class FreshRSSRepository extends ARepository {
                         database.accountDao().updateWriteToken(account.getId(), writeToken);
 
                         return api.markItemReadUnread(read, item.getRemoteId(), writeToken)
-                                .concatWith(super.setItemReadState(item, read));
+                                .andThen(super.setItemReadState(item, read));
                     });
         } else {
             return api.markItemReadUnread(read, item.getRemoteId(), account.getWriteToken())
