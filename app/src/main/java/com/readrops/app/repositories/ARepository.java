@@ -51,10 +51,7 @@ public abstract class ARepository {
     }
 
     public Completable deleteFeed(Feed feed) {
-        return Completable.create(emitter -> {
-            database.feedDao().delete(feed.getId());
-            emitter.onComplete();
-        });
+        return database.feedDao().delete(feed);
     }
 
     public Completable addFolder(Folder folder) {
@@ -65,42 +62,28 @@ public abstract class ARepository {
     }
 
     public Completable updateFolder(Folder folder) {
-        return Completable.create(emitter -> {
-            database.folderDao().update(folder);
-            emitter.onComplete();
-        });
+        return database.folderDao().update(folder);
     }
 
     public Completable deleteFolder(Folder folder) {
-        return Completable.create(emitter -> {
-            database.folderDao().delete(folder);
-            emitter.onComplete();
-        });
+        return database.folderDao().delete(folder);
     }
 
     public Completable setItemReadState(Item item, boolean read) {
-        return Completable.create(emitter -> {
-            database.itemDao().setReadState(item.getId(), read ? 1 : 0, !item.isReadChanged() ? 1 : 0);
-            emitter.onComplete();
-        });
+        return database.itemDao().setReadState(item.getId(), read ? 1 : 0, !item.isReadChanged() ? 1 : 0);
+
     }
 
     public Completable setAllItemsReadState(Boolean read) {
-        return Completable.create(emitter -> {
-            database.itemDao().setAllItemsReadState(read ? 1 : 0, account.getId());
-            emitter.onComplete();
-        });
+        return database.itemDao().setAllItemsReadState(read ? 1 : 0, account.getId());
     }
 
     public Completable setAllFeedItemsReadState(int feedId, boolean read) {
-        return Completable.create(emitter -> {
-            database.itemDao().setAllFeedItemsReadState(feedId, read ? 1 : 0);
-            emitter.onComplete();
-        });
+        return database.itemDao().setAllFeedItemsReadState(feedId, read ? 1 : 0);
     }
 
     public Single<Integer> getFeedCount(int accountId) {
-        return Single.create(emitter -> emitter.onSuccess(database.feedDao().getFeedCount(accountId)));
+        return database.feedDao().getFeedCount(accountId);
     }
 
     protected void setFaviconUtils(List<Feed> feeds) {

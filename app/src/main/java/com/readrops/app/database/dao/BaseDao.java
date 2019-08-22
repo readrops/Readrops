@@ -6,23 +6,25 @@ import androidx.room.Update;
 
 import java.util.List;
 
+import io.reactivex.Completable;
+
 public interface BaseDao<T> {
 
     @Insert
-    long insert(T entity);
+    long insert(T entity); // can't turn return type to Single<Long> while some repositories can't use rxjava properly
 
     @Insert
     List<Long> insert(List<T> entities);
 
     @Update
-    void update(T entity);
+    Completable update(T entity);
 
     @Update
-    void update(List<T> entities);
+    Completable update(List<T> entities);
 
     @Delete
-    void delete(T entity);
+    Completable delete(T entity);
 
     @Delete
-    void delete(List<T> entities);
+    Completable delete(List<T> entities);
 }

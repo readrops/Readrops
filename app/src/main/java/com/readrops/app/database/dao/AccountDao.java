@@ -8,6 +8,8 @@ import com.readrops.app.database.entities.account.Account;
 
 import java.util.List;
 
+import io.reactivex.Single;
+
 @Dao
 public abstract class AccountDao implements BaseDao<Account> {
 
@@ -27,7 +29,7 @@ public abstract class AccountDao implements BaseDao<Account> {
     public abstract Integer getAccountCountByType(int accountType);
 
     @Query("Select count(*) From Account")
-    public abstract Integer getAccountCount();
+    public abstract Single<Integer> getAccountCount();
 
     @Query("Update Account set writeToken = :writeToken Where id = :accountId")
     public abstract void updateWriteToken(int accountId, String writeToken);

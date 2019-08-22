@@ -13,14 +13,13 @@ import com.readrops.app.database.pojo.FeedWithFolder;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Single;
+
 @Dao
 public abstract class FeedDao implements BaseDao<Feed> {
 
     @Query("Select * from Feed Where account_id = :accountId order by name ASC")
     public abstract List<Feed> getAllFeeds(int accountId);
-
-    @Query("Delete From Feed Where id = :feedId")
-    public abstract void delete(int feedId);
 
     @Query("Select case When :feedUrl In (Select url from Feed Where account_id = :accountId) Then 1 else 0 end")
     public abstract boolean feedExists(String feedUrl, int accountId);
@@ -29,7 +28,7 @@ public abstract class FeedDao implements BaseDao<Feed> {
     public abstract boolean remoteFeedExists(String remoteId, int accountId);
 
     @Query("Select count(*) from Feed Where account_id = :accountId")
-    public abstract int getFeedCount(int accountId);
+    public abstract Single<Integer> getFeedCount(int accountId);
 
     @Query("Select * from Feed Where url = :feedUrl")
     public abstract Feed getFeedByUrl(String feedUrl);

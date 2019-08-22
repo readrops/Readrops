@@ -15,6 +15,8 @@ import com.readrops.app.database.pojo.ItemWithFeed;
 
 import java.util.List;
 
+import io.reactivex.Completable;
+
 @Dao
 public abstract class ItemDao implements BaseDao<Item> {
 
@@ -35,13 +37,13 @@ public abstract class ItemDao implements BaseDao<Item> {
      * @param readChanged
      */
     @Query("Update Item Set read_changed = :readChanged, read = :readState Where id = :itemId")
-    public abstract void setReadState(int itemId, int readState, int readChanged);
+    public abstract Completable setReadState(int itemId, int readState, int readChanged);
 
     @Query("Update Item set read_changed = 1, read = :readState Where feed_id In (Select id From Feed Where account_id = :accountId)")
-    public abstract void setAllItemsReadState(int readState, int accountId);
+    public abstract Completable setAllItemsReadState(int readState, int accountId);
 
     @Query("Update Item set read_changed = 1, read = :readState Where feed_id = :feedId")
-    public abstract void setAllFeedItemsReadState(int feedId, int readState);
+    public abstract Completable setAllFeedItemsReadState(int feedId, int readState);
 
     @Query("Update Item set read_it_later = 1 Where id = :itemId")
     public abstract void setReadItLater(int itemId);

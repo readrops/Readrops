@@ -37,24 +37,17 @@ public class AccountViewModel extends AndroidViewModel {
             long id = database.accountDao().insert(account);
             emitter.onSuccess(id);
         });
-
     }
 
     public Completable update(Account account) {
-        return Completable.create(emitter -> {
-            database.accountDao().update(account);
-            emitter.onComplete();
-        });
+        return database.accountDao().update(account);
     }
 
     public Completable delete(Account account) {
-        return Completable.create(emitter -> {
-            database.accountDao().delete(account);
-            emitter.onComplete();
-        });
+        return database.accountDao().delete(account);
     }
 
     public Single<Integer> getAccountCount() {
-        return Single.create(emitter -> emitter.onSuccess(database.accountDao().getAccountCount()));
+        return database.accountDao().getAccountCount();
     }
 }
