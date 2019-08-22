@@ -237,7 +237,6 @@ public class MainViewModel extends AndroidViewModel {
 
     //endregion
 
-
     //region Item read state
 
     public Completable setItemReadState(ItemWithFeed itemWithFeed, boolean read) {
@@ -255,13 +254,10 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     public Completable setAllItemsReadState(boolean read) {
-        return Completable.create(emitter -> {
-            if (queryBuilder.getFilterType() == FilterType.FEED_FILTER)
-                db.itemDao().setAllItemsReadState(queryBuilder.getFilterFeedId(), read ? 1 : 0);
-            else
-                db.itemDao().setAllItemsReadState(read ? 1 : 0);
-            emitter.onComplete();
-        });
+        if (queryBuilder.getFilterType() == FilterType.FEED_FILTER)
+            return repository.setAllFeedItemsReadState(queryBuilder.getFilterFeedId(), read);
+        else
+            return repository.setAllItemsReadState(read);
     }
 
     public Completable setItemReadItLater(int itemId) {

@@ -37,11 +37,11 @@ public abstract class ItemDao implements BaseDao<Item> {
     @Query("Update Item Set read_changed = :readChanged, read = :readState Where id = :itemId")
     public abstract void setReadState(int itemId, int readState, int readChanged);
 
-    @Query("Update Item set read_changed = 1, read = :readState")
-    public abstract void setAllItemsReadState(int readState);
+    @Query("Update Item set read_changed = 1, read = :readState Where feed_id In (Select id From Feed Where account_id = :accountId)")
+    public abstract void setAllItemsReadState(int readState, int accountId);
 
     @Query("Update Item set read_changed = 1, read = :readState Where feed_id = :feedId")
-    public abstract void setAllItemsReadState(int feedId, int readState);
+    public abstract void setAllFeedItemsReadState(int feedId, int readState);
 
     @Query("Update Item set read_it_later = 1 Where id = :itemId")
     public abstract void setReadItLater(int itemId);

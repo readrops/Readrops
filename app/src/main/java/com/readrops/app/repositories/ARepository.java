@@ -85,6 +85,20 @@ public abstract class ARepository {
         });
     }
 
+    public Completable setAllItemsReadState(Boolean read) {
+        return Completable.create(emitter -> {
+            database.itemDao().setAllItemsReadState(read ? 1 : 0, account.getId());
+            emitter.onComplete();
+        });
+    }
+
+    public Completable setAllFeedItemsReadState(int feedId, boolean read) {
+        return Completable.create(emitter -> {
+            database.itemDao().setAllFeedItemsReadState(feedId, read ? 1 : 0);
+            emitter.onComplete();
+        });
+    }
+
     public Single<Integer> getFeedCount(int accountId) {
         return Single.create(emitter -> emitter.onSuccess(database.feedDao().getFeedCount(accountId)));
     }
