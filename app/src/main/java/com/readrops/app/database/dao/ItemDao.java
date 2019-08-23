@@ -56,12 +56,12 @@ public abstract class ItemDao implements BaseDao<Item> {
             "Folder.name as folder_name from Item Inner Join Feed On Item.feed_id = Feed.id Left Join Folder on Folder.id = Feed.folder_id Where Item.id = :id")
     public abstract LiveData<ItemWithFeed> getItemById(int id);
 
-    @Query("Select remoteId From Item Where read_changed = 1 And read = 1")
-    public abstract List<String> getReadChanges();
+    @Query("Select Item.remoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where read_changed = 1 And read = 1 And account_id = :accountId")
+    public abstract List<String> getReadChanges(int accountId);
 
-    @Query("Select remoteId From Item Where read_changed = 1 And read = 0")
-    public abstract List<String> getUnreadChanges();
+    @Query("Select Item.remoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where read_changed = 1 And read = 0 And account_id = :accountId")
+    public abstract List<String> getUnreadChanges(int accountId);
 
-    @Query("Update Item set read_changed = 0")
-    public abstract void resetReadChanges();
+    @Query("Update Item set read_changed = 0 Where feed_id in (Select id From Feed Where account_id = :accountId)")
+    public abstract void resetReadChanges(int accountId);
 }

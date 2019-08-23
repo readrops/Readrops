@@ -46,6 +46,11 @@ public class FreshRSSRepository extends ARepository {
                     account.setToken(token);
                     api.setCredentials(new FreshRSSCredentials(token, account.getUrl()));
 
+                    return api.getWriteToken();
+                })
+                .flatMap(writeToken -> {
+                    account.setWriteToken(writeToken);
+
                     return api.getUserInfo();
                 })
                 .flatMap(userInfo -> {
@@ -71,7 +76,12 @@ public class FreshRSSRepository extends ARepository {
         } else
             syncType = SyncType.INITIAL_SYNC;
 
-        return api.sync(syncType, syncData)
+        return Single.<FreshRSSSyncData>create(emitter -> {
+            syncData.setReadItemsIds(database.itemDao().getReadChanges(account.getId()));
+            syncData.setUnreadItemsIds(database.itemDao().getUnreadChanges(account.getId()));
+
+            emitter.onSuccess(syncData);
+        }).flatMap(syncData1 -> api.sync(syncType, syncData1, account.getWriteToken()))
                 .flatMapObservable(syncResult -> {
                     insertFolders(syncResult.getFolders(), account);
                     insertFeeds(syncResult.getFeeds(), account);
@@ -79,6 +89,8 @@ public class FreshRSSRepository extends ARepository {
 
                     account.setLastModified(syncResult.getLastUpdated());
                     database.accountDao().updateLastModified(account.getId(), syncResult.getLastUpdated());
+
+                    database.itemDao().resetReadChanges(account.getId());
 
                     return Observable.empty();
                 });
@@ -191,24 +203,6 @@ public class FreshRSSRepository extends ARepository {
         }
         return api.deleteFolder(account.getWriteToken(), folder.getRemoteId())
                 .andThen(super.deleteFolder(folder));
-    }
-
-    @Override
-    public Completable setItemReadState(Item item, boolean read) {
-        FreshRSSAPI api = new FreshRSSAPI(account.toCredentials());
-
-        if (account.getWriteToken() == null) {
-            return api.getWriteToken()
-                    .flatMapCompletable(writeToken -> {
-                        database.accountDao().updateWriteToken(account.getId(), writeToken);
-
-                        return api.markItemReadUnread(read, item.getRemoteId(), writeToken)
-                                .andThen(super.setItemReadState(item, read));
-                    });
-        } else {
-            return api.markItemReadUnread(read, item.getRemoteId(), account.getWriteToken())
-                    .andThen(super.setItemReadState(item, read));
-        }
     }
 
     private List<Feed> insertFeeds(List<FreshRSSFeed> freshRSSFeeds, Account account) {

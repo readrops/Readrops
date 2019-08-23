@@ -83,8 +83,8 @@ public class NextNewsRepository extends ARepository {
 
                 if (syncType == SyncType.CLASSIC_SYNC) {
                     syncData.setLastModified(account.getLastModified() / 1000L);
-                    syncData.setReadItems(database.itemDao().getReadChanges());
-                    syncData.setUnreadItems(database.itemDao().getUnreadChanges());
+                    syncData.setReadItems(database.itemDao().getReadChanges(account.getId()));
+                    syncData.setUnreadItems(database.itemDao().getUnreadChanges(account.getId()));
                 }
 
                 TimingLogger timings = new TimingLogger(TAG, "nextcloud news " + syncType.name().toLowerCase());
@@ -105,7 +105,7 @@ public class NextNewsRepository extends ARepository {
 
                     account.setLastModified(lastModified);
                     database.accountDao().updateLastModified(account.getId(), lastModified);
-                    database.itemDao().resetReadChanges();
+                    database.itemDao().resetReadChanges(account.getId());
 
                     emitter.onComplete();
                 } else
@@ -214,8 +214,7 @@ public class NextNewsRepository extends ARepository {
                     folder.setName(nextNewsFolder.getName());
                     folder.setRemoteId(String.valueOf(nextNewsFolder.getId()));
                     database.folderDao().insert(folder);
-                }
-                else
+                } else
                     emitter.onError(new Exception("Unknown error"));
             } catch (Exception e) {
                 emitter.onError(e);

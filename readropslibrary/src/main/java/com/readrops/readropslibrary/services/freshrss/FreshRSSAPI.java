@@ -11,6 +11,7 @@ import com.readrops.readropslibrary.services.freshrss.json.FreshRSSItems;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSUserInfo;
 
 import java.io.StringReader;
+import java.util.List;
 import java.util.Properties;
 
 import io.reactivex.Completable;
@@ -56,33 +57,34 @@ public class FreshRSSAPI extends API<FreshRSSService> {
         return api.getUserInfo();
     }
 
-    public Single<FreshRSSSyncResult> sync(@NonNull SyncType syncType, @NonNull FreshRSSSyncData syncData) {
+    public Single<FreshRSSSyncResult> sync(@NonNull SyncType syncType, @NonNull FreshRSSSyncData syncData, String writeToken) {
         FreshRSSSyncResult syncResult = new FreshRSSSyncResult();
 
-        return getFolders()
-                .flatMap(freshRSSFolders -> {
-                    syncResult.setFolders(freshRSSFolders.getTags());
+        return setItemsReadState(syncData, writeToken)
+                .andThen(getFolders()
+                        .flatMap(freshRSSFolders -> {
+                            syncResult.setFolders(freshRSSFolders.getTags());
 
-                    return getFeeds();
-                })
-                .flatMap(freshRSSFeeds -> {
-                    syncResult.setFeeds(freshRSSFeeds.getSubscriptions());
+                            return getFeeds();
+                        })
+                        .flatMap(freshRSSFeeds -> {
+                            syncResult.setFeeds(freshRSSFeeds.getSubscriptions());
 
-                    switch (syncType) {
-                        case INITIAL_SYNC:
-                            return getItems(EXCLUDE_ITEMS.EXCLUDE_READ_ITEMS.value, 10000, null);
-                        case CLASSIC_SYNC:
-                            return getItems(EXCLUDE_ITEMS.EXCLUDE_READ_ITEMS.value, 10000, syncData.getLastModified());
-                    }
+                            switch (syncType) {
+                                case INITIAL_SYNC:
+                                    return getItems(EXCLUDE_ITEMS.EXCLUDE_READ_ITEMS.value, 10000, null);
+                                case CLASSIC_SYNC:
+                                    return getItems(EXCLUDE_ITEMS.EXCLUDE_READ_ITEMS.value, 10000, syncData.getLastModified());
+                            }
 
-                    return Single.error(new Exception("Unknown sync type"));
-                })
-                .flatMap(freshRSSItems -> {
-                    syncResult.setItems(freshRSSItems.getItems());
-                    syncResult.setLastUpdated(freshRSSItems.getUpdated());
+                            return Single.error(new Exception("Unknown sync type"));
+                        })
+                        .flatMap(freshRSSItems -> {
+                            syncResult.setItems(freshRSSItems.getItems());
+                            syncResult.setLastUpdated(freshRSSItems.getUpdated());
 
-                    return Single.just(syncResult);
-                });
+                            return Single.just(syncResult);
+                        }));
     }
 
     public Single<FreshRSSFolders> getFolders() {
@@ -97,11 +99,11 @@ public class FreshRSSAPI extends API<FreshRSSService> {
         return api.getItems(excludeTarget, max, lastModified);
     }
 
-    public Completable markItemReadUnread(Boolean read, String itemId, String token) {
+    public Completable markItemsReadUnread(Boolean read, List<String> itemIds, String token) {
         if (read)
-            return api.setItemReadState(token, EXCLUDE_ITEMS.EXCLUDE_READ_ITEMS.value, null, itemId);
+            return api.setItemsReadState(token, EXCLUDE_ITEMS.EXCLUDE_READ_ITEMS.value, null, itemIds);
         else
-            return api.setItemReadState(token, null, EXCLUDE_ITEMS.EXCLUDE_READ_ITEMS.value, itemId);
+            return api.setItemsReadState(token, null, EXCLUDE_ITEMS.EXCLUDE_READ_ITEMS.value, itemIds);
     }
 
     public Completable createFeed(String token, String feedUrl) {
@@ -126,6 +128,22 @@ public class FreshRSSAPI extends API<FreshRSSService> {
 
     public Completable deleteFolder(String token, String folderId) {
         return api.deleteFolder(token, folderId);
+    }
+
+    private Completable setItemsReadState(FreshRSSSyncData syncData, String token) {
+        Completable readItemsCompletable;
+        if (syncData.getReadItemsIds().isEmpty())
+            readItemsCompletable = Completable.complete();
+        else
+            readItemsCompletable = markItemsReadUnread(true, syncData.getReadItemsIds(), token);
+
+        Completable unreadItemsCompletable;
+        if (syncData.getUnreadItemsIds().isEmpty())
+            unreadItemsCompletable = Completable.complete();
+        else
+            unreadItemsCompletable = markItemsReadUnread(false, syncData.getUnreadItemsIds(), token);
+
+        return readItemsCompletable.concatWith(unreadItemsCompletable);
     }
 
     public enum EXCLUDE_ITEMS {

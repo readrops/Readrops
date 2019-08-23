@@ -5,6 +5,8 @@ import com.readrops.readropslibrary.services.freshrss.json.FreshRSSFolders;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSItems;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSUserInfo;
 
+import java.util.List;
+
 import io.reactivex.Completable;
 import io.reactivex.Single;
 import okhttp3.RequestBody;
@@ -40,7 +42,7 @@ public interface FreshRSSService {
 
     @FormUrlEncoded
     @POST("reader/api/0/edit-tag")
-    Completable setItemReadState(@Field("T") String token, @Field("a") String readAction, @Field("r") String unreadAction, @Field("i") String itemId);
+    Completable setItemsReadState(@Field("T") String token, @Field("a") String readAction, @Field("r") String unreadAction, @Field("i") List<String> itemIds);
 
     @FormUrlEncoded
     @POST("reader/api/0/subscription/edit")
