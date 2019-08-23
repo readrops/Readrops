@@ -31,15 +31,21 @@ import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
-public class FreshRSSRepository extends ARepository {
+public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
 
     public FreshRSSRepository(@NonNull Application application, @Nullable Account account) {
         super(application, account);
+
+        if (account != null)
+            api = new FreshRSSAPI(account.toCredentials());
     }
 
     @Override
     public Single<Boolean> login(Account account, boolean insert) {
-        FreshRSSAPI api = new FreshRSSAPI(new FreshRSSCredentials(null, account.getUrl()));
+        if (api == null)
+            api = new FreshRSSAPI(account.toCredentials());
+        else
+            api.setCredentials(account.toCredentials());
 
         return api.login(account.getLogin(), account.getPassword())
                 .flatMap(token -> {
@@ -65,8 +71,6 @@ public class FreshRSSRepository extends ARepository {
 
     @Override
     public Observable<Feed> sync(List<Feed> feeds) {
-        FreshRSSAPI api = new FreshRSSAPI(account.toCredentials());
-
         FreshRSSSyncData syncData = new FreshRSSSyncData();
         SyncType syncType;
 
@@ -98,8 +102,6 @@ public class FreshRSSRepository extends ARepository {
 
     @Override
     public Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results) {
-        FreshRSSAPI api = new FreshRSSAPI(account.toCredentials());
-
         List<Completable> completableList = new ArrayList<>();
 
         for (ParsingResult result : results) {
@@ -113,8 +115,6 @@ public class FreshRSSRepository extends ARepository {
 
     @Override
     public Completable updateFeed(Feed feed) {
-        FreshRSSAPI api = new FreshRSSAPI(account.toCredentials());
-
         return Single.<Folder>create(emitter -> {
             Folder folder = feed.getFolderId() == null ? null : database.folderDao().select(feed.getFolderId());
             emitter.onSuccess(folder);
@@ -126,31 +126,23 @@ public class FreshRSSRepository extends ARepository {
 
     @Override
     public Completable deleteFeed(Feed feed) {
-        FreshRSSAPI api = new FreshRSSAPI(account.toCredentials());
-
         return api.deleteFeed(account.getWriteToken(), feed.getUrl())
                 .andThen(super.deleteFeed(feed));
     }
 
     @Override
     public Completable addFolder(Folder folder) {
-        FreshRSSAPI api = new FreshRSSAPI(account.toCredentials());
-
         return api.createFolder(account.getWriteToken(), folder.getName());
     }
 
     @Override
     public Completable updateFolder(Folder folder) {
-        FreshRSSAPI api = new FreshRSSAPI(account.toCredentials());
-
         return api.updateFolder(account.getWriteToken(), folder.getRemoteId(), folder.getName())
                 .andThen(super.updateFolder(folder));
     }
 
     @Override
     public Completable deleteFolder(Folder folder) {
-        FreshRSSAPI api = new FreshRSSAPI(account.toCredentials());
-
         return api.deleteFolder(account.getWriteToken(), folder.getRemoteId())
                 .andThen(super.deleteFolder(folder));
     }

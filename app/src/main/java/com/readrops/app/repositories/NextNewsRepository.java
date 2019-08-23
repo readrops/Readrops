@@ -40,19 +40,26 @@ import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
-public class NextNewsRepository extends ARepository {
+public class NextNewsRepository extends ARepository<NextNewsAPI> {
 
     private static final String TAG = NextNewsRepository.class.getSimpleName();
 
     public NextNewsRepository(@NonNull Application application, @Nullable Account account) {
         super(application, account);
+
+        if (account != null)
+            api = new NextNewsAPI(account.toCredentials());
     }
 
     @Override
     public Single<Boolean> login(Account account, boolean insert) {
         return Single.create(emitter -> {
-            NextNewsAPI newsAPI = new NextNewsAPI(account.toCredentials());
-            NextNewsUser user = newsAPI.login();
+            if (api == null)
+                api = new NextNewsAPI(account.toCredentials());
+            else
+                api.setCredentials(account.toCredentials());
+
+            NextNewsUser user = api.login();
 
             if (user != null) {
                 account.setDisplayedName(user.getDisplayName());
@@ -70,7 +77,6 @@ public class NextNewsRepository extends ARepository {
     public Observable<Feed> sync(List<Feed> feeds) {
         return Observable.create(emitter -> {
             try {
-                NextNewsAPI newsAPI = new NextNewsAPI(account.toCredentials());
                 long lastModified = LocalDateTime.now().toDateTime().getMillis();
                 SyncType syncType;
 
@@ -88,7 +94,7 @@ public class NextNewsRepository extends ARepository {
                 }
 
                 TimingLogger timings = new TimingLogger(TAG, "nextcloud news " + syncType.name().toLowerCase());
-                NextNewsSyncResult syncResult = newsAPI.sync(syncType, syncData);
+                NextNewsSyncResult syncResult = api.sync(syncType, syncData);
                 timings.addSplit("server queries");
 
                 if (!syncResult.isError()) {
@@ -122,13 +128,12 @@ public class NextNewsRepository extends ARepository {
     public Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results) {
         return Single.create(emitter -> {
             List<FeedInsertionResult> feedInsertionResults = new ArrayList<>();
-            NextNewsAPI newsAPI = new NextNewsAPI(account.toCredentials());
 
             for (ParsingResult result : results) {
                 FeedInsertionResult insertionResult = new FeedInsertionResult();
 
                 try {
-                    NextNewsFeeds nextNewsFeeds = newsAPI.createFeed(result.getUrl(), 0);
+                    NextNewsFeeds nextNewsFeeds = api.createFeed(result.getUrl(), 0);
 
                     if (nextNewsFeeds != null) {
                         List<Feed> newFeeds = insertFeeds(nextNewsFeeds.getFeeds());
@@ -159,8 +164,6 @@ public class NextNewsRepository extends ARepository {
     @Override
     public Completable updateFeed(Feed feed) {
         return Completable.create(emitter -> {
-            NextNewsAPI api = new NextNewsAPI(account.toCredentials());
-
             Folder folder = feed.getFolderId() == null ? null : database.folderDao().select(feed.getFolderId());
             NextNewsRenameFeed newsRenameFeed = new NextNewsRenameFeed(Integer.parseInt(feed.getRemoteId()), feed.getName());
 
@@ -184,8 +187,6 @@ public class NextNewsRepository extends ARepository {
     @Override
     public Completable deleteFeed(Feed feed) {
         return Completable.create(emitter -> {
-            NextNewsAPI api = new NextNewsAPI(account.toCredentials());
-
             try {
                 if (api.deleteFeed(Integer.parseInt(feed.getRemoteId()))) {
                     emitter.onComplete();
@@ -202,8 +203,6 @@ public class NextNewsRepository extends ARepository {
     @Override
     public Completable addFolder(Folder folder) {
         return Completable.create(emitter -> {
-            NextNewsAPI api = new NextNewsAPI(account.toCredentials());
-
             try {
                 int folderRemoteId = folder.getRemoteId() == null ? 0 : Integer.parseInt(folder.getRemoteId());
                 NextNewsFolders folders = api.createFolder(new NextNewsFolder(folderRemoteId, folder.getName()));
@@ -227,8 +226,6 @@ public class NextNewsRepository extends ARepository {
     @Override
     public Completable updateFolder(Folder folder) {
         return Completable.create(emitter -> {
-            NextNewsAPI api = new NextNewsAPI(account.toCredentials());
-
             try {
                 if (api.renameFolder(new NextNewsFolder(Integer.parseInt(folder.getRemoteId()), folder.getName()))) {
                     emitter.onComplete();
@@ -246,8 +243,6 @@ public class NextNewsRepository extends ARepository {
     @Override
     public Completable deleteFolder(Folder folder) {
         return Completable.create(emitter -> {
-            NextNewsAPI api = new NextNewsAPI(account.toCredentials());
-
             try {
                 if (api.deleteFolder(new NextNewsFolder(Integer.parseInt(folder.getRemoteId()), folder.getName()))) {
                     emitter.onComplete();

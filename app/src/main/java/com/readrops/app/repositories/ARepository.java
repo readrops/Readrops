@@ -27,10 +27,12 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 
-public abstract class ARepository {
+public abstract class ARepository<T> {
 
     protected Database database;
     protected Account account;
+
+    protected T api;
 
     protected ARepository(@NonNull Application application, @Nullable Account account) {
         this.database = Database.getInstance(application);

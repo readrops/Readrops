@@ -37,10 +37,10 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.readrops.app.R;
 import com.readrops.app.adapters.MainItemListAdapter;
-import com.readrops.app.database.entities.account.Account;
-import com.readrops.app.database.entities.account.AccountType;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
+import com.readrops.app.database.entities.account.Account;
+import com.readrops.app.database.entities.account.AccountType;
 import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.fragments.settings.AccountSettingsFragment;
 import com.readrops.app.utils.DrawerManager;
@@ -177,6 +177,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         WeakReference<Account> accountWeakReference = new WeakReference<>(currentAccount);
 
         viewModel.getAllAccounts().observe(this, accounts -> {
+            getAccountCredentials(accounts);
             viewModel.setAccounts(accounts);
 
             if (drawer == null) {
@@ -203,6 +204,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         });
     }
+
 
     private void handleDrawerClick(IDrawerItem drawerItem) {
         if (drawerItem instanceof PrimaryDrawerItem) {
@@ -528,13 +530,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
     private void sync(@Nullable List<Feed> feeds) {
-        Account account = viewModel.getCurrentAccount();
-        if (account.getLogin() == null)
-            account.setLogin(SharedPreferencesManager.readString(this, account.getLoginKey()));
-
-        if (viewModel.getCurrentAccount().getPassword() == null)
-            account.setPassword(SharedPreferencesManager.readString(this, account.getPasswordKey()));
-
         viewModel.sync(feeds)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -651,6 +646,17 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 })
                 .show();
     }
+
+    private void getAccountCredentials(List<Account> accounts) {
+        for (Account account : accounts) {
+            if (account.getLogin() == null)
+                account.setLogin(SharedPreferencesManager.readString(this, account.getLoginKey()));
+
+            if (account.getPassword() == null)
+                account.setPassword(SharedPreferencesManager.readString(this, account.getPasswordKey()));
+        }
+    }
+
 
     @Override
     protected void onDestroy() {

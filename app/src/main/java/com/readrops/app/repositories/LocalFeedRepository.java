@@ -37,7 +37,7 @@ import java.util.List;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
-public class LocalFeedRepository extends ARepository {
+public class LocalFeedRepository extends ARepository<Void> {
 
     private static final String TAG = LocalFeedRepository.class.getSimpleName();
 
