@@ -41,15 +41,13 @@ public class AccountTypeListActivity extends AppCompatActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_account_type_list);
         viewModel = ViewModelProviders.of(this).get(AccountViewModel.class);
 
+        setTitle(R.string.new_account);
+
         binding.accountTypeRecyclerview.setLayoutManager(new LinearLayoutManager(this));
         binding.accountTypeRecyclerview.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
 
         fromMainActivity = getIntent().getBooleanExtra("fromMainActivity", false);
 
-        if (fromMainActivity)
-            setTitle(R.string.add_account);
-        else
-            setTitle(R.string.create_account);
 
         adapter = new AccountTypeListAdapter(accountType -> {
             if (!(accountType == AccountType.LOCAL)) {

@@ -73,6 +73,6 @@
     <string name="filter_newest">Du plus récent au plus ancien</string>
     <string name="filter_oldest">Du plus ancien au plus récent</string>
     <string name="login_failed">La connexion a échoué. Veuillez vérifier vos identifiants</string>
-    <string name="create_account">Créer un compte</string>
+    <string name="new_account">Nouveau compte</string>
 
 </resources>
