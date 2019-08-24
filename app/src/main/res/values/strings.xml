@@ -79,4 +79,5 @@
     <string name="filter_newest">Newest to oldest</string>
     <string name="filter_oldest">Oldest to newsest</string>
     <string name="login_failed">Login failed. Please check your credentials</string>
+    <string name="create_account">Create account</string>
 </resources>

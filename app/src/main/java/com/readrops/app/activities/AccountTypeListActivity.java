@@ -46,6 +46,11 @@ public class AccountTypeListActivity extends AppCompatActivity {
 
         fromMainActivity = getIntent().getBooleanExtra("fromMainActivity", false);
 
+        if (fromMainActivity)
+            setTitle(R.string.add_account);
+        else
+            setTitle(R.string.create_account);
+
         adapter = new AccountTypeListAdapter(accountType -> {
             if (!(accountType == AccountType.LOCAL)) {
                 Intent intent = new Intent(getApplicationContext(), AddAccountActivity.class);
