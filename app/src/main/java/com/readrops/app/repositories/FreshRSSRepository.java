@@ -138,6 +138,10 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
     @Override
     public Completable updateFolder(Folder folder) {
         return api.updateFolder(account.getWriteToken(), folder.getRemoteId(), folder.getName())
+                .andThen(Completable.create(emitter -> {
+                    folder.setRemoteId("user/-/label/" + folder.getName());
+                    emitter.onComplete();
+                }))
                 .andThen(super.updateFolder(folder));
     }
 
