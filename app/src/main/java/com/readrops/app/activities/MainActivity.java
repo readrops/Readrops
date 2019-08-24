@@ -40,7 +40,6 @@ import com.readrops.app.adapters.MainItemListAdapter;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.account.Account;
-import com.readrops.app.database.entities.account.AccountType;
 import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.fragments.settings.AccountSettingsFragment;
 import com.readrops.app.utils.DrawerManager;
@@ -311,8 +310,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
                         menu.findItem(R.id.item_mark_read).setVisible(!itemWithFeed.getItem().isRead());
                         menu.findItem(R.id.item_mark_unread).setVisible(itemWithFeed.getItem().isRead());
-                        menu.findItem(R.id.item_select_all).setVisible(!(viewModel.getCurrentAccount()
-                                .is(AccountType.FRESHRSS)));
 
                         return true;
                     }
