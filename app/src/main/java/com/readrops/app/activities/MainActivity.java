@@ -492,7 +492,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             if (data != null) {
                 ArrayList<Feed> feeds = data.getParcelableArrayListExtra("feedIds");
 
-                if (feeds != null && feeds.size() > 0) {
+                if (feeds != null && feeds.size() > 0 && viewModel.isAccountLocal()) {
                     refreshLayout.setRefreshing(true);
                     feedNb = feeds.size();
                     sync(feeds);
@@ -561,6 +561,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                         syncProgressLayout.setVisibility(View.GONE);
 
                         Utils.showSnackbar(rootLayout, e.getMessage());
+                        drawerManager.enableAccountSelection();
                     }
 
                     @Override
