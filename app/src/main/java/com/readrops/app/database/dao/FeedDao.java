@@ -30,8 +30,8 @@ public abstract class FeedDao implements BaseDao<Feed> {
     @Query("Select count(*) from Feed Where account_id = :accountId")
     public abstract Single<Integer> getFeedCount(int accountId);
 
-    @Query("Select * from Feed Where url = :feedUrl")
-    public abstract Feed getFeedByUrl(String feedUrl);
+    @Query("Select * from Feed Where url = :feedUrl And account_id = :accountId")
+    public abstract Feed getFeedByUrl(String feedUrl, int accountId);
 
     @Query("Select id from Feed Where remoteId = :remoteId And account_id = :accountId")
     public abstract int getFeedIdByRemoteId(String remoteId, int accountId);

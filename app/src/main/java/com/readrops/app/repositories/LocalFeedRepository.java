@@ -151,15 +151,15 @@ public class LocalFeedRepository extends ARepository<Void> {
 
         switch (type) {
             case RSS_2:
-                dbFeed = database.feedDao().getFeedByUrl(((RSSFeed) feed).getChannel().getFeedUrl());
+                dbFeed = database.feedDao().getFeedByUrl(((RSSFeed) feed).getChannel().getFeedUrl(), account.getId());
                 items = ItemMatcher.itemsFromRSS(((RSSFeed) feed).getChannel().getItems(), dbFeed);
                 break;
             case RSS_ATOM:
-                dbFeed = database.feedDao().getFeedByUrl(((ATOMFeed) feed).getUrl());
+                dbFeed = database.feedDao().getFeedByUrl(((ATOMFeed) feed).getUrl(), account.getId());
                 items = ItemMatcher.itemsFromATOM(((ATOMFeed) feed).getEntries(), dbFeed);
                 break;
             case RSS_JSON:
-                dbFeed = database.feedDao().getFeedByUrl(((JSONFeed) feed).getFeedUrl());
+                dbFeed = database.feedDao().getFeedByUrl(((JSONFeed) feed).getFeedUrl(), account.getId());
                 items = ItemMatcher.itemsFromJSON(((JSONFeed) feed).getItems(), dbFeed);
                 break;
         }
