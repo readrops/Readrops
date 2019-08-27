@@ -220,7 +220,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     viewModel.setFilterType(MainViewModel.FilterType.READ_IT_LATER_FILTER);
                     viewModel.invalidate();
                     break;
-
+                case DrawerManager.ABOUT_ID:
+                    startActivity(new Intent(getApplication(), AboutActivity.class));
+                    break;
             }
         } else if (drawerItem instanceof SecondaryDrawerItem) {
             drawer.closeDrawer();

@@ -7,7 +7,7 @@
     <string name="add_feed_item">Ajouter un flux</string>
     <string name="add_folder_item">Ajouter un dossier</string>
     <string name="settings">Paramètres</string>
-    <string name="about_item">A propos</string>
+    <string name="about">A propos</string>
     <string name="add_feed_title">Ajouter un flux</string>
     <string name="feed_url">Adresse du flux</string>
     <string name="validate">Valider</string>
@@ -74,5 +74,6 @@
     <string name="filter_oldest">Du plus ancien au plus récent</string>
     <string name="login_failed">La connexion a échoué. Veuillez vérifier vos identifiants</string>
     <string name="new_account">Nouveau compte</string>
+    <string name="app_licence">App distribuée sous la licence GPLv3</string>
 
 </resources>

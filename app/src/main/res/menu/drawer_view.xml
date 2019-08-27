@@ -34,7 +34,7 @@
             android:icon="@drawable/ic_settings"/>
         <item
             android:id="@+id/about_item"
-            android:title="@string/about_item"
+            android:title="@string/about"
             android:icon="@drawable/ic_about"/>
     </group>
 

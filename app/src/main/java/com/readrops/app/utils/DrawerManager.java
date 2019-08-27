@@ -25,9 +25,9 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.readrops.app.R;
-import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
+import com.readrops.app.database.entities.account.Account;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +40,7 @@ public class DrawerManager {
     public static final int ARTICLES_ITEM_ID = -5;
     public static final int READ_LATER_ID = -6;
     public static final int ADD_ACCOUNT_ID = -4;
+    public static final int ABOUT_ID = -7;
 
     private Activity activity;
     private Toolbar toolbar;
@@ -77,6 +78,8 @@ public class DrawerManager {
 
     public void updateDrawer(Map<Folder, List<Feed>> folderListMap) {
         drawer.removeAllItems();
+        drawer.removeAllStickyFooterItems();
+        
         addDefaultPlaces();
 
         List<SecondaryDrawerItem> feedsWithoutFolder = new ArrayList<>();
@@ -200,6 +203,14 @@ public class DrawerManager {
                 .withIcon(R.drawable.ic_read_later_grey)
                 .withSelectable(true)
                 .withIdentifier(READ_LATER_ID);
+
+        PrimaryDrawerItem aboutItem = new PrimaryDrawerItem()
+                .withName(R.string.about)
+                .withIcon(R.drawable.ic_about_grey)
+                .withSelectable(true)
+                .withIdentifier(ABOUT_ID);
+
+        drawer.addStickyFooterItem(aboutItem);
 
         drawer.addItem(articles);
         drawer.addItem(toReadLater);
