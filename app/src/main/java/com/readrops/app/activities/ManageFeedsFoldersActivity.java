@@ -45,6 +45,7 @@ public class ManageFeedsFoldersActivity extends AppCompatActivity {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_manage_feeds_folders);
         setSupportActionBar(binding.manageFeedsFoldersToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         binding.manageFeedsFoldersToolbar.setTitleTextColor(Color.WHITE);
         binding.manageFeedsFoldersTablayout.setTabTextColors(Color.WHITE, Color.WHITE);

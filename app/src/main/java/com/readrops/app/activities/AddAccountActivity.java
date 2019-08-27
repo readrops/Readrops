@@ -3,6 +3,7 @@ package com.readrops.app.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -49,6 +50,9 @@ public class AddAccountActivity extends AppCompatActivity {
         forwardResult = flag == Intent.FLAG_ACTIVITY_FORWARD_RESULT;
 
         accountToEdit = getIntent().getParcelableExtra(EDIT_ACCOUNT);
+
+        if (forwardResult || accountToEdit != null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         try {
             if (accountToEdit != null) {
@@ -225,5 +229,16 @@ public class AddAccountActivity extends AppCompatActivity {
                         Utils.showSnackbar(binding.addAccountRoot, e.getMessage());
                     }
                 });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

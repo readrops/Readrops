@@ -3,6 +3,7 @@ package com.readrops.app.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.view.MenuItem;
 import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -48,6 +49,8 @@ public class AccountTypeListActivity extends AppCompatActivity {
 
         fromMainActivity = getIntent().getBooleanExtra("fromMainActivity", false);
 
+        if (fromMainActivity)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         adapter = new AccountTypeListAdapter(accountType -> {
             if (!(accountType == AccountType.LOCAL)) {
@@ -110,5 +113,16 @@ public class AccountTypeListActivity extends AppCompatActivity {
                         Utils.showSnackbar(binding.accountTypeListRoot, e.getMessage());
                     }
                 });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
