@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     public static final String TAG = MainActivity.class.getSimpleName();
 
     public static final int ADD_FEED_REQUEST = 1;
-    public static final int MANAGE_FEEDS_REQUEST = 2;
+    public static final int MANAGE_ACCOUNT_REQUEST = 2;
     public static final int ITEM_REQUEST = 3;
     public static final int ADD_ACCOUNT_REQUEST = 4;
 
@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 intent.putExtra(SettingsActivity.SETTINGS_KEY,
                         SettingsActivity.SettingsKey.ACCOUNT_SETTINGS.ordinal());
                 intent.putExtra(AccountSettingsFragment.ACCOUNT, viewModel.getCurrentAccount());
-                startActivity(intent);
+                startActivityForResult(intent, MANAGE_ACCOUNT_REQUEST);
             }
 
             return true;
@@ -499,7 +499,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 }
             }
 
-        } else if (requestCode == MANAGE_FEEDS_REQUEST) {
+        } else if (requestCode == MANAGE_ACCOUNT_REQUEST) {
             updateDrawerFeeds();
 
         } else if (requestCode == ADD_ACCOUNT_REQUEST && resultCode == RESULT_OK) {
