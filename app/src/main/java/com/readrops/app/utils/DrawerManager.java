@@ -79,7 +79,7 @@ public class DrawerManager {
     public void updateDrawer(Map<Folder, List<Feed>> folderListMap) {
         drawer.removeAllItems();
         drawer.removeAllStickyFooterItems();
-        
+
         addDefaultPlaces();
 
         List<SecondaryDrawerItem> feedsWithoutFolder = new ArrayList<>();
@@ -229,6 +229,13 @@ public class DrawerManager {
     public void updateHeader(List<Account> accounts) {
         header.clear();
 
+        ProfileSettingDrawerItem addAccountSettingsItem = new ProfileSettingDrawerItem()
+                .withName(R.string.add_account)
+                .withIcon(R.drawable.ic_add_account_grey)
+                .withIdentifier(ADD_ACCOUNT_ID);
+
+        header.addProfiles(addAccountSettingsItem);
+
         for (Account account : accounts) {
             addAccount(account, account.isCurrentAccount());
         }
@@ -248,6 +255,7 @@ public class DrawerManager {
 
     public void resetItems() {
         drawer.removeAllItems();
+        drawer.removeAllStickyFooterItems();
         addDefaultPlaces();
     }
 
