@@ -97,7 +97,7 @@ public final class HtmlParser {
         Connection.Response response = Jsoup.connect(url).execute();
 
         String body = response.body();
-        String head = body.substring(body.indexOf("<head>"), body.indexOf("</head>"));
+        String head = body.substring(body.indexOf("<head"), body.indexOf("</head>"));
 
         long end = System.currentTimeMillis();
         Log.d(TAG, "parsing time : " + (end - start));
