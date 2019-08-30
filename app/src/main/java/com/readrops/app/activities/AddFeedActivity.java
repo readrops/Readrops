@@ -280,7 +280,10 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
 
                     @Override
                     public void onError(Throwable e) {
+                        feedInsertionProgressBar.setVisibility(View.GONE);
+                        validate.setEnabled(true);
                         Utils.showSnackbar(rootLayout, e.getMessage());
+
                     }
                 });
     }
