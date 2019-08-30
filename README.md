@@ -4,17 +4,19 @@ Readrops is a multi-services RSS client for Android. Its name is composed of "Re
 
 # Screenshots
 
-To come !
+![](images/Screenshot_1.png)![](images/Screenshot_2.png)![](images/Screenshot_3.png)![](images/Screenshot_4.png)
+<br/>
+![](images/Screenshot_5.png)![](images/Screenshot_6.png)![](images/Screenshot_7.png)![](images/Screenshot_8.png)
 
 # Features
 
-- Local RSS parsing - Done
-- RSS 2.0, ATOM and JSON formats support - Done
-- Multiple accounts - Done
-- Nextcloud news support - Done
-- FreshRSS support - To come
-- Feedly support - To come
-- OPML import/export - To come
+- Local RSS parsing 
+- RSS 2.0, ATOM and JSON formats support 
+- Multiple accounts 
+- Feeds and folders management (create, update and delete feeds/folders if your service API supports it)
+- Nextcloud news support 
+- FreshRSS support
+
 
 Other features will come in the near future. 
 
