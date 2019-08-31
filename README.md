@@ -23,3 +23,7 @@ Other features will come in the near future.
 # Licence
 
 This project is released under the GPLv3 licence.
+
+# Donations
+Bitcoin adress : bc1qlkzlcsvvtn3y6mek5umv5tc4ln09l64x6y42hr
+Litecoin adress : MTuf45ZvxhMWWo4v8YBbFDTLsFcGtpcPNT
