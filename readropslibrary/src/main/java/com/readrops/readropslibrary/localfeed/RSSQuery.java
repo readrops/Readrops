@@ -37,6 +37,7 @@ public class RSSQuery {
     /**
      * Request the url given in parameter.
      * This method is synchronous, it <b>has</b> to be called from another thread than the main one.
+     *
      * @param url url to request
      * @throws Exception
      */
@@ -58,7 +59,7 @@ public class RSSQuery {
     }
 
     public boolean isUrlFeedLink(String url) throws IOException {
-        Response response = query(url, new HashMap<String, String>());
+        Response response = query(url, new HashMap<>());
 
         if (response.isSuccessful()) {
             String header = response.header(LibUtils.CONTENT_TYPE_HEADER);
@@ -97,17 +98,15 @@ public class RSSQuery {
 
         switch (header) {
             case LibUtils.RSS_DEFAULT_CONTENT_TYPE:
-                return  RSSType.RSS_2;
+                return RSSType.RSS_2;
             case LibUtils.RSS_TEXT_CONTENT_TYPE:
-                return RSSType.RSS_UNKNOWN;
+            case LibUtils.HTML_CONTENT_TYPE:
             case LibUtils.RSS_APPLICATION_CONTENT_TYPE:
                 return RSSType.RSS_UNKNOWN;
             case LibUtils.ATOM_CONTENT_TYPE:
                 return RSSType.RSS_ATOM;
             case LibUtils.JSON_CONTENT_TYPE:
                 return RSSType.RSS_JSON;
-            case LibUtils.HTML_CONTENT_TYPE:
-                return RSSType.RSS_UNKNOWN;
             default:
                 Log.d(TAG, "bad content type : " + contentType);
                 return null;
@@ -116,8 +115,9 @@ public class RSSQuery {
 
     /**
      * Parse input feed
-     * @param stream source to parse
-     * @param type rss type, important to know the feed format
+     *
+     * @param stream   source to parse
+     * @param type     rss type, important to know the feed format
      * @param response query response
      * @throws Exception
      */
@@ -135,41 +135,34 @@ public class RSSQuery {
 
         String etag = response.header(LibUtils.ETAG_HEADER);
         String lastModified = response.header(LibUtils.LAST_MODIFIED_HEADER);
-        AFeed feed;
+        AFeed feed = null;
         RSSQueryResult queryResult = new RSSQueryResult();
 
         switch (type) {
             case RSS_2:
                 feed = serializer.read(RSSFeed.class, xml);
-                if (((RSSFeed)feed).getChannel().getFeedUrl() == null) // workaround if the channel does not have any atom:link tag
-                    ((RSSFeed)feed).getChannel().getLinks().add(new RSSLink(null, response.request().url().toString()));
-                feed.setEtag(etag);
-                feed.setLastModified(lastModified);
 
-                queryResult.setFeed(feed);
-                queryResult.setRssType(type);
+                // workaround if the channel does not have any atom:link tag
+                if (((RSSFeed) feed).getChannel().getFeedUrl() == null) {
+                    ((RSSFeed) feed).getChannel().getLinks().add(new RSSLink(null, response.request().url().toString()));
+                }
                 break;
             case RSS_ATOM:
                 feed = serializer.read(ATOMFeed.class, xml);
-                ((ATOMFeed)feed).setWebsiteUrl(response.request().url().scheme() + "://" + response.request().url().host());
-                ((ATOMFeed)feed).setUrl(response.request().url().toString());
-                feed.setEtag(etag);
-                feed.setLastModified(etag);
-
-                queryResult.setFeed(feed);
-                queryResult.setRssType(type);
+                ((ATOMFeed) feed).setWebsiteUrl(response.request().url().scheme() + "://" + response.request().url().host());
+                ((ATOMFeed) feed).setUrl(response.request().url().toString());
                 break;
             case RSS_JSON:
                 Gson gson = new Gson();
                 feed = gson.fromJson(xml, JSONFeed.class);
-
-                feed.setEtag(etag);
-                feed.setLastModified(lastModified);
-
-                queryResult.setFeed(feed);
-                queryResult.setRssType(type);
                 break;
         }
+
+        queryResult.setFeed(feed);
+        queryResult.setRssType(type);
+
+        feed.setEtag(etag);
+        feed.setLastModified(lastModified);
 
         return queryResult;
     }
@@ -188,16 +181,10 @@ public class RSSQuery {
     }
 
     public enum RSSType {
-        RSS_2("rss"),
-        RSS_ATOM("atom"),
-        RSS_JSON("json"),
-        RSS_UNKNOWN("");
-
-        private String value;
-
-        RSSType(String value) {
-            this.value = value;
-        }
+        RSS_2,
+        RSS_ATOM,
+        RSS_JSON,
+        RSS_UNKNOWN
     }
 
 

@@ -1,7 +1,5 @@
 package com.readrops.readropslibrary.localfeed.atom;
 
-import com.readrops.readropslibrary.localfeed.AItem;
-
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
@@ -10,7 +8,7 @@ import org.simpleframework.xml.Root;
 import java.util.List;
 
 @Root(name = "entry", strict = false)
-public class ATOMEntry extends AItem  {
+public class ATOMEntry {
 
     @Element(required = false)
     private String title;

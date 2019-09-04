@@ -1,9 +1,8 @@
 package com.readrops.readropslibrary.localfeed.json;
 
 import com.google.gson.annotations.SerializedName;
-import com.readrops.readropslibrary.localfeed.AItem;
 
-public class JSONItem extends AItem {
+public class JSONItem {
 
     private String id;
 
