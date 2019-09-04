@@ -2,6 +2,9 @@ package com.readrops.app.utils;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.readrops.readropslibrary.utils.LibUtils;
 
 import org.jsoup.Connection;
@@ -23,6 +26,7 @@ public final class HtmlParser {
 
     /**
      * Parse the html page to get all rss urls
+     *
      * @param url url to request
      * @return a list of rss urls with their title
      */
@@ -58,6 +62,7 @@ public final class HtmlParser {
     /**
      * get the feed item image based on open graph metadata.
      * Warning, This method is slow.
+     *
      * @param url url to request
      * @return the item image
      */
@@ -75,9 +80,13 @@ public final class HtmlParser {
         return imageUrl;
     }
 
-    public static String getFaviconLink(String url) throws IOException {
+    @Nullable
+    public static String getFaviconLink(@NonNull String url) throws IOException {
         String favUrl = null;
+
         String head = getHTMLHeadFromUrl(url);
+        if (head == null)
+            return null;
 
         Document document = Jsoup.parse(head, url);
         Elements elements = document.select("link");
@@ -92,17 +101,21 @@ public final class HtmlParser {
         return favUrl;
     }
 
-    private static String getHTMLHeadFromUrl(String url) throws IOException {
+    @Nullable
+    private static String getHTMLHeadFromUrl(@NonNull String url) throws IOException {
         long start = System.currentTimeMillis();
         Connection.Response response = Jsoup.connect(url).execute();
 
-        String body = response.body();
-        String head = body.substring(body.indexOf("<head"), body.indexOf("</head>"));
+        if (response.contentType().contains(LibUtils.HTML_CONTENT_TYPE)) {
+            String body = response.body();
+            String head = body.substring(body.indexOf("<head"), body.indexOf("</head>"));
 
-        long end = System.currentTimeMillis();
-        Log.d(TAG, "parsing time : " + (end - start));
+            long end = System.currentTimeMillis();
+            Log.d(TAG, "parsing time : " + (end - start));
 
-        return head;
+            return head;
+        } else
+            return null;
     }
 
     public static String getDescImageLink(String description, String url) {
