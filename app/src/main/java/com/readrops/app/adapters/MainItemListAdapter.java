@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -139,15 +138,15 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
 
         if (itemWithFeed.getBgColor() != 0) {
             viewHolder.feedName.setTextColor(itemWithFeed.getBgColor());
-            Utils.setDrawableColor(viewHolder.dateLayout.getBackground(), itemWithFeed.getBgColor());
+            Utils.setDrawableColor(viewHolder.date.getBackground(), itemWithFeed.getBgColor());
 
         } else if (itemWithFeed.getColor() != 0) {
             viewHolder.feedName.setTextColor(itemWithFeed.getColor());
-            Utils.setDrawableColor(viewHolder.dateLayout.getBackground(), itemWithFeed.getColor());
+            Utils.setDrawableColor(viewHolder.date.getBackground(), itemWithFeed.getColor());
 
         } else if (itemWithFeed.getBgColor() == 0 && itemWithFeed.getColor() == 0) {
             viewHolder.feedName.setTextColor(resources.getColor(android.R.color.tab_indicator_text));
-            Utils.setDrawableColor(viewHolder.dateLayout.getBackground(),
+            Utils.setDrawableColor(viewHolder.date.getBackground(),
                     ContextCompat.getColor(viewHolder.itemView.getContext(), R.color.colorPrimary));
         }
 
@@ -274,7 +273,6 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
         private ImageView itemImage;
         private TextView itemReadTime;
         private TextView itemFolderName;
-        private RelativeLayout dateLayout;
 
         View[] alphaViews;
 
@@ -305,10 +303,9 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
             itemImage = itemView.findViewById(R.id.item_image);
             itemReadTime = itemView.findViewById(R.id.item_readtime);
             itemFolderName = itemView.findViewById(R.id.item_folder_name);
-            dateLayout = itemView.findViewById(R.id.item_date_layout);
 
             alphaViews = new View[]{
-                    dateLayout,
+                    date,
                     itemFolderName,
                     feedIcon,
                     feedName,
