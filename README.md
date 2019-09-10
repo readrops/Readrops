@@ -4,9 +4,9 @@ Readrops is a multi-services RSS client for Android. Its name is composed of "Re
 
 # Screenshots
 
-![](images/Screenshot_1.png)![](images/Screenshot_2.png)![](images/Screenshot_3.png)![](images/Screenshot_4.png)
+![](fastlane/metadata/android/en-US/images/Screenshot_1.png)![](fastlane/metadata/android/en-US/images/Screenshot_2.png)![](fastlane/metadata/android/en-US/images/Screenshot_3.png)![](fastlane/metadata/android/en-US/images/Screenshot_4.png)
 <br/>
-![](images/Screenshot_5.png)![](images/Screenshot_6.png)![](images/Screenshot_7.png)![](images/Screenshot_8.png)
+![](fastlane/metadata/android/en-US/images/Screenshot_5.png)![](fastlane/metadata/android/en-US/images/Screenshot_6.png)![](fastlane/metadata/android/en-US/images/Screenshot_7.png)![](fastlane/metadata/android/en-US/images/Screenshot_8.png)
 
 # Features
 
