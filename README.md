@@ -4,9 +4,9 @@ Readrops is a multi-services RSS client for Android. Its name is composed of "Re
 
 # Screenshots
 
-![](fastlane/metadata/android/en-US/images/Screenshot_1.png)![](fastlane/metadata/android/en-US/images/Screenshot_2.png)![](fastlane/metadata/android/en-US/images/Screenshot_3.png)![](fastlane/metadata/android/en-US/images/Screenshot_4.png)
+![](fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_1.png)![](fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_2.png)![](fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_3.png)![](fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_4.png)
 <br/>
-![](fastlane/metadata/android/en-US/images/Screenshot_5.png)![](fastlane/metadata/android/en-US/images/Screenshot_6.png)![](fastlane/metadata/android/en-US/images/Screenshot_7.png)![](fastlane/metadata/android/en-US/images/Screenshot_8.png)
+![](fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_5.png)![](fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_6.png)![](fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_7.png)![](fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_8.png)
 
 # Features
 
@@ -25,6 +25,5 @@ Other features will come in the near future.
 This project is released under the GPLv3 licence.
 
 # Donations
-Bitcoin address : bc1qlkzlcsvvtn3y6mek5umv5tc4ln09l64x6y42hr
-
+Bitcoin address : bc1qlkzlcsvvtn3y6mek5umv5tc4ln09l64x6y42hr<br/>
 Litecoin address : MTuf45ZvxhMWWo4v8YBbFDTLsFcGtpcPNT
