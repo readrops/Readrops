@@ -61,7 +61,8 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
-public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, ReadropsItemTouchCallback.SwipeCallback {
+public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener,
+        ReadropsItemTouchCallback.SwipeCallback, ActionMode.Callback {
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
@@ -100,6 +101,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     private ActionMode actionMode;
     private Disposable syncDisposable;
+
+    private ItemWithFeed selectedItemWithFeed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -290,7 +293,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     if (adapter.getSelection().isEmpty())
                         actionMode.finish();
                 }
-
             }
 
             @Override
@@ -298,61 +300,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 if (actionMode != null)
                     return;
 
+                selectedItemWithFeed = itemWithFeed;
                 adapter.toggleSelection(position);
-
-                actionMode = startActionMode(new ActionMode.Callback() {
-                    @Override
-                    public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
-                        drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-                        refreshLayout.setEnabled(false);
-                        actionMode.getMenuInflater().inflate(R.menu.item_list_contextual_menu, menu);
-
-                        return true;
-                    }
-
-                    @Override
-                    public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
-                        menu.findItem(R.id.item_mark_read).setVisible(!itemWithFeed.getItem().isRead());
-                        menu.findItem(R.id.item_mark_unread).setVisible(itemWithFeed.getItem().isRead());
-
-                        return true;
-                    }
-
-                    @Override
-                    public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-                        switch (menuItem.getItemId()) {
-                            case R.id.item_mark_read:
-                                setReadState(true);
-                                break;
-                            case R.id.item_mark_unread:
-                                setReadState(false);
-                                break;
-                            case R.id.item_select_all:
-                                if (allItemsSelected) {
-                                    adapter.unselectAll();
-                                    allItemsSelected = false;
-                                    actionMode.finish();
-                                } else {
-                                    adapter.selectAll();
-                                    allItemsSelected = true;
-                                }
-                                break;
-                        }
-
-                        return true;
-                    }
-
-                    @Override
-                    public void onDestroyActionMode(ActionMode mode) {
-                        mode.finish();
-                        actionMode = null;
-
-                        drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-                        refreshLayout.setEnabled(true);
-
-                        adapter.clearSelection();
-                    }
-                });
+                actionMode = startActionMode(MainActivity.this);
             }
         });
 
@@ -423,6 +373,58 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             if (viewModel.getFilterType() == MainViewModel.FilterType.READ_IT_LATER_FILTER)
                 adapter.notifyItemChanged(viewHolder.getAdapterPosition());
         }
+    }
+
+    @Override
+    public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+        drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        refreshLayout.setEnabled(false);
+        actionMode.getMenuInflater().inflate(R.menu.item_list_contextual_menu, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+        menu.findItem(R.id.item_mark_read).setVisible(!selectedItemWithFeed.getItem().isRead());
+        menu.findItem(R.id.item_mark_unread).setVisible(selectedItemWithFeed.getItem().isRead());
+
+        return true;
+    }
+
+    @Override
+    public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.item_mark_read:
+                setReadState(true);
+                break;
+            case R.id.item_mark_unread:
+                setReadState(false);
+                break;
+            case R.id.item_select_all:
+                if (allItemsSelected) {
+                    adapter.unselectAll();
+                    allItemsSelected = false;
+                    actionMode.finish();
+                } else {
+                    adapter.selectAll();
+                    allItemsSelected = true;
+                }
+                break;
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onDestroyActionMode(ActionMode mode) {
+        mode.finish();
+        actionMode = null;
+
+        drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        refreshLayout.setEnabled(true);
+
+        adapter.clearSelection();
     }
 
     private void setReadState(boolean read) {
