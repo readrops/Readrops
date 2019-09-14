@@ -13,7 +13,6 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -44,9 +43,12 @@ import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.fragments.settings.AccountSettingsFragment;
 import com.readrops.app.utils.DrawerManager;
 import com.readrops.app.utils.GlideApp;
+import com.readrops.app.utils.ReadropsItemTouchCallback;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.MainViewModel;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -59,7 +61,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
-public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, ReadropsItemTouchCallback.SwipeCallback {
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
@@ -370,50 +372,12 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         recyclerView.setAdapter(adapter);
 
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-            @Override
-            public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-                int swipeFlags = ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
-
-                return makeMovementFlags(0, swipeFlags);
-            }
-
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-                if (i == ItemTouchHelper.LEFT) { // set item read state
-                    ItemWithFeed itemWithFeed = adapter.getItemWithFeed(viewHolder.getAdapterPosition());
-
-                    viewModel.setItemReadState(itemWithFeed, !itemWithFeed.getItem().isRead())
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .doOnError(throwable -> Utils.showSnackbar(rootLayout, throwable.getMessage()))
-                            .subscribe();
-
-                    itemWithFeed.getItem().setRead(!itemWithFeed.getItem().isRead());
-
-                    adapter.notifyItemChanged(viewHolder.getAdapterPosition());
-                } else { // add item to read it later section
-                    viewModel.setItemReadItLater((int) adapter.getItemId(viewHolder.getAdapterPosition()))
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .doOnError(throwable -> Utils.showSnackbar(rootLayout, throwable.getMessage()))
-                            .subscribe();
-
-                    if (viewModel.getFilterType() == MainViewModel.FilterType.READ_IT_LATER_FILTER)
-                        adapter.notifyItemChanged(viewHolder.getAdapterPosition());
-                }
-            }
-
-            @Override
-            public boolean isItemViewSwipeEnabled() {
-                return true;
-            }
-        }).attachToRecyclerView(recyclerView);
+        new ItemTouchHelper(new ReadropsItemTouchCallback(
+                new ReadropsItemTouchCallback.Config.Builder()
+                        .swipeDirs(ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT)
+                        .swipeCallback(this)
+                        .build()))
+                .attachToRecyclerView(recyclerView);
 
         adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
@@ -433,6 +397,32 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     super.onItemRangeMoved(fromPosition, toPosition, itemCount);
             }
         });
+    }
+
+    @Override
+    public void onSwipe(@NotNull RecyclerView.ViewHolder viewHolder, int direction) {
+        if (direction == ItemTouchHelper.LEFT) { // set item read state
+            ItemWithFeed itemWithFeed = adapter.getItemWithFeed(viewHolder.getAdapterPosition());
+
+            viewModel.setItemReadState(itemWithFeed, !itemWithFeed.getItem().isRead())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnError(throwable -> Utils.showSnackbar(rootLayout, throwable.getMessage()))
+                    .subscribe();
+
+            itemWithFeed.getItem().setRead(!itemWithFeed.getItem().isRead());
+
+            adapter.notifyItemChanged(viewHolder.getAdapterPosition());
+        } else { // add item to read it later section
+            viewModel.setItemReadItLater((int) adapter.getItemId(viewHolder.getAdapterPosition()))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnError(throwable -> Utils.showSnackbar(rootLayout, throwable.getMessage()))
+                    .subscribe();
+
+            if (viewModel.getFilterType() == MainViewModel.FilterType.READ_IT_LATER_FILTER)
+                adapter.notifyItemChanged(viewHolder.getAdapterPosition());
+        }
     }
 
     private void setReadState(boolean read) {
