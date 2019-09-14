@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 28
@@ -71,4 +73,8 @@ dependencies {
     implementation 'com.mikepenz:materialdrawer:6.1.2'
 
     implementation 'com.facebook.stetho:stetho:1.5.1'
+
+    implementation "androidx.core:core-ktx:1.1.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.1.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
