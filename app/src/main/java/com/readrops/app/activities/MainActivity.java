@@ -322,10 +322,12 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         recyclerView.setAdapter(adapter);
 
-        new ItemTouchHelper(new ReadropsItemTouchCallback(
+        new ItemTouchHelper(new ReadropsItemTouchCallback(this,
                 new ReadropsItemTouchCallback.Config.Builder()
                         .swipeDirs(ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT)
                         .swipeCallback(this)
+                        .leftDraw(Color.DKGRAY, R.drawable.ic_read_later)
+                        .rightDraw(Color.DKGRAY, R.drawable.ic_read)
                         .build()))
                 .attachToRecyclerView(recyclerView);
 
