@@ -16,9 +16,9 @@ import androidx.lifecycle.ViewModelProviders;
 import com.google.android.material.textfield.TextInputEditText;
 import com.readrops.app.R;
 import com.readrops.app.activities.ManageFeedsFoldersActivity;
-import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
+import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.pojo.FeedWithFolder;
 import com.readrops.app.viewmodels.ManageFeedsFoldersViewModel;
 
@@ -71,7 +71,9 @@ public class EditFeedDialog extends DialogFragment implements AdapterView.OnItem
 
         viewModel.getFolders().observe(this, folders -> {
             values = new TreeMap<>(String::compareTo);
-            values.put(getString(R.string.no_folder), 0);
+
+            if (!account.getAccountType().getAccountConfig().isNoFolderCase())
+                values.put(getString(R.string.no_folder), 0);
 
             for (Folder folder : folders) {
                 values.put(folder.getName(), folder.getId());

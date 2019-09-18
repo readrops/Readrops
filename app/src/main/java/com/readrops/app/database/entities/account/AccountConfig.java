@@ -5,19 +5,26 @@ public class AccountConfig {
     public static final AccountConfig LOCAL = new AccountConfigBuilder()
             .setFeedUrlEditable(true)
             .setFolderCreation(true)
+            .setNoFolderCase(false)
             .build();
 
     public static final AccountConfig NEXTNEWS = new AccountConfigBuilder()
             .setFeedUrlEditable(false)
             .setFolderCreation(true)
+            .setNoFolderCase(false)
             .build();
 
     public static final AccountConfig FRESHRSS = new AccountConfigBuilder()
             .setFeedUrlEditable(false)
             .setFolderCreation(false)
+            .setNoFolderCase(true)
             .build();
 
     private boolean feedUrlEditable;
+
+    private boolean folderCreation;
+
+    private boolean noFolderCase;
 
     public boolean isFeedUrlEditable() {
         return feedUrlEditable;
@@ -27,16 +34,20 @@ public class AccountConfig {
         return folderCreation;
     }
 
-    private boolean folderCreation;
+    public boolean isNoFolderCase() {
+        return noFolderCase;
+    }
 
-    public AccountConfig(boolean feedUrlEditable, boolean folderCreation) {
-        this.feedUrlEditable = feedUrlEditable;
-        this.folderCreation = folderCreation;
+    public AccountConfig(AccountConfigBuilder builder) {
+        this.feedUrlEditable = builder.feedUrlEditable;
+        this.folderCreation = builder.folderCreation;
+        this.noFolderCase = builder.noFolderCase;
     }
 
     public static class AccountConfigBuilder {
         private boolean feedUrlEditable;
         private boolean folderCreation;
+        private boolean noFolderCase;
 
         public AccountConfigBuilder setFeedUrlEditable(boolean feedUrlEditable) {
             this.feedUrlEditable = feedUrlEditable;
@@ -48,8 +59,13 @@ public class AccountConfig {
             return this;
         }
 
+        public AccountConfigBuilder setNoFolderCase(boolean noFolderCase) {
+            this.noFolderCase = noFolderCase;
+            return this;
+        }
+
         public AccountConfig build() {
-            return new AccountConfig(feedUrlEditable, folderCreation);
+            return new AccountConfig(this);
         }
     }
 }
