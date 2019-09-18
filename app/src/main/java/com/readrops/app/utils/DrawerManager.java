@@ -120,6 +120,8 @@ public class DrawerManager {
         for (SecondaryDrawerItem primaryDrawerItem : feedsWithoutFolder) {
             drawer.addItem(primaryDrawerItem);
         }
+
+        drawer.setSelection(ARTICLES_ITEM_ID);
     }
 
     private void createAccountHeader(List<Account> accounts) {
@@ -207,7 +209,7 @@ public class DrawerManager {
         PrimaryDrawerItem aboutItem = new PrimaryDrawerItem()
                 .withName(R.string.about)
                 .withIcon(R.drawable.ic_about_grey)
-                .withSelectable(true)
+                .withSelectable(false)
                 .withIdentifier(ABOUT_ID);
 
         drawer.addStickyFooterItem(aboutItem);
