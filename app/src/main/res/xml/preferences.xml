@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <PreferenceCategory android:title="@string/local">
+        <ListPreference
+            android:defaultValue="20"
+            android:entries="@array/items_per_feed_numbers"
+            android:entryValues="@array/items_per_feed_numbers_values"
+            android:key="items_to_parse_max_nb"
+            android:title="@string/number_items_to_parse" />
+    </PreferenceCategory>
+
 </PreferenceScreen>

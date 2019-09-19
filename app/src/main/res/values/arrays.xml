@@ -1,9 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string-array name="filter_items">
         <item>@string/filter_newest</item>
         <item>@string/filter_oldest</item>
+    </string-array>
+
+    <string-array name="items_per_feed_numbers_values">
+        <item>20</item>
+        <item>50</item>
+        <item>100</item>
+        <item>0</item>
+    </string-array>
+
+    <string-array name="items_per_feed_numbers">
+        <item>20</item>
+        <item>50</item>
+        <item>100</item>
+        <item>@string/unlimited</item>
     </string-array>
 
 </resources>

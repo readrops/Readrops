@@ -29,12 +29,14 @@ import io.reactivex.schedulers.Schedulers;
 
 public abstract class ARepository<T> {
 
+    protected Application application;
     protected Database database;
     protected Account account;
 
     protected T api;
 
     protected ARepository(@NonNull Application application, @Nullable Account account) {
+        this.application = application;
         this.database = Database.getInstance(application);
         this.account = account;
     }

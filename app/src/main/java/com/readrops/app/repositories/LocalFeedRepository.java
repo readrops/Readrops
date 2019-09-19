@@ -6,14 +6,15 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Item;
+import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.FeedMatcher;
 import com.readrops.app.utils.HtmlParser;
 import com.readrops.app.utils.ItemMatcher;
 import com.readrops.app.utils.ParsingResult;
+import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.readropslibrary.localfeed.AFeed;
 import com.readrops.readropslibrary.localfeed.RSSQuery;
@@ -43,7 +44,6 @@ public class LocalFeedRepository extends ARepository<Void> {
 
     public LocalFeedRepository(@NonNull Application application, @Nullable Account account) {
         super(application, account);
-
     }
 
     @Override
@@ -106,40 +106,40 @@ public class LocalFeedRepository extends ARepository<Void> {
 
     @Override
     public Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results) {
-         return Single.create(emitter -> {
-             List<FeedInsertionResult> insertionResults = new ArrayList<>();
+        return Single.create(emitter -> {
+            List<FeedInsertionResult> insertionResults = new ArrayList<>();
 
-             for (ParsingResult parsingResult : results) {
-                 FeedInsertionResult insertionResult = new FeedInsertionResult();
+            for (ParsingResult parsingResult : results) {
+                FeedInsertionResult insertionResult = new FeedInsertionResult();
 
-                 try {
-                     RSSQuery rssNet = new RSSQuery();
-                     RSSQueryResult queryResult = rssNet.queryUrl(parsingResult.getUrl(), new HashMap<>());
+                try {
+                    RSSQuery rssNet = new RSSQuery();
+                    RSSQueryResult queryResult = rssNet.queryUrl(parsingResult.getUrl(), new HashMap<>());
 
-                     if (queryResult != null && queryResult.getException() == null) {
+                    if (queryResult != null && queryResult.getException() == null) {
                         Feed feed = insertFeed(queryResult.getFeed(), queryResult.getRssType());
                         if (feed != null) {
                             insertionResult.setFeed(feed);
                             insertionResults.add(insertionResult);
                         }
-                     } else if (queryResult != null && queryResult.getException() != null) {
-                         insertionResult.setParsingResult(parsingResult);
-                         insertionResult.setInsertionError(getErrorFromException(queryResult.getException()));
+                    } else if (queryResult != null && queryResult.getException() != null) {
+                        insertionResult.setParsingResult(parsingResult);
+                        insertionResult.setInsertionError(getErrorFromException(queryResult.getException()));
 
-                         insertionResults.add(insertionResult);
-                     } else {
-                         // error 304
-                     }
-                 } catch (Exception e) {
-                     if (e instanceof IOException)
-                         insertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.NETWORK_ERROR);
-                     else
-                         insertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.PARSE_ERROR);
+                        insertionResults.add(insertionResult);
+                    } else {
+                        // error 304
+                    }
+                } catch (Exception e) {
+                    if (e instanceof IOException)
+                        insertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.NETWORK_ERROR);
+                    else
+                        insertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.PARSE_ERROR);
 
-                     insertionResult.setParsingResult(parsingResult);
-                     insertionResults.add(insertionResult);
-                 }
-             }
+                    insertionResult.setParsingResult(parsingResult);
+                    insertionResults.add(insertionResult);
+                }
+            }
 
             emitter.onSuccess(insertionResults);
         });
@@ -165,8 +165,12 @@ public class LocalFeedRepository extends ARepository<Void> {
         }
 
         database.feedDao().updateHeaders(dbFeed.getEtag(), dbFeed.getLastModified(), dbFeed.getId());
-
         Collections.sort(items, Item::compareTo);
+
+        int maxItems = Integer.parseInt(SharedPreferencesManager.readString(application, SharedPreferencesManager.SharedPrefKey.ITEMS_TO_PARSE_MAX_NB));
+        if (maxItems > 0 && items.size() > maxItems)
+            items = items.subList(items.size() - maxItems, items.size());
+
         insertItems(items, dbFeed);
     }
 
@@ -194,7 +198,7 @@ public class LocalFeedRepository extends ARepository<Void> {
         dbFeed.setEtag(null);
         dbFeed.setLastModified(null);
 
-        dbFeed.setId((int)(database.feedDao().insert(dbFeed)));
+        dbFeed.setId((int) (database.feedDao().insert(dbFeed)));
         return dbFeed;
     }
 

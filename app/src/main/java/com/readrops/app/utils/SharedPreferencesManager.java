@@ -2,17 +2,16 @@ package com.readrops.app.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
+import androidx.annotation.NonNull;
 
 public final class SharedPreferencesManager {
 
     private static final String PREFS = "com.readrops.app.uniquepreferences";
 
     private static SharedPreferences getSharedPreferences(Context context) {
-        return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-    }
-
-    public static void writeValue(Context context, SharedPrefKey key, Object value) {
-        writeValue(context, key.toString(), value);
+        return PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     public static void writeValue(Context context, String key, Object value) {
@@ -27,18 +26,18 @@ public final class SharedPreferencesManager {
         editor.apply();
     }
 
-    public static int readInt(Context context, SharedPrefKey key) {
-        SharedPreferences sharedPreferences = getSharedPreferences(context);
-        return sharedPreferences.getInt(key.toString(), 0);
+    public static void writeValue(Context context, SharedPrefKey sharedPrefKey, Object value) {
+        writeValue(context, sharedPrefKey.key, value);
     }
 
-    public static boolean readBoolean(Context context, SharedPrefKey key) {
+    public static int readInt(Context context, SharedPrefKey sharedPrefKey) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
-        return sharedPreferences.getBoolean(key.toString(), false);
+        return sharedPreferences.getInt(sharedPrefKey.key, sharedPrefKey.getIntDefaultValue());
     }
 
-    public static String readString(Context context, SharedPrefKey key) {
-        return readString(context, key.toString());
+    public static boolean readBoolean(Context context, SharedPrefKey sharedPrefKey) {
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
+        return sharedPreferences.getBoolean(sharedPrefKey.key, sharedPrefKey.getBooleanDefaultValue());
     }
 
     public static String readString(Context context, String key) {
@@ -46,7 +45,35 @@ public final class SharedPreferencesManager {
         return sharedPreferences.getString(key, null);
     }
 
+    public static String readString(Context context, SharedPrefKey sharedPrefKey) {
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
+        return sharedPreferences.getString(sharedPrefKey.key, sharedPrefKey.getStringDefaultValue());
+    }
+
     public enum SharedPrefKey {
-        SHOW_READ_ARTICLES
+        SHOW_READ_ARTICLES("show_read_articles", false),
+        ITEMS_TO_PARSE_MAX_NB("items_to_parse_max_nb", "20");
+
+        @NonNull
+        private String key;
+        @NonNull
+        private Object defaultValue;
+
+        public Boolean getBooleanDefaultValue() {
+            return (Boolean) defaultValue;
+        }
+
+        public String getStringDefaultValue() {
+            return (String) defaultValue;
+        }
+
+        public int getIntDefaultValue() {
+            return (int) defaultValue;
+        }
+
+        SharedPrefKey(@NonNull String key, @NonNull Object defaultValue) {
+            this.key = key;
+            this.defaultValue = defaultValue;
+        }
     }
 }

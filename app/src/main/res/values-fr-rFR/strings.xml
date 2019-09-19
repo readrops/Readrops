@@ -75,5 +75,8 @@
     <string name="login_failed">La connexion a échoué. Veuillez vérifier vos identifiants</string>
     <string name="new_account">Nouveau compte</string>
     <string name="app_licence">App distribuée sous la licence GPLv3</string>
+    <string name="number_items_to_parse">Nombre maximum d\'articles par flux</string>
+    <string name="unlimited">Illimité</string>
+    <string name="local">Local</string>
 
 </resources>
