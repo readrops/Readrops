@@ -2,6 +2,8 @@
 
 Readrops is a multi-services RSS client for Android. Its name is composed of "Read" and "drops", where drops are information drops in an ocean of news.
 
+[<img src="images/google-play-badge.png" width=250>](https://play.google.com/store/apps/details?id=com.readrops.app)
+
 # Screenshots
 
 ![](fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_1.png)![](fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_2.png)![](fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_3.png)![](fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_4.png)
@@ -10,11 +12,11 @@ Readrops is a multi-services RSS client for Android. Its name is composed of "Re
 
 # Features
 
-- Local RSS parsing 
-- RSS 2.0, ATOM and JSON formats support 
-- Multiple accounts 
+- Local RSS parsing
+- RSS 2.0, ATOM and JSON formats support
+- Multiple accounts
 - Feeds and folders management (create, update and delete feeds/folders if your service API supports it)
-- Nextcloud news support 
+- Nextcloud news support
 - FreshRSS support
 
 
