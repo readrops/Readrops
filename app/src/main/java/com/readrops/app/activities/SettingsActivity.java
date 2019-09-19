@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import com.readrops.app.R;
 import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.fragments.settings.AccountSettingsFragment;
+import com.readrops.app.fragments.settings.SettingsFragment;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -31,6 +32,10 @@ public class SettingsActivity extends AppCompatActivity {
                 fragment = AccountSettingsFragment.newInstance(account);
                 setTitle(account.getAccountName());
                 break;
+            case SETTINGS:
+                fragment = new SettingsFragment();
+                setTitle(R.string.settings);
+                break;
         }
 
         getSupportFragmentManager()
@@ -40,7 +45,8 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public enum SettingsKey {
-        ACCOUNT_SETTINGS
+        ACCOUNT_SETTINGS,
+        SETTINGS
     }
 
     @Override

@@ -228,6 +228,12 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 case DrawerManager.ABOUT_ID:
                     startActivity(new Intent(getApplication(), AboutActivity.class));
                     break;
+                case DrawerManager.SETTINGS_ID:
+                    Intent intent = new Intent(getApplication(), SettingsActivity.class);
+                    intent.putExtra(SettingsActivity.SETTINGS_KEY,
+                            SettingsActivity.SettingsKey.SETTINGS.ordinal());
+                    startActivity(intent);
+                    break;
             }
         } else if (drawerItem instanceof SecondaryDrawerItem) {
             drawer.closeDrawer();

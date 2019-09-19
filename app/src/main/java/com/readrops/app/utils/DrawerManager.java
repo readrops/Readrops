@@ -41,6 +41,7 @@ public class DrawerManager {
     public static final int READ_LATER_ID = -6;
     public static final int ADD_ACCOUNT_ID = -4;
     public static final int ABOUT_ID = -7;
+    public static final int SETTINGS_ID = -8;
 
     private Activity activity;
     private Toolbar toolbar;
@@ -212,6 +213,13 @@ public class DrawerManager {
                 .withSelectable(false)
                 .withIdentifier(ABOUT_ID);
 
+        PrimaryDrawerItem settingsItem = new PrimaryDrawerItem()
+                .withName(R.string.settings)
+                .withIcon(R.drawable.ic_settings)
+                .withSelectable(false)
+                .withIdentifier(SETTINGS_ID);
+
+        drawer.addStickyFooterItem(settingsItem);
         drawer.addStickyFooterItem(aboutItem);
 
         drawer.addItem(articles);
