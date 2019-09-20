@@ -8,8 +8,6 @@ import androidx.annotation.NonNull;
 
 public final class SharedPreferencesManager {
 
-    private static final String PREFS = "com.readrops.app.uniquepreferences";
-
     private static SharedPreferences getSharedPreferences(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context);
     }
