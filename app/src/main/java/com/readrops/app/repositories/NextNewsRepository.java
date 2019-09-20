@@ -7,10 +7,10 @@ import android.util.TimingLogger;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.Item;
+import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.FeedMatcher;
 import com.readrops.app.utils.ItemMatcher;
@@ -137,12 +137,12 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
 
                     if (nextNewsFeeds != null) {
                         List<Feed> newFeeds = insertFeeds(nextNewsFeeds.getFeeds());
-
                         // there is always only one object in the list, see nextcloud news api doc
                         insertionResult.setFeed(newFeeds.get(0));
                     } else
                         insertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.UNKNOWN_ERROR);
 
+                    insertionResult.setParsingResult(result);
                 } catch (Exception e) {
                     if (e instanceof IOException)
                         insertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.NETWORK_ERROR);

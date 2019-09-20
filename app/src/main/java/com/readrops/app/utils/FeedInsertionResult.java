@@ -94,11 +94,12 @@ public class FeedInsertionResult extends AbstractItem<FeedInsertionResult, FeedI
 
         @Override
         public void bindView(FeedInsertionResult item, List<Object> payloads) {
-            if (item.getFeed() != null) {
-                feedInsertionRes.setText(itemView.getContext().getString(R.string.feed_insertion_successfull, item.feed.getName()));
+            if (item.getInsertionError() == null) {
+                feedInsertionRes.setText(itemView.getContext().getString(R.string.feed_insertion_successfull,
+                        parsingResult.getLabel() != null ? parsingResult.getLabel() :
+                                parsingResult.getUrl()));
                 feedInsertionIcon.setImageResource(R.drawable.ic_check_green);
-            }
-            else {
+            } else {
                 switch (item.getInsertionError()) {
                     case NETWORK_ERROR:
                         setErrorText(R.string.feed_insertion_network_failed, item.parsingResult);

@@ -103,14 +103,25 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
     @Override
     public Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results) {
         List<Completable> completableList = new ArrayList<>();
+        List<FeedInsertionResult> insertionResults = new ArrayList<>();
 
         for (ParsingResult result : results) {
-            completableList.add(api.createFeed(account.getWriteToken(), result.getUrl()));
+            completableList.add(api.createFeed(account.getWriteToken(), result.getUrl())
+                    .doOnTerminate(() -> {
+                        FeedInsertionResult feedInsertionResult = new FeedInsertionResult();
+                        feedInsertionResult.setParsingResult(result);
+                        insertionResults.add(feedInsertionResult);
+                    }).onErrorResumeNext(throwable -> {
+                        FeedInsertionResult feedInsertionResult = new FeedInsertionResult();
+                        feedInsertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.UNKNOWN_ERROR);
+                        insertionResults.add(feedInsertionResult);
+
+                        return Completable.complete();
+                    }));
         }
 
-        // TODO : see how to handle exceptions/errors like the others repositories
         return Completable.concat(completableList)
-                .andThen(Single.just(new ArrayList<>()));
+                .andThen(Single.just(insertionResults));
     }
 
     @Override

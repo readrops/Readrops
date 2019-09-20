@@ -120,6 +120,7 @@ public class LocalFeedRepository extends ARepository<Void> {
                         Feed feed = insertFeed(queryResult.getFeed(), queryResult.getRssType());
                         if (feed != null) {
                             insertionResult.setFeed(feed);
+                            insertionResult.setParsingResult(parsingResult);
                             insertionResults.add(insertionResult);
                         }
                     } else if (queryResult != null && queryResult.getException() != null) {
