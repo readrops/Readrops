@@ -13,11 +13,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.readrops.app.R;
 import com.readrops.app.database.entities.Folder;
+import com.readrops.app.database.pojo.FolderWithFeedCount;
 import com.readrops.app.databinding.FolderLayoutBinding;
 
 import java.util.List;
 
-public class FoldersAdapter extends ListAdapter<Folder, FoldersAdapter.FolderViewHolder> {
+public class FoldersAdapter extends ListAdapter<FolderWithFeedCount, FoldersAdapter.FolderViewHolder> {
 
     private ManageFoldersListener listener;
 
@@ -28,20 +29,21 @@ public class FoldersAdapter extends ListAdapter<Folder, FoldersAdapter.FolderVie
     }
 
 
-    private static final DiffUtil.ItemCallback<Folder> DIFF_CALLBACK = new DiffUtil.ItemCallback<Folder>() {
+    private static final DiffUtil.ItemCallback<FolderWithFeedCount> DIFF_CALLBACK = new DiffUtil.ItemCallback<FolderWithFeedCount>() {
         @Override
-        public boolean areItemsTheSame(@NonNull Folder oldItem, @NonNull Folder newItem) {
-            return oldItem.getId() == newItem.getId();
+        public boolean areItemsTheSame(@NonNull FolderWithFeedCount oldItem, @NonNull FolderWithFeedCount newItem) {
+            return oldItem.getFolder().getId() == newItem.getFolder().getId();
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull Folder oldItem, @NonNull Folder newItem) {
-            return TextUtils.equals(oldItem.getName(), newItem.getName());
+        public boolean areContentsTheSame(@NonNull FolderWithFeedCount oldItem, @NonNull FolderWithFeedCount newItem) {
+            return TextUtils.equals(oldItem.getFolder().getName(), newItem.getFolder().getName()) &&
+                    oldItem.getFeedCount() == newItem.getFeedCount();
         }
 
         @Nullable
         @Override
-        public Object getChangePayload(@NonNull Folder oldItem, @NonNull Folder newItem) {
+        public Object getChangePayload(@NonNull FolderWithFeedCount oldItem, @NonNull FolderWithFeedCount newItem) {
             return newItem;
         }
     };
@@ -58,9 +60,12 @@ public class FoldersAdapter extends ListAdapter<Folder, FoldersAdapter.FolderVie
     @Override
     public void onBindViewHolder(@NonNull FolderViewHolder holder, int position, @NonNull List<Object> payloads) {
         if (payloads.size() > 0) {
-            Folder folder = (Folder) payloads.get(0);
+            FolderWithFeedCount folder = (FolderWithFeedCount) payloads.get(0);
 
-            holder.binding.folderName.setText(folder.getName());
+            holder.binding.folderName.setText(folder.getFolder().getName());
+
+            int stringRes = folder.getFeedCount() > 1 ? R.string.feeds_number : R.string.feed_number;
+            holder.binding.folderFeedsCount.setText(holder.itemView.getContext().getString(stringRes, String.valueOf(folder.getFeedCount())));
         } else
             onBindViewHolder(holder, position);
 
@@ -68,15 +73,18 @@ public class FoldersAdapter extends ListAdapter<Folder, FoldersAdapter.FolderVie
 
     @Override
     public void onBindViewHolder(@NonNull FolderViewHolder holder, int position) {
-        Folder folder = getItem(position);
+        FolderWithFeedCount folder = getItem(position);
 
-        holder.binding.folderName.setText(folder.getName());
+        holder.binding.folderName.setText(folder.getFolder().getName());
 
-        holder.itemView.setOnClickListener(v -> listener.onClick(folder));
+        int stringRes = folder.getFeedCount() > 1 ? R.string.feeds_number : R.string.feed_number;
+        holder.binding.folderFeedsCount.setText(holder.itemView.getContext().getString(stringRes, String.valueOf(folder.getFeedCount())));
+
+        holder.itemView.setOnClickListener(v -> listener.onClick(folder.getFolder()));
     }
 
     public Folder getFolder(int position) {
-        return getItem(position);
+        return getItem(position).getFolder();
     }
 
     public interface ManageFoldersListener {

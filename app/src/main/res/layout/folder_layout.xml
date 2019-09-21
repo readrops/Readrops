@@ -22,7 +22,18 @@
                 style="@style/TextAppearance.AppCompat.Subhead"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="Dossier 1" />
+                android:layout_alignParentStart="true"
+                android:layout_toStartOf="@id/folder_feeds_count"
+                tools:text="Folder 1" />
+
+            <TextView
+                android:id="@+id/folder_feeds_count"
+                style="@style/TextAppearance.AppCompat.Subhead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                tools:text="15 feeds" />
+
         </RelativeLayout>
 
     </androidx.cardview.widget.CardView>

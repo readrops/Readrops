@@ -78,5 +78,7 @@
     <string name="number_items_to_parse">Nombre maximum d\'articles par flux</string>
     <string name="unlimited">Illimité</string>
     <string name="local">Local</string>
+    <string name="feeds_number">%1$s flux</string>
+    <string name="feed_number">%1$s flux</string>
 
 </resources>

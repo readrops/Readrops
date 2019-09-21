@@ -85,4 +85,6 @@
     <string name="number_items_to_parse">Maximum number of items per feed</string>
     <string name="unlimited">Unlimited</string>
     <string name="local">Local</string>
+    <string name="feeds_number">%1$s feeds</string>
+    <string name="feed_number">%1$s feed</string>
 </resources>

@@ -5,8 +5,9 @@ import androidx.room.Dao;
 import androidx.room.Query;
 import androidx.room.Transaction;
 
-import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.Folder;
+import com.readrops.app.database.entities.account.Account;
+import com.readrops.app.database.pojo.FolderWithFeedCount;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,9 @@ public abstract class FolderDao implements BaseDao<Folder> {
 
     @Query("Select * from Folder Where account_id = :accountId Order By name ASC")
     public abstract LiveData<List<Folder>> getAllFolders(int accountId);
+
+    @Query("Select Folder.*, count(Feed.id) as feed_count from Folder Left Join Feed on Folder.id = Feed.folder_id Where Folder.account_id = :accountId Group by Folder.id Order By name ASC")
+    public abstract LiveData<List<FolderWithFeedCount>> getFoldersWithFeedCount(int accountId);
 
     @Query("Select * from Folder Where account_id = :accountId Order By name ASC")
     public abstract List<Folder> getFolders(int accountId);

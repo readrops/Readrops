@@ -69,7 +69,7 @@ public class FoldersFragment extends Fragment {
         viewModel = ViewModelProviders.of(this).get(ManageFeedsFoldersViewModel.class);
 
         viewModel.setAccount(account);
-        viewModel.getFolders().observe(this, folders -> adapter.submitList(folders));
+        viewModel.getFoldersWithFeedCount().observe(this, folders -> adapter.submitList(folders));
     }
 
     @Override
