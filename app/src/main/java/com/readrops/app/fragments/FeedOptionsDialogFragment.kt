@@ -14,7 +14,7 @@ import com.readrops.app.database.entities.account.Account
 import com.readrops.app.database.pojo.FeedWithFolder
 import com.readrops.app.databinding.FeedOptionsLayoutBinding
 
-class FeedsOptionsDialogFragment : BottomSheetDialogFragment() {
+class FeedOptionsDialogFragment : BottomSheetDialogFragment() {
 
     private lateinit var feedWithFolder: FeedWithFolder
     private lateinit var account: Account
@@ -23,12 +23,12 @@ class FeedsOptionsDialogFragment : BottomSheetDialogFragment() {
     companion object {
         val FEED_KEY = "FEED_KEY"
 
-        fun newInstance(feedWithFolder: FeedWithFolder, account: Account): FeedsOptionsDialogFragment {
+        fun newInstance(feedWithFolder: FeedWithFolder, account: Account): FeedOptionsDialogFragment {
             val bundle = Bundle()
             bundle.putParcelable(FEED_KEY, feedWithFolder)
             bundle.putParcelable(ACCOUNT, account)
 
-            val feedsOptionsDialogFragment = FeedsOptionsDialogFragment()
+            val feedsOptionsDialogFragment = FeedOptionsDialogFragment()
             feedsOptionsDialogFragment.arguments = bundle
 
             return feedsOptionsDialogFragment

@@ -131,7 +131,7 @@ public class FeedsFragment extends Fragment {
     }
 
     private void openFeedOptionsFragment(FeedWithFolder feedWithFolder) {
-        FeedsOptionsDialogFragment dialogFragment = FeedsOptionsDialogFragment.Companion.newInstance(feedWithFolder, account);
+        FeedOptionsDialogFragment dialogFragment = FeedOptionsDialogFragment.Companion.newInstance(feedWithFolder, account);
 
         getChildFragmentManager()
                 .beginTransaction()

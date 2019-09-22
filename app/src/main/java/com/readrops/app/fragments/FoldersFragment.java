@@ -12,20 +12,18 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.readrops.app.R;
 import com.readrops.app.activities.ManageFeedsFoldersActivity;
-import com.readrops.app.database.entities.account.Account;
+import com.readrops.app.adapters.FoldersAdapter;
 import com.readrops.app.database.entities.Folder;
+import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.databinding.FragmentFoldersBinding;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.ManageFeedsFoldersViewModel;
-import com.readrops.app.adapters.FoldersAdapter;
 import com.readrops.readropslibrary.utils.ConflictException;
 import com.readrops.readropslibrary.utils.UnknownFormatException;
 
@@ -65,7 +63,7 @@ public class FoldersFragment extends Fragment {
         if (account.getPassword() == null)
             account.setPassword(SharedPreferencesManager.readString(getContext(), account.getPasswordKey()));
 
-        adapter = new FoldersAdapter(this::editFolder);
+        adapter = new FoldersAdapter(this::openFolderOptionsDialog);
         viewModel = ViewModelProviders.of(this).get(ManageFeedsFoldersViewModel.class);
 
         viewModel.setAccount(account);
@@ -86,21 +84,9 @@ public class FoldersFragment extends Fragment {
 
         binding.foldersList.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.foldersList.setAdapter(adapter);
-
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                deleteFolder(adapter.getFolder(viewHolder.getAdapterPosition()), viewHolder.getAdapterPosition());
-            }
-        }).attachToRecyclerView(binding.foldersList);
     }
 
-    private void editFolder(Folder folder) {
+    public void editFolder(Folder folder) {
         new MaterialDialog.Builder(getActivity())
                 .title(R.string.edit_folder)
                 .positiveText(R.string.validate)
@@ -128,7 +114,7 @@ public class FoldersFragment extends Fragment {
                 .show();
     }
 
-    private void deleteFolder(Folder folder, int position) {
+    public void deleteFolder(Folder folder) {
         new MaterialDialog.Builder(getActivity())
                 .title(R.string.delete_folder)
                 .negativeText(R.string.cancel)
@@ -146,8 +132,16 @@ public class FoldersFragment extends Fragment {
                             Utils.showSnackbar(binding.foldersRoot, message);
                         })
                         .subscribe())
-                .onNegative((dialog, which) -> adapter.notifyItemChanged(position))
                 .show();
+    }
+
+    private void openFolderOptionsDialog(Folder folder) {
+        FolderOptionsDialogFragment fragment = FolderOptionsDialogFragment.Companion.newInstance(folder);
+
+        getChildFragmentManager()
+                .beginTransaction()
+                .add(fragment, "")
+                .commit();
     }
 }
 
