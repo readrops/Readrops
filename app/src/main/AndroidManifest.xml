@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.readrops.app">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".utils.ReadropsApp"
         android:allowBackup="true"
@@ -13,11 +16,13 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
+
         <activity
             android:name=".activities.AboutActivity"
             android:label="@string/about"
             android:parentActivityName=".activities.MainActivity" />
         <activity android:name=".activities.SettingsActivity" />
+
         <activity
             android:name=".activities.SplashActivity"
             android:theme="@style/SplashTheme">
@@ -27,32 +32,32 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".activities.AccountTypeListActivity" />
+
         <activity
             android:name=".activities.AddAccountActivity"
             android:label="@string/add_account" />
+
         <activity
             android:name=".activities.ManageFeedsFoldersActivity"
             android:label="@string/manage_feeds_folders"
             android:parentActivityName=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".activities.MainActivity"
             android:label="@string/articles"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".activities.ItemActivity"
             android:parentActivityName=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".activities.AddFeedActivity"
             android:label="@string/add_feed_title"
             android:parentActivityName=".activities.MainActivity" />
     </application>
-
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-
-    <uses-permission android:name="android.permission.INTERNET" />
-
 </manifest>

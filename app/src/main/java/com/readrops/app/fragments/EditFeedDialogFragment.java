@@ -29,7 +29,9 @@ import java.util.TreeMap;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-public class EditFeedDialog extends DialogFragment implements AdapterView.OnItemSelectedListener {
+import static com.readrops.app.activities.ManageFeedsFoldersActivity.ACCOUNT;
+
+public class EditFeedDialogFragment extends DialogFragment implements AdapterView.OnItemSelectedListener {
 
     private TextInputEditText feedName;
     private TextInputEditText feedUrl;
@@ -40,6 +42,20 @@ public class EditFeedDialog extends DialogFragment implements AdapterView.OnItem
     private FeedWithFolder feedWithFolder;
     private Account account;
     private ManageFeedsFoldersViewModel viewModel;
+
+    public EditFeedDialogFragment() {
+    }
+
+    public static EditFeedDialogFragment newInstance(FeedWithFolder feedWithFolder, Account account) {
+        Bundle args = new Bundle();
+        args.putParcelable("feedWithFolder", feedWithFolder);
+        args.putParcelable(ACCOUNT, account);
+
+        EditFeedDialogFragment fragment = new EditFeedDialogFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
 
     @NonNull
     @Override

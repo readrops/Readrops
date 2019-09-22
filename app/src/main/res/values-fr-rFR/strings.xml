@@ -80,5 +80,6 @@
     <string name="local">Local</string>
     <string name="feeds_number">%1$s flux</string>
     <string name="feed_number">%1$s flux</string>
+    <string name="delete">Supprimer</string>
 
 </resources>

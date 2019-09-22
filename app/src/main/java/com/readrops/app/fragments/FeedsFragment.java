@@ -1,11 +1,8 @@
 package com.readrops.app.fragments;
 
 
-import android.content.Intent;
 import android.content.res.Resources;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,17 +11,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.readrops.app.R;
 import com.readrops.app.adapters.FeedsAdapter;
-import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.Feed;
+import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.pojo.FeedWithFolder;
 import com.readrops.app.databinding.FragmentFeedsBinding;
 import com.readrops.app.fragments.settings.AccountSettingsFragment;
@@ -36,7 +30,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.schedulers.Schedulers;
 
-import static android.content.Context.VIBRATOR_SERVICE;
 import static com.readrops.app.activities.ManageFeedsFoldersActivity.ACCOUNT;
 
 
@@ -97,50 +90,18 @@ public class FeedsFragment extends Fragment {
         adapter = new FeedsAdapter(new FeedsAdapter.ManageFeedsListener() {
             @Override
             public void onEdit(FeedWithFolder feedWithFolder) {
-                openEditFeedDialog(feedWithFolder);
+                openFeedOptionsFragment(feedWithFolder);
             }
 
             @Override
             public void onOpenLink(FeedWithFolder feedWithFolder) {
-                Vibrator vibrator = (Vibrator) getActivity().getSystemService(VIBRATOR_SERVICE);
-                vibrator.vibrate(50);
-
-                Intent urlIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(feedWithFolder.getFeed().getSiteUrl()));
-                startActivity(urlIntent);
             }
         });
 
         binding.feedsRecyclerview.setAdapter(adapter);
-
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
-            @Override
-            public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-                int swipeFlags = ItemTouchHelper.RIGHT;
-
-                return makeMovementFlags(0, swipeFlags);
-            }
-
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-                deleteFeed(adapter.getItemAt(viewHolder.getAdapterPosition()).getFeed(),
-                        viewHolder.getAdapterPosition());
-
-            }
-
-            @Override
-            public boolean isItemViewSwipeEnabled() {
-                return true;
-            }
-
-        }).attachToRecyclerView(binding.feedsRecyclerview);
     }
 
-    private void deleteFeed(Feed feed, int position) {
+    public void deleteFeed(Feed feed) {
         new MaterialDialog.Builder(getContext())
                 .title(R.string.delete_feed)
                 .positiveText(R.string.validate)
@@ -157,8 +118,6 @@ public class FeedsFragment extends Fragment {
 
                             @Override
                             public void onError(Throwable e) {
-                                adapter.notifyItemChanged(position);
-
                                 String message;
                                 if (e instanceof Resources.NotFoundException)
                                     message = getString(R.string.feed_doesnt_exist, feed.getName());
@@ -168,19 +127,15 @@ public class FeedsFragment extends Fragment {
                                 Utils.showSnackbar(binding.feedsRoot, message);
                             }
                         }))
-                .onNegative(((dialog, which) -> adapter.notifyItemChanged(position)))
                 .show();
     }
 
-    private void openEditFeedDialog(FeedWithFolder feedWithFolder) {
-        EditFeedDialog editFeedDialog = new EditFeedDialog();
+    private void openFeedOptionsFragment(FeedWithFolder feedWithFolder) {
+        FeedsOptionsDialogFragment dialogFragment = FeedsOptionsDialogFragment.Companion.newInstance(feedWithFolder, account);
 
-        Bundle bundle = new Bundle();
-        bundle.putParcelable("feedWithFolder", feedWithFolder);
-        bundle.putParcelable(ACCOUNT, account);
-        editFeedDialog.setArguments(bundle);
-
-        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.add(editFeedDialog, "").commit();
+        getChildFragmentManager()
+                .beginTransaction()
+                .add(dialogFragment, "")
+                .commit();
     }
 }
