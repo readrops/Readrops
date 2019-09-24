@@ -62,7 +62,8 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/add_account_login"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -91,7 +92,8 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/add_account_url"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -105,7 +107,8 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/add_account_name"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
                 </com.google.android.material.textfield.TextInputLayout>
 
             </RelativeLayout>
