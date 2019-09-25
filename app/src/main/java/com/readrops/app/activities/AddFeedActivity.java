@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -330,5 +331,16 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         }
 
         super.finish();
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_ENTER:
+                onClick(load);
+                return true;
+        }
+
+        return super.onKeyUp(keyCode, event);
     }
 }

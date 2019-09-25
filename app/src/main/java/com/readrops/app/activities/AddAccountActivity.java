@@ -3,6 +3,7 @@ package com.readrops.app.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -240,5 +241,16 @@ public class AddAccountActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_ENTER:
+                createAccount(null);
+                return true;
+        }
+        
+        return super.onKeyUp(keyCode, event);
     }
 }

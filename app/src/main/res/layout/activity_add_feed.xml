@@ -35,7 +35,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:drawableEnd="@drawable/ic_cancel_grey"
-                    android:hint="@string/feed_url" />
+                    android:hint="@string/feed_url"
+                    android:inputType="text"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
