@@ -66,14 +66,14 @@ public final class ItemMatcher {
     public static List<Item> itemsFromRSS(List<RSSItem> items, Feed feed) throws ParseException {
         List<Item> dbItems = new ArrayList<>();
 
-        for(RSSItem item : items) {
+        for (RSSItem item : items) {
             Item newItem = new Item();
 
             newItem.setAuthor(item.getCreator());
-            newItem.setContent(item.getContent());
+            newItem.setContent(item.getContent()); // Jsoup.clean(item.getContent(), Whitelist.relaxed())
             newItem.setDescription(item.getDescription());
             newItem.setGuid(item.getGuid());
-            newItem.setTitle(Jsoup.parse(item.getTitle()).text());
+            newItem.setTitle(Jsoup.parse(item.getTitle()).text().trim());
 
             // I wish I hadn't done that...
             if (Pattern.compile(DateUtils.RSS_ALTERNATIVE_DATE_FORMAT_REGEX).matcher(item.getDate()).matches())
@@ -130,10 +130,10 @@ public final class ItemMatcher {
         for (ATOMEntry item : items) {
             Item dbItem = new Item();
 
-            dbItem.setContent(item.getContent());
+            dbItem.setContent(item.getContent()); // Jsoup.clean(item.getContent(), Whitelist.relaxed())
             dbItem.setDescription(item.getSummary());
             dbItem.setGuid(item.getId());
-            dbItem.setTitle(item.getTitle());
+            dbItem.setTitle(Jsoup.parse(item.getTitle()).text().trim());
 
             dbItem.setPubDate(DateUtils.stringToDateTime(item.getUpdated(), DateUtils.ATOM_JSON_DATE_FORMAT));
             dbItem.setLink(item.getUrl());
@@ -155,10 +155,10 @@ public final class ItemMatcher {
             if (item.getAuthor() != null)
                 dbItem.setAuthor(item.getAuthor().getName());
 
-            dbItem.setContent(item.getContent());
+            dbItem.setContent(item.getContent()); // Jsoup.clean(item.getContent(), Whitelist.relaxed())
             dbItem.setDescription(item.getSummary());
             dbItem.setGuid(item.getId());
-            dbItem.setTitle(item.getTitle());
+            dbItem.setTitle(Jsoup.parse(item.getTitle()).text().trim());
 
             dbItem.setPubDate(DateUtils.stringToDateTime(item.getPubDate(), DateUtils.ATOM_JSON_DATE_FORMAT));
 
