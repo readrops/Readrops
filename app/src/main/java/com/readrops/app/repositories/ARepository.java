@@ -9,11 +9,11 @@ import androidx.annotation.Nullable;
 import androidx.palette.graphics.Palette;
 
 import com.readrops.app.database.Database;
-import com.readrops.app.database.entities.account.Account;
-import com.readrops.app.database.entities.account.AccountType;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.Item;
+import com.readrops.app.database.entities.account.Account;
+import com.readrops.app.database.entities.account.AccountType;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.HtmlParser;
 import com.readrops.app.utils.ParsingResult;
@@ -96,7 +96,7 @@ public abstract class ARepository<T> {
                 setFavIconUtils(feed);
                 emitter.onNext(feed);
             }
-        }).subscribeOn(Schedulers.computation())
+        }).subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .doOnNext(feed1 -> database.feedDao().updateColors(feed1.getId(),
                         feed1.getTextColor(), feed1.getBackgroundColor()))
@@ -123,10 +123,14 @@ public abstract class ARepository<T> {
         if (favicon != null) {
             Palette palette = Palette.from(favicon).generate();
 
-            feed.setTextColor(palette.getDominantSwatch().getRgb());
+            if (palette.getDominantSwatch() != null) {
+                feed.setTextColor(palette.getDominantSwatch().getRgb());
+            }
 
-            if (palette.getMutedSwatch() != null)
+            if (palette.getMutedSwatch() != null) {
                 feed.setBackgroundColor(palette.getMutedSwatch().getRgb());
+            }
+
         }
     }
 
