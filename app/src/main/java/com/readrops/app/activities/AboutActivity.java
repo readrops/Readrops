@@ -2,11 +2,11 @@ package com.readrops.app.activities;
 
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.readrops.app.BuildConfig;
+import com.mikepenz.aboutlibraries.Libs;
+import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.readrops.app.R;
 
 public class AboutActivity extends AppCompatActivity {
@@ -16,8 +16,17 @@ public class AboutActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
 
-        TextView appVersion = findViewById(R.id.app_version);
-        appVersion.setText(BuildConfig.VERSION_NAME);
+        new LibsBuilder()
+                .withAboutIconShown(true)
+                .withAboutVersionShown(true)
+                .withAboutAppName(getString(R.string.app_name))
+                .withAboutDescription(getString(R.string.app_description, getString(R.string.app_licence), getString(R.string.app_url)))
+                .withLicenseShown(true)
+                .withLicenseDialog(false)
+                .withActivityTitle(getString(R.string.about))
+                .withActivityStyle(Libs.ActivityStyle.LIGHT)
+                .withFields(R.string.class.getFields())
+                .start(this);
     }
 
     @Override

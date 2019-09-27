@@ -81,11 +81,12 @@
     <string name="login_failed">Login failed. Please check your credentials</string>
     <string name="new_account">New account</string>
     <string name="app_licence">App released under the GPLv3 licence</string>
-    <string name="source_url" translatable="false">https://github.com/readrops/Readrops</string>
+    <string name="app_url" translatable="false">https://github.com/readrops/Readrops</string>
     <string name="number_items_to_parse">Maximum number of items per feed</string>
     <string name="unlimited">Unlimited</string>
     <string name="local">Local</string>
     <string name="feeds_number">%1$s feeds</string>
     <string name="feed_number">%1$s feed</string>
     <string name="delete">Delete</string>
+    <string name="app_description" translatable="false"><![CDATA[%1$s <br/><br/> %2$s]]></string>
 </resources>
