@@ -2,7 +2,7 @@ package com.readrops.app.database.dao;
 
 
 import androidx.lifecycle.LiveData;
-import androidx.paging.PageKeyedDataSource;
+import androidx.paging.DataSource;
 import androidx.room.Dao;
 import androidx.room.Query;
 import androidx.room.RawQuery;
@@ -21,7 +21,7 @@ import io.reactivex.Completable;
 public abstract class ItemDao implements BaseDao<Item> {
 
     @RawQuery(observedEntities = {Item.class, Folder.class, Feed.class})
-    public abstract PageKeyedDataSource.Factory<Integer, ItemWithFeed> selectAll(SupportSQLiteQuery query);
+    public abstract DataSource.Factory<Integer, ItemWithFeed> selectAll(SupportSQLiteQuery query);
 
     @Query("Select case When :guid In (Select guid From Item Inner Join Feed on Item.feed_id = Feed.id and account_id = :accountId) Then 1 else 0 end")
     public abstract boolean itemExists(String guid, int accountId);

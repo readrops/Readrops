@@ -70,8 +70,8 @@ public class MainViewModel extends AndroidViewModel {
 
         lastFetch = new LivePagedListBuilder<>(db.itemDao().selectAll(queryBuilder.getQuery()),
                 new PagedList.Config.Builder()
-                        .setPageSize(40)
-                        .setPrefetchDistance(80)
+                        .setPageSize(100)
+                        .setPrefetchDistance(150)
                         .setEnablePlaceholders(false)
                         .build())
                 .build();

@@ -122,8 +122,10 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder viewHolder, int i) {
         ItemWithFeed itemWithFeed = getItem(i);
-        viewHolder.bind(itemWithFeed);
+        if (itemWithFeed == null)
+            return;
 
+        viewHolder.bind(itemWithFeed);
         viewHolder.setImages(itemWithFeed);
         viewHolder.applyColors(itemWithFeed);
 
@@ -161,8 +163,12 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
     }
 
     public void clearSelection() {
+        LinkedHashSet<Integer> localSelection = new LinkedHashSet<>(selection);
         selection.clear();
-        notifyDataSetChanged();
+
+        for (int position : localSelection) {
+            notifyItemChanged(position, getItem(position));
+        }
     }
 
     public LinkedHashSet<Integer> getSelection() {
