@@ -122,8 +122,6 @@ public class DrawerManager {
         for (SecondaryDrawerItem primaryDrawerItem : feedsWithoutFolder) {
             drawer.addItem(primaryDrawerItem);
         }
-
-        drawer.setSelection(ARTICLES_ITEM_ID);
     }
 
     private void createAccountHeader(List<Account> accounts) {
@@ -140,20 +138,9 @@ public class DrawerManager {
             profileItems[i] = profileItem;
         }
 
-        ProfileSettingDrawerItem addAccountSettingsItem = new ProfileSettingDrawerItem()
-                .withName(R.string.add_account)
-                .withIcon(R.drawable.ic_add_account_grey)
-                .withIdentifier(ADD_ACCOUNT_ID);
-
-        ProfileSettingDrawerItem accountSettingsItem = new ProfileSettingDrawerItem()
-                .withName(R.string.account_settings)
-                .withIcon(R.drawable.ic_settings)
-                .withIdentifier(ACCOUNT_SETTINGS_ID);
-
         header = new AccountHeaderBuilder()
                 .withActivity(activity)
                 .addProfiles(profileItems)
-                .addProfiles(accountSettingsItem, addAccountSettingsItem)
                 .withDividerBelowHeader(false)
                 .withAlternativeProfileHeaderSwitching(true)
                 .withCurrentProfileHiddenInList(true)
@@ -163,6 +150,7 @@ public class DrawerManager {
                 .withOnAccountHeaderListener(headerListener)
                 .build();
 
+        addProfileSettingItems();
         header.setActiveProfile(currentAccountId);
     }
 
@@ -233,6 +221,20 @@ public class DrawerManager {
         drawer.addItem(new DividerDrawerItem());
     }
 
+    private void addProfileSettingItems() {
+        ProfileSettingDrawerItem accountSettingsItem = new ProfileSettingDrawerItem()
+                .withName(R.string.account_settings)
+                .withIcon(R.drawable.ic_settings)
+                .withIdentifier(ACCOUNT_SETTINGS_ID);
+
+        ProfileSettingDrawerItem addAccountSettingsItem = new ProfileSettingDrawerItem()
+                .withName(R.string.add_account)
+                .withIcon(R.drawable.ic_add_account_grey)
+                .withIdentifier(ADD_ACCOUNT_ID);
+
+        header.addProfiles(accountSettingsItem, addAccountSettingsItem);
+    }
+
     public void addAccount(Account account, boolean currentProfile) {
         ProfileDrawerItem profileItem = createProfileItem(account);
 
@@ -244,13 +246,7 @@ public class DrawerManager {
 
     public void updateHeader(List<Account> accounts) {
         header.clear();
-
-        ProfileSettingDrawerItem addAccountSettingsItem = new ProfileSettingDrawerItem()
-                .withName(R.string.add_account)
-                .withIcon(R.drawable.ic_add_account_grey)
-                .withIdentifier(ADD_ACCOUNT_ID);
-
-        header.addProfiles(addAccountSettingsItem);
+        addProfileSettingItems();
 
         for (Account account : accounts) {
             addAccount(account, account.isCurrentAccount());
@@ -295,5 +291,9 @@ public class DrawerManager {
                 header.updateProfile(profile);
             }
         }
+    }
+
+    public void setDrawerSelection(long identifier) {
+        drawer.setSelection(identifier);
     }
 }

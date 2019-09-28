@@ -194,6 +194,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
             if (drawer == null) {
                 drawer = drawerManager.buildDrawer(accounts);
+                drawer.setSelection(DrawerManager.ARTICLES_ITEM_ID);
                 updateDrawerFeeds();
             } else if (accounts.size() < drawerManager.getNumberOfProfiles() && accounts.size() > 0) {
                 drawerManager.updateHeader(accounts);
@@ -213,7 +214,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 onRefresh();
                 savedInstanceState.clear();
             }
-
         });
     }
 
