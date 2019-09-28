@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,6 +29,7 @@ import com.bumptech.glide.util.ViewPreloadSizeProvider;
 import com.readrops.app.R;
 import com.readrops.app.database.entities.Item;
 import com.readrops.app.database.pojo.ItemWithFeed;
+import com.readrops.app.databinding.ListItemBinding;
 import com.readrops.app.utils.DateUtils;
 import com.readrops.app.utils.GlideRequests;
 import com.readrops.app.utils.Utils;
@@ -78,20 +78,24 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
                     itemWithFeed.getColor() == t1.getColor() &&
                     itemWithFeed.getBgColor() == t1.getBgColor();
         }
+
+        @Override
+        public Object getChangePayload(@NonNull ItemWithFeed oldItem, @NonNull ItemWithFeed newItem) {
+            return newItem;
+        }
     };
 
     private static final DrawableCrossFadeFactory FADE_FACTORY = new DrawableCrossFadeFactory.Builder().setCrossFadeEnabled(true).build();
 
-    private static final RequestOptions requestOptions = new RequestOptions().transforms(new CenterCrop(), new RoundedCorners(16));
+    private static final RequestOptions REQUEST_OPTIONS = new RequestOptions().transforms(new CenterCrop(), new RoundedCorners(16));
 
     @NonNull
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-        View view = inflater.inflate(R.layout.image_item, viewGroup, false);
+        ListItemBinding binding = ListItemBinding.inflate(LayoutInflater.from(viewGroup.getContext()));
 
-        ItemViewHolder viewHolder = new ItemViewHolder(view);
-        preloadSizeProvider.setView(viewHolder.itemImage);
+        ItemViewHolder viewHolder = new ItemViewHolder(binding);
+        preloadSizeProvider.setView(binding.itemImage);
 
         return viewHolder;
     }
@@ -100,6 +104,14 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position, @NonNull List<Object> payloads) {
         if (payloads.size() > 0) {
             ItemWithFeed itemWithFeed = (ItemWithFeed) payloads.get(0);
+
+            holder.bind(itemWithFeed);
+            holder.applyColors(itemWithFeed);
+
+            if (itemWithFeed.getFolder() != null)
+                holder.binding.itemFolderName.setText(itemWithFeed.getFolder().getName());
+            else
+                holder.binding.itemFolderName.setText(R.string.no_folder);
 
             holder.setReadState(itemWithFeed.getItem().isRead());
             holder.setSelected(selection.contains(position));
@@ -112,56 +124,22 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
         ItemWithFeed itemWithFeed = getItem(i);
         viewHolder.bind(itemWithFeed);
 
-        if (itemWithFeed.getItem().hasImage()) {
-            viewHolder.itemImage.setVisibility(View.VISIBLE);
-
-            glideRequests
-                    .load(itemWithFeed.getItem().getImageLink())
-                    .centerCrop()
-                    .apply(requestOptions)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .transition(DrawableTransitionOptions.withCrossFade(FADE_FACTORY))
-                    .into(viewHolder.itemImage);
-        } else
-            viewHolder.itemImage.setVisibility(View.GONE);
-
-        if (itemWithFeed.getFeedIconUrl() != null) {
-            glideRequests.
-                    load(itemWithFeed.getFeedIconUrl())
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .placeholder(R.drawable.ic_rss_feed)
-                    .into(viewHolder.feedIcon);
-        } else
-            viewHolder.feedIcon.setImageResource(R.drawable.ic_rss_feed);
-
-        Resources resources = viewHolder.itemView.getResources();
-
-        if (itemWithFeed.getBgColor() != 0) {
-            viewHolder.feedName.setTextColor(itemWithFeed.getBgColor());
-            Utils.setDrawableColor(viewHolder.date.getBackground(), itemWithFeed.getBgColor());
-
-        } else if (itemWithFeed.getColor() != 0) {
-            viewHolder.feedName.setTextColor(itemWithFeed.getColor());
-            Utils.setDrawableColor(viewHolder.date.getBackground(), itemWithFeed.getColor());
-
-        } else if (itemWithFeed.getBgColor() == 0 && itemWithFeed.getColor() == 0) {
-            viewHolder.feedName.setTextColor(resources.getColor(android.R.color.tab_indicator_text));
-            Utils.setDrawableColor(viewHolder.date.getBackground(),
-                    ContextCompat.getColor(viewHolder.itemView.getContext(), R.color.colorPrimary));
-        }
+        viewHolder.setImages(itemWithFeed);
+        viewHolder.applyColors(itemWithFeed);
 
         int minutes = (int) Math.round(itemWithFeed.getItem().getReadTime());
         if (minutes < 1)
-            viewHolder.itemReadTime.setText(R.string.read_time_lower_than_1);
+            viewHolder.binding.itemReadtime.setText(R.string.read_time_lower_than_1);
         else if (minutes > 1)
-            viewHolder.itemReadTime.setText(resources.getString(R.string.read_time, String.valueOf(minutes)));
+            viewHolder.binding.itemReadtime.setText(viewHolder.itemView.getContext().
+                    getString(R.string.read_time, String.valueOf(minutes)));
         else
-            viewHolder.itemReadTime.setText(R.string.read_time_one_minute);
+            viewHolder.binding.itemReadtime.setText(R.string.read_time_one_minute);
 
         if (itemWithFeed.getFolder() != null)
-            viewHolder.itemFolderName.setText(itemWithFeed.getFolder().getName());
+            viewHolder.binding.itemFolderName.setText(itemWithFeed.getFolder().getName());
         else
-            viewHolder.itemFolderName.setText(R.string.no_folder);
+            viewHolder.binding.itemFolderName.setText(R.string.no_folder);
 
         viewHolder.setReadState(itemWithFeed.getItem().isRead());
         viewHolder.setSelected(selection.contains(viewHolder.getAdapterPosition()));
@@ -179,7 +157,7 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
         else
             selection.add(position);
 
-        notifyItemChanged(position);
+        notifyItemChanged(position, getItem(position));
     }
 
     public void clearSelection() {
@@ -248,7 +226,7 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
         return glideRequests
                 .load(url)
                 .centerCrop()
-                .apply(requestOptions)
+                .apply(REQUEST_OPTIONS)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .transition(DrawableTransitionOptions.withCrossFade(FADE_FACTORY));
     }
@@ -265,19 +243,12 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView itemTitle;
-        private TextView date;
-        private TextView feedName;
-        private TextView itemDescription;
-        private ImageView feedIcon;
-        private ImageView itemImage;
-        private TextView itemReadTime;
-        private TextView itemFolderName;
-
+        private ListItemBinding binding;
         View[] alphaViews;
 
-        ItemViewHolder(@NonNull View itemView) {
-            super(itemView);
+        ItemViewHolder(ListItemBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
 
             itemView.setOnClickListener((view -> {
                 int position = getAdapterPosition();
@@ -295,41 +266,74 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
                 return true;
             });
 
-            itemTitle = itemView.findViewById(R.id.item_title);
-            date = itemView.findViewById(R.id.item_date);
-            feedName = itemView.findViewById(R.id.item_feed_title);
-            itemDescription = itemView.findViewById(R.id.item_description);
-            feedIcon = itemView.findViewById(R.id.item_feed_icon);
-            itemImage = itemView.findViewById(R.id.item_image);
-            itemReadTime = itemView.findViewById(R.id.item_readtime);
-            itemFolderName = itemView.findViewById(R.id.item_folder_name);
-
             alphaViews = new View[]{
-                    date,
-                    itemFolderName,
-                    feedIcon,
-                    feedName,
-                    itemDescription,
-                    itemTitle,
-                    itemImage,
-                    itemReadTime
+                    binding.itemDate,
+                    binding.itemFolderName,
+                    binding.itemFeedIcon,
+                    binding.itemFeedName,
+                    binding.itemDescription,
+                    binding.itemTitle,
+                    binding.itemImage,
+                    binding.itemReadtime
             };
         }
 
         private void bind(ItemWithFeed itemWithFeed) {
             Item item = itemWithFeed.getItem();
 
-            itemTitle.setText(item.getTitle());
-            date.setText(DateUtils.formatedDateByLocal(item.getPubDate()));
-            feedName.setText(itemWithFeed.getFeedName());
+            binding.itemTitle.setText(item.getTitle());
+            binding.itemDate.setText(DateUtils.formatedDateByLocal(item.getPubDate()));
+            binding.itemFeedName.setText(itemWithFeed.getFeedName());
 
             if (item.getCleanDescription() != null) {
-                itemDescription.setVisibility(View.VISIBLE);
-                itemDescription.setText(item.getCleanDescription());
+                binding.itemDescription.setVisibility(View.VISIBLE);
+                binding.itemDescription.setText(item.getCleanDescription());
             } else {
-                itemDescription.setVisibility(View.GONE);
+                binding.itemDescription.setVisibility(View.GONE);
                 if (itemWithFeed.getItem().hasImage())
-                    itemTitle.setMaxLines(4);
+                    binding.itemTitle.setMaxLines(4);
+            }
+        }
+
+        private void setImages(ItemWithFeed itemWithFeed) {
+            if (itemWithFeed.getItem().hasImage()) {
+                binding.itemImage.setVisibility(View.VISIBLE);
+
+                glideRequests
+                        .load(itemWithFeed.getItem().getImageLink())
+                        .centerCrop()
+                        .apply(REQUEST_OPTIONS)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .transition(DrawableTransitionOptions.withCrossFade(FADE_FACTORY))
+                        .into(binding.itemImage);
+            } else
+                binding.itemImage.setVisibility(View.GONE);
+
+            if (itemWithFeed.getFeedIconUrl() != null) {
+                glideRequests.
+                        load(itemWithFeed.getFeedIconUrl())
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .placeholder(R.drawable.ic_rss_feed_grey)
+                        .into(binding.itemFeedIcon);
+            } else
+                binding.itemFeedIcon.setImageResource(R.drawable.ic_rss_feed_grey);
+        }
+
+        private void applyColors(ItemWithFeed itemWithFeed) {
+            Resources resources = itemView.getResources();
+
+            if (itemWithFeed.getBgColor() != 0) {
+                binding.itemFeedName.setTextColor(itemWithFeed.getBgColor());
+                Utils.setDrawableColor(binding.itemDate.getBackground(), itemWithFeed.getBgColor());
+
+            } else if (itemWithFeed.getColor() != 0) {
+                binding.itemFeedName.setTextColor(itemWithFeed.getColor());
+                Utils.setDrawableColor(binding.itemDate.getBackground(), itemWithFeed.getColor());
+
+            } else if (itemWithFeed.getBgColor() == 0 && itemWithFeed.getColor() == 0) {
+                binding.itemFeedName.setTextColor(resources.getColor(android.R.color.tab_indicator_text));
+                Utils.setDrawableColor(binding.itemDate.getBackground(),
+                        ContextCompat.getColor(itemView.getContext(), R.color.colorPrimary));
             }
         }
 
@@ -343,9 +347,9 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
         private void setSelected(boolean selected) {
             Context context = itemView.getContext();
 
-            if (selected)
+            if (selected) {
                 itemView.setBackground(new ColorDrawable(ContextCompat.getColor(context, R.color.selected_background)));
-            else {
+            } else {
                 TypedValue outValue = new TypedValue();
                 context.getTheme().resolveAttribute(
                         android.R.attr.selectableItemBackground, outValue, true);
@@ -355,7 +359,7 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
         }
 
         public ImageView getItemImage() {
-            return itemImage;
+            return binding.itemImage;
         }
     }
 }

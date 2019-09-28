@@ -72,7 +72,7 @@
                 android:layout_height="match_parent"
                 android:scrollbars="vertical"
                 tools:itemCount="3"
-                tools:listitem="@layout/image_item"
+                tools:listitem="@layout/list_item"
                 tools:visibility="visible" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
