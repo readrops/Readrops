@@ -9,6 +9,8 @@
         <item name="android:colorBackground">@color/colorBackground</item>
         <item name="colorControlNormal">@color/colorControlNormal</item>
         <item name="android:textColorPrimary">@color/textColorPrimary</item>
+
+        <item name="actionBarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="AppTheme">

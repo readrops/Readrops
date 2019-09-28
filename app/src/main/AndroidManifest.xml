@@ -17,10 +17,6 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
 
-        <activity
-            android:name=".activities.AboutActivity"
-            android:label="@string/about"
-            android:parentActivityName=".activities.MainActivity" />
         <activity android:name=".activities.SettingsActivity" />
 
         <activity

@@ -42,6 +42,7 @@ public class DrawerManager {
     public static final int ADD_ACCOUNT_ID = -4;
     public static final int ABOUT_ID = -7;
     public static final int SETTINGS_ID = -8;
+    public static final int ACCOUNT_SETTINGS_ID = -9;
 
     private Activity activity;
     private Toolbar toolbar;
@@ -144,10 +145,15 @@ public class DrawerManager {
                 .withIcon(R.drawable.ic_add_account_grey)
                 .withIdentifier(ADD_ACCOUNT_ID);
 
+        ProfileSettingDrawerItem accountSettingsItem = new ProfileSettingDrawerItem()
+                .withName(R.string.account_settings)
+                .withIcon(R.drawable.ic_settings)
+                .withIdentifier(ACCOUNT_SETTINGS_ID);
+
         header = new AccountHeaderBuilder()
                 .withActivity(activity)
                 .addProfiles(profileItems)
-                .addProfiles(addAccountSettingsItem)
+                .addProfiles(accountSettingsItem, addAccountSettingsItem)
                 .withDividerBelowHeader(false)
                 .withAlternativeProfileHeaderSwitching(true)
                 .withCurrentProfileHiddenInList(true)

@@ -30,6 +30,8 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
 import com.bumptech.glide.util.ViewPreloadSizeProvider;
+import com.mikepenz.aboutlibraries.Libs;
+import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
@@ -158,6 +160,13 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                         intent.putExtra("fromMainActivity", true);
                         startActivityForResult(intent, ADD_ACCOUNT_REQUEST);
                         break;
+                    case DrawerManager.ACCOUNT_SETTINGS_ID:
+                        Intent intent1 = new Intent(this, SettingsActivity.class);
+                        intent1.putExtra(SettingsActivity.SETTINGS_KEY,
+                                SettingsActivity.SettingsKey.ACCOUNT_SETTINGS.ordinal());
+                        intent1.putExtra(AccountSettingsFragment.ACCOUNT, viewModel.getCurrentAccount());
+                        startActivity(intent1);
+                        break;
                     default:
                         if (!updating) {
                             viewModel.setCurrentAccount(id);
@@ -225,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     viewModel.invalidate();
                     break;
                 case DrawerManager.ABOUT_ID:
-                    startActivity(new Intent(getApplication(), AboutActivity.class));
+                    startAboutActivity();
                     break;
                 case DrawerManager.SETTINGS_ID:
                     Intent intent = new Intent(getApplication(), SettingsActivity.class);
@@ -656,6 +665,19 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         }
     }
 
+    private void startAboutActivity() {
+        new LibsBuilder()
+                .withAboutIconShown(true)
+                .withAboutVersionShown(true)
+                .withAboutAppName(getString(R.string.app_name))
+                .withAboutDescription(getString(R.string.app_description, getString(R.string.app_licence), getString(R.string.app_url)))
+                .withLicenseShown(true)
+                .withLicenseDialog(false)
+                .withActivityTitle(getString(R.string.about))
+                .withActivityStyle(Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
+                .withFields(R.string.class.getFields())
+                .start(this);
+    }
 
     @Override
     protected void onDestroy() {
