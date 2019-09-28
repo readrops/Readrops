@@ -197,7 +197,7 @@ public class DrawerManager {
 
         PrimaryDrawerItem toReadLater = new PrimaryDrawerItem()
                 .withName(R.string.read_later)
-                .withIcon(R.drawable.ic_read_later_grey)
+                .withIcon(R.drawable.ic_read_later)
                 .withSelectable(true)
                 .withIdentifier(READ_LATER_ID);
 
