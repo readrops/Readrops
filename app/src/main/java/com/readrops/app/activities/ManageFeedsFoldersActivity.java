@@ -1,6 +1,5 @@
 package com.readrops.app.activities;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,8 +15,8 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.readrops.app.R;
-import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.Folder;
+import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.databinding.ActivityManageFeedsFoldersBinding;
 import com.readrops.app.fragments.FeedsFragment;
 import com.readrops.app.fragments.FoldersFragment;
@@ -46,9 +45,6 @@ public class ManageFeedsFoldersActivity extends AppCompatActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_manage_feeds_folders);
         setSupportActionBar(binding.manageFeedsFoldersToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        binding.manageFeedsFoldersToolbar.setTitleTextColor(Color.WHITE);
-        binding.manageFeedsFoldersTablayout.setTabTextColors(Color.WHITE, Color.WHITE);
 
         account = getIntent().getParcelableExtra(ACCOUNT);
 

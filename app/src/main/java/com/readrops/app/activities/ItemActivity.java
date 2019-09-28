@@ -2,7 +2,6 @@ package com.readrops.app.activities;
 
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
@@ -86,12 +85,9 @@ public class ItemActivity extends AppCompatActivity {
             toolbarLayout.setTitleEnabled(false);
             scrim.setVisibility(View.GONE);
 
-            toolbar.setTitleTextColor(Color.WHITE);
         } else {
             appBarLayout.setExpanded(true);
             toolbarLayout.setTitleEnabled(true);
-            toolbarLayout.setExpandedTitleColor(Color.WHITE);
-            toolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
 
             GlideApp.with(this)
                     .load(imageUrl)
@@ -126,7 +122,6 @@ public class ItemActivity extends AppCompatActivity {
 
         if (itemWithFeed.getFolder() != null) {
             toolbar.setSubtitle(itemWithFeed.getFolder().getName());
-            toolbar.setSubtitleTextColor(Color.WHITE);
         }
 
         title.setText(item.getTitle());

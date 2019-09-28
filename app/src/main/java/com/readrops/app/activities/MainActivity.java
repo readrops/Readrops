@@ -111,7 +111,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
-        toolbar.setTitleTextColor(Color.WHITE);
 
         emptyListLayout = findViewById(R.id.empty_list_layout);
         refreshLayout = findViewById(R.id.swipe_refresh_layout);
