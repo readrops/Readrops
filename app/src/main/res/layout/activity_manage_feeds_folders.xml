@@ -23,7 +23,10 @@
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/manage_feeds_folders_tablayout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                app:tabIndicator="@drawable/tab_indicator"
+                app:tabIndicatorColor="@android:color/white"
+                app:tabIndicatorHeight="4dp"/>
 
         </com.google.android.material.appbar.AppBarLayout>
 
