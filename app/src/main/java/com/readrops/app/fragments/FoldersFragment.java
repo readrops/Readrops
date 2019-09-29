@@ -67,7 +67,15 @@ public class FoldersFragment extends Fragment {
         viewModel = ViewModelProviders.of(this).get(ManageFeedsFoldersViewModel.class);
 
         viewModel.setAccount(account);
-        viewModel.getFoldersWithFeedCount().observe(this, folders -> adapter.submitList(folders));
+        viewModel.getFoldersWithFeedCount().observe(this, folders -> {
+            adapter.submitList(folders);
+
+            if (folders.size() > 0) {
+                binding.foldersEmptyList.setVisibility(View.GONE);
+            } else {
+                binding.foldersEmptyList.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     @Override

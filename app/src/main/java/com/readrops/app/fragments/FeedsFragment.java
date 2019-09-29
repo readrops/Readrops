@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -69,13 +68,21 @@ public class FeedsFragment extends Fragment {
         viewModel = ViewModelProviders.of(this).get(ManageFeedsFoldersViewModel.class);
         viewModel.setAccount(account);
 
-        viewModel.getFeedsWithFolder().observe(this, feedWithFolders -> adapter.submitList(feedWithFolders));
+        viewModel.getFeedsWithFolder().observe(this, feedWithFolders -> {
+            adapter.submitList(feedWithFolders);
+
+            if (feedWithFolders.size() > 0) {
+                binding.feedsEmptyList.setVisibility(View.GONE);
+            } else {
+                binding.feedsEmptyList.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_feeds, container, false);
+        binding = FragmentFeedsBinding.inflate(inflater);
 
         return binding.getRoot();
     }

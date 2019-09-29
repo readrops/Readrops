@@ -84,29 +84,14 @@
         android:layout_height="match_parent"
         android:animateLayoutChanges="true">
 
-        <RelativeLayout
+        <com.readrops.app.utils.EmptyListView
             android:id="@+id/empty_list_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:image="@drawable/ic_rss_feed_grey"
+            app:text="@string/no_item"
             android:layout_gravity="center"
-            android:visibility="gone">
-
-            <ImageView
-                android:id="@+id/empty_list_imageview"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:src="@drawable/ic_rss_feed_grey" />
-
-            <TextView
-                style="@style/TextAppearance.AppCompat.Large"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/empty_list_imageview"
-                android:layout_centerInParent="true"
-                android:text="@string/no_feed" />
-
-        </RelativeLayout>
-
+            android:visibility="gone" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/add_feed_fab"

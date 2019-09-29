@@ -9,6 +9,7 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -90,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private MainViewModel viewModel;
     private DrawerManager drawerManager;
 
-    private RelativeLayout emptyListLayout;
+    private LinearLayout emptyListLayout;
     private RelativeLayout syncProgressLayout;
     private TextView syncProgress;
     private ProgressBar syncProgressBar;

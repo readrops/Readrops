@@ -89,4 +89,5 @@
     <string name="feed_number">%1$s feed</string>
     <string name="delete">Delete</string>
     <string name="app_description" translatable="false"><![CDATA[%1$s <br/><br/> %2$s]]></string>
+    <string name="no_item">No item</string>
 </resources>

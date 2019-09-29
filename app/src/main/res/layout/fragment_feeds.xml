@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".fragments.FeedsFragment">
 
@@ -12,9 +13,20 @@
             android:id="@+id/feeds_recyclerview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:listItem="@layout/feed_layout">
+            tools:itemCount="5"
+            tools:listitem="@layout/feed_layout" />
 
-        </androidx.recyclerview.widget.RecyclerView>
+        <com.readrops.app.utils.EmptyListView
+            android:id="@+id/feeds_empty_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:image="@drawable/ic_rss_feed_grey"
+            app:layout_constraintBottom_toBottomOf="@+id/feeds_recyclerview"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:text="@string/no_feed" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
