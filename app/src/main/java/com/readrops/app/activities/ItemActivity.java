@@ -2,6 +2,7 @@ package com.readrops.app.activities;
 
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -80,22 +82,27 @@ public class ItemActivity extends AppCompatActivity {
         dateLayout = findViewById(R.id.activity_item_date_layout);
 
         if (imageUrl == null) {
-            appBarLayout.setExpanded(false);
             getSupportActionBar().setDisplayShowTitleEnabled(false);
             toolbarLayout.setTitleEnabled(false);
             scrim.setVisibility(View.GONE);
-
         } else {
             appBarLayout.setExpanded(true);
             toolbarLayout.setTitleEnabled(true);
 
             GlideApp.with(this)
                     .load(imageUrl)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(imageView);
         }
 
+        final TypedArray styledAttributes = getTheme().obtainStyledAttributes(
+                new int[]{android.R.attr.actionBarSize});
+        int actionBarSize = (int) styledAttributes.getDimension(0, 0);
+        styledAttributes.recycle();
+
         appBarLayout.addOnOffsetChangedListener(((appBarLayout1, i) -> {
-            if (Math.abs(i) >= (appBarLayout.getTotalScrollRange() - ((8 * appBarLayout.getTotalScrollRange()) / 100))) {
+
+            if (Math.abs(i) >= (appBarLayout.getTotalScrollRange() - actionBarSize - ((8 * appBarLayout.getTotalScrollRange()) / 100))) {
                 appBarCollapsed = true;
                 invalidateOptionsMenu();
             } else {
@@ -156,11 +163,15 @@ public class ItemActivity extends AppCompatActivity {
             toolbarLayout.setContentScrimColor(itemWithFeed.getBgColor());
             toolbarLayout.setStatusBarScrimColor(itemWithFeed.getBgColor());
 
+            getWindow().setStatusBarColor(itemWithFeed.getBgColor());
+
             actionButton.setBackgroundTintList(ColorStateList.valueOf(itemWithFeed.getBgColor()));
         } else if (itemWithFeed.getColor() != 0) {
             toolbarLayout.setBackgroundColor(itemWithFeed.getColor());
             toolbarLayout.setContentScrimColor(itemWithFeed.getColor());
             toolbarLayout.setStatusBarScrimColor(itemWithFeed.getColor());
+
+            getWindow().setStatusBarColor(itemWithFeed.getColor());
 
             actionButton.setBackgroundTintList(ColorStateList.valueOf(itemWithFeed.getColor()));
         }
