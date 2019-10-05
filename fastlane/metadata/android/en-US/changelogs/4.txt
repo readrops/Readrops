@@ -1,0 +1,1 @@
+Fix a crash due to proguard rules
