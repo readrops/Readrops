@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.mikepenz.materialdrawer.AccountHeader;
@@ -30,6 +31,7 @@ import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.account.Account;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -84,9 +86,10 @@ public class DrawerManager {
 
         addDefaultPlaces();
 
-        List<SecondaryDrawerItem> feedsWithoutFolder = new ArrayList<>();
+        Map<SecondaryDrawerItem, Feed> feedsWithoutFolder = new HashMap<>();
 
-        for (Folder folder : folderListMap.keySet()) {
+        for (Map.Entry<Folder, List<Feed>> entry : folderListMap.entrySet()) {
+            Folder folder = entry.getKey();
             if (folder.getId() != 0) {
                 // no identifier for badge items, but if needed, be aware of not getting conflicts
                 // with secondary item identifiers (folder and feed ids can be the same)
@@ -97,30 +100,32 @@ public class DrawerManager {
                 List<IDrawerItem> secondaryDrawerItems = new ArrayList<>();
                 int expandableUnreadCount = 0;
 
-                for (Feed feed : folderListMap.get(folder)) {
+                for (Feed feed : entry.getValue()) {
                     expandableUnreadCount += feed.getUnreadCount();
 
                     SecondaryDrawerItem secondaryDrawerItem = createSecondaryItem(feed);
                     secondaryDrawerItems.add(secondaryDrawerItem);
+
+                    loadItemIcon(secondaryDrawerItem, feed);
                 }
 
-                if (secondaryDrawerItems.size() > 0) {
+                if (!secondaryDrawerItems.isEmpty()) {
                     badgeDrawerItem.withSubItems(secondaryDrawerItems);
                     badgeDrawerItem.withBadge(String.valueOf(expandableUnreadCount));
                     drawer.addItem(badgeDrawerItem);
                 }
             } else { // no folder case, items to add after the folders
                 for (Feed feed : folderListMap.get(folder)) {
-                    SecondaryDrawerItem primaryDrawerItem = createSecondaryItem(feed);
-
-                    feedsWithoutFolder.add(primaryDrawerItem);
+                    SecondaryDrawerItem secondaryItem = createSecondaryItem(feed);
+                    feedsWithoutFolder.put(secondaryItem, feed);
                 }
             }
         }
 
         // work-around as MaterialDrawer doesn't accept an item list
-        for (SecondaryDrawerItem primaryDrawerItem : feedsWithoutFolder) {
-            drawer.addItem(primaryDrawerItem);
+        for (Map.Entry<SecondaryDrawerItem, Feed> entry : feedsWithoutFolder.entrySet()) {
+            drawer.addItem(entry.getKey());
+            loadItemIcon(entry.getKey(), entry.getValue());
         }
     }
 
@@ -165,14 +170,17 @@ public class DrawerManager {
     private SecondaryDrawerItem createSecondaryItem(Feed feed) {
         int color = feed.getTextColor();
 
-        SecondaryDrawerItem secondaryDrawerItem = new SecondaryDrawerItem()
+        return new SecondaryDrawerItem()
                 .withName(feed.getName())
                 .withBadge(String.valueOf(feed.getUnreadCount()))
                 .withIcon(color != 0 ? drawableWithColor(color) : drawableWithColor(activity.getResources().getColor(R.color.colorPrimary)))
                 .withIdentifier(feed.getId());
+    }
 
+    private void loadItemIcon(SecondaryDrawerItem secondaryDrawerItem, Feed feed) {
         Glide.with(activity)
                 .load(feed.getIconUrl())
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(new CustomTarget<Drawable>() {
                     @Override
                     public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
@@ -181,11 +189,9 @@ public class DrawerManager {
 
                     @Override
                     public void onLoadCleared(@Nullable Drawable placeholder) {
-
+                        // no need of this method
                     }
                 });
-
-        return secondaryDrawerItem;
     }
 
     private void addDefaultPlaces() {
