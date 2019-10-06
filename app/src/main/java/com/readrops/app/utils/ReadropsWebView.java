@@ -31,12 +31,15 @@ public class ReadropsWebView extends WebView {
 
     @SuppressLint("SetJavaScriptEnabled")
     private void init() {
-        WebSettings settings = getSettings();
+        if (!isInEditMode()) {
+            WebSettings settings = getSettings();
 
-        settings.setJavaScriptEnabled(true);
-        settings.setBuiltInZoomControls(true);
-        settings.setDisplayZoomControls(false);
+            settings.setJavaScriptEnabled(true);
+            settings.setBuiltInZoomControls(true);
+            settings.setDisplayZoomControls(false);
+        }
 
+        setVerticalScrollBarEnabled(false);
         setBackgroundColor(getResources().getColor(R.color.colorBackground));
     }
 
@@ -46,9 +49,10 @@ public class ReadropsWebView extends WebView {
 
             formatDocument(document);
 
+            int color = itemWithFeed.getColor() != 0 ? itemWithFeed.getColor() : getResources().getColor(R.color.colorPrimary);
             return getContext().getString(R.string.webview_html_template,
                     Utils.getCssColor(itemWithFeed.getBgColor() != 0 ? itemWithFeed.getBgColor() :
-                            (itemWithFeed.getColor() != 0 ? itemWithFeed.getColor() : getResources().getColor(R.color.colorPrimary))),
+                            color),
                     document.body().html());
 
         } else
