@@ -1,0 +1,1 @@
+Disable Proguard as it makes fail some functionalities
