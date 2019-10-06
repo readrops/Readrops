@@ -280,7 +280,7 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
                     binding.itemDescription,
                     binding.itemTitle,
                     binding.itemImage,
-                    binding.itemReadtime
+                    binding.itemReadtimeLayout
             };
         }
 
