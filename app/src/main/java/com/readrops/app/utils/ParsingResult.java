@@ -1,13 +1,16 @@
 package com.readrops.app.utils;
 
-import androidx.annotation.NonNull;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.items.AbstractItem;
 import com.readrops.app.R;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -89,21 +92,31 @@ public class ParsingResult extends AbstractItem<ParsingResult, ParsingResult.Par
         }
 
         @Override
-        public void bindView(ParsingResult item, List<Object> payloads) {
-            if (item.getLabel() != null && !item.getLabel().isEmpty())
-                feedLabel.setText(item.getLabel());
-            else
-                feedLabel.setVisibility(View.GONE);
+        public void bindView(@NotNull ParsingResult item, List<Object> payloads) {
+            if (!payloads.isEmpty()) {
+                ParsingResult newItem = (ParsingResult) payloads.get(0);
 
-            feedUrl.setText(item.getUrl());
+                checkBox.setChecked(newItem.isChecked());
+            } else {
+                if (item.getLabel() != null && !item.getLabel().isEmpty())
+                    feedLabel.setText(item.getLabel());
+                else
+                    feedLabel.setVisibility(View.GONE);
 
-            checkBox.setChecked(item.isChecked());
-            checkBox.setClickable(false);
+                feedUrl.setText(item.getUrl());
+
+                checkBox.setChecked(item.isChecked());
+                checkBox.setClickable(false);
+            }
+
+
         }
 
         @Override
-        public void unbindView(ParsingResult item) {
-
+        public void unbindView(@NotNull ParsingResult item) {
+            // not useful
         }
+
+
     }
 }

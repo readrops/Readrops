@@ -81,7 +81,9 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/add_feed_results_text_view"
-                tools:visibility="visible" />
+                tools:visibility="visible"
+                tools:listitem="@layout/add_feed_item"
+                tools:itemCount="2"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -92,7 +94,8 @@
             android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/add_feed_main_layout" />
+            app:layout_constraintTop_toBottomOf="@+id/add_feed_main_layout"
+            tools:listitem="@layout/account_type_item"/>
 
         <Button
             android:id="@+id/add_feed_ok"
@@ -127,7 +130,9 @@
             app:layout_constraintHorizontal_bias="0.6"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/add_feed_insert_progressbar"
-            tools:visibility="visible" />
+            tools:visibility="visible"
+            tools:listitem="@layout/feed_insertion_result"
+            tools:itemCount="2"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

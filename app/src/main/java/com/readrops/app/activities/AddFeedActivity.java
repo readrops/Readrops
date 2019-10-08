@@ -8,16 +8,16 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.NestedScrollView;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,15 +25,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.adapters.ItemAdapter;
+import com.mikepenz.fastadapter.commons.utils.DiffCallback;
+import com.mikepenz.fastadapter.commons.utils.FastAdapterDiffUtil;
 import com.readrops.app.R;
-import com.readrops.app.database.entities.account.Account;
+import com.readrops.app.adapters.AccountArrayAdapter;
 import com.readrops.app.database.entities.Feed;
+import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.ParsingResult;
+import com.readrops.app.utils.ReadropsItemTouchCallback;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.AddFeedsViewModel;
-import com.readrops.app.adapters.AccountArrayAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +64,7 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
 
     private ItemAdapter<ParsingResult> parseItemsAdapter;
     private ItemAdapter<FeedInsertionResult> insertionResultsAdapter;
+    FastAdapter<ParsingResult> fastAdapter;
 
     private AddFeedsViewModel viewModel;
     private ArrayList<Feed> feedsToUpdate;
@@ -90,11 +94,10 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         feedInput.setOnTouchListener((v, event) -> {
             final int DRAWABLE_RIGHT = 2;
 
-            if(event.getAction() == MotionEvent.ACTION_UP) {
-                if(event.getRawX() >= (feedInput.getRight() - feedInput.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                    feedInput.setText("");
-                    return true;
-                }
+            int drawablePos = (feedInput.getRight() - feedInput.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width());
+            if (event.getAction() == MotionEvent.ACTION_UP && event.getRawX() >= drawablePos) {
+                feedInput.setText("");
+                return true;
             }
 
             return false;
@@ -103,7 +106,7 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         viewModel = ViewModelProviders.of(this).get(AddFeedsViewModel.class);
 
         parseItemsAdapter = new ItemAdapter<>();
-        FastAdapter<ParsingResult> fastAdapter = FastAdapter.with(parseItemsAdapter);
+        fastAdapter = FastAdapter.with(parseItemsAdapter);
         fastAdapter.withSelectable(true);
         fastAdapter.withOnClickListener((v, adapter, item, position) -> {
             if (item.isChecked()) {
@@ -123,35 +126,19 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         parseResultsRecyclerView.setLayoutManager(layoutManager);
 
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-            @Override
-            public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-                int swipeFlags = ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
+        new ItemTouchHelper(new ReadropsItemTouchCallback(this,
+                new ReadropsItemTouchCallback.Config.Builder()
+                        .swipeDirs(ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT)
+                        .swipeCallback((viewHolder, direction) -> {
+                            parseItemsAdapter.remove(viewHolder.getAdapterPosition());
 
-                return makeMovementFlags(0, swipeFlags);
-            }
-
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-                parseItemsAdapter.remove(viewHolder.getAdapterPosition());
-
-                if (parseItemsAdapter.getAdapterItemCount() == 0) {
-                    resultsTextView.setVisibility(View.GONE);
-                    parseResultsRecyclerView.setVisibility(View.GONE);
-                }
-
-            }
-
-            @Override
-            public boolean isItemViewSwipeEnabled() {
-                return true;
-            }
-        }).attachToRecyclerView(parseResultsRecyclerView);
+                            if (parseItemsAdapter.getAdapterItemCount() == 0) {
+                                resultsTextView.setVisibility(View.GONE);
+                                parseResultsRecyclerView.setVisibility(View.GONE);
+                            }
+                        })
+                        .build()))
+                .attachToRecyclerView(parseResultsRecyclerView);
 
         insertionResultsAdapter = new ItemAdapter<>();
         RecyclerView.LayoutManager layoutManager1 = new LinearLayoutManager(this);
@@ -163,18 +150,6 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
             arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
             accountSpinner.setAdapter(arrayAdapter);
-
-            accountSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-
-                }
-            });
         });
 
         feedsToUpdate = new ArrayList<>();
@@ -190,6 +165,7 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
                 }
                 break;
             case R.id.add_feed_ok:
+                insertionResultsAdapter.clear();
                 insertFeeds();
                 break;
         }
@@ -215,6 +191,15 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         }
 
         return false;
+    }
+
+    private void disableParsingResult(ParsingResult parsingResult) {
+        for (ParsingResult result : parseItemsAdapter.getAdapterItems()) {
+            if (result.getUrl().equals(parsingResult.getUrl())) {
+                result.setChecked(false);
+                fastAdapter.notifyAdapterItemChanged(parseItemsAdapter.getAdapterPosition(result));
+            }
+        }
     }
 
     private void loadFeed() {
@@ -244,12 +229,32 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void displayParseResults(List<ParsingResult> parsingResultList) {
-        if (parsingResultList.size() > 0) {
+        if (!parsingResultList.isEmpty()) {
             parseResultsRecyclerView.setVisibility(View.VISIBLE);
             progressBar.setVisibility(View.GONE);
             resultsTextView.setVisibility(View.VISIBLE);
 
-            parseItemsAdapter.add(parsingResultList);
+            DiffUtil.DiffResult diffResult = FastAdapterDiffUtil.calculateDiff(parseItemsAdapter, parsingResultList, new DiffCallback<ParsingResult>() {
+                @Override
+                public boolean areItemsTheSame(ParsingResult oldItem, ParsingResult newItem) {
+                    return oldItem.getUrl().equals(newItem.getUrl());
+                }
+
+                @Override
+                public boolean areContentsTheSame(ParsingResult oldItem, ParsingResult newItem) {
+                    return oldItem.getUrl().equals(newItem.getUrl()) &&
+                            oldItem.isChecked() == newItem.isChecked();
+                }
+
+                @Nullable
+                @Override
+                public Object getChangePayload(ParsingResult oldItem, int oldItemPosition, ParsingResult newItem, int newItemPosition) {
+                    newItem.setChecked(oldItem.isChecked());
+                    return newItem;
+                }
+            }, false);
+
+            FastAdapterDiffUtil.set(parseItemsAdapter, diffResult);
             validate.setEnabled(recyclerViewHasCheckedItems());
         } else
             progressBar.setVisibility(View.GONE);
@@ -284,7 +289,6 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
                         feedInsertionProgressBar.setVisibility(View.GONE);
                         validate.setEnabled(true);
                         Utils.showSnackbar(rootLayout, e.getMessage());
-
                     }
                 });
     }
@@ -296,12 +300,13 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         for (FeedInsertionResult feedInsertionResult : feedInsertionResults) {
             if (feedInsertionResult.getFeed() != null)
                 feedsToUpdate.add(feedInsertionResult.getFeed());
+
+            disableParsingResult(feedInsertionResult.getParsingResult());
         }
 
         insertionResultsAdapter.add(feedInsertionResults);
         validate.setEnabled(recyclerViewHasCheckedItems());
     }
-
 
 
     @Override
@@ -323,7 +328,7 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void finish() {
-        if (feedsToUpdate.size() > 0) {
+        if (!feedsToUpdate.isEmpty()) {
             Intent intent = new Intent();
             intent.putParcelableArrayListExtra("feedIds", feedsToUpdate);
 
@@ -339,8 +344,8 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
             case KeyEvent.KEYCODE_ENTER:
                 onClick(load);
                 return true;
+            default:
+                return super.onKeyUp(keyCode, event);
         }
-
-        return super.onKeyUp(keyCode, event);
     }
 }

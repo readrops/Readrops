@@ -1,6 +1,7 @@
 package com.readrops.app.viewmodels;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -21,6 +22,8 @@ import io.reactivex.Single;
 
 public class AddFeedsViewModel extends AndroidViewModel {
 
+    private static final String TAG = AddFeedsViewModel.class.getSimpleName();
+
     private ARepository repository;
     private Database database;
 
@@ -36,7 +39,7 @@ public class AddFeedsViewModel extends AndroidViewModel {
 
             return repository.addFeeds(results);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.d(TAG, e.getMessage());
         }
 
         return null;
