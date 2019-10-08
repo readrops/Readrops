@@ -2,38 +2,38 @@ package com.readrops.app.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ProgressBar;
-import android.widget.Spinner;
-import android.widget.TextView;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.widget.NestedScrollView;
+import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.textfield.TextInputEditText;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.adapters.ItemAdapter;
+import com.mikepenz.fastadapter.commons.utils.DiffCallback;
+import com.mikepenz.fastadapter.commons.utils.FastAdapterDiffUtil;
 import com.readrops.app.R;
-import com.readrops.app.database.entities.account.Account;
+import com.readrops.app.adapters.AccountArrayAdapter;
 import com.readrops.app.database.entities.Feed;
+import com.readrops.app.database.entities.account.Account;
+import com.readrops.app.databinding.ActivityAddFeedBinding;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.ParsingResult;
+import com.readrops.app.utils.ReadropsItemTouchCallback;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.AddFeedsViewModel;
-import com.readrops.app.adapters.AccountArrayAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,57 +44,35 @@ import io.reactivex.schedulers.Schedulers;
 
 public class AddFeedActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private TextInputEditText feedInput;
-    private Button load;
-    private ProgressBar progressBar;
-    private Button validate;
-    private RecyclerView parseResultsRecyclerView;
-    private TextView resultsTextView;
-
-    private NestedScrollView rootLayout;
-
-    private ProgressBar feedInsertionProgressBar;
-    private RecyclerView insertionResultsRecyclerView;
-
-    private Spinner accountSpinner;
     private AccountArrayAdapter arrayAdapter;
 
     private ItemAdapter<ParsingResult> parseItemsAdapter;
     private ItemAdapter<FeedInsertionResult> insertionResultsAdapter;
+    FastAdapter<ParsingResult> fastAdapter;
 
     private AddFeedsViewModel viewModel;
     private ArrayList<Feed> feedsToUpdate;
+
+    private ActivityAddFeedBinding binding;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_feed);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_add_feed);
 
-        feedInput = findViewById(R.id.add_feed_text_input);
-        load = findViewById(R.id.add_feed_load);
-        validate = findViewById(R.id.add_feed_ok);
-        progressBar = findViewById(R.id.add_feed_loading);
-        parseResultsRecyclerView = findViewById(R.id.add_feed_results);
-        resultsTextView = findViewById(R.id.add_feed_results_text_view);
-        feedInsertionProgressBar = findViewById(R.id.add_feed_insert_progressbar);
-        insertionResultsRecyclerView = findViewById(R.id.add_feed_inserted_results_recyclerview);
-        accountSpinner = findViewById(R.id.add_feed_account_spinner);
+        binding.addFeedLoad.setOnClickListener(this);
+        binding.addFeedOk.setOnClickListener(this);
+        binding.addFeedOk.setEnabled(false);
 
-        rootLayout = findViewById(R.id.add_feed_root);
-
-        load.setOnClickListener(this);
-        validate.setOnClickListener(this);
-        validate.setEnabled(false);
-
-        feedInput.setOnTouchListener((v, event) -> {
+        binding.addFeedTextInput.setOnTouchListener((v, event) -> {
             final int DRAWABLE_RIGHT = 2;
 
-            if(event.getAction() == MotionEvent.ACTION_UP) {
-                if(event.getRawX() >= (feedInput.getRight() - feedInput.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                    feedInput.setText("");
-                    return true;
-                }
+            int drawablePos = (binding.addFeedTextInput.getRight() -
+                    binding.addFeedTextInput.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width());
+            if (event.getAction() == MotionEvent.ACTION_UP && event.getRawX() >= drawablePos) {
+                binding.addFeedTextInput.setText("");
+                return true;
             }
 
             return false;
@@ -103,7 +81,7 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         viewModel = ViewModelProviders.of(this).get(AddFeedsViewModel.class);
 
         parseItemsAdapter = new ItemAdapter<>();
-        FastAdapter<ParsingResult> fastAdapter = FastAdapter.with(parseItemsAdapter);
+        fastAdapter = FastAdapter.with(parseItemsAdapter);
         fastAdapter.withSelectable(true);
         fastAdapter.withOnClickListener((v, adapter, item, position) -> {
             if (item.isChecked()) {
@@ -114,67 +92,41 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
                 fastAdapter.notifyAdapterItemChanged(position);
             }
 
-            validate.setEnabled(recyclerViewHasCheckedItems());
+            binding.addFeedOk.setEnabled(recyclerViewHasCheckedItems());
 
             return true;
         });
 
-        parseResultsRecyclerView.setAdapter(fastAdapter);
+        binding.addFeedResults.setAdapter(fastAdapter);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        parseResultsRecyclerView.setLayoutManager(layoutManager);
+        binding.addFeedResults.setLayoutManager(layoutManager);
 
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-            @Override
-            public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-                int swipeFlags = ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
+        new ItemTouchHelper(new ReadropsItemTouchCallback(this,
+                new ReadropsItemTouchCallback.Config.Builder()
+                        .swipeDirs(ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT)
+                        .leftDraw(Color.RED, R.drawable.ic_delete)
+                        .rightDraw(Color.RED, R.drawable.ic_delete)
+                        .swipeCallback((viewHolder, direction) -> {
+                            parseItemsAdapter.remove(viewHolder.getAdapterPosition());
 
-                return makeMovementFlags(0, swipeFlags);
-            }
-
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-                parseItemsAdapter.remove(viewHolder.getAdapterPosition());
-
-                if (parseItemsAdapter.getAdapterItemCount() == 0) {
-                    resultsTextView.setVisibility(View.GONE);
-                    parseResultsRecyclerView.setVisibility(View.GONE);
-                }
-
-            }
-
-            @Override
-            public boolean isItemViewSwipeEnabled() {
-                return true;
-            }
-        }).attachToRecyclerView(parseResultsRecyclerView);
+                            if (parseItemsAdapter.getAdapterItemCount() == 0) {
+                                binding.addFeedResultsTextView.setVisibility(View.GONE);
+                                binding.addFeedResults.setVisibility(View.GONE);
+                            }
+                        })
+                        .build()))
+                .attachToRecyclerView(binding.addFeedResults);
 
         insertionResultsAdapter = new ItemAdapter<>();
         RecyclerView.LayoutManager layoutManager1 = new LinearLayoutManager(this);
-        insertionResultsRecyclerView.setAdapter(FastAdapter.with(insertionResultsAdapter));
-        insertionResultsRecyclerView.setLayoutManager(layoutManager1);
+        binding.addFeedInsertedResultsRecyclerview.setAdapter(FastAdapter.with(insertionResultsAdapter));
+        binding.addFeedInsertedResultsRecyclerview.setLayoutManager(layoutManager1);
 
         viewModel.getAccounts().observe(this, accounts -> {
             arrayAdapter = new AccountArrayAdapter(this, accounts);
             arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-            accountSpinner.setAdapter(arrayAdapter);
-
-            accountSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-
-                }
-            });
+            binding.addFeedAccountSpinner.setAdapter(arrayAdapter);
         });
 
         feedsToUpdate = new ArrayList<>();
@@ -185,24 +137,25 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         switch (v.getId()) {
             case R.id.add_feed_load:
                 if (isValidUrl()) {
-                    progressBar.setVisibility(View.VISIBLE);
+                    binding.addFeedLoading.setVisibility(View.VISIBLE);
                     loadFeed();
                 }
                 break;
             case R.id.add_feed_ok:
+                insertionResultsAdapter.clear();
                 insertFeeds();
                 break;
         }
     }
 
     private boolean isValidUrl() {
-        String url = feedInput.getText().toString().trim();
+        String url = binding.addFeedTextInput.getText().toString().trim();
 
         if (url.isEmpty()) {
-            feedInput.setError(getString(R.string.empty_field));
+            binding.addFeedTextInput.setError(getString(R.string.empty_field));
             return false;
         } else if (!Patterns.WEB_URL.matcher(url).matches()) {
-            feedInput.setError(getString(R.string.wrong_url));
+            binding.addFeedTextInput.setError(getString(R.string.wrong_url));
             return false;
         } else
             return true;
@@ -217,8 +170,17 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         return false;
     }
 
+    private void disableParsingResult(ParsingResult parsingResult) {
+        for (ParsingResult result : parseItemsAdapter.getAdapterItems()) {
+            if (result.getUrl().equals(parsingResult.getUrl())) {
+                result.setChecked(false);
+                fastAdapter.notifyAdapterItemChanged(parseItemsAdapter.getAdapterPosition(result));
+            }
+        }
+    }
+
     private void loadFeed() {
-        String url = feedInput.getText().toString().trim();
+        String url = binding.addFeedTextInput.getText().toString().trim();
 
         final String finalUrl;
         if (!(url.contains(Utils.HTTP_PREFIX) || url.contains(Utils.HTTPS_PREFIX)))
@@ -237,27 +199,47 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
 
                     @Override
                     public void onError(Throwable e) {
-                        Utils.showSnackbar(rootLayout, e.getMessage());
-                        progressBar.setVisibility(View.GONE);
+                        Utils.showSnackbar(binding.addFeedRoot, e.getMessage());
+                        binding.addFeedLoading.setVisibility(View.GONE);
                     }
                 });
     }
 
     private void displayParseResults(List<ParsingResult> parsingResultList) {
-        if (parsingResultList.size() > 0) {
-            parseResultsRecyclerView.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.GONE);
-            resultsTextView.setVisibility(View.VISIBLE);
+        binding.addFeedLoading.setVisibility(View.GONE);
 
-            parseItemsAdapter.add(parsingResultList);
-            validate.setEnabled(recyclerViewHasCheckedItems());
-        } else
-            progressBar.setVisibility(View.GONE);
+        if (!parsingResultList.isEmpty()) {
+            binding.addFeedResultsTextView.setVisibility(View.VISIBLE);
+            binding.addFeedResults.setVisibility(View.VISIBLE);
+
+            DiffUtil.DiffResult diffResult = FastAdapterDiffUtil.calculateDiff(parseItemsAdapter, parsingResultList, new DiffCallback<ParsingResult>() {
+                @Override
+                public boolean areItemsTheSame(ParsingResult oldItem, ParsingResult newItem) {
+                    return oldItem.getUrl().equals(newItem.getUrl());
+                }
+
+                @Override
+                public boolean areContentsTheSame(ParsingResult oldItem, ParsingResult newItem) {
+                    return oldItem.getUrl().equals(newItem.getUrl()) &&
+                            oldItem.isChecked() == newItem.isChecked();
+                }
+
+                @Nullable
+                @Override
+                public Object getChangePayload(ParsingResult oldItem, int oldItemPosition, ParsingResult newItem, int newItemPosition) {
+                    newItem.setChecked(oldItem.isChecked());
+                    return newItem;
+                }
+            }, false);
+
+            FastAdapterDiffUtil.set(parseItemsAdapter, diffResult);
+            binding.addFeedOk.setEnabled(recyclerViewHasCheckedItems());
+        }
     }
 
     private void insertFeeds() {
-        feedInsertionProgressBar.setVisibility(View.VISIBLE);
-        validate.setEnabled(false);
+        binding.addFeedInsertProgressbar.setVisibility(View.VISIBLE);
+        binding.addFeedOk.setEnabled(false);
 
         List<ParsingResult> feedsToInsert = new ArrayList<>();
         for (ParsingResult result : parseItemsAdapter.getAdapterItems()) {
@@ -265,7 +247,7 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
                 feedsToInsert.add(result);
         }
 
-        Account account = (Account) accountSpinner.getSelectedItem();
+        Account account = (Account) binding.addFeedAccountSpinner.getSelectedItem();
 
         account.setLogin(SharedPreferencesManager.readString(this, account.getLoginKey()));
         account.setPassword(SharedPreferencesManager.readString(this, account.getPasswordKey()));
@@ -281,27 +263,27 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
 
                     @Override
                     public void onError(Throwable e) {
-                        feedInsertionProgressBar.setVisibility(View.GONE);
-                        validate.setEnabled(true);
-                        Utils.showSnackbar(rootLayout, e.getMessage());
-
+                        binding.addFeedInsertProgressbar.setVisibility(View.GONE);
+                        binding.addFeedOk.setEnabled(true);
+                        Utils.showSnackbar(binding.addFeedRoot, e.getMessage());
                     }
                 });
     }
 
     private void displayInsertionResults(List<FeedInsertionResult> feedInsertionResults) {
-        feedInsertionProgressBar.setVisibility(View.GONE);
-        insertionResultsRecyclerView.setVisibility(View.VISIBLE);
+        binding.addFeedInsertProgressbar.setVisibility(View.GONE);
+        binding.addFeedInsertedResultsRecyclerview.setVisibility(View.VISIBLE);
 
         for (FeedInsertionResult feedInsertionResult : feedInsertionResults) {
             if (feedInsertionResult.getFeed() != null)
                 feedsToUpdate.add(feedInsertionResult.getFeed());
+
+            disableParsingResult(feedInsertionResult.getParsingResult());
         }
 
         insertionResultsAdapter.add(feedInsertionResults);
-        validate.setEnabled(recyclerViewHasCheckedItems());
+        binding.addFeedOk.setEnabled(recyclerViewHasCheckedItems());
     }
-
 
 
     @Override
@@ -323,7 +305,7 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void finish() {
-        if (feedsToUpdate.size() > 0) {
+        if (!feedsToUpdate.isEmpty()) {
             Intent intent = new Intent();
             intent.putParcelableArrayListExtra("feedIds", feedsToUpdate);
 
@@ -337,10 +319,10 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_ENTER:
-                onClick(load);
+                onClick(binding.addFeedLoad);
                 return true;
+            default:
+                return super.onKeyUp(keyCode, event);
         }
-
-        return super.onKeyUp(keyCode, event);
     }
 }
