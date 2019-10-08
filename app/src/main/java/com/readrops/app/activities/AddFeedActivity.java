@@ -134,17 +134,14 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.add_feed_load:
-                if (isValidUrl()) {
-                    binding.addFeedLoading.setVisibility(View.VISIBLE);
-                    loadFeed();
-                }
-                break;
-            case R.id.add_feed_ok:
-                insertionResultsAdapter.clear();
-                insertFeeds();
-                break;
+        if (v.getId() == R.id.add_feed_load) {
+            if (isValidUrl()) {
+                binding.addFeedLoading.setVisibility(View.VISIBLE);
+                loadFeed();
+            }
+        } else if (v.getId() == R.id.add_feed_ok) {
+            insertionResultsAdapter.clear();
+            insertFeeds();
         }
     }
 
@@ -294,10 +291,9 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -317,12 +313,11 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_ENTER:
-                onClick(binding.addFeedLoad);
-                return true;
-            default:
-                return super.onKeyUp(keyCode, event);
+        if (keyCode == KeyEvent.KEYCODE_ENTER) {
+            onClick(binding.addFeedLoad);
+            return true;
         }
+
+        return super.onKeyUp(keyCode, event);
     }
 }
