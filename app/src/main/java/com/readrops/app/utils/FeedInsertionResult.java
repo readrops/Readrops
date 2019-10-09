@@ -12,9 +12,11 @@ import com.mikepenz.fastadapter.items.AbstractItem;
 import com.readrops.app.R;
 import com.readrops.app.database.entities.Feed;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
-public class FeedInsertionResult extends AbstractItem<FeedInsertionResult, FeedInsertionResult.ViewHolder> {
+public class FeedInsertionResult extends AbstractItem<FeedInsertionResult, FeedInsertionResult.FeedInsertionViewHolder> {
 
     private Feed feed;
 
@@ -23,7 +25,7 @@ public class FeedInsertionResult extends AbstractItem<FeedInsertionResult, FeedI
     private FeedInsertionError insertionError;
 
     public FeedInsertionResult() {
-
+        // empty constructor
     }
 
     public Feed getFeed() {
@@ -57,8 +59,8 @@ public class FeedInsertionResult extends AbstractItem<FeedInsertionResult, FeedI
 
     @NonNull
     @Override
-    public ViewHolder getViewHolder(View v) {
-        return new ViewHolder(v);
+    public FeedInsertionViewHolder getViewHolder(View v) {
+        return new FeedInsertionViewHolder(v);
     }
 
     @Override
@@ -81,12 +83,12 @@ public class FeedInsertionResult extends AbstractItem<FeedInsertionResult, FeedI
         UNKNOWN_ERROR
     }
 
-    class ViewHolder extends FastAdapter.ViewHolder<FeedInsertionResult> {
+    class FeedInsertionViewHolder extends FastAdapter.ViewHolder<FeedInsertionResult> {
 
         private TextView feedInsertionRes;
         private ImageView feedInsertionIcon;
 
-        public ViewHolder(View itemView) {
+        public FeedInsertionViewHolder(View itemView) {
             super(itemView);
 
             feedInsertionRes = itemView.findViewById(R.id.feed_insertion_result_text_view);
@@ -96,7 +98,8 @@ public class FeedInsertionResult extends AbstractItem<FeedInsertionResult, FeedI
         @Override
         public void bindView(FeedInsertionResult item, List<Object> payloads) {
             if (item.getInsertionError() == null) {
-                setText(R.string.feed_insertion_successfull, parsingResult);
+                setText(R.string.feed_insertion_successfull, item.parsingResult);
+                feedInsertionIcon.setImageResource(R.drawable.ic_check_green);
             } else {
                 switch (item.getInsertionError()) {
                     case NETWORK_ERROR:
@@ -128,8 +131,8 @@ public class FeedInsertionResult extends AbstractItem<FeedInsertionResult, FeedI
         }
 
         @Override
-        public void unbindView(FeedInsertionResult item) {
-
+        public void unbindView(@NotNull FeedInsertionResult item) {
+            // not useful
         }
     }
 }
