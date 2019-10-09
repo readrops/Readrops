@@ -89,9 +89,9 @@ public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.ViewH
         else
             viewHolder.folderName.setText(R.string.no_folder);
 
-        viewHolder.itemView.setOnClickListener(v -> listener.onEdit(getItem(i)));
+        viewHolder.itemView.setOnClickListener(v -> listener.onEdit(feedWithFolder));
         viewHolder.itemView.setOnLongClickListener(v -> {
-            listener.onOpenLink(getItem(i));
+            listener.onOpenLink(feedWithFolder);
             return true;
         });
     }
