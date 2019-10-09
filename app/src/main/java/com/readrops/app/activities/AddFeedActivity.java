@@ -136,6 +136,7 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
     public void onClick(View v) {
         if (v.getId() == R.id.add_feed_load) {
             if (isValidUrl()) {
+                binding.addFeedLoadingMessage.setVisibility(View.GONE);
                 binding.addFeedLoading.setVisibility(View.VISIBLE);
                 loadFeed();
             }
@@ -231,6 +232,13 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
 
             FastAdapterDiffUtil.set(parseItemsAdapter, diffResult);
             binding.addFeedOk.setEnabled(recyclerViewHasCheckedItems());
+        } else {
+            parseItemsAdapter.clear();
+            binding.addFeedResultsTextView.setVisibility(View.GONE);
+            binding.addFeedResults.setVisibility(View.GONE);
+
+            binding.addFeedLoadingMessage.setVisibility(View.VISIBLE);
+            binding.addFeedLoadingMessage.setText(R.string.no_feed_found);
         }
     }
 

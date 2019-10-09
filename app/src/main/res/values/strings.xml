@@ -90,4 +90,5 @@
     <string name="delete">Delete</string>
     <string name="app_description" translatable="false"><![CDATA[%1$s <br/><br/> %2$s]]></string>
     <string name="no_item">No item</string>
+    <string name="no_feed_found">No feed found</string>
 </resources>

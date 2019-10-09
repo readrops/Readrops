@@ -82,5 +82,6 @@
     <string name="feed_number">%1$s flux</string>
     <string name="delete">Supprimer</string>
     <string name="no_item">Aucun item</string>
+    <string name="no_feed_found">Aucun flux trouvé</string>
 
 </resources>
