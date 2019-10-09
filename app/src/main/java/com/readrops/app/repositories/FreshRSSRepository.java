@@ -1,6 +1,7 @@
 package com.readrops.app.repositories;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,6 +34,8 @@ import io.reactivex.Single;
 
 public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
 
+    private static final String TAG = FreshRSSRepository.class.getSimpleName();
+    
     public FreshRSSRepository(@NonNull Application application, @Nullable Account account) {
         super(application, account);
 
@@ -107,13 +110,17 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
 
         for (ParsingResult result : results) {
             completableList.add(api.createFeed(account.getWriteToken(), result.getUrl())
-                    .doOnTerminate(() -> {
+                    .doOnComplete(() -> {
                         FeedInsertionResult feedInsertionResult = new FeedInsertionResult();
                         feedInsertionResult.setParsingResult(result);
                         insertionResults.add(feedInsertionResult);
                     }).onErrorResumeNext(throwable -> {
+                        Log.d(TAG, throwable.getMessage());
+
                         FeedInsertionResult feedInsertionResult = new FeedInsertionResult();
-                        feedInsertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.UNKNOWN_ERROR);
+
+                        feedInsertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.ERROR);
+                        feedInsertionResult.setParsingResult(result);
                         insertionResults.add(feedInsertionResult);
 
                         return Completable.complete();

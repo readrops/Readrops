@@ -73,6 +73,7 @@ public class FeedInsertionResult extends AbstractItem<FeedInsertionResult, FeedI
 
 
     public enum FeedInsertionError {
+        ERROR,
         NETWORK_ERROR,
         DB_ERROR,
         PARSE_ERROR,
@@ -95,33 +96,32 @@ public class FeedInsertionResult extends AbstractItem<FeedInsertionResult, FeedI
         @Override
         public void bindView(FeedInsertionResult item, List<Object> payloads) {
             if (item.getInsertionError() == null) {
-                feedInsertionRes.setText(itemView.getContext().getString(R.string.feed_insertion_successfull,
-                        parsingResult.getLabel() != null ? parsingResult.getLabel() :
-                                parsingResult.getUrl()));
-                feedInsertionIcon.setImageResource(R.drawable.ic_check_green);
+                setText(R.string.feed_insertion_successfull, parsingResult);
             } else {
                 switch (item.getInsertionError()) {
                     case NETWORK_ERROR:
-                        setErrorText(R.string.feed_insertion_network_failed, item.parsingResult);
+                        setText(R.string.feed_insertion_network_failed, item.parsingResult);
                         break;
                     case DB_ERROR:
                         break;
                     case PARSE_ERROR:
-                        setErrorText(R.string.feed_insertion_parse_failed, item.parsingResult);
+                        setText(R.string.feed_insertion_parse_failed, item.parsingResult);
                         break;
                     case FORMAT_ERROR:
-                        setErrorText(R.string.feed_insertion_wrong_format, item.parsingResult);
+                        setText(R.string.feed_insertion_wrong_format, item.parsingResult);
                         break;
                     case UNKNOWN_ERROR:
-                        setErrorText(R.string.feed_insertion_unknown_error, item.parsingResult);
+                        setText(R.string.feed_insertion_unknown_error, item.parsingResult);
                         break;
+                    case ERROR:
+                        setText(R.string.feed_insertion_error, item.parsingResult);
                 }
 
                 feedInsertionIcon.setImageResource(R.drawable.ic_warning_red);
             }
         }
 
-        private void setErrorText(@StringRes int stringRes, ParsingResult parsingResult) {
+        private void setText(@StringRes int stringRes, ParsingResult parsingResult) {
             feedInsertionRes.setText(itemView.getContext().getString(stringRes,
                     parsingResult.getLabel() != null ? parsingResult.getLabel() :
                             parsingResult.getUrl()));

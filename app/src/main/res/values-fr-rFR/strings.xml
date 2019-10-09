@@ -83,5 +83,6 @@
     <string name="delete">Supprimer</string>
     <string name="no_item">Aucun item</string>
     <string name="no_feed_found">Aucun flux trouvé</string>
+    <string name="feed_insertion_error">Erreur pour le flux %1$s</string>
 
 </resources>
