@@ -46,7 +46,7 @@ public class FoldersFragment extends Fragment {
         FoldersFragment fragment = new FoldersFragment();
 
         Bundle args = new Bundle();
-        args.putParcelable(ManageFeedsFoldersActivity.ACCOUNT, account);
+        args.putParcelable(ManageFeedsFoldersActivity.ACCOUNT_KEY, account);
         fragment.setArguments(args);
 
         return fragment;
@@ -56,7 +56,7 @@ public class FoldersFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        account = getArguments().getParcelable(ManageFeedsFoldersActivity.ACCOUNT);
+        account = getArguments().getParcelable(ManageFeedsFoldersActivity.ACCOUNT_KEY);
 
         if (account.getLogin() == null)
             account.setLogin(SharedPreferencesManager.readString(getContext(), account.getLoginKey()));

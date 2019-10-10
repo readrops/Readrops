@@ -29,7 +29,7 @@ import java.util.TreeMap;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.readrops.app.activities.ManageFeedsFoldersActivity.ACCOUNT;
+import static com.readrops.app.activities.ManageFeedsFoldersActivity.ACCOUNT_KEY;
 
 public class EditFeedDialogFragment extends DialogFragment implements AdapterView.OnItemSelectedListener {
 
@@ -49,7 +49,7 @@ public class EditFeedDialogFragment extends DialogFragment implements AdapterVie
     public static EditFeedDialogFragment newInstance(FeedWithFolder feedWithFolder, Account account) {
         Bundle args = new Bundle();
         args.putParcelable("feedWithFolder", feedWithFolder);
-        args.putParcelable(ACCOUNT, account);
+        args.putParcelable(ACCOUNT_KEY, account);
 
         EditFeedDialogFragment fragment = new EditFeedDialogFragment();
         fragment.setArguments(args);
@@ -63,7 +63,7 @@ public class EditFeedDialogFragment extends DialogFragment implements AdapterVie
         viewModel = ViewModelProviders.of(getActivity()).get(ManageFeedsFoldersViewModel.class);
 
         feedWithFolder = getArguments().getParcelable("feedWithFolder");
-        account = getArguments().getParcelable(ManageFeedsFoldersActivity.ACCOUNT);
+        account = getArguments().getParcelable(ManageFeedsFoldersActivity.ACCOUNT_KEY);
 
         viewModel.setAccount(account);
 

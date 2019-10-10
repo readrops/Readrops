@@ -29,7 +29,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.readrops.app.activities.ManageFeedsFoldersActivity.ACCOUNT;
+import static com.readrops.app.activities.ManageFeedsFoldersActivity.ACCOUNT_KEY;
 
 
 public class FeedsFragment extends Fragment {
@@ -58,7 +58,7 @@ public class FeedsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        account = getArguments().getParcelable(ACCOUNT);
+        account = getArguments().getParcelable(ACCOUNT_KEY);
 
         if (account.getLogin() == null)
             account.setLogin(SharedPreferencesManager.readString(getContext(), account.getLoginKey()));

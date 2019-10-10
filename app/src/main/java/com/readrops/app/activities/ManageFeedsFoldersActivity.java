@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.viewpager.widget.ViewPager;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.readrops.app.R;
@@ -30,10 +29,9 @@ import io.reactivex.schedulers.Schedulers;
 
 public class ManageFeedsFoldersActivity extends AppCompatActivity {
 
-    public static final String ACCOUNT = "ACCOUNT";
+    public static final String ACCOUNT_KEY = "ACCOUNT_KEY";
 
     private ActivityManageFeedsFoldersBinding binding;
-    private FeedsFoldersPageAdapter pageAdapter;
     private ManageFeedsFoldersViewModel viewModel;
 
     private Account account;
@@ -46,32 +44,15 @@ public class ManageFeedsFoldersActivity extends AppCompatActivity {
         setSupportActionBar(binding.manageFeedsFoldersToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        account = getIntent().getParcelableExtra(ACCOUNT);
+        account = getIntent().getParcelableExtra(ACCOUNT_KEY);
 
-        pageAdapter = new FeedsFoldersPageAdapter(getSupportFragmentManager());
+        FeedsFoldersPageAdapter pageAdapter = new FeedsFoldersPageAdapter(getSupportFragmentManager());
 
         binding.manageFeedsFoldersViewpager.setAdapter(pageAdapter);
         binding.manageFeedsFoldersTablayout.setupWithViewPager(binding.manageFeedsFoldersViewpager);
 
         viewModel = ViewModelProviders.of(this).get(ManageFeedsFoldersViewModel.class);
         viewModel.setAccount(account);
-
-        binding.manageFeedsFoldersViewpager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                binding.manageFeedsFoldersTablayout.getTabAt(position).select();
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
     }
 
 
@@ -92,8 +73,9 @@ public class ManageFeedsFoldersActivity extends AppCompatActivity {
             case R.id.add_folder:
                 addFolder();
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -132,7 +114,7 @@ public class ManageFeedsFoldersActivity extends AppCompatActivity {
     public class FeedsFoldersPageAdapter extends FragmentPagerAdapter {
 
         private FeedsFoldersPageAdapter(FragmentManager fragmentManager) {
-            super(fragmentManager);
+            super(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         }
 
         @Override

@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.readrops.app.R
-import com.readrops.app.activities.ManageFeedsFoldersActivity.ACCOUNT
+import com.readrops.app.activities.ManageFeedsFoldersActivity.ACCOUNT_KEY
 import com.readrops.app.database.entities.account.Account
 import com.readrops.app.database.pojo.FeedWithFolder
 import com.readrops.app.databinding.FeedOptionsLayoutBinding
@@ -26,7 +26,7 @@ class FeedOptionsDialogFragment : BottomSheetDialogFragment() {
         fun newInstance(feedWithFolder: FeedWithFolder, account: Account): FeedOptionsDialogFragment {
             val bundle = Bundle()
             bundle.putParcelable(FEED_KEY, feedWithFolder)
-            bundle.putParcelable(ACCOUNT, account)
+            bundle.putParcelable(ACCOUNT_KEY, account)
 
             val feedsOptionsDialogFragment = FeedOptionsDialogFragment()
             feedsOptionsDialogFragment.arguments = bundle
@@ -39,7 +39,7 @@ class FeedOptionsDialogFragment : BottomSheetDialogFragment() {
         super.onCreate(savedInstanceState)
 
         feedWithFolder = arguments?.getParcelable(FEED_KEY)!!
-        account = arguments?.getParcelable(ACCOUNT)!!
+        account = arguments?.getParcelable(ACCOUNT_KEY)!!
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

@@ -27,7 +27,7 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class AccountSettingsFragment extends PreferenceFragmentCompat {
 
-    public static final String ACCOUNT = "ACCOUNT";
+    public static final String ACCOUNT = "ACCOUNT_KEY";
 
     private Account account;
     private AccountViewModel viewModel;
