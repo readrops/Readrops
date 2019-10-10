@@ -120,7 +120,7 @@ public class ItemActivity extends AppCompatActivity {
         this.itemWithFeed = itemWithFeed;
         Item item = itemWithFeed.getItem();
 
-        date.setText(DateUtils.formatedDateTimeByLocal(item.getPubDate()));
+        date.setText(DateUtils.formattedDateTimeByLocal(item.getPubDate()));
 
         if (item.getImageLink() == null)
             toolbar.setTitle(itemWithFeed.getFeedName());

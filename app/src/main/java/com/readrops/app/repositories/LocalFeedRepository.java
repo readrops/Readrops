@@ -23,12 +23,12 @@ import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
 import com.readrops.readropslibrary.localfeed.json.JSONFeed;
 import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
 import com.readrops.readropslibrary.utils.LibUtils;
+import com.readrops.readropslibrary.utils.ParseException;
 import com.readrops.readropslibrary.utils.UnknownFormatException;
 
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

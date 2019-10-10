@@ -288,7 +288,7 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
             Item item = itemWithFeed.getItem();
 
             binding.itemTitle.setText(item.getTitle());
-            binding.itemDate.setText(DateUtils.formatedDateByLocal(item.getPubDate()));
+            binding.itemDate.setText(DateUtils.formattedDateByLocal(item.getPubDate()));
             binding.itemFeedName.setText(itemWithFeed.getFeedName());
 
             if (item.getCleanDescription() != null) {

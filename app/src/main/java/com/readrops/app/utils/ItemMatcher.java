@@ -9,15 +9,14 @@ import com.readrops.readropslibrary.localfeed.rss.RSSItem;
 import com.readrops.readropslibrary.localfeed.rss.RSSMediaContent;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSItem;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItem;
+import com.readrops.readropslibrary.utils.ParseException;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.jsoup.Jsoup;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public final class ItemMatcher {
 
@@ -75,31 +74,16 @@ public final class ItemMatcher {
             newItem.setGuid(item.getGuid());
             newItem.setTitle(Jsoup.parse(item.getTitle()).text().trim());
 
-            // I wish I hadn't done that...
-            if (Pattern.compile(DateUtils.RSS_ALTERNATIVE_DATE_FORMAT_REGEX).matcher(item.getDate()).matches())
-                newItem.setPubDate(DateUtils.stringToDateTime(item.getDate(), DateUtils.RSS_2_DATE_FORMAT_3));
-            else {
-                try {
-                    newItem.setPubDate(DateUtils.stringToDateTime(item.getDate(), DateUtils.RSS_2_DATE_FORMAT_2));
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                } finally {
-                    if (newItem.getPubDate() == null) {
-                        try {
-                            newItem.setPubDate(DateUtils.stringToDateTime(item.getDate(), DateUtils.RSS_2_DATE_FORMAT));
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        } finally {
-                            newItem.setPubDate(DateUtils.stringToDateTime(item.getDate(), DateUtils.ATOM_JSON_DATE_FORMAT));
-                        }
-                    }
-                }
+            try {
+                newItem.setPubDate(DateUtils.stringToLocalDateTime(item.getDate()));
+            } catch (Exception e) {
+                throw new ParseException();
             }
 
             newItem.setLink(item.getLink());
             newItem.setFeedId(feed.getId());
 
-            if (item.getMediaContents() != null && item.getMediaContents().size() > 0) {
+            if (item.getMediaContents() != null && !item.getMediaContents().isEmpty()) {
                 for (RSSMediaContent mediaContent : item.getMediaContents()) {
                     if (mediaContent.getMedium() != null && Utils.isTypeImage(mediaContent.getMedium())) {
                         newItem.setImageLink(mediaContent.getUrl());
@@ -135,7 +119,11 @@ public final class ItemMatcher {
             dbItem.setGuid(item.getId());
             dbItem.setTitle(Jsoup.parse(item.getTitle()).text().trim());
 
-            dbItem.setPubDate(DateUtils.stringToDateTime(item.getUpdated(), DateUtils.ATOM_JSON_DATE_FORMAT));
+            try {
+                dbItem.setPubDate(DateUtils.stringToLocalDateTime(item.getUpdated()));
+            } catch (Exception e) {
+                throw new ParseException();
+            }
             dbItem.setLink(item.getUrl());
 
             dbItem.setFeedId(feed.getId());
@@ -160,7 +148,11 @@ public final class ItemMatcher {
             dbItem.setGuid(item.getId());
             dbItem.setTitle(Jsoup.parse(item.getTitle()).text().trim());
 
-            dbItem.setPubDate(DateUtils.stringToDateTime(item.getPubDate(), DateUtils.ATOM_JSON_DATE_FORMAT));
+            try {
+                dbItem.setPubDate(DateUtils.stringToLocalDateTime(item.getPubDate()));
+            } catch (Exception e) {
+                throw new ParseException();
+            }
 
             dbItem.setLink(item.getUrl());
 
