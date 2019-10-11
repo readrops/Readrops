@@ -116,7 +116,18 @@ public class ParsingResult extends AbstractItem<ParsingResult, ParsingResult.Par
         public void unbindView(@NotNull ParsingResult item) {
             // not useful
         }
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null)
+            return false;
+        else if (!(o instanceof ParsingResult))
+            return false;
+        else {
+            ParsingResult parsingResult = (ParsingResult) o;
 
+            return parsingResult.getUrl().equals(this.getUrl());
+        }
     }
 }

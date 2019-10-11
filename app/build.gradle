@@ -13,6 +13,9 @@ android {
         versionName "1.0.2.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
     buildTypes {
         release {
             minifyEnabled false // proguard makes some functionalities fail so It's disabled until I find the problem source
