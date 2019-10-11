@@ -15,6 +15,8 @@ import androidx.annotation.NonNull;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import org.jsoup.Jsoup;
+
 import java.io.InputStream;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -94,5 +96,14 @@ public final class Utils {
     public static void showSnackbar(View root, String message) {
         Snackbar snackbar = Snackbar.make(root, message, Snackbar.LENGTH_LONG);
         snackbar.show();
+    }
+
+    /**
+     * Remove html tags and trim the text
+     * @param text string to clean
+     * @return cleaned text
+     */
+    public static String cleanText(String text) {
+        return Jsoup.parse(text).text().trim();
     }
 }
