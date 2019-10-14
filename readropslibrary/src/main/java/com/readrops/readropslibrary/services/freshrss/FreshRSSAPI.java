@@ -22,7 +22,9 @@ import okhttp3.RequestBody;
 
 public class FreshRSSAPI extends API<FreshRSSService> {
 
-    private static final String GOOGLE_READ = "user/-/state/com.google/read";
+    public static final String GOOGLE_READ = "user/-/state/com.google/read";
+
+    private static final String FEED_PREFIX = "feed/";
 
     public FreshRSSAPI(Credentials credentials) {
         super(credentials, FreshRSSService.class, FreshRSSService.END_POINT);
@@ -134,7 +136,7 @@ public class FreshRSSAPI extends API<FreshRSSService> {
      * @param lastModified  fetch only items created after this timestamp
      * @return the items
      */
-    public Single<FreshRSSItems> getItems(@NonNull String excludeTarget, @NonNull Integer max, @Nullable Long lastModified) {
+    public Single<FreshRSSItems> getItems(@Nullable String excludeTarget, int max, @Nullable Long lastModified) {
         return api.getItems(excludeTarget, max, lastModified);
     }
 
@@ -147,7 +149,7 @@ public class FreshRSSAPI extends API<FreshRSSService> {
      * @param token   token for modifications
      * @return Completable
      */
-    public Completable markItemsReadUnread(@NonNull Boolean read, @NonNull List<String> itemIds, @NonNull String token) {
+    public Completable markItemsReadUnread(boolean read, @NonNull List<String> itemIds, @NonNull String token) {
         if (read)
             return api.setItemsReadState(token, GOOGLE_READ, null, itemIds);
         else
@@ -162,7 +164,7 @@ public class FreshRSSAPI extends API<FreshRSSService> {
      * @return Completable
      */
     public Completable createFeed(@NonNull String token, @NonNull String feedUrl) {
-        return api.createOrDeleteFeed(token, "feed/" + feedUrl, "subscribe");
+        return api.createOrDeleteFeed(token, FEED_PREFIX + feedUrl, "subscribe");
     }
 
     /**
@@ -173,7 +175,7 @@ public class FreshRSSAPI extends API<FreshRSSService> {
      * @return Completable
      */
     public Completable deleteFeed(@NonNull String token, @NonNull String feedUrl) {
-        return api.createOrDeleteFeed(token, "feed/" + feedUrl, "unsubscribe");
+        return api.createOrDeleteFeed(token, FEED_PREFIX + feedUrl, "unsubscribe");
     }
 
     /**
@@ -186,7 +188,7 @@ public class FreshRSSAPI extends API<FreshRSSService> {
      * @return Completable
      */
     public Completable updateFeed(@NonNull String token, @NonNull String feedUrl, @NonNull String title, @NonNull String folderId) {
-        return api.updateFeed(token, "feed/" + feedUrl, title, folderId, "edit");
+        return api.updateFeed(token, FEED_PREFIX + feedUrl, title, folderId, "edit");
     }
 
     /**

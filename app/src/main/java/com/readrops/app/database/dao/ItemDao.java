@@ -64,4 +64,7 @@ public abstract class ItemDao implements BaseDao<Item> {
 
     @Query("Update Item set read_changed = 0 Where feed_id in (Select id From Feed Where account_id = :accountId)")
     public abstract void resetReadChanges(int accountId);
+
+    @Query("Update Item set read = :read Where remoteId = :remoteId")
+    public abstract void setReadState(String remoteId, boolean read);
 }

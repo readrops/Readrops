@@ -90,9 +90,9 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
             emitter.onSuccess(syncData);
         }).flatMap(syncData1 -> api.sync(syncType, syncData1, account.getWriteToken()))
                 .flatMapObservable(syncResult -> {
-                    insertFolders(syncResult.getFolders(), account);
-                    insertFeeds(syncResult.getFeeds(), account);
-                    insertItems(syncResult.getItems(), account, syncType == SyncType.INITIAL_SYNC);
+                    insertFolders(syncResult.getFolders());
+                    insertFeeds(syncResult.getFeeds());
+                    insertItems(syncResult.getItems(), syncType == SyncType.INITIAL_SYNC);
 
                     account.setLastModified(syncResult.getLastUpdated());
                     database.accountDao().updateLastModified(account.getId(), syncResult.getLastUpdated());
@@ -169,7 +169,7 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
                 .andThen(super.deleteFolder(folder));
     }
 
-    private List<Feed> insertFeeds(List<FreshRSSFeed> freshRSSFeeds, Account account) {
+    private void insertFeeds(List<FreshRSSFeed> freshRSSFeeds) {
         List<Feed> feeds = new ArrayList<>();
 
         for (FreshRSSFeed freshRSSFeed : freshRSSFeeds) {
@@ -184,10 +184,9 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
             setFaviconUtils(insertedFeeds);
         }
 
-        return insertedFeeds;
     }
 
-    private void insertFolders(List<FreshRSSFolder> freshRSSFolders, Account account) {
+    private void insertFolders(List<FreshRSSFolder> freshRSSFolders) {
         List<Folder> folders = new ArrayList<>();
 
         for (FreshRSSFolder freshRSSFolder : freshRSSFolders) {
@@ -205,15 +204,15 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
         database.folderDao().foldersUpsert(folders, account);
     }
 
-    private void insertItems(List<FreshRSSItem> items, Account account, boolean initialSync) {
+    private void insertItems(List<FreshRSSItem> items, boolean initialSync) {
         List<Item> newItems = new ArrayList<>();
 
         for (FreshRSSItem freshRSSItem : items) {
             int feedId = database.feedDao().getFeedIdByRemoteId(String.valueOf(freshRSSItem.getOrigin().getStreamId()), account.getId());
 
-            if (!initialSync && feedId > 0) {
-                if (database.itemDao().remoteItemExists(freshRSSItem.getId(), feedId))
-                    break;
+            if (!initialSync && feedId > 0 && database.itemDao().remoteItemExists(freshRSSItem.getId(), feedId)) {
+                database.itemDao().setReadState(freshRSSItem.getId(), freshRSSItem.isRead());
+                break;
             }
 
             Item item = ItemMatcher.freshRSSItemtoItem(freshRSSItem, feedId);

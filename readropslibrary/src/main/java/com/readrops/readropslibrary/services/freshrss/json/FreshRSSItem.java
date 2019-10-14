@@ -1,6 +1,8 @@
 
 package com.readrops.readropslibrary.services.freshrss.json;
 
+import com.readrops.readropslibrary.services.freshrss.FreshRSSAPI;
+
 import java.util.List;
 
 public class FreshRSSItem {
@@ -103,6 +105,10 @@ public class FreshRSSItem {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public boolean isRead() {
+        return categories.contains(FreshRSSAPI.GOOGLE_READ);
     }
 
 }
