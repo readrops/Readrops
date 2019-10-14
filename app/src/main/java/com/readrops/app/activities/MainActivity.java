@@ -312,7 +312,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
             @Override
             public void onItemLongClick(ItemWithFeed itemWithFeed, int position) {
-                if (actionMode != null)
+                if (actionMode != null || refreshLayout.isRefreshing())
                     return;
 
                 selectedItemWithFeed = itemWithFeed;
