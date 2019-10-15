@@ -10,3 +10,6 @@ android:
 
 script:
   - ./gradlew clean assembleDebug assembleRelease testDebug
+
+before_install:
+  - yes | sdkmanager "platforms;android-28"
