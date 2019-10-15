@@ -3,6 +3,10 @@ android:
   components:
     - android-28
     - build-tools-29.0.4
+  licenses:
+    - 'android-sdk-preview-license-52d11cd2'
+    - 'android-sdk-license-.+'
+    - 'google-gdk-license-.+'
 
 script:
   - ./gradlew clean assembleDebug assembleRelease testDebug
