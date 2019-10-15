@@ -47,6 +47,11 @@ public class LocalFeedRepository extends ARepository<Void> {
     }
 
     @Override
+    protected Void createAPI() {
+        return null;
+    }
+
+    @Override
     public Single<Boolean> login(Account account, boolean insert) {
         return null;
     }
@@ -128,8 +133,6 @@ public class LocalFeedRepository extends ARepository<Void> {
                         insertionResult.setInsertionError(getErrorFromException(queryResult.getException()));
 
                         insertionResults.add(insertionResult);
-                    } else {
-                        // error 304
                     }
                 } catch (Exception e) {
                     if (e instanceof IOException)
@@ -192,7 +195,7 @@ public class LocalFeedRepository extends ARepository<Void> {
         if (database.feedDao().feedExists(dbFeed.getUrl(), account.getId()))
             return null; // feed already inserted
 
-        setFavIconUtils(dbFeed);
+        setFaviconUtils(dbFeed);
         dbFeed.setAccountId(account.getId());
 
         // we need empty headers to query the feed just after, without any 304 result

@@ -39,7 +39,11 @@ public abstract class ARepository<T> {
         this.application = application;
         this.database = Database.getInstance(application);
         this.account = account;
+
+        api = createAPI();
     }
+
+    protected abstract T createAPI();
 
     public abstract Single<Boolean> login(Account account, boolean insert);
 
@@ -75,10 +79,9 @@ public abstract class ARepository<T> {
 
     public Completable setItemReadState(Item item, boolean read) {
         return database.itemDao().setReadState(item.getId(), read ? 1 : 0, !item.isReadChanged() ? 1 : 0);
-
     }
 
-    public Completable setAllItemsReadState(Boolean read) {
+    public Completable setAllItemsReadState(boolean read) {
         return database.itemDao().setAllItemsReadState(read ? 1 : 0, account.getId());
     }
 
@@ -93,7 +96,7 @@ public abstract class ARepository<T> {
     protected void setFaviconUtils(List<Feed> feeds) {
         Observable.<Feed>create(emitter -> {
             for (Feed feed : feeds) {
-                setFavIconUtils(feed);
+                setFaviconUtils(feed);
                 emitter.onNext(feed);
             }
         }).subscribeOn(Schedulers.io())
@@ -103,7 +106,7 @@ public abstract class ARepository<T> {
                 .subscribe();
     }
 
-    protected void setFavIconUtils(Feed feed) throws IOException {
+    protected void setFaviconUtils(Feed feed) throws IOException {
         String favUrl;
 
         if (feed.getIconUrl() != null)
@@ -130,7 +133,6 @@ public abstract class ARepository<T> {
             if (palette.getMutedSwatch() != null) {
                 feed.setBackgroundColor(palette.getMutedSwatch().getRgb());
             }
-
         }
     }
 

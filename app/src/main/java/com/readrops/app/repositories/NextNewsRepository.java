@@ -46,9 +46,14 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
 
     public NextNewsRepository(@NonNull Application application, @Nullable Account account) {
         super(application, account);
+    }
 
+    @Override
+    protected NextNewsAPI createAPI() {
         if (account != null)
-            api = new NextNewsAPI(account.toCredentials());
+            return new NextNewsAPI(account.toCredentials());
+
+        return null;
     }
 
     @Override

@@ -38,9 +38,14 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
     
     public FreshRSSRepository(@NonNull Application application, @Nullable Account account) {
         super(application, account);
+    }
 
+    @Override
+    protected FreshRSSAPI createAPI() {
         if (account != null)
-            api = new FreshRSSAPI(account.toCredentials());
+            return new FreshRSSAPI(account.toCredentials());
+
+        return null;
     }
 
     @Override
