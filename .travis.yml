@@ -1,0 +1,8 @@
+language: android
+android:
+  components:
+    - android-28
+    - build-tools-29.0.4
+
+script:
+  - ./gradlew clean assembleDebug assembleRelease testDebug
