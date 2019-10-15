@@ -1,5 +1,7 @@
 # Readrops ![alt text](images/readrops_logo.png "Readrops Logo")
 
+[![Build Status](https://travis-ci.org/readrops/Readrops.svg?branch=develop)](https://travis-ci.org/readrops/Readrops)
+
 Readrops is a multi-services RSS client for Android. Its name is composed of "Read" and "drops", where drops are information drops in an ocean of news.
 
 [<img src="images/google-play-badge.png" width=250>](https://play.google.com/store/apps/details?id=com.readrops.app)
@@ -19,8 +21,7 @@ Readrops is a multi-services RSS client for Android. Its name is composed of "Re
 - Nextcloud news support
 - FreshRSS support
 
-
-Other features will come in the near future. 
+Other features will come in the near future.
 
 # Licence
 
