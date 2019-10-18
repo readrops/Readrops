@@ -300,9 +300,9 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
         for (NextNewsItem nextNewsItem : items) {
             int feedId = database.feedDao().getFeedIdByRemoteId(String.valueOf(nextNewsItem.getFeedId()), account.getId());
 
-            if (!initialSync && feedId > 0) {
-                if (database.itemDao().remoteItemExists(String.valueOf(nextNewsItem.getId()), feedId))
-                    break;
+            if (!initialSync && feedId > 0 && database.itemDao().remoteItemExists(String.valueOf(nextNewsItem.getId()), feedId)) {
+                database.itemDao().setReadState(String.valueOf(nextNewsItem.getId()), !nextNewsItem.isUnread());
+                break;
             }
 
             Item item = ItemMatcher.nextNewsItemToItem(nextNewsItem, feedId);
@@ -311,7 +311,9 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
             newItems.add(item);
         }
 
-        Collections.sort(newItems, Item::compareTo);
-        database.itemDao().insert(newItems);
+        if (!newItems.isEmpty()) {
+            Collections.sort(newItems, Item::compareTo);
+            database.itemDao().insert(newItems);
+        }
     }
 }
