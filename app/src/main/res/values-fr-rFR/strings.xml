@@ -84,5 +84,7 @@
     <string name="no_item">Aucun item</string>
     <string name="no_feed_found">Aucun flux trouvé</string>
     <string name="feed_insertion_error">Erreur pour le flux %1$s</string>
+    <string name="get_feeds_colors">Récupération des couleurs des flux</string>
+    <string name="feeds_colors">Couleurs des flux</string>
 
 </resources>

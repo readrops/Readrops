@@ -183,10 +183,8 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
 
         List<Long> insertedFeedsIds = database.feedDao().feedsUpsert(feeds, account);
 
-        List<Feed> insertedFeeds = new ArrayList<>();
         if (!insertedFeedsIds.isEmpty()) {
-            insertedFeeds.addAll(database.feedDao().selectFromIdList(insertedFeedsIds));
-            setFaviconUtils(insertedFeeds);
+            setFeedsColors(database.feedDao().selectFromIdList(insertedFeedsIds));
         }
 
     }

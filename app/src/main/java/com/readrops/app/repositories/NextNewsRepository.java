@@ -274,7 +274,7 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
         List<Feed> insertedFeeds = new ArrayList<>();
         if (!insertedFeedsIds.isEmpty()) {
             insertedFeeds.addAll(database.feedDao().selectFromIdList(insertedFeedsIds));
-            setFaviconUtils(insertedFeeds);
+            setFeedsColors(insertedFeeds);
         }
 
         return insertedFeeds;

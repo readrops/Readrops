@@ -1,12 +1,10 @@
 package com.readrops.app.repositories;
 
 import android.app.Application;
-import android.graphics.Bitmap;
-import android.util.Patterns;
+import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.palette.graphics.Palette;
 
 import com.readrops.app.database.Database;
 import com.readrops.app.database.entities.Feed;
@@ -14,18 +12,17 @@ import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.Item;
 import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.account.AccountType;
+import com.readrops.app.utils.feedscolors.FeedsColorsIntentService;
 import com.readrops.app.utils.FeedInsertionResult;
-import com.readrops.app.utils.HtmlParser;
 import com.readrops.app.utils.ParsingResult;
-import com.readrops.app.utils.Utils;
+import com.readrops.app.utils.feedscolors.FeedColorsKt;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.schedulers.Schedulers;
 
 public abstract class ARepository<T> {
 
@@ -93,47 +90,17 @@ public abstract class ARepository<T> {
         return database.feedDao().getFeedCount(accountId);
     }
 
-    protected void setFaviconUtils(List<Feed> feeds) {
-        Observable.<Feed>create(emitter -> {
-            for (Feed feed : feeds) {
-                setFaviconUtils(feed);
-                emitter.onNext(feed);
-            }
-        }).subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .doOnNext(feed1 -> database.feedDao().updateColors(feed1.getId(),
-                        feed1.getTextColor(), feed1.getBackgroundColor()))
-                .subscribe();
+    protected void setFeedColors(Feed feed) {
+        FeedColorsKt.setFeedColors(feed);
+        database.feedDao().updateColors(feed.getId(),
+                feed.getTextColor(), feed.getBackgroundColor());
     }
 
-    protected void setFaviconUtils(Feed feed) throws IOException {
-        String favUrl;
+    protected void setFeedsColors(List<Feed> feeds) {
+        Intent intent = new Intent(application, FeedsColorsIntentService.class);
+        intent.putParcelableArrayListExtra(FeedsColorsIntentService.FEEDS, new ArrayList<>(feeds));
 
-        if (feed.getIconUrl() != null)
-            favUrl = feed.getIconUrl();
-        else
-            favUrl = HtmlParser.getFaviconLink(feed.getSiteUrl());
-
-        if (favUrl != null && Patterns.WEB_URL.matcher(favUrl).matches()) {
-            feed.setIconUrl(favUrl);
-            setFeedColors(favUrl, feed);
-        }
-    }
-
-    protected void setFeedColors(String favUrl, Feed feed) {
-        Bitmap favicon = Utils.getImageFromUrl(favUrl);
-
-        if (favicon != null) {
-            Palette palette = Palette.from(favicon).generate();
-
-            if (palette.getDominantSwatch() != null) {
-                feed.setTextColor(palette.getDominantSwatch().getRgb());
-            }
-
-            if (palette.getMutedSwatch() != null) {
-                feed.setBackgroundColor(palette.getMutedSwatch().getRgb());
-            }
-        }
+        application.startService(intent);
     }
 
     public static ARepository repositoryFactory(Account account, AccountType accountType, Application application) throws Exception {

@@ -195,7 +195,7 @@ public class LocalFeedRepository extends ARepository<Void> {
         if (database.feedDao().feedExists(dbFeed.getUrl(), account.getId()))
             return null; // feed already inserted
 
-        setFaviconUtils(dbFeed);
+        setFeedColors(dbFeed);
         dbFeed.setAccountId(account.getId());
 
         // we need empty headers to query the feed just after, without any 304 result

@@ -92,4 +92,6 @@
     <string name="no_item">No item</string>
     <string name="no_feed_found">No feed found</string>
     <string name="feed_insertion_error">Error for feed %1$s</string>
+    <string name="get_feeds_colors">Get feeds colors</string>
+    <string name="feeds_colors">Feeds Colors</string>
 </resources>
