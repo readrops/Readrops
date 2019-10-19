@@ -18,7 +18,7 @@ public class HtmlParserTest {
     public void getFeedLinkTest() throws Exception {
         String url = "https://github.com/readrops/Readrops";
 
-        ParsingResult parsingResult = new ParsingResult("https://github.com/readrops/Readrops/commits/master.atom", "Recent Commits to Readrops:master");
+        ParsingResult parsingResult = new ParsingResult("https://github.com/readrops/Readrops/commits/develop.atom", "Recent Commits to Readrops:develop");
         List<ParsingResult> parsingResultList = new ArrayList<>();
         parsingResultList.add(parsingResult);
 
