@@ -12,6 +12,14 @@ android {
         versionCode 5
         versionName "1.0.2.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [
+                        "room.incremental": "true"]
+            }
+        }
+
     }
     testOptions {
         unitTests.returnDefaultValues = true
