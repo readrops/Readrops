@@ -10,4 +10,10 @@
             android:title="@string/number_items_to_parse" />
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/global">
+        <Preference
+            android:key="reload_feeds_colors"
+            android:title="@string/reload_feeds_colors" />
+    </PreferenceCategory>
+
 </PreferenceScreen>

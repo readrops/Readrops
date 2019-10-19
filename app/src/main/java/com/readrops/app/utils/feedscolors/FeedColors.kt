@@ -9,7 +9,7 @@ fun setFeedColors(feed: Feed) {
     getFaviconLink(feed)
 
     if (feed.iconUrl != null) {
-        val bitmap = Utils.getImageFromUrl(feed.iconUrl)
+        val bitmap = Utils.getImageFromUrl(feed.iconUrl) ?: return
         val palette = Palette.from(bitmap).generate()
 
         val dominantSwatch = palette.dominantSwatch

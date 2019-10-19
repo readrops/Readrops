@@ -19,7 +19,10 @@ import io.reactivex.Single;
 public abstract class FeedDao implements BaseDao<Feed> {
 
     @Query("Select * from Feed Where account_id = :accountId order by name ASC")
-    public abstract List<Feed> getAllFeeds(int accountId);
+    public abstract List<Feed> getFeeds(int accountId);
+
+    @Query("Select * from Feed Order By name ASC")
+    public abstract LiveData<List<Feed>> getAllFeeds();
 
     @Query("Select case When :feedUrl In (Select url from Feed Where account_id = :accountId) Then 1 else 0 end")
     public abstract boolean feedExists(String feedUrl, int accountId);

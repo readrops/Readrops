@@ -62,7 +62,7 @@ public class LocalFeedRepository extends ARepository<Void> {
             List<Feed> feedList;
 
             if (feeds == null || feeds.size() == 0)
-                feedList = database.feedDao().getAllFeeds(account.getId());
+                feedList = database.feedDao().getFeeds(account.getId());
             else
                 feedList = new ArrayList<>(feeds);
 
