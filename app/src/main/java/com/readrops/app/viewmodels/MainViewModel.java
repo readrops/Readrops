@@ -12,6 +12,7 @@ import androidx.paging.PagedList;
 import com.readrops.app.activities.MainActivity;
 import com.readrops.app.database.Database;
 import com.readrops.app.database.ItemsListQueryBuilder;
+import com.readrops.app.database.RoomFactoryWrapper;
 import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
@@ -68,7 +69,7 @@ public class MainViewModel extends AndroidViewModel {
         if (lastFetch != null)
             itemsWithFeed.removeSource(lastFetch);
 
-        lastFetch = new LivePagedListBuilder<>(db.itemDao().selectAll(queryBuilder.getQuery()),
+        lastFetch = new LivePagedListBuilder<>(new RoomFactoryWrapper<>(db.itemDao().selectAll(queryBuilder.getQuery())),
                 new PagedList.Config.Builder()
                         .setPageSize(100)
                         .setPrefetchDistance(150)
