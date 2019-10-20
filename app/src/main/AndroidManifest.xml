@@ -16,12 +16,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="AllowBackup,GoogleAppIndexingWarning">
+        <activity android:name=".activities.WebViewActivity"></activity>
 
         <service android:name=".utils.feedscolors.FeedsColorsIntentService" />
 
         <activity android:name=".activities.SettingsActivity" />
-
         <activity
             android:name=".activities.SplashActivity"
             android:theme="@style/SplashTheme">
@@ -31,32 +31,27 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".activities.AccountTypeListActivity" />
-
         <activity
             android:name=".activities.AddAccountActivity"
             android:label="@string/add_account" />
-
         <activity
             android:name=".activities.ManageFeedsFoldersActivity"
             android:label="@string/manage_feeds_folders"
             android:parentActivityName=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".activities.MainActivity"
             android:label="@string/articles"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".activities.ItemActivity"
             android:parentActivityName=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".activities.AddFeedActivity"
             android:label="@string/add_feed_title"
             android:parentActivityName=".activities.MainActivity" />
     </application>
+
 </manifest>
