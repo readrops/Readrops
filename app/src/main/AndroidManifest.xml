@@ -17,7 +17,9 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".activities.WebViewActivity"></activity>
+        <activity
+            android:name=".activities.WebViewActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <service android:name=".utils.feedscolors.FeedsColorsIntentService" />
 

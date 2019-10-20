@@ -1,6 +1,7 @@
 package com.readrops.app.activities
 
 import android.annotation.SuppressLint
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
@@ -9,6 +10,7 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.readrops.app.R
 import com.readrops.app.databinding.ActivityWebViewBinding
@@ -20,9 +22,12 @@ class WebViewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_web_view)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        setSupportActionBar(binding.activityWebViewToolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         title = ""
+        val actionBarColor = intent.getIntExtra(ACTION_BAR_COLOR, ContextCompat.getColor(this, R.color.colorPrimary))
+        supportActionBar?.setBackgroundDrawable(ColorDrawable(actionBarColor))
         setWebViewSettings()
 
         val url: String = intent.getStringExtra(WEB_URL)
@@ -74,5 +79,6 @@ class WebViewActivity : AppCompatActivity() {
 
     companion object {
         const val WEB_URL = "webUrl"
+        const val ACTION_BAR_COLOR = "actionBarColor"
     }
 }

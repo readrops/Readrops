@@ -233,6 +233,7 @@ public class ItemActivity extends AppCompatActivity {
     private void openInWebView() {
         Intent intent = new Intent(this, WebViewActivity.class);
         intent.putExtra(WebViewActivity.WEB_URL, itemWithFeed.getItem().getLink());
+        intent.putExtra(WebViewActivity.ACTION_BAR_COLOR, itemWithFeed.getColor() != 0 ? itemWithFeed.getColor() : itemWithFeed.getBgColor());
 
         startActivity(intent);
     }
