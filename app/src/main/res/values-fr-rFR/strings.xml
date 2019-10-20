@@ -88,5 +88,8 @@
     <string name="feeds_colors">Couleurs des flux</string>
     <string name="global">Général</string>
     <string name="reload_feeds_colors">Recharger les couleurs des flux</string>
+    <string name="open_items_in">Ouvrir les articles avec</string>
+    <string name="webview">Vue web</string>
+    <string name="external_navigator">Navigateur externe</string>
 
 </resources>

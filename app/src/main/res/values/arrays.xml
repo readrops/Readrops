@@ -19,4 +19,14 @@
         <item>@string/unlimited</item>
     </string-array>
 
+    <string-array name="open_items_in">
+        <item>@string/external_navigator</item>
+        <item>@string/webview</item>
+    </string-array>
+
+    <string-array name="open_item_in_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
 </resources>

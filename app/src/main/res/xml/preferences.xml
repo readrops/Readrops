@@ -14,6 +14,13 @@
         <Preference
             android:key="reload_feeds_colors"
             android:title="@string/reload_feeds_colors" />
+
+        <ListPreference
+            android:defaultValue="@string/external_navigator"
+            android:entries="@array/open_items_in"
+            android:entryValues="@array/open_item_in_values"
+            android:key="open_items_in"
+            android:title="@string/open_items_in" />
     </PreferenceCategory>
 
 </PreferenceScreen>

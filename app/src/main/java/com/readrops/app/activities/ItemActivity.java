@@ -26,6 +26,7 @@ import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.utils.DateUtils;
 import com.readrops.app.utils.GlideApp;
 import com.readrops.app.utils.ReadropsWebView;
+import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.ItemViewModel;
 
@@ -113,7 +114,7 @@ public class ItemActivity extends AppCompatActivity {
 
         viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(ItemViewModel.class);
         viewModel.getItemById(itemId).observe(this, this::bindUI);
-        actionButton.setOnClickListener(v -> openLink());
+        actionButton.setOnClickListener(v -> openInNavigator());
     }
 
     private void bindUI(ItemWithFeed itemWithFeed) {
@@ -207,7 +208,12 @@ public class ItemActivity extends AppCompatActivity {
                 shareArticle();
                 return true;
             case R.id.item_open:
-                openLink();
+                int value = Integer.valueOf(SharedPreferencesManager.readString(this,
+                        SharedPreferencesManager.SharedPrefKey.OPEN_ITEMS_IN));
+                if (value == 0)
+                    openInNavigator();
+                else
+                    openInWebView();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -219,9 +225,16 @@ public class ItemActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    private void openLink() {
+    private void openInNavigator() {
         Intent urlIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(itemWithFeed.getItem().getLink()));
         startActivity(urlIntent);
+    }
+
+    private void openInWebView() {
+        Intent intent = new Intent(this, WebViewActivity.class);
+        intent.putExtra(WebViewActivity.WEB_URL, itemWithFeed.getItem().getLink());
+
+        startActivity(intent);
     }
 
     private void shareArticle() {

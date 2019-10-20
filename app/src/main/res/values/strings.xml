@@ -96,4 +96,7 @@
     <string name="feeds_colors">Feeds Colors</string>
     <string name="global">Global</string>
     <string name="reload_feeds_colors">Reload feeds colors</string>
+    <string name="open_items_in">Open items in</string>
+    <string name="webview">Webview</string>
+    <string name="external_navigator">External navigator</string>
 </resources>
