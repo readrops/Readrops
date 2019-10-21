@@ -20,7 +20,7 @@
     <string name="read_time">%1$s min</string>
     <string name="read_time_lower_than_1">Moins d\'une minute</string>
     <string name="read_time_one_minute">1 min</string>
-    <string name="share">Partager l\'article</string>
+    <string name="share_article">Partager l\'article</string>
     <string name="open_url">Ouvrir le lien</string>
     <string name="add_folder">Ajouter un dossier</string>
     <string name="feed_folder">Dossier du flux</string>
@@ -91,5 +91,7 @@
     <string name="open_items_in">Ouvrir les articles avec</string>
     <string name="webview">Vue web</string>
     <string name="external_navigator">Navigateur externe</string>
+    <string name="actualize">Actualiser</string>
+    <string name="share_url">Partager le lien</string>
 
 </resources>

@@ -22,7 +22,7 @@
     <string name="read_time_lower_than_1">Less than a minute</string>
     <string name="read_time_one_minute">1 min</string>
     <string name="interpoint" translatable="false">·</string>
-    <string name="share">Share Article</string>
+    <string name="share_article">Share Article</string>
     <string name="open_url">Open url</string>
     <string name="add_folder">Add folder</string>
     <string name="feed_folder">Feed folder</string>
@@ -99,4 +99,6 @@
     <string name="open_items_in">Open items in</string>
     <string name="webview">Webview</string>
     <string name="external_navigator">External navigator</string>
+    <string name="actualize">Actualize</string>
+    <string name="share_url">Share url</string>
 </resources>
