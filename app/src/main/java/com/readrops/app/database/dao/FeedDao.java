@@ -4,10 +4,11 @@ package com.readrops.app.database.dao;
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Query;
+import androidx.room.RoomWarnings;
 import androidx.room.Transaction;
 
-import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.Feed;
+import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.pojo.FeedWithFolder;
 
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ public abstract class FeedDao implements BaseDao<Feed> {
     @Query("Update Feed set text_color = :textColor, background_color = :bgColor Where id = :feedId")
     public abstract void updateColors(int feedId, int textColor, int bgColor);
 
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Query("Select Feed.name as feed_name, Feed.id as feed_id, Folder.name as folder_name, Folder.id as folder_id, Folder.remoteId as folder_remoteId," +
             "Feed.description as feed_description, Feed.icon_url as feed_icon_url, Feed.url as feed_url, Feed.folder_id as feed_folder_id" +
             ", Feed.siteUrl as feed_siteUrl, Feed.remoteId as feed_remoteId from Feed Left Join Folder on Feed.folder_id = Folder.id Where Feed.account_id = :accountId Order by Feed.name")
