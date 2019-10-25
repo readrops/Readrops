@@ -242,6 +242,6 @@ public class ItemActivity extends AppCompatActivity {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, itemWithFeed.getItem().getTitle() + " - " + itemWithFeed.getItem().getLink());
-        startActivity(Intent.createChooser(shareIntent, getString(R.string.share)));
+        startActivity(Intent.createChooser(shareIntent, getString(R.string.share_article)));
     }
 }

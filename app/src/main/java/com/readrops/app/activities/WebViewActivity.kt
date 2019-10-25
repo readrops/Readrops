@@ -1,9 +1,11 @@
 package com.readrops.app.activities
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.view.Menu
 import android.view.MenuItem
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
@@ -30,6 +32,8 @@ class WebViewActivity : AppCompatActivity() {
         supportActionBar?.setBackgroundDrawable(ColorDrawable(actionBarColor))
         setWebViewSettings()
 
+        binding.activityWebViewSwipe.setOnRefreshListener { binding.webView.reload() }
+
         val url: String = intent.getStringExtra(WEB_URL)
         binding.webView.loadUrl(url)
     }
@@ -51,8 +55,10 @@ class WebViewActivity : AppCompatActivity() {
                 title = view?.title
                 supportActionBar?.subtitle = Uri.parse(view?.url).host
 
+                binding.activityWebViewSwipe.isRefreshing = false
                 super.onPageFinished(view, url)
             }
+
         }
     }
 
@@ -72,9 +78,27 @@ class WebViewActivity : AppCompatActivity() {
                     finish()
                 return true
             }
+            R.id.web_view_refresh -> {
+                binding.webView.reload()
+            }
+            R.id.web_view_share -> {
+                shareLink()
+            }
         }
 
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun shareLink() {
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "text/plain"
+        intent.putExtra(Intent.EXTRA_TEXT, binding.webView.url.toString())
+        startActivity(Intent.createChooser(intent, getString(R.string.share_url)))
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.webview_menu, menu)
+        return true
     }
 
     companion object {
