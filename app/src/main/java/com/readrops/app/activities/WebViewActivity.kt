@@ -2,15 +2,15 @@ package com.readrops.app.activities
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.webkit.WebResourceRequest
-import android.webkit.WebSettings
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.view.View
+import android.webkit.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -33,6 +33,8 @@ class WebViewActivity : AppCompatActivity() {
         setWebViewSettings()
 
         binding.activityWebViewSwipe.setOnRefreshListener { binding.webView.reload() }
+        binding.activityWebViewProgress.indeterminateDrawable.setColorFilter(actionBarColor, PorterDuff.Mode.SRC_IN)
+        binding.activityWebViewProgress.max = 100
 
         val url: String = intent.getStringExtra(WEB_URL)
         binding.webView.loadUrl(url)
@@ -51,14 +53,30 @@ class WebViewActivity : AppCompatActivity() {
                 return true
             }
 
-            override fun onPageFinished(view: WebView?, url: String?) {
-                title = view?.title
+            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                binding.activityWebViewSwipe.isRefreshing = false
+                binding.activityWebViewProgress.progress = 0
+                binding.activityWebViewProgress.visibility = View.VISIBLE
+
+                super.onPageStarted(view, url, favicon)
+            }
+        }
+
+        binding.webView.webChromeClient = object : WebChromeClient() {
+            override fun onReceivedTitle(view: WebView?, title: String?) {
+                setTitle(title)
                 supportActionBar?.subtitle = Uri.parse(view?.url).host
 
-                binding.activityWebViewSwipe.isRefreshing = false
-                super.onPageFinished(view, url)
+                super.onReceivedTitle(view, title)
             }
 
+            override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                binding.activityWebViewProgress.progress = newProgress
+                if (newProgress == 100)
+                    binding.activityWebViewProgress.visibility = View.GONE
+
+                super.onProgressChanged(view, newProgress)
+            }
         }
     }
 
