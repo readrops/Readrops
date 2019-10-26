@@ -12,6 +12,7 @@ import com.readrops.app.database.pojo.ItemWithFeed;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 
 public class ReadropsWebView extends WebView {
@@ -45,7 +46,7 @@ public class ReadropsWebView extends WebView {
 
     private String getText() {
         if (itemWithFeed.getItem().getText() != null) {
-            Document document = Jsoup.parse(itemWithFeed.getItem().getText(), itemWithFeed.getWebsiteUrl());
+            Document document = Jsoup.parse(Parser.unescapeEntities(itemWithFeed.getItem().getText(), false), itemWithFeed.getWebsiteUrl());
 
             formatDocument(document);
 
