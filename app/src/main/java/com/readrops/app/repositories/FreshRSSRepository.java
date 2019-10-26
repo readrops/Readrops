@@ -2,6 +2,7 @@ package com.readrops.app.repositories;
 
 import android.app.Application;
 import android.util.Log;
+import android.util.TimingLogger;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -88,6 +89,8 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
         } else
             syncType = SyncType.INITIAL_SYNC;
 
+        TimingLogger logger = new TimingLogger(TAG, "FreshRSS sync timer");
+
         return Single.<FreshRSSSyncData>create(emitter -> {
             syncData.setReadItemsIds(database.itemDao().getReadChanges(account.getId()));
             syncData.setUnreadItemsIds(database.itemDao().getUnreadChanges(account.getId()));
@@ -95,14 +98,21 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
             emitter.onSuccess(syncData);
         }).flatMap(syncData1 -> api.sync(syncType, syncData1, account.getWriteToken()))
                 .flatMapObservable(syncResult -> {
+                    logger.addSplit("server queries");
+
                     insertFolders(syncResult.getFolders());
+                    logger.addSplit("folders insertion");
                     insertFeeds(syncResult.getFeeds());
+                    logger.addSplit("feeds insertion");
+
                     insertItems(syncResult.getItems(), syncType == SyncType.INITIAL_SYNC);
+                    logger.addSplit("items insertion");
 
                     account.setLastModified(syncResult.getLastUpdated());
                     database.accountDao().updateLastModified(account.getId(), syncResult.getLastUpdated());
 
                     database.itemDao().resetReadChanges(account.getId());
+                    logger.dumpToLog();
 
                     return Observable.empty();
                 });
