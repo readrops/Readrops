@@ -1,5 +1,9 @@
 package com.readrops.readropslibrary.utils;
 
+import android.content.Context;
+import android.net.Uri;
+
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Scanner;
 
@@ -28,6 +32,10 @@ public final class LibUtils {
         return scanner.hasNext() ? scanner.next() : "";
     }
 
+    public static String fileToString(Uri uri, Context context) throws FileNotFoundException {
+        InputStream  inputStream = context.getContentResolver().openInputStream(uri);
 
+        return inputStreamToString(inputStream);
+    }
 
 }
