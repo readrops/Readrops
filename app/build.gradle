@@ -77,9 +77,9 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
     kapt 'androidx.lifecycle:lifecycle-common-java8:2.1.0'
 
-    implementation 'androidx.room:room-runtime:2.2.0'
-    kapt 'androidx.room:room-compiler:2.2.0'
-    implementation 'androidx.room:room-rxjava2:2.2.0'
+    implementation 'androidx.room:room-runtime:2.2.1'
+    kapt 'androidx.room:room-compiler:2.2.1'
+    implementation 'androidx.room:room-rxjava2:2.2.1'
 
     implementation 'androidx.paging:paging-runtime:2.1.0'
     implementation 'androidx.paging:paging-common:2.1.0'
