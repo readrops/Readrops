@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.readrops.app.R;
-import com.readrops.app.activities.ManageFeedsFoldersActivity;
 import com.readrops.app.adapters.FoldersAdapter;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.account.Account;
@@ -29,6 +28,8 @@ import com.readrops.readropslibrary.utils.UnknownFormatException;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+
+import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
 
 public class FoldersFragment extends Fragment {
 
@@ -46,7 +47,7 @@ public class FoldersFragment extends Fragment {
         FoldersFragment fragment = new FoldersFragment();
 
         Bundle args = new Bundle();
-        args.putParcelable(ManageFeedsFoldersActivity.ACCOUNT_KEY, account);
+        args.putParcelable(ACCOUNT, account);
         fragment.setArguments(args);
 
         return fragment;
@@ -56,7 +57,7 @@ public class FoldersFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        account = getArguments().getParcelable(ManageFeedsFoldersActivity.ACCOUNT_KEY);
+        account = getArguments().getParcelable(ACCOUNT);
 
         if (account.getLogin() == null)
             account.setLogin(SharedPreferencesManager.readString(getContext(), account.getLoginKey()));

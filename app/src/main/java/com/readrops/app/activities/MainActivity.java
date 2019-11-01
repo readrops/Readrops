@@ -43,7 +43,6 @@ import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.pojo.ItemWithFeed;
-import com.readrops.app.fragments.settings.AccountSettingsFragment;
 import com.readrops.app.utils.DrawerManager;
 import com.readrops.app.utils.GlideApp;
 import com.readrops.app.utils.ReadropsItemTouchCallback;
@@ -64,6 +63,12 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
+import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
+import static com.readrops.app.utils.ReadropsKeys.IMAGE_URL;
+import static com.readrops.app.utils.ReadropsKeys.ITEM_ID;
+import static com.readrops.app.utils.ReadropsKeys.SETTINGS;
+import static com.readrops.app.utils.ReadropsKeys.SYNCING;
+
 public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener,
         ReadropsItemTouchCallback.SwipeCallback, ActionMode.Callback {
 
@@ -73,10 +78,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     public static final int MANAGE_ACCOUNT_REQUEST = 2;
     public static final int ITEM_REQUEST = 3;
     public static final int ADD_ACCOUNT_REQUEST = 4;
-
-    public static final String ACCOUNT_KEY = "account";
-
-    private static final String SYNCING_KEY = "SYNCING";
 
     private RecyclerView recyclerView;
     private MainItemListAdapter adapter;
@@ -163,9 +164,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                         break;
                     case DrawerManager.ACCOUNT_SETTINGS_ID:
                         Intent intent1 = new Intent(this, SettingsActivity.class);
-                        intent1.putExtra(SettingsActivity.SETTINGS_KEY,
+                        intent1.putExtra(SETTINGS,
                                 SettingsActivity.SettingsKey.ACCOUNT_SETTINGS.ordinal());
-                        intent1.putExtra(AccountSettingsFragment.ACCOUNT, viewModel.getCurrentAccount());
+                        intent1.putExtra(ACCOUNT, viewModel.getCurrentAccount());
                         startActivity(intent1);
                         break;
                     default:
@@ -177,16 +178,16 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 }
             } else {
                 Intent intent = new Intent(this, SettingsActivity.class);
-                intent.putExtra(SettingsActivity.SETTINGS_KEY,
+                intent.putExtra(SETTINGS,
                         SettingsActivity.SettingsKey.ACCOUNT_SETTINGS.ordinal());
-                intent.putExtra(AccountSettingsFragment.ACCOUNT, viewModel.getCurrentAccount());
+                intent.putExtra(ACCOUNT, viewModel.getCurrentAccount());
                 startActivityForResult(intent, MANAGE_ACCOUNT_REQUEST);
             }
 
             return true;
         });
 
-        Account currentAccount = getIntent().getParcelableExtra(MainActivity.ACCOUNT_KEY);
+        Account currentAccount = getIntent().getParcelableExtra(ACCOUNT);
         WeakReference<Account> accountWeakReference = new WeakReference<>(currentAccount);
 
         viewModel.getAllAccounts().observe(this, accounts -> {
@@ -210,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 refreshLayout.setRefreshing(true);
                 onRefresh();
                 accountWeakReference.clear();
-            } else if (currentAccount == null && savedInstanceState != null && savedInstanceState.getBoolean(SYNCING_KEY)) {
+            } else if (currentAccount == null && savedInstanceState != null && savedInstanceState.getBoolean(SYNCING)) {
                 refreshLayout.setRefreshing(true);
                 onRefresh();
                 savedInstanceState.clear();
@@ -239,7 +240,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     break;
                 case DrawerManager.SETTINGS_ID:
                     Intent intent = new Intent(getApplication(), SettingsActivity.class);
-                    intent.putExtra(SettingsActivity.SETTINGS_KEY,
+                    intent.putExtra(SETTINGS,
                             SettingsActivity.SettingsKey.SETTINGS.ordinal());
                     startActivity(intent);
                     break;
@@ -289,8 +290,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 if (actionMode == null) {
                     Intent intent = new Intent(getApplicationContext(), ItemActivity.class);
 
-                    intent.putExtra(ItemActivity.ITEM_ID, itemWithFeed.getItem().getId());
-                    intent.putExtra(ItemActivity.IMAGE_URL, itemWithFeed.getItem().getImageLink());
+                    intent.putExtra(ITEM_ID, itemWithFeed.getItem().getId());
+                    intent.putExtra(IMAGE_URL, itemWithFeed.getItem().getImageLink());
                     startActivityForResult(intent, ITEM_REQUEST);
 
                     viewModel.setItemReadState(itemWithFeed, true)
@@ -515,7 +516,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         } else if (requestCode == ADD_ACCOUNT_REQUEST && resultCode == RESULT_OK) {
             if (data != null) {
-                Account newAccount = data.getParcelableExtra(ACCOUNT_KEY);
+                Account newAccount = data.getParcelableExtra(ACCOUNT);
 
                 if (newAccount != null) {
                     viewModel.addAccount(newAccount);
@@ -691,7 +692,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         if (refreshLayout.isRefreshing())
-            outState.putBoolean(SYNCING_KEY, true);
+            outState.putBoolean(SYNCING, true);
 
         super.onSaveInstanceState(outState);
     }

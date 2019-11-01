@@ -22,12 +22,13 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.schedulers.Schedulers;
 
+import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
+import static com.readrops.app.utils.ReadropsKeys.EDIT_ACCOUNT;
+
 /**
  * A simple {@link Fragment} subclass.
  */
 public class AccountSettingsFragment extends PreferenceFragmentCompat {
-
-    public static final String ACCOUNT = "ACCOUNT_KEY";
 
     private Account account;
     private AccountViewModel viewModel;
@@ -65,7 +66,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
         credentialsPref.setOnPreferenceClickListener(preference -> {
             if (!account.isLocal()) {
                 Intent intent = new Intent(getContext(), AddAccountActivity.class);
-                intent.putExtra(AddAccountActivity.EDIT_ACCOUNT, account);
+                intent.putExtra(EDIT_ACCOUNT, account);
                 startActivity(intent);
             }
 

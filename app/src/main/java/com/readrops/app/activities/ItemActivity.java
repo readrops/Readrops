@@ -30,6 +30,11 @@ import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.ItemViewModel;
 
+import static com.readrops.app.utils.ReadropsKeys.ACTION_BAR_COLOR;
+import static com.readrops.app.utils.ReadropsKeys.IMAGE_URL;
+import static com.readrops.app.utils.ReadropsKeys.ITEM_ID;
+import static com.readrops.app.utils.ReadropsKeys.WEB_URL;
+
 public class ItemActivity extends AppCompatActivity {
 
     private ItemViewModel viewModel;
@@ -45,9 +50,6 @@ public class ItemActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private FloatingActionButton actionButton;
     private ReadropsWebView webView;
-
-    public static final String ITEM_ID = "itemId";
-    public static final String IMAGE_URL = "imageUrl";
 
     private ItemWithFeed itemWithFeed;
 
@@ -232,8 +234,8 @@ public class ItemActivity extends AppCompatActivity {
 
     private void openInWebView() {
         Intent intent = new Intent(this, WebViewActivity.class);
-        intent.putExtra(WebViewActivity.WEB_URL, itemWithFeed.getItem().getLink());
-        intent.putExtra(WebViewActivity.ACTION_BAR_COLOR, itemWithFeed.getColor() != 0 ? itemWithFeed.getColor() : itemWithFeed.getBgColor());
+        intent.putExtra(WEB_URL, itemWithFeed.getItem().getLink());
+        intent.putExtra(ACTION_BAR_COLOR, itemWithFeed.getColor() != 0 ? itemWithFeed.getColor() : itemWithFeed.getBgColor());
 
         startActivity(intent);
     }

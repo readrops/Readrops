@@ -16,6 +16,8 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.readrops.app.R
 import com.readrops.app.databinding.ActivityWebViewBinding
+import com.readrops.app.utils.ReadropsKeys.ACTION_BAR_COLOR
+import com.readrops.app.utils.ReadropsKeys.WEB_URL
 
 class WebViewActivity : AppCompatActivity() {
 
@@ -117,10 +119,5 @@ class WebViewActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.webview_menu, menu)
         return true
-    }
-
-    companion object {
-        const val WEB_URL = "webUrl"
-        const val ACTION_BAR_COLOR = "actionBarColor"
     }
 }

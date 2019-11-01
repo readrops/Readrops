@@ -27,9 +27,10 @@ import com.readrops.readropslibrary.utils.UnknownFormatException;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
+import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
+
 public class ManageFeedsFoldersActivity extends AppCompatActivity {
 
-    public static final String ACCOUNT_KEY = "ACCOUNT_KEY";
 
     private ActivityManageFeedsFoldersBinding binding;
     private ManageFeedsFoldersViewModel viewModel;
@@ -44,7 +45,7 @@ public class ManageFeedsFoldersActivity extends AppCompatActivity {
         setSupportActionBar(binding.manageFeedsFoldersToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        account = getIntent().getParcelableExtra(ACCOUNT_KEY);
+        account = getIntent().getParcelableExtra(ACCOUNT);
 
         FeedsFoldersPageAdapter pageAdapter = new FeedsFoldersPageAdapter(getSupportFragmentManager());
 

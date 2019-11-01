@@ -26,9 +26,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class AddAccountActivity extends AppCompatActivity {
+import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
+import static com.readrops.app.utils.ReadropsKeys.EDIT_ACCOUNT;
 
-    public static final String EDIT_ACCOUNT = "EDIT_ACCOUNT";
+public class AddAccountActivity extends AppCompatActivity {
 
     private ActivityAddAccountBinding binding;
     private AccountViewModel viewModel;
@@ -114,13 +115,13 @@ public class AddAccountActivity extends AppCompatActivity {
 
                                     if (forwardResult) {
                                         Intent intent = new Intent();
-                                        intent.putExtra(MainActivity.ACCOUNT_KEY, account);
+                                        intent.putExtra(ACCOUNT, account);
                                         setResult(RESULT_OK, intent);
                                         finish();
 
                                     } else {
                                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                        intent.putExtra(MainActivity.ACCOUNT_KEY, account);
+                                        intent.putExtra(ACCOUNT, account);
                                         startActivity(intent);
                                     }
 
@@ -250,7 +251,7 @@ public class AddAccountActivity extends AppCompatActivity {
                 createAccount(null);
                 return true;
         }
-        
+
         return super.onKeyUp(keyCode, event);
     }
 }

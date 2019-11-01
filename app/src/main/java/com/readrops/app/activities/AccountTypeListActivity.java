@@ -27,6 +27,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
+import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
+
 public class AccountTypeListActivity extends AppCompatActivity {
 
     private ActivityAccountTypeListBinding binding;
@@ -96,11 +98,11 @@ public class AccountTypeListActivity extends AppCompatActivity {
 
                         if (fromMainActivity) {
                             Intent intent = new Intent();
-                            intent.putExtra(MainActivity.ACCOUNT_KEY, account);
+                            intent.putExtra(ACCOUNT, account);
                             setResult(RESULT_OK, intent);
                         } else {
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                            intent.putExtra(MainActivity.ACCOUNT_KEY, account);
+                            intent.putExtra(ACCOUNT, account);
 
                             startActivity(intent);
                         }

@@ -11,9 +11,10 @@ import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.fragments.settings.AccountSettingsFragment;
 import com.readrops.app.fragments.settings.SettingsFragment;
 
-public class SettingsActivity extends AppCompatActivity {
+import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
+import static com.readrops.app.utils.ReadropsKeys.SETTINGS;
 
-    public static final String SETTINGS_KEY = SettingsKey.class.getSimpleName().toUpperCase();
+public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,9 +23,9 @@ public class SettingsActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Account account = getIntent().getParcelableExtra(AccountSettingsFragment.ACCOUNT);
+        Account account = getIntent().getParcelableExtra(ACCOUNT);
 
-        SettingsKey settingsKey = SettingsKey.values()[getIntent().getIntExtra(SETTINGS_KEY, -1)];
+        SettingsKey settingsKey = SettingsKey.values()[getIntent().getIntExtra(SETTINGS, -1)];
         Fragment fragment = null;
 
         switch (settingsKey) {

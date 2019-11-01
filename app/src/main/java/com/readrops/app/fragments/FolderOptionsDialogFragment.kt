@@ -16,7 +16,7 @@ class FolderOptionsDialogFragment : BottomSheetDialogFragment() {
     private lateinit var foldersOptionsLayoutBinding: FolderOptionsLayoutBinding
 
     companion object {
-        val FOLDER_KEY = "FOLDER_KEY"
+        const val FOLDER_KEY = "FOLDER_KEY"
 
         fun newInstance(folder: Folder): FolderOptionsDialogFragment {
             val args = Bundle()

@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.readrops.app.R;
-import com.readrops.app.activities.ManageFeedsFoldersActivity;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.account.Account;
@@ -29,7 +28,7 @@ import java.util.TreeMap;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.readrops.app.activities.ManageFeedsFoldersActivity.ACCOUNT_KEY;
+import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
 
 public class EditFeedDialogFragment extends DialogFragment implements AdapterView.OnItemSelectedListener {
 
@@ -49,7 +48,7 @@ public class EditFeedDialogFragment extends DialogFragment implements AdapterVie
     public static EditFeedDialogFragment newInstance(FeedWithFolder feedWithFolder, Account account) {
         Bundle args = new Bundle();
         args.putParcelable("feedWithFolder", feedWithFolder);
-        args.putParcelable(ACCOUNT_KEY, account);
+        args.putParcelable(ACCOUNT, account);
 
         EditFeedDialogFragment fragment = new EditFeedDialogFragment();
         fragment.setArguments(args);
@@ -63,7 +62,7 @@ public class EditFeedDialogFragment extends DialogFragment implements AdapterVie
         viewModel = ViewModelProviders.of(getActivity()).get(ManageFeedsFoldersViewModel.class);
 
         feedWithFolder = getArguments().getParcelable("feedWithFolder");
-        account = getArguments().getParcelable(ManageFeedsFoldersActivity.ACCOUNT_KEY);
+        account = getArguments().getParcelable(ACCOUNT);
 
         viewModel.setAccount(account);
 
