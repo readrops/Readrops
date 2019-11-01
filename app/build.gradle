@@ -4,11 +4,11 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
         applicationId "com.readrops.app"
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 5
         versionName "1.0.2.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -16,7 +16,8 @@ android {
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = [
-                        "room.incremental": "true"]
+                        "room.incremental": "true"
+                ]
             }
         }
 
@@ -26,7 +27,8 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false // proguard makes some functionalities fail so It's disabled until I find the problem source
+            // proguard makes some functionalities fail so It's disabled until I find the problem source
+            minifyEnabled false
             shrinkResources false
 
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
