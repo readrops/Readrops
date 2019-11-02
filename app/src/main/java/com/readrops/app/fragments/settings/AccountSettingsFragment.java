@@ -16,6 +16,7 @@ import com.readrops.app.R;
 import com.readrops.app.activities.AddAccountActivity;
 import com.readrops.app.activities.ManageFeedsFoldersActivity;
 import com.readrops.app.database.entities.account.Account;
+import com.readrops.app.database.entities.account.AccountType;
 import com.readrops.app.viewmodels.AccountViewModel;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -51,9 +52,14 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.acount_preferences);
 
+        account = getArguments().getParcelable(ACCOUNT);
+
         Preference feedsFoldersPref = findPreference("feeds_folders_key");
         Preference credentialsPref = findPreference("credentials_key");
         Preference deleteAccountPref = findPreference("delete_account_key");
+
+        if (account.is(AccountType.LOCAL))
+            credentialsPref.setVisible(false);
 
         feedsFoldersPref.setOnPreferenceClickListener(preference -> {
             Intent intent = new Intent(getContext(), ManageFeedsFoldersActivity.class);
@@ -84,7 +90,6 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
         super.onCreate(savedInstanceState);
 
         viewModel = ViewModelProviders.of(this).get(AccountViewModel.class);
-        account = getArguments().getParcelable(ACCOUNT);
     }
 
     private void deleteAccount() {
