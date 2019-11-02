@@ -2,6 +2,7 @@ package com.readrops.app.fragments.settings;
 
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -23,6 +24,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.schedulers.Schedulers;
 
+import static android.app.Activity.RESULT_OK;
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
 import static com.readrops.app.utils.ReadropsKeys.EDIT_ACCOUNT;
 
@@ -30,6 +32,8 @@ import static com.readrops.app.utils.ReadropsKeys.EDIT_ACCOUNT;
  * A simple {@link Fragment} subclass.
  */
 public class AccountSettingsFragment extends PreferenceFragmentCompat {
+
+    public static final int OPEN_OPML_FILE_REQUEST = 1;
 
     private Account account;
     private AccountViewModel viewModel;
@@ -57,9 +61,13 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
         Preference feedsFoldersPref = findPreference("feeds_folders_key");
         Preference credentialsPref = findPreference("credentials_key");
         Preference deleteAccountPref = findPreference("delete_account_key");
+        Preference opmlPref = findPreference("opml_import_export");
 
         if (account.is(AccountType.LOCAL))
             credentialsPref.setVisible(false);
+
+        if (!account.is(AccountType.LOCAL))
+            opmlPref.setVisible(false);
 
         feedsFoldersPref.setOnPreferenceClickListener(preference -> {
             Intent intent = new Intent(getContext(), ManageFeedsFoldersActivity.class);
@@ -81,6 +89,11 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
 
         deleteAccountPref.setOnPreferenceClickListener(preference -> {
             deleteAccount();
+            return true;
+        });
+
+        opmlPref.setOnPreferenceClickListener(preference -> {
+            openOPMLFile();
             return true;
         });
     }
@@ -112,5 +125,22 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
                             }
                         })))
                 .show();
+    }
+
+    private void openOPMLFile() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("application/*");
+
+        getActivity().startActivityForResult(intent, OPEN_OPML_FILE_REQUEST);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == OPEN_OPML_FILE_REQUEST && requestCode == RESULT_OK && data != null) {
+            Uri uri = data.getData();
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

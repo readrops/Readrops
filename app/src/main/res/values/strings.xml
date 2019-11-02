@@ -101,4 +101,5 @@
     <string name="external_navigator">External navigator</string>
     <string name="actualize">Actualize</string>
     <string name="share_url">Share url</string>
+    <string name="opml_import_export">OPML Import/Export</string>
 </resources>

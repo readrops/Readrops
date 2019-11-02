@@ -93,5 +93,6 @@
     <string name="external_navigator">Navigateur externe</string>
     <string name="actualize">Actualiser</string>
     <string name="share_url">Partager le lien</string>
+    <string name="opml_import_export">Import/Export OPML</string>
 
 </resources>
