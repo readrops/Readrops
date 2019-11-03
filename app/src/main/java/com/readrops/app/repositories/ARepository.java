@@ -59,11 +59,8 @@ public abstract class ARepository<T> {
         return database.feedDao().delete(feed);
     }
 
-    public Completable addFolder(Folder folder) {
-        return Completable.create(emitter -> {
-            database.folderDao().insert(folder);
-            emitter.onComplete();
-        });
+    public Single<Long> addFolder(Folder folder) {
+        return database.folderDao().insert(folder);
     }
 
     public Completable updateFolder(Folder folder) {

@@ -33,10 +33,7 @@ public class AccountViewModel extends AndroidViewModel {
     }
 
     public Single<Long> insert(Account account) {
-        return Single.create(emitter -> {
-            long id = database.accountDao().insert(account);
-            emitter.onSuccess(id);
-        });
+        return database.accountDao().insert(account);
     }
 
     public Completable update(Account account) {

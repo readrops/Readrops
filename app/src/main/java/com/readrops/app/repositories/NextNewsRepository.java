@@ -58,7 +58,7 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
 
     @Override
     public Single<Boolean> login(Account account, boolean insert) {
-        return Single.create(emitter -> {
+        return Single.<NextNewsUser>create(emitter -> {
             if (api == null)
                 api = new NextNewsAPI(account.toCredentials());
             else
@@ -66,15 +66,23 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
 
             NextNewsUser user = api.login();
 
+            emitter.onSuccess(user);
+        }).flatMap(user -> {
             if (user != null) {
                 account.setDisplayedName(user.getDisplayName());
                 account.setCurrentAccount(true);
 
-                if (insert)
-                    account.setId((int) database.accountDao().insert(account));
-                emitter.onSuccess(true);
+                if (insert) {
+                    return database.accountDao().insert(account)
+                            .flatMap(id -> {
+                                account.setId(id.intValue());
+                                return Single.just(true);
+                            });
+                }
+
+                return Single.just(true);
             } else
-                emitter.onSuccess(false);
+                return Single.just(false);
         });
     }
 
@@ -206,8 +214,8 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
     }
 
     @Override
-    public Completable addFolder(Folder folder) {
-        return Completable.create(emitter -> {
+    public Single<Long> addFolder(Folder folder) {
+        return Single.<Folder>create(emitter -> {
             try {
                 int folderRemoteId = folder.getRemoteId() == null ? 0 : Integer.parseInt(folder.getRemoteId());
                 NextNewsFolders folders = api.createFolder(new NextNewsFolder(folderRemoteId, folder.getName()));
@@ -217,15 +225,13 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
 
                     folder.setName(nextNewsFolder.getName());
                     folder.setRemoteId(String.valueOf(nextNewsFolder.getId()));
-                    database.folderDao().insert(folder);
+                    emitter.onSuccess(folder);
                 } else
                     emitter.onError(new Exception("Unknown error"));
             } catch (Exception e) {
                 emitter.onError(e);
             }
-
-            emitter.onComplete();
-        });
+        }).flatMap(folder1 -> database.folderDao().insert(folder));
     }
 
     @Override

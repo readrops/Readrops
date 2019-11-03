@@ -202,7 +202,7 @@ public class LocalFeedRepository extends ARepository<Void> {
         dbFeed.setEtag(null);
         dbFeed.setLastModified(null);
 
-        dbFeed.setId((int) (database.feedDao().insert(dbFeed)));
+        dbFeed.setId((int) (database.feedDao().compatInsert(dbFeed)));
         return dbFeed;
     }
 

@@ -36,7 +36,7 @@ import io.reactivex.Single;
 public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
 
     private static final String TAG = FreshRSSRepository.class.getSimpleName();
-    
+
     public FreshRSSRepository(@NonNull Application application, @Nullable Account account) {
         super(application, account);
     }
@@ -71,8 +71,14 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
                 .flatMap(userInfo -> {
                     account.setDisplayedName(userInfo.getUserName());
 
-                    if (insert)
-                        account.setId((int) database.accountDao().insert(account));
+                    if (insert) {
+                        return database.accountDao().insert(account)
+                                .flatMap(id -> {
+                                    account.setId(id.intValue());
+
+                                    return Single.just(true);
+                                });
+                    }
 
                     return Single.just(true);
                 });
@@ -164,8 +170,9 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
     }
 
     @Override
-    public Completable addFolder(Folder folder) {
-        return api.createFolder(account.getWriteToken(), folder.getName());
+    public Single<Long> addFolder(Folder folder) {
+        return api.createFolder(account.getWriteToken(), folder.getName())
+                .andThen(super.addFolder(folder));
     }
 
     @Override
