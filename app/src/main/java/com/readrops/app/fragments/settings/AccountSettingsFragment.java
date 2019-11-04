@@ -4,7 +4,6 @@ package com.readrops.app.fragments.settings;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -143,13 +142,20 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
         if (requestCode == OPEN_OPML_FILE_REQUEST && resultCode == RESULT_OK && data != null) {
             Uri uri = data.getData();
 
-            parseOPMLFile(uri);
+            MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
+                    .title(R.string.opml_processing)
+                    .content(R.string.operation_takes_time)
+                    .progress(true, 100)
+                    .cancelable(false)
+                    .show();
+
+            parseOPMLFile(uri, dialog);
         }
 
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void parseOPMLFile(Uri uri) {
+    private void parseOPMLFile(Uri uri, MaterialDialog dialog) {
         OpmlParser.parse(uri, getContext())
                 .flatMapCompletable(opml -> viewModel.insertOPMLFoldersAndFeeds(opml))
                 .subscribeOn(Schedulers.io())
@@ -157,12 +163,18 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
                 .subscribe(new DisposableCompletableObserver() {
                     @Override
                     public void onComplete() {
-                        Log.d("", "onComplete: ");
+                        dialog.dismiss();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.d("", "onError: ");
+                        dialog.dismiss();
+
+                        new MaterialDialog.Builder(getActivity())
+                                .title(R.string.processing_file_failed)
+                                .neutralText(R.string.cancel)
+                                .iconRes(R.drawable.ic_error)
+                                .show();
                     }
                 });
     }

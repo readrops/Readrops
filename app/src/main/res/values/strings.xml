@@ -102,4 +102,7 @@
     <string name="actualize">Actualize</string>
     <string name="share_url">Share url</string>
     <string name="opml_import_export">OPML Import/Export</string>
+    <string name="opml_processing">Processing OPML file</string>
+    <string name="operation_takes_time">This operation can take a significant time as each feed needs to be queried.</string>
+    <string name="processing_file_failed">An error occurred during the file processing</string>
 </resources>
