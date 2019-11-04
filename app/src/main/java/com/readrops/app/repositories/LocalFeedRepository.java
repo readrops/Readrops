@@ -122,7 +122,7 @@ public class LocalFeedRepository extends ARepository<Void> {
                     RSSQueryResult queryResult = rssNet.queryUrl(parsingResult.getUrl(), new HashMap<>());
 
                     if (queryResult != null && queryResult.getException() == null) {
-                        Feed feed = insertFeed(queryResult.getFeed(), queryResult.getRssType());
+                        Feed feed = insertFeed(queryResult.getFeed(), queryResult.getRssType(), parsingResult);
                         if (feed != null) {
                             insertionResult.setFeed(feed);
                             insertionResult.setParsingResult(parsingResult);
@@ -150,8 +150,8 @@ public class LocalFeedRepository extends ARepository<Void> {
     }
 
     private void insertNewItems(AFeed feed, RSSQuery.RSSType type) throws ParseException {
-        Feed dbFeed = null;
-        List<Item> items = null;
+        Feed dbFeed;
+        List<Item> items;
 
         switch (type) {
             case RSS_2:
@@ -166,6 +166,8 @@ public class LocalFeedRepository extends ARepository<Void> {
                 dbFeed = database.feedDao().getFeedByUrl(((JSONFeed) feed).getFeedUrl(), account.getId());
                 items = ItemMatcher.itemsFromJSON(((JSONFeed) feed).getItems(), dbFeed);
                 break;
+            default:
+                throw new IllegalArgumentException("Unknown RSS type");
         }
 
         database.feedDao().updateHeaders(dbFeed.getEtag(), dbFeed.getLastModified(), dbFeed.getId());
@@ -178,8 +180,8 @@ public class LocalFeedRepository extends ARepository<Void> {
         insertItems(items, dbFeed);
     }
 
-    private Feed insertFeed(AFeed feed, RSSQuery.RSSType type) throws IOException {
-        Feed dbFeed = null;
+    private Feed insertFeed(AFeed feed, RSSQuery.RSSType type, ParsingResult parsingResult) {
+        Feed dbFeed;
         switch (type) {
             case RSS_2:
                 dbFeed = FeedMatcher.feedFromRSS((RSSFeed) feed);
@@ -190,7 +192,11 @@ public class LocalFeedRepository extends ARepository<Void> {
             case RSS_JSON:
                 dbFeed = FeedMatcher.feedFromJSON((JSONFeed) feed);
                 break;
+            default:
+                throw new IllegalArgumentException("Unknown RSS type");
         }
+
+        dbFeed.setFolderId(parsingResult.getFolderId());
 
         if (database.feedDao().feedExists(dbFeed.getUrl(), account.getId()))
             return null; // feed already inserted

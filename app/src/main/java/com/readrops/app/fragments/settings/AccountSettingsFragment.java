@@ -4,6 +4,7 @@ package com.readrops.app.fragments.settings;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -19,6 +20,7 @@ import com.readrops.app.activities.ManageFeedsFoldersActivity;
 import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.account.AccountType;
 import com.readrops.app.viewmodels.AccountViewModel;
+import com.readrops.readropslibrary.opml.OpmlParser;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableCompletableObserver;
@@ -103,6 +105,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
         super.onCreate(savedInstanceState);
 
         viewModel = ViewModelProviders.of(this).get(AccountViewModel.class);
+        viewModel.setAccount(account);
     }
 
     private void deleteAccount() {
@@ -132,15 +135,35 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("application/*");
 
-        getActivity().startActivityForResult(intent, OPEN_OPML_FILE_REQUEST);
+        startActivityForResult(intent, OPEN_OPML_FILE_REQUEST);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == OPEN_OPML_FILE_REQUEST && requestCode == RESULT_OK && data != null) {
+        if (requestCode == OPEN_OPML_FILE_REQUEST && resultCode == RESULT_OK && data != null) {
             Uri uri = data.getData();
+
+            parseOPMLFile(uri);
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void parseOPMLFile(Uri uri) {
+        OpmlParser.parse(uri, getContext())
+                .flatMapCompletable(opml -> viewModel.insertOPMLFoldersAndFeeds(opml))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Log.d("", "onComplete: ");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("", "onError: ");
+                    }
+                });
     }
 }

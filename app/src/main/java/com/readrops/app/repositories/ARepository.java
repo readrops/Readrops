@@ -12,13 +12,14 @@ import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.Item;
 import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.account.AccountType;
-import com.readrops.app.utils.feedscolors.FeedsColorsIntentService;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.utils.feedscolors.FeedColorsKt;
+import com.readrops.app.utils.feedscolors.FeedsColorsIntentService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -47,6 +48,36 @@ public abstract class ARepository<T> {
     public abstract Observable<Feed> sync(List<Feed> feeds);
 
     public abstract Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results);
+
+    public Completable insertOPMLFoldersAndFeeds(Map<Folder, List<Feed>> foldersAndFeeds) {
+        List<Completable> completableList = new ArrayList<>();
+
+        for (Map.Entry<Folder, List<Feed>> entry : foldersAndFeeds.entrySet()) {
+            Folder folder = entry.getKey();
+            folder.setAccountId(account.getId());
+
+            Completable completable = Single.<Integer>create(emitter -> {
+                Folder dbFolder = database.folderDao().getFolderByName(folder.getName(), account.getId());
+
+                if (dbFolder != null)
+                    emitter.onSuccess(dbFolder.getId());
+                else
+                    emitter.onSuccess((int) database.folderDao().compatInsert(folder));
+            }).flatMap(folderId -> {
+                List<Feed> feeds = entry.getValue();
+                for (Feed feed : feeds) {
+                    feed.setFolderId(folderId);
+                }
+
+                List<ParsingResult> parsingResults = ParsingResult.toParsingResults(feeds);
+                return addFeeds(parsingResults);
+            }).flatMapCompletable(feedInsertionResults -> Completable.complete());
+
+            completableList.add(completable);
+        }
+
+        return Completable.concat(completableList);
+    }
 
     public Completable updateFeed(Feed feed) {
         return Completable.create(emitter -> {

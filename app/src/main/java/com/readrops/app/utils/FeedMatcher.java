@@ -1,15 +1,24 @@
 package com.readrops.app.utils;
 
-import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.Feed;
+import com.readrops.app.database.entities.Folder;
+import com.readrops.app.database.entities.account.Account;
 import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
 import com.readrops.readropslibrary.localfeed.json.JSONFeed;
 import com.readrops.readropslibrary.localfeed.rss.RSSChannel;
 import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
+import com.readrops.readropslibrary.opml.model.Body;
+import com.readrops.readropslibrary.opml.model.Opml;
+import com.readrops.readropslibrary.opml.model.Outline;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeed;
 
 import org.jsoup.Jsoup;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public final class FeedMatcher {
 
@@ -99,5 +108,28 @@ public final class FeedMatcher {
         feed.setFolderId(null);
 
         return feed;
+    }
+
+    public static Map<Folder, List<Feed>> feedsAndFoldersFromOPML(Opml opml) {
+        Map<Folder, List<Feed>> foldersAndFeeds = new HashMap<>();
+        Body body = opml.getBody();
+
+        for (Outline outline : body.getOutlines()) {
+            Folder folder = new Folder(outline.getTitle());
+
+            List<Feed> feeds = new ArrayList<>();
+            for (Outline feedOutline : outline.getOutlines()) {
+                Feed feed = new Feed();
+                feed.setName(feedOutline.getTitle());
+                feed.setUrl(feedOutline.getXmlUrl());
+                feed.setSiteUrl(feedOutline.getHtmlUrl());
+
+                feeds.add(feed);
+            }
+
+            foldersAndFeeds.put(folder, feeds);
+        }
+
+        return foldersAndFeeds;
     }
 }

@@ -39,6 +39,9 @@ public abstract class FolderDao implements BaseDao<Folder> {
     @Query("Delete From Folder Where remoteId in (:ids)")
     abstract void deleteByIds(List<String> ids);
 
+    @Query("Select * From Folder Where name = :name And account_id = :accountId")
+    public abstract Folder getFolderByName(String name, int accountId);
+
     /**
      * Insert, update and delete folders
      *
