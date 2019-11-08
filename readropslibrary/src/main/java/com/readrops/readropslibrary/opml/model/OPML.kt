@@ -5,7 +5,7 @@ import org.simpleframework.xml.Element
 import org.simpleframework.xml.Root
 
 @Root(name = "opml", strict = false)
-data class Opml(@field:Attribute(required = true) var version: String?,
+data class OPML(@field:Attribute(required = true) var version: String?,
                 @field:Element(required = true) var head: Head?,
                 @field:Element(required = true) var body: Body?) {
 

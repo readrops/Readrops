@@ -13,9 +13,9 @@ import com.readrops.app.activities.MainActivity;
 import com.readrops.app.database.Database;
 import com.readrops.app.database.ItemsListQueryBuilder;
 import com.readrops.app.database.RoomFactoryWrapper;
-import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Folder;
+import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.repositories.ARepository;
 
@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -125,32 +124,7 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     public Single<Map<Folder, List<Feed>>> getFoldersWithFeeds() {
-        return Single.create(emitter -> {
-            List<Folder> folders = db.folderDao().getFolders(currentAccount.getId());
-            Map<Folder, List<Feed>> foldersWithFeeds = new TreeMap<>(Folder::compareTo);
-
-            for (Folder folder : folders) {
-                List<Feed> feeds = db.feedDao().getFeedsByFolder(folder.getId());
-
-                for (Feed feed : feeds) {
-                    int unreadCount = db.itemDao().getUnreadCount(feed.getId());
-                    feed.setUnreadCount(unreadCount);
-                }
-
-                foldersWithFeeds.put(folder, feeds);
-            }
-
-            Folder noFolder = new Folder("no folder");
-
-            List<Feed> feedsWithoutFolder = db.feedDao().getFeedsWithoutFolder(currentAccount.getId());
-            for (Feed feed : feedsWithoutFolder) {
-                feed.setUnreadCount(db.itemDao().getUnreadCount(feed.getId()));
-            }
-
-            foldersWithFeeds.put(noFolder, feedsWithoutFolder);
-
-            emitter.onSuccess(foldersWithFeeds);
-        });
+        return repository.getFoldersWithFeeds();
     }
 
     //endregion

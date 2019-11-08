@@ -105,4 +105,7 @@
     <string name="opml_processing">Processing OPML file</string>
     <string name="operation_takes_time">This operation can take a significant time as each feed needs to be queried.</string>
     <string name="processing_file_failed">An error occurred during the file processing</string>
+    <string name="import_opml">Import OPML file</string>
+    <string name="export_feeds_folders_opml">Export feeds and folders to an OPML file</string>
+    <string name="subscriptions" translatable="false">Subscriptions</string>
 </resources>

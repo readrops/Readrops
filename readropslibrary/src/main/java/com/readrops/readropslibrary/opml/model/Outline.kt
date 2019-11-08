@@ -20,7 +20,7 @@ data class Outline(@field:Attribute(required = false) var title: String?,
             null,
             null)
 
-    fun hasSubElements(): Boolean {
-        return !outlines.isNullOrEmpty()
-    }
+    constructor(title: String) : this(title, null, null, null, null, null)
+
+    constructor(title: String, xmlUrl: String, htmlUrl: String) : this(title, null, null, xmlUrl, htmlUrl, null)
 }

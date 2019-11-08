@@ -1,12 +1,18 @@
 package com.readrops.app.fragments.settings;
 
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.preference.Preference;
@@ -18,8 +24,15 @@ import com.readrops.app.activities.AddAccountActivity;
 import com.readrops.app.activities.ManageFeedsFoldersActivity;
 import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.account.AccountType;
+import com.readrops.app.utils.OPMLMatcher;
 import com.readrops.app.viewmodels.AccountViewModel;
-import com.readrops.readropslibrary.opml.OpmlParser;
+import com.readrops.readropslibrary.opml.OPMLParser;
+import com.readrops.readropslibrary.opml.model.OPML;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableCompletableObserver;
@@ -34,7 +47,10 @@ import static com.readrops.app.utils.ReadropsKeys.EDIT_ACCOUNT;
  */
 public class AccountSettingsFragment extends PreferenceFragmentCompat {
 
-    public static final int OPEN_OPML_FILE_REQUEST = 1;
+    private static final String TAG = AccountSettingsFragment.class.getSimpleName();
+
+    private static final int OPEN_OPML_FILE_REQUEST = 1;
+    private static final int WRITE_EXTERNAL_STORAGE_REQUEST = 1;
 
     private Account account;
     private AccountViewModel viewModel;
@@ -94,7 +110,19 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
         });
 
         opmlPref.setOnPreferenceClickListener(preference -> {
-            openOPMLFile();
+            new MaterialDialog.Builder(getActivity())
+                    .items(R.array.opml_import_export)
+                    .itemsCallback(((dialog, itemView, position, text) -> {
+                        if (position == 0) {
+                            openOPMLFile();
+                        } else {
+                            if (isExternalStoragePermissionGranted())
+                                exportAsOPMLFile();
+                            else
+                                requestExternalStoragePermission();
+                        }
+                    }))
+                    .show();
             return true;
         });
     }
@@ -137,6 +165,55 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
         startActivityForResult(intent, OPEN_OPML_FILE_REQUEST);
     }
 
+    private void exportAsOPMLFile() {
+        try {
+            String filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
+            File file = new File(filePath, "subscriptions.opml");
+
+            final OutputStream outputStream = new FileOutputStream(file);
+
+            viewModel.getFoldersWithFeeds()
+                    .flatMapCompletable(folderListMap -> {
+                        OPML opml = OPMLMatcher.INSTANCE.foldersAndFeedsToOPML(folderListMap, getContext());
+
+                        return OPMLParser.write(opml, outputStream);
+                    }).subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doAfterTerminate(() -> {
+                        try {
+                            outputStream.flush();
+                            outputStream.close();
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    })
+                    .subscribe(new DisposableCompletableObserver() {
+                        @Override
+                        public void onComplete() {
+                            Log.d(TAG, "onComplete: ");
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.d(TAG, "onError: ");
+                        }
+                    });
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
+        }
+
+    }
+
+    private boolean isExternalStoragePermissionGranted() {
+        return ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestExternalStoragePermission() {
+        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE_REQUEST);
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == OPEN_OPML_FILE_REQUEST && resultCode == RESULT_OK && data != null) {
@@ -155,8 +232,23 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == WRITE_EXTERNAL_STORAGE_REQUEST) {
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                //if (shouldShowRequestPermissionRationale(permissions[0]))
+
+            } else {
+                exportAsOPMLFile();
+            }
+        }
+
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
     private void parseOPMLFile(Uri uri, MaterialDialog dialog) {
-        OpmlParser.parse(uri, getContext())
+        OPMLParser.parse(uri, getContext())
                 .flatMapCompletable(opml -> viewModel.insertOPMLFoldersAndFeeds(opml))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

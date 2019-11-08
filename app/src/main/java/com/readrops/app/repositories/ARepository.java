@@ -20,6 +20,7 @@ import com.readrops.app.utils.feedscolors.FeedsColorsIntentService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -116,6 +117,35 @@ public abstract class ARepository<T> {
 
     public Single<Integer> getFeedCount(int accountId) {
         return database.feedDao().getFeedCount(accountId);
+    }
+
+    public Single<Map<Folder, List<Feed>>> getFoldersWithFeeds() {
+        return Single.create(emitter -> {
+            List<Folder> folders = database.folderDao().getFolders(account.getId());
+            Map<Folder, List<Feed>> foldersWithFeeds = new TreeMap<>(Folder::compareTo);
+
+            for (Folder folder : folders) {
+                List<Feed> feeds = database.feedDao().getFeedsByFolder(folder.getId());
+
+                for (Feed feed : feeds) {
+                    int unreadCount = database.itemDao().getUnreadCount(feed.getId());
+                    feed.setUnreadCount(unreadCount);
+                }
+
+                foldersWithFeeds.put(folder, feeds);
+            }
+
+            Folder noFolder = new Folder("no folder");
+
+            List<Feed> feedsWithoutFolder = database.feedDao().getFeedsWithoutFolder(account.getId());
+            for (Feed feed : feedsWithoutFolder) {
+                feed.setUnreadCount(database.itemDao().getUnreadCount(feed.getId()));
+            }
+
+            foldersWithFeeds.put(noFolder, feedsWithoutFolder);
+
+            emitter.onSuccess(foldersWithFeeds);
+        });
     }
 
     protected void setFeedColors(Feed feed) {
