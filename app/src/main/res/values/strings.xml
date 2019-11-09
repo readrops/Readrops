@@ -108,4 +108,7 @@
     <string name="import_opml">Import OPML file</string>
     <string name="export_feeds_folders_opml">Export feeds and folders to an OPML file</string>
     <string name="subscriptions" translatable="false">Subscriptions</string>
+    <string name="external_storage_opml_export">Subscriptions export needs external storage permission</string>
+    <string name="try_again">Try again</string>
+    <string name="permissions">Permissions</string>
 </resources>

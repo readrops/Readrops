@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -25,6 +26,7 @@ import com.readrops.app.activities.ManageFeedsFoldersActivity;
 import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.account.AccountType;
 import com.readrops.app.utils.OPMLMatcher;
+import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.AccountViewModel;
 import com.readrops.readropslibrary.opml.OPMLParser;
 import com.readrops.readropslibrary.opml.model.OPML;
@@ -157,6 +159,8 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
                 .show();
     }
 
+    // region opml parsing
+
     private void openOPMLFile() {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -164,6 +168,48 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
 
         startActivityForResult(intent, OPEN_OPML_FILE_REQUEST);
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == OPEN_OPML_FILE_REQUEST && resultCode == RESULT_OK && data != null) {
+            Uri uri = data.getData();
+
+            MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
+                    .title(R.string.opml_processing)
+                    .content(R.string.operation_takes_time)
+                    .progress(true, 100)
+                    .cancelable(false)
+                    .show();
+
+            parseOPMLFile(uri, dialog);
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void parseOPMLFile(Uri uri, MaterialDialog dialog) {
+        OPMLParser.parse(uri, getContext())
+                .flatMapCompletable(opml -> viewModel.insertOPMLFoldersAndFeeds(opml))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        dialog.dismiss();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        dialog.dismiss();
+
+                        displayErrorMessage();
+                    }
+                });
+    }
+
+    //endregion
+
+    //region opml export
 
     private void exportAsOPMLFile() {
         try {
@@ -185,7 +231,8 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
                             outputStream.close();
 
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            Log.e(TAG, e.getMessage());
+                            displayErrorMessage();
                         }
                     })
                     .subscribe(new DisposableCompletableObserver() {
@@ -196,78 +243,57 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
 
                         @Override
                         public void onError(Throwable e) {
-                            Log.d(TAG, "onError: ");
+
                         }
                     });
         } catch (Exception e) {
-            Log.d(TAG, e.getMessage());
+            Log.e(TAG, e.getMessage());
+
+            displayErrorMessage();
         }
 
     }
 
     private boolean isExternalStoragePermissionGranted() {
-        return ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        return ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
     }
 
     private void requestExternalStoragePermission() {
-        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE_REQUEST);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == OPEN_OPML_FILE_REQUEST && resultCode == RESULT_OK && data != null) {
-            Uri uri = data.getData();
-
-            MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
-                    .title(R.string.opml_processing)
-                    .content(R.string.operation_takes_time)
-                    .progress(true, 100)
-                    .cancelable(false)
-                    .show();
-
-            parseOPMLFile(uri, dialog);
-        }
-
-        super.onActivityResult(requestCode, resultCode, data);
+        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE_REQUEST);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == WRITE_EXTERNAL_STORAGE_REQUEST) {
             if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                //if (shouldShowRequestPermissionRationale(permissions[0]))
 
+                if (shouldShowRequestPermissionRationale(permissions[0])) {
+                    Utils.showSnackBarWithAction(getView(), getString(R.string.external_storage_opml_export),
+                            getString(R.string.try_again), v -> requestExternalStoragePermission());
+                } else {
+                    Utils.showSnackBarWithAction(getView(), getString(R.string.external_storage_opml_export),
+                            getString(R.string.permissions), v -> {
+                                Intent intent = new Intent();
+                                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                intent.setData(Uri.fromParts("package", getContext().getPackageName(), null));
+                                getContext().startActivity(intent);
+                            });
+                }
             } else {
                 exportAsOPMLFile();
             }
         }
 
-
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    private void parseOPMLFile(Uri uri, MaterialDialog dialog) {
-        OPMLParser.parse(uri, getContext())
-                .flatMapCompletable(opml -> viewModel.insertOPMLFoldersAndFeeds(opml))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DisposableCompletableObserver() {
-                    @Override
-                    public void onComplete() {
-                        dialog.dismiss();
-                    }
+    //endregion
 
-                    @Override
-                    public void onError(Throwable e) {
-                        dialog.dismiss();
-
-                        new MaterialDialog.Builder(getActivity())
-                                .title(R.string.processing_file_failed)
-                                .neutralText(R.string.cancel)
-                                .iconRes(R.drawable.ic_error)
-                                .show();
-                    }
-                });
+    private void displayErrorMessage() {
+        new MaterialDialog.Builder(getActivity())
+                .title(R.string.processing_file_failed)
+                .neutralText(R.string.cancel)
+                .iconRes(R.drawable.ic_error)
+                .show();
     }
 }
