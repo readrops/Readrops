@@ -6,8 +6,8 @@
     </string-array>
 
     <string-array name="opml_import_export">
-        <item>@string/import_opml</item>
-        <item>@string/export_feeds_folders_opml</item>
+        <item>@string/opml_import</item>
+        <item>@string/opml_export</item>
     </string-array>
 
     <string-array name="items_per_feed_numbers_values">

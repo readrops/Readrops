@@ -2,6 +2,8 @@ package com.readrops.app.fragments.settings;
 
 
 import android.Manifest;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -9,10 +11,11 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
@@ -26,6 +29,7 @@ import com.readrops.app.activities.ManageFeedsFoldersActivity;
 import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.account.AccountType;
 import com.readrops.app.utils.OPMLMatcher;
+import com.readrops.app.utils.ReadropsApp;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.AccountViewModel;
 import com.readrops.readropslibrary.opml.OPMLParser;
@@ -153,13 +157,13 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
 
                             @Override
                             public void onError(Throwable e) {
-                                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                                Utils.showSnackbar(getView(), e.getMessage());
                             }
                         })))
                 .show();
     }
 
-    // region opml parsing
+    // region opml import
 
     private void openOPMLFile() {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
@@ -207,6 +211,14 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
                 });
     }
 
+    private void displayErrorMessage() {
+        new MaterialDialog.Builder(getActivity())
+                .title(R.string.processing_file_failed)
+                .neutralText(R.string.cancel)
+                .iconRes(R.drawable.ic_error)
+                .show();
+    }
+
     //endregion
 
     //region opml export
@@ -232,26 +244,42 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
 
                         } catch (IOException e) {
                             Log.e(TAG, e.getMessage());
-                            displayErrorMessage();
+                            Utils.showSnackbar(getView(), e.getMessage());
                         }
                     })
                     .subscribe(new DisposableCompletableObserver() {
                         @Override
                         public void onComplete() {
-                            Log.d(TAG, "onComplete: ");
+                            displayNotification(file);
                         }
 
                         @Override
                         public void onError(Throwable e) {
-
+                            Utils.showSnackbar(getView(), e.getMessage());
                         }
                     });
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
-
-            displayErrorMessage();
+            Utils.showSnackbar(getView(), e.getMessage());
         }
 
+    }
+
+    private void displayNotification(File file) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(file.getAbsolutePath()));
+
+        Notification notification = new NotificationCompat.Builder(getContext(), ReadropsApp.OPML_EXPORT_CHANNEL_ID)
+                .setContentTitle(getString(R.string.opml_export))
+                .setContentText(file.getName())
+                .setSmallIcon(R.drawable.ic_readrops)
+                .setContentIntent(PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
+                .setDeleteIntent(PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
+                .setAutoCancel(true)
+                .build();
+
+        NotificationManagerCompat manager = NotificationManagerCompat.from(getContext());
+        manager.notify(2, notification);
     }
 
     private boolean isExternalStoragePermissionGranted() {
@@ -288,12 +316,4 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
     }
 
     //endregion
-
-    private void displayErrorMessage() {
-        new MaterialDialog.Builder(getActivity())
-                .title(R.string.processing_file_failed)
-                .neutralText(R.string.cancel)
-                .iconRes(R.drawable.ic_error)
-                .show();
-    }
 }

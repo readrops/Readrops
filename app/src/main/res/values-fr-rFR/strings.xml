@@ -97,8 +97,8 @@
     <string name="opml_processing">Traitement du fichier OPML</string>
     <string name="operation_takes_time">Cette opération peut prendre un certain temps car il faut interroger chaque flux.</string>
     <string name="processing_file_failed">Une erreur s\'est produite lors du traitement du fichier</string>
-    <string name="import_opml">Importer un fichier OPML</string>
-    <string name="export_feeds_folders_opml">Exporter les flux et les dossiers dans un fichier OPML</string>
+    <string name="opml_import">Import OPML</string>
+    <string name="opml_export">Export OPML</string>
     <string name="external_storage_opml_export">L\'export des soubscriptions nécessite l\'accès au stockage</string>
     <string name="try_again">Réessayer</string>
     <string name="permissions">Permissions</string>
