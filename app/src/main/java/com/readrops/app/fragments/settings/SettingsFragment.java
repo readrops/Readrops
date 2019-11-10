@@ -13,6 +13,8 @@ import com.readrops.app.utils.feedscolors.FeedsColorsIntentService;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.readrops.app.utils.ReadropsKeys.FEEDS;
+
 public class SettingsFragment extends PreferenceFragmentCompat {
 
     @Override
@@ -28,7 +30,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             database.feedDao().getAllFeeds().observe(getActivity(), feeds -> {
                 if (!serviceStarted.get()) {
                     Intent intent = new Intent(getContext(), FeedsColorsIntentService.class);
-                    intent.putParcelableArrayListExtra(FeedsColorsIntentService.FEEDS, new ArrayList<>(feeds));
+                    intent.putParcelableArrayListExtra(FEEDS, new ArrayList<>(feeds));
 
                     getContext().startService(intent);
                     serviceStarted.set(true);

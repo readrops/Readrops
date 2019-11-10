@@ -6,14 +6,15 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.readrops.app.R
+import com.readrops.app.ReadropsApp
 import com.readrops.app.database.Database
 import com.readrops.app.database.entities.Feed
-import com.readrops.app.ReadropsApp
+import com.readrops.app.utils.ReadropsKeys.FEEDS
 
 class FeedsColorsIntentService : IntentService("FeedsColorsIntentService") {
 
     override fun onHandleIntent(intent: Intent?) {
-        val feeds: List<Feed> = intent!!.getParcelableArrayListExtra(FEEDS)
+        val feeds: List<Feed> = intent!!.getParcelableArrayListExtra(FEEDS)!!
         val database = Database.getInstance(this)
 
         val notificationBuilder = NotificationCompat.Builder(this, ReadropsApp.FEEDS_COLORS_CHANNEL_ID)
@@ -42,7 +43,6 @@ class FeedsColorsIntentService : IntentService("FeedsColorsIntentService") {
 
     companion object {
         private const val NOTIFICATION_ID = 1
-        const val FEEDS = "feeds"
     }
 
 }

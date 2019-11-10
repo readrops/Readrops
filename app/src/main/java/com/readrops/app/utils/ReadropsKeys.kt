@@ -14,4 +14,6 @@ object ReadropsKeys {
 
     const val WEB_URL = "WEB_URL_KEY"
     const val ACTION_BAR_COLOR = "ACTION_BAR_COLOR_KEY"
+
+    const val FEEDS = "FEEDS"
 }

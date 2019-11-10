@@ -42,6 +42,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
+import static com.readrops.app.utils.ReadropsKeys.FEEDS;
+
 public class AddFeedActivity extends AppCompatActivity implements View.OnClickListener {
 
     private AccountArrayAdapter arrayAdapter;
@@ -311,7 +313,7 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
     public void finish() {
         if (!feedsToUpdate.isEmpty()) {
             Intent intent = new Intent();
-            intent.putParcelableArrayListExtra("feedIds", feedsToUpdate);
+            intent.putParcelableArrayListExtra(FEEDS, feedsToUpdate);
 
             setResult(RESULT_OK, intent);
         }

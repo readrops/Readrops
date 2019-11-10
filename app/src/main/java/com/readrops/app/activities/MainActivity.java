@@ -64,6 +64,7 @@ import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
+import static com.readrops.app.utils.ReadropsKeys.FEEDS;
 import static com.readrops.app.utils.ReadropsKeys.IMAGE_URL;
 import static com.readrops.app.utils.ReadropsKeys.ITEM_ID;
 import static com.readrops.app.utils.ReadropsKeys.SETTINGS;
@@ -502,7 +503,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == ADD_FEED_REQUEST && resultCode == RESULT_OK) {
             if (data != null) {
-                ArrayList<Feed> feeds = data.getParcelableArrayListExtra("feedIds");
+                ArrayList<Feed> feeds = data.getParcelableArrayListExtra(FEEDS);
 
                 if (feeds != null && feeds.size() > 0 && viewModel.isAccountLocal()) {
                     refreshLayout.setRefreshing(true);

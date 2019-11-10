@@ -26,6 +26,8 @@ import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
+import static com.readrops.app.utils.ReadropsKeys.FEEDS;
+
 public abstract class ARepository<T> {
 
     protected Application application;
@@ -156,7 +158,7 @@ public abstract class ARepository<T> {
 
     protected void setFeedsColors(List<Feed> feeds) {
         Intent intent = new Intent(application, FeedsColorsIntentService.class);
-        intent.putParcelableArrayListExtra(FeedsColorsIntentService.FEEDS, new ArrayList<>(feeds));
+        intent.putParcelableArrayListExtra(FEEDS, new ArrayList<>(feeds));
 
         application.startService(intent);
     }
