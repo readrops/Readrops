@@ -11,6 +11,9 @@ data class OPML(@field:Attribute(required = true) var version: String?,
                 @field:Element(required = true) var head: Head?,
                 @field:Element(required = true) var body: Body?) {
 
+    /**
+     * empty constructor required by SimpleXML
+     */
     constructor() : this(null, null, null)
 
 }

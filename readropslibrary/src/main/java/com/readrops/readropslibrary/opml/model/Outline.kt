@@ -12,6 +12,9 @@ data class Outline(@field:Attribute(required = false) var title: String?,
                    @field:Attribute(required = false) var htmlUrl: String?,
                    @field:ElementList(inline = true, required = false) var outlines: List<Outline>?) {
 
+    /**
+     * empty constructor required by SimpleXML
+     */
     constructor() : this(
             null,
             null,
@@ -22,5 +25,5 @@ data class Outline(@field:Attribute(required = false) var title: String?,
 
     constructor(title: String) : this(title, null, null, null, null, null)
 
-    constructor(title: String, xmlUrl: String, htmlUrl: String) : this(title, null, null, xmlUrl, htmlUrl, null)
+    constructor(title: String, xmlUrl: String, htmlUrl: String) : this(title, title, "rss", xmlUrl, htmlUrl, null)
 }
