@@ -1,4 +1,4 @@
-package com.readrops.app.utils
+package com.readrops.app.utils.matchers
 
 import android.content.Context
 import com.readrops.app.R
@@ -36,7 +36,6 @@ object OPMLMatcher {
 
         return foldersAndFeeds
     }
-
 
     fun foldersAndFeedsToOPML(foldersAndFeeds: Map<Folder, List<Feed>>, context: Context): OPML {
         val outlines = arrayListOf<Outline>()

@@ -1,4 +1,4 @@
-package com.readrops.app.utils;
+package com.readrops.app.utils.matchers;
 
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.account.Account;

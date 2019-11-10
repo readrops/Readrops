@@ -8,7 +8,7 @@ import androidx.core.content.ContextCompat
 import com.readrops.app.R
 import com.readrops.app.database.Database
 import com.readrops.app.database.entities.Feed
-import com.readrops.app.utils.ReadropsApp
+import com.readrops.app.ReadropsApp
 
 class FeedsColorsIntentService : IntentService("FeedsColorsIntentService") {
 

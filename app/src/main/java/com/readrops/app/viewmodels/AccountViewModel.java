@@ -12,7 +12,7 @@ import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.account.AccountType;
 import com.readrops.app.repositories.ARepository;
-import com.readrops.app.utils.OPMLMatcher;
+import com.readrops.app.utils.matchers.OPMLMatcher;
 import com.readrops.readropslibrary.opml.model.OPML;
 
 import java.util.List;

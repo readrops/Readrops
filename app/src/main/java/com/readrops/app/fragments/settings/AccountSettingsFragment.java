@@ -28,8 +28,8 @@ import com.readrops.app.activities.AddAccountActivity;
 import com.readrops.app.activities.ManageFeedsFoldersActivity;
 import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.account.AccountType;
-import com.readrops.app.utils.OPMLMatcher;
-import com.readrops.app.utils.ReadropsApp;
+import com.readrops.app.utils.matchers.OPMLMatcher;
+import com.readrops.app.ReadropsApp;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.AccountViewModel;
 import com.readrops.readropslibrary.opml.OPMLParser;
@@ -192,7 +192,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
     }
 
     private void parseOPMLFile(Uri uri, MaterialDialog dialog) {
-        OPMLParser.parse(uri, getContext())
+        OPMLParser.read(uri, getContext())
                 .flatMapCompletable(opml -> viewModel.insertOPMLFoldersAndFeeds(opml))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

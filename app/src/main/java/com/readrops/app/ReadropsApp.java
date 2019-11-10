@@ -1,4 +1,4 @@
-package com.readrops.app.utils;
+package com.readrops.app;
 
 import android.app.Application;
 import android.app.NotificationChannel;
@@ -6,8 +6,6 @@ import android.app.NotificationManager;
 import android.os.Build;
 
 import com.facebook.stetho.Stetho;
-import com.readrops.app.BuildConfig;
-import com.readrops.app.R;
 
 import io.reactivex.plugins.RxJavaPlugins;
 

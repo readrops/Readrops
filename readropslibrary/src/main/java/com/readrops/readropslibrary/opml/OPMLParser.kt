@@ -14,7 +14,7 @@ class OPMLParser {
 
     companion object {
         @JvmStatic
-        fun parse(uri: Uri, context: Context): Single<OPML> {
+        fun read(uri: Uri, context: Context): Single<OPML> {
             return Single.create { emitter ->
                 val fileString = LibUtils.fileToString(uri, context)
                 val serializer: Serializer = Persister()
