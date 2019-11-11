@@ -65,6 +65,7 @@ import io.reactivex.schedulers.Schedulers;
 
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
 import static com.readrops.app.utils.ReadropsKeys.FEEDS;
+import static com.readrops.app.utils.ReadropsKeys.FROM_MAIN_ACTIVITY;
 import static com.readrops.app.utils.ReadropsKeys.IMAGE_URL;
 import static com.readrops.app.utils.ReadropsKeys.ITEM_ID;
 import static com.readrops.app.utils.ReadropsKeys.SETTINGS;
@@ -160,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 switch (id) {
                     case DrawerManager.ADD_ACCOUNT_ID:
                         Intent intent = new Intent(this, AccountTypeListActivity.class);
-                        intent.putExtra("fromMainActivity", true);
+                        intent.putExtra(FROM_MAIN_ACTIVITY, true);
                         startActivityForResult(intent, ADD_ACCOUNT_REQUEST);
                         break;
                     case DrawerManager.ACCOUNT_SETTINGS_ID:

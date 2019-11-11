@@ -35,6 +35,8 @@ import io.reactivex.schedulers.Schedulers;
 
 import static com.readrops.app.fragments.settings.AccountSettingsFragment.OPEN_OPML_FILE_REQUEST;
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
+import static com.readrops.app.utils.ReadropsKeys.ACCOUNT_TYPE;
+import static com.readrops.app.utils.ReadropsKeys.FROM_MAIN_ACTIVITY;
 
 public class AccountTypeListActivity extends AppCompatActivity {
 
@@ -58,7 +60,7 @@ public class AccountTypeListActivity extends AppCompatActivity {
         binding.accountTypeRecyclerview.setLayoutManager(new LinearLayoutManager(this));
         binding.accountTypeRecyclerview.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
 
-        fromMainActivity = getIntent().getBooleanExtra("fromMainActivity", false);
+        fromMainActivity = getIntent().getBooleanExtra(FROM_MAIN_ACTIVITY, false);
 
         if (fromMainActivity)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -70,7 +72,7 @@ public class AccountTypeListActivity extends AppCompatActivity {
                 if (fromMainActivity)
                     intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
 
-                intent.putExtra("accountType", (Parcelable) accountType);
+                intent.putExtra(ACCOUNT_TYPE, (Parcelable) accountType);
 
                 startActivity(intent);
                 finish();

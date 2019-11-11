@@ -27,6 +27,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
+import static com.readrops.app.utils.ReadropsKeys.ACCOUNT_TYPE;
 import static com.readrops.app.utils.ReadropsKeys.EDIT_ACCOUNT;
 
 public class AddAccountActivity extends AppCompatActivity {
@@ -46,7 +47,7 @@ public class AddAccountActivity extends AppCompatActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_account);
         viewModel = ViewModelProviders.of(this).get(AccountViewModel.class);
 
-        accountType = getIntent().getParcelableExtra("accountType");
+        accountType = getIntent().getParcelableExtra(ACCOUNT_TYPE);
 
         int flag = getIntent().getFlags();
         forwardResult = flag == Intent.FLAG_ACTIVITY_FORWARD_RESULT;
