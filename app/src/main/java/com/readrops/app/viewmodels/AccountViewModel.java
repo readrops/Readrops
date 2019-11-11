@@ -1,6 +1,7 @@
 package com.readrops.app.viewmodels;
 
 import android.app.Application;
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -13,7 +14,7 @@ import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.account.AccountType;
 import com.readrops.app.repositories.ARepository;
 import com.readrops.app.utils.matchers.OPMLMatcher;
-import com.readrops.readropslibrary.opml.model.OPML;
+import com.readrops.readropslibrary.opml.OPMLParser;
 
 import java.util.List;
 import java.util.Map;
@@ -66,13 +67,16 @@ public class AccountViewModel extends AndroidViewModel {
         return database.accountDao().getAccountCount();
     }
 
-    public Completable insertOPMLFoldersAndFeeds(OPML opml) {
-        Map<Folder, List<Feed>> foldersAndFeeds = OPMLMatcher.INSTANCE.opmltoFoldersAndFeeds(opml);
-
-        return repository.insertOPMLFoldersAndFeeds(foldersAndFeeds);
-    }
-
     public Single<Map<Folder, List<Feed>>> getFoldersWithFeeds() {
         return repository.getFoldersWithFeeds();
+    }
+
+    public Completable parseOPMLFile(Uri uri) {
+        return OPMLParser.read(uri, getApplication())
+                .flatMapCompletable(opml -> {
+                    Map<Folder, List<Feed>> foldersAndFeeds = OPMLMatcher.INSTANCE.opmltoFoldersAndFeeds(opml);
+
+                    return repository.insertOPMLFoldersAndFeeds(foldersAndFeeds);
+                });
     }
 }

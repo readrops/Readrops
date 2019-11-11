@@ -1,35 +1,44 @@
 package com.readrops.app.activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.LinearLayout;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.readrops.app.R;
+import com.readrops.app.adapters.AccountTypeListAdapter;
 import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.account.AccountType;
 import com.readrops.app.databinding.ActivityAccountTypeListBinding;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.AccountViewModel;
-import com.readrops.app.adapters.AccountTypeListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
+import static com.readrops.app.fragments.settings.AccountSettingsFragment.OPEN_OPML_FILE_REQUEST;
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
 
 public class AccountTypeListActivity extends AppCompatActivity {
+
+    private static final String TAG = AccountTypeListActivity.class.getSimpleName();
 
     private ActivityAccountTypeListBinding binding;
     private AccountTypeListAdapter adapter;
@@ -55,7 +64,7 @@ public class AccountTypeListActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         adapter = new AccountTypeListAdapter(accountType -> {
-            if (!(accountType == AccountType.LOCAL)) {
+            if (accountType != AccountType.LOCAL) {
                 Intent intent = new Intent(getApplicationContext(), AddAccountActivity.class);
 
                 if (fromMainActivity)
@@ -65,8 +74,27 @@ public class AccountTypeListActivity extends AppCompatActivity {
 
                 startActivity(intent);
                 finish();
-            } else
-                createNewLocalAccount(accountType);
+            } else {
+                Account account = new Account(null, getString(AccountType.LOCAL.getName()), AccountType.LOCAL);
+                account.setCurrentAccount(true);
+
+                viewModel.insert(account)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new DisposableSingleObserver<Long>() {
+                            @Override
+                            public void onSuccess(Long id) {
+                                account.setId(id.intValue());
+                                goToNextActivity(account);
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.e(TAG, e.getMessage());
+                                Utils.showSnackbar(binding.accountTypeListRoot, e.getMessage());
+                            }
+                        });
+            }
 
         });
 
@@ -84,39 +112,6 @@ public class AccountTypeListActivity extends AppCompatActivity {
         return accountTypes;
     }
 
-    private void createNewLocalAccount(AccountType accountType) {
-        Account account = new Account(null, getString(accountType.getName()), accountType);
-        account.setCurrentAccount(true);
-
-        viewModel.insert(account)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DisposableSingleObserver<Long>() {
-                    @Override
-                    public void onSuccess(Long id) {
-                        account.setId(id.intValue());
-
-                        if (fromMainActivity) {
-                            Intent intent = new Intent();
-                            intent.putExtra(ACCOUNT, account);
-                            setResult(RESULT_OK, intent);
-                        } else {
-                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                            intent.putExtra(ACCOUNT, account);
-
-                            startActivity(intent);
-                        }
-
-                        finish();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Utils.showSnackbar(binding.accountTypeListRoot, e.getMessage());
-                    }
-                });
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -126,5 +121,76 @@ public class AccountTypeListActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void openOPMLFile(View view) {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("application/*");
+
+        startActivityForResult(intent, OPEN_OPML_FILE_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == OPEN_OPML_FILE_REQUEST && resultCode == RESULT_OK && data != null) {
+            Uri uri = data.getData();
+
+            MaterialDialog dialog = new MaterialDialog.Builder(this)
+                    .title(R.string.opml_processing)
+                    .content(R.string.operation_takes_time)
+                    .progress(true, 100)
+                    .cancelable(false)
+                    .show();
+
+            parseOPMLFile(uri, dialog);
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void parseOPMLFile(Uri uri, MaterialDialog dialog) {
+        Account account = new Account(null, getString(AccountType.LOCAL.getName()), AccountType.LOCAL);
+        account.setCurrentAccount(true);
+
+        viewModel.insert(account)
+                .flatMapCompletable(id -> {
+                    account.setId(id.intValue());
+                    viewModel.setAccount(account);
+
+                    return viewModel.parseOPMLFile(uri);
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        dialog.dismiss();
+                        goToNextActivity(account);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, e.getMessage());
+
+                        dialog.dismiss();
+                        Utils.showSnackbar(binding.accountTypeListRoot, e.getMessage());
+                    }
+                });
+    }
+
+    private void goToNextActivity(Account account) {
+        if (fromMainActivity) {
+            Intent intent = new Intent();
+            intent.putExtra(ACCOUNT, account);
+            setResult(RESULT_OK, intent);
+        } else {
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            intent.putExtra(ACCOUNT, account);
+
+            startActivity(intent);
+        }
+
+        finish();
     }
 }

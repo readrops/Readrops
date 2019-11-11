@@ -24,13 +24,13 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.readrops.app.R;
+import com.readrops.app.ReadropsApp;
 import com.readrops.app.activities.AddAccountActivity;
 import com.readrops.app.activities.ManageFeedsFoldersActivity;
 import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.account.AccountType;
-import com.readrops.app.utils.matchers.OPMLMatcher;
-import com.readrops.app.ReadropsApp;
 import com.readrops.app.utils.Utils;
+import com.readrops.app.utils.matchers.OPMLMatcher;
 import com.readrops.app.viewmodels.AccountViewModel;
 import com.readrops.readropslibrary.opml.OPMLParser;
 import com.readrops.readropslibrary.opml.model.OPML;
@@ -55,7 +55,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
 
     private static final String TAG = AccountSettingsFragment.class.getSimpleName();
 
-    private static final int OPEN_OPML_FILE_REQUEST = 1;
+    public static final int OPEN_OPML_FILE_REQUEST = 1;
     private static final int WRITE_EXTERNAL_STORAGE_REQUEST = 1;
 
     private Account account;
@@ -192,8 +192,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
     }
 
     private void parseOPMLFile(Uri uri, MaterialDialog dialog) {
-        OPMLParser.read(uri, getContext())
-                .flatMapCompletable(opml -> viewModel.insertOPMLFoldersAndFeeds(opml))
+        viewModel.parseOPMLFile(uri)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new DisposableCompletableObserver() {

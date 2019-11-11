@@ -102,5 +102,6 @@
     <string name="external_storage_opml_export">L\'export des soubscriptions nécessite l\'accès au stockage</string>
     <string name="try_again">Réessayer</string>
     <string name="permissions">Permissions</string>
+    <string name="or">Ou</string>
 
 </resources>
