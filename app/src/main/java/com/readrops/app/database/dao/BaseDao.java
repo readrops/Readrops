@@ -12,7 +12,7 @@ import io.reactivex.Single;
 public interface BaseDao<T> {
 
     @Insert
-    Single<Long> insert(T entity); // can't turn return type to Single<Long> while some repositories can't use rxjava properly
+    Single<Long> insert(T entity);
 
     // only here for compatibility with LocalFeedRepository
     // which hasn't been written with rxjava usage in mind
