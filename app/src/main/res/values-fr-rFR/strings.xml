@@ -103,5 +103,8 @@
     <string name="try_again">Réessayer</string>
     <string name="permissions">Permissions</string>
     <string name="or">Ou</string>
+    <string name="image_options">Options de l\'image</string>
+    <string name="download_image">Télécharger l\'image</string>
+    <string name="share_image">Partager l\'image</string>
 
 </resources>

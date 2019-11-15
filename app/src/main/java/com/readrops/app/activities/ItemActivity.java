@@ -3,20 +3,31 @@ package com.readrops.app.activities;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ShareCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -36,6 +47,8 @@ import static com.readrops.app.utils.ReadropsKeys.ITEM_ID;
 import static com.readrops.app.utils.ReadropsKeys.WEB_URL;
 
 public class ItemActivity extends AppCompatActivity {
+
+    private static final String TAG = ItemActivity.class.getSimpleName();
 
     private ItemViewModel viewModel;
     private TextView date;
@@ -83,6 +96,8 @@ public class ItemActivity extends AppCompatActivity {
         readTime = findViewById(R.id.activity_item_readtime);
         readTimeLayout = findViewById(R.id.activity_item_readtime_layout);
         dateLayout = findViewById(R.id.activity_item_date_layout);
+
+        registerForContextMenu(webView);
 
         if (imageUrl == null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -245,5 +260,59 @@ public class ItemActivity extends AppCompatActivity {
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, itemWithFeed.getItem().getTitle() + " - " + itemWithFeed.getItem().getLink());
         startActivity(Intent.createChooser(shareIntent, getString(R.string.share_article)));
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        WebView.HitTestResult hitTestResult = webView.getHitTestResult();
+
+        if (hitTestResult.getType() == WebView.HitTestResult.IMAGE_TYPE ||
+                hitTestResult.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {
+            new MaterialDialog.Builder(this)
+                    .title(R.string.image_options)
+                    .items(R.array.image_options)
+                    .itemsCallback((dialog, itemView, position, text) -> {
+                        if (position == 0)
+                            shareImage(hitTestResult.getExtra());
+                        else
+                            downloadImage(hitTestResult.getExtra());
+                    })
+                    .show();
+        }
+    }
+
+    private void downloadImage(String url) {
+
+    }
+
+    private void shareImage(String url) {
+        GlideApp.with(this)
+                .asBitmap()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .load(url)
+                .into(new CustomTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                        try {
+                            Uri uri = viewModel.saveImageInCache(resource);
+                            Intent intent = ShareCompat.IntentBuilder.from(ItemActivity.this)
+                                    .setType("image/png")
+                                    .setStream(uri)
+                                    .setChooserTitle(R.string.share_image)
+                                    .createChooserIntent()
+                                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                            startActivity(intent);
+                        } catch (Exception e) {
+                            Log.e(TAG, e.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+                        // not useful
+                    }
+                });
+
     }
 }

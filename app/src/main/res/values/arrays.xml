@@ -10,6 +10,11 @@
         <item>@string/opml_export</item>
     </string-array>
 
+    <string-array name="image_options">
+        <item>@string/share_image</item>
+        <item>@string/download_image</item>
+    </string-array>
+
     <string-array name="items_per_feed_numbers_values">
         <item>20</item>
         <item>50</item>

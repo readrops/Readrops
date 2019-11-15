@@ -112,4 +112,7 @@
     <string name="try_again">Try again</string>
     <string name="permissions">Permissions</string>
     <string name="or">Or</string>
+    <string name="image_options">Image Options</string>
+    <string name="download_image">Download image</string>
+    <string name="share_image">Share image</string>
 </resources>
