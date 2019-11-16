@@ -1,5 +1,6 @@
 package com.readrops.app.activities;
 
+import android.app.DownloadManager;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
@@ -7,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -282,7 +284,16 @@ public class ItemActivity extends AppCompatActivity {
     }
 
     private void downloadImage(String url) {
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url))
+                .setTitle(getString(R.string.download_image))
+                .setMimeType("image/png")
+                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "image.png");
 
+        request.allowScanningByMediaScanner();
+
+        DownloadManager downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+        downloadManager.enqueue(request);
     }
 
     private void shareImage(String url) {
