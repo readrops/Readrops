@@ -24,7 +24,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ShareCompat;
-import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -131,7 +131,7 @@ public class ItemActivity extends AppCompatActivity {
             }
         }));
 
-        viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(ItemViewModel.class);
+        viewModel = ViewModelProviders.of(this).get(ItemViewModel.class);
         viewModel.getItemById(itemId).observe(this, this::bindUI);
         actionButton.setOnClickListener(v -> openInNavigator());
     }
@@ -208,11 +208,7 @@ public class ItemActivity extends AppCompatActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item = menu.findItem(R.id.item_open);
-
-        if (appBarCollapsed)
-            item.setVisible(true);
-        else
-            item.setVisible(false);
+        item.setVisible(appBarCollapsed);
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -234,8 +230,9 @@ public class ItemActivity extends AppCompatActivity {
                 else
                     openInWebView();
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
