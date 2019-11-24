@@ -27,9 +27,8 @@ android {
     }
     buildTypes {
         release {
-            // proguard makes some functionalities fail so It's disabled until I find the problem source
-            minifyEnabled false
-            shrinkResources false
+            minifyEnabled true
+            shrinkResources true
 
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
