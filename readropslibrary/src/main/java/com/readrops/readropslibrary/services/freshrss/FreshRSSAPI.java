@@ -95,9 +95,9 @@ public class FreshRSSAPI extends API<FreshRSSService> {
 
                             switch (syncType) {
                                 case INITIAL_SYNC:
-                                    return getItems(GOOGLE_READ, 10000, null);
+                                    return getItems(GOOGLE_READ, MAX_ITEMS, null);
                                 case CLASSIC_SYNC:
-                                    return getItems(GOOGLE_READ, 10000, syncData.getLastModified());
+                                    return getItems(GOOGLE_READ, MAX_ITEMS, syncData.getLastModified());
                             }
 
                             return Single.error(new Exception("Unknown sync type"));

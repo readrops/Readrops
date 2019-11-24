@@ -78,7 +78,7 @@ public class NextNewsAPI extends API<NextNewsService> {
     private void initialSync(NextNewsSyncResult syncResult) throws IOException {
         getFeedsAndFolders(syncResult);
 
-        Response<NextNewsItems> itemsResponse = api.getItems(3, false, -1).execute();
+        Response<NextNewsItems> itemsResponse = api.getItems(3, false, MAX_ITEMS).execute();
         NextNewsItems itemList = itemsResponse.body();
 
         if (!itemsResponse.isSuccessful())
