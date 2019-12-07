@@ -99,5 +99,5 @@ dependencies {
     implementation 'com.mikepenz:materialdrawer:6.1.2'
     implementation "com.mikepenz:aboutlibraries:6.2.3"
 
-    debugImplementation 'com.facebook.stetho:stetho:1.5.1'
+    implementation 'com.facebook.stetho:stetho:1.5.1'
 }
