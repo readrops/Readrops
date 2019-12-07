@@ -35,7 +35,7 @@ dependencies {
     implementation "androidx.core:core-ktx:1.1.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
@@ -49,7 +49,7 @@ dependencies {
 
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
     implementation 'org.jsoup:jsoup:1.12.1'
-    implementation 'com.facebook.stetho:stetho-okhttp3:1.5.1'
+    debugImplementation 'com.facebook.stetho:stetho-okhttp3:1.5.1'
 
 
 }
