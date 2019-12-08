@@ -51,7 +51,8 @@ public final class SharedPreferencesManager {
     public enum SharedPrefKey {
         SHOW_READ_ARTICLES("show_read_articles", false),
         ITEMS_TO_PARSE_MAX_NB("items_to_parse_max_nb", "20"),
-        OPEN_ITEMS_IN("open_items_in", "0");
+        OPEN_ITEMS_IN("open_items_in", "0"),
+        DARK_THEME("dark_theme", "false");
 
         @NonNull
         private String key;
@@ -59,7 +60,7 @@ public final class SharedPreferencesManager {
         private Object defaultValue;
 
         public boolean getBooleanDefaultValue() {
-            return (boolean) defaultValue;
+            return Boolean.valueOf(defaultValue.toString());
         }
 
         public String getStringDefaultValue() {
@@ -67,7 +68,7 @@ public final class SharedPreferencesManager {
         }
 
         public int getIntDefaultValue() {
-            return (int) defaultValue;
+            return Integer.parseInt(defaultValue.toString());
         }
 
         SharedPrefKey(@NonNull String key, @NonNull Object defaultValue) {

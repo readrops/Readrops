@@ -115,4 +115,7 @@
     <string name="image_options">Image Options</string>
     <string name="download_image">Download image</string>
     <string name="share_image">Share image</string>
+    <string name="theme">Theme</string>
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
 </resources>

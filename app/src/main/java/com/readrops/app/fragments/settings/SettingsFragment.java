@@ -3,6 +3,7 @@ package com.readrops.app.fragments.settings;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -21,9 +22,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.preferences);
 
-        AtomicBoolean serviceStarted = new AtomicBoolean(false);
         Preference feedsColorsPreference = findPreference("reload_feeds_colors");
+        Preference themePreference = findPreference("dark_theme");
 
+        AtomicBoolean serviceStarted = new AtomicBoolean(false);
         feedsColorsPreference.setOnPreferenceClickListener(preference -> {
             Database database = Database.getInstance(getContext());
 
@@ -39,5 +41,18 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
             return true;
         });
+
+        themePreference.setOnPreferenceChangeListener((preference, newValue) -> {
+            boolean darkTheme = Boolean.parseBoolean(newValue.toString());
+
+            if (darkTheme) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            }
+
+            return true;
+        });
     }
+
 }
