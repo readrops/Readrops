@@ -16,6 +16,7 @@
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/manage_feeds_folders_toolbar"
+                style="@style/ToolbarTheme"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_scrollFlags="scroll|enterAlways" />
@@ -26,7 +27,7 @@
                 android:layout_height="match_parent"
                 app:tabIndicator="@drawable/tab_indicator"
                 app:tabIndicatorColor="@android:color/white"
-                app:tabIndicatorHeight="4dp"/>
+                app:tabIndicatorHeight="4dp" />
 
         </com.google.android.material.appbar.AppBarLayout>
 
