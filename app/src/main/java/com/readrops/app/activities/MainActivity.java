@@ -670,6 +670,12 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
     private void startAboutActivity() {
+        Libs.ActivityStyle activityStyle;
+        if (Boolean.valueOf(SharedPreferencesManager.readString(this, SharedPreferencesManager.SharedPrefKey.DARK_THEME)))
+            activityStyle = Libs.ActivityStyle.DARK;
+        else
+            activityStyle = Libs.ActivityStyle.LIGHT_DARK_TOOLBAR;
+
         new LibsBuilder()
                 .withAboutIconShown(true)
                 .withAboutVersionShown(true)
@@ -678,7 +684,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 .withLicenseShown(true)
                 .withLicenseDialog(false)
                 .withActivityTitle(getString(R.string.about))
-                .withActivityStyle(Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
+                .withActivityStyle(activityStyle)
                 .withFields(R.string.class.getFields())
                 .start(this);
     }
