@@ -2,11 +2,13 @@ package com.readrops.app.utils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.util.Base64;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
 import com.readrops.app.R;
@@ -22,9 +24,15 @@ public class ReadropsWebView extends WebView {
 
     private ItemWithFeed itemWithFeed;
 
+    @ColorInt
+    private int textColor;
+    @ColorInt
+    private int backgroundColor;
+
     public ReadropsWebView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
+        getColors(context, attrs);
         init();
     }
 
@@ -40,6 +48,14 @@ public class ReadropsWebView extends WebView {
         loadData(base64Content, "text/html; charset=utf-8", "base64");
     }
 
+    private void getColors(Context context, AttributeSet attrs) {
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ReadropsWebView);
+        textColor = typedArray.getColor(R.styleable.ReadropsWebView_textColor, 0);
+        backgroundColor = typedArray.getColor(R.styleable.ReadropsWebView_backgroundColor, 0);
+
+        typedArray.recycle();
+    }
+
     @SuppressLint("SetJavaScriptEnabled")
     private void init() {
         if (!isInEditMode()) {
@@ -51,7 +67,7 @@ public class ReadropsWebView extends WebView {
         }
 
         setVerticalScrollBarEnabled(false);
-        setBackgroundColor(getResources().getColor(R.color.colorBackground));
+        setBackgroundColor(backgroundColor);
     }
 
     @Nullable
@@ -65,6 +81,8 @@ public class ReadropsWebView extends WebView {
             return getContext().getString(R.string.webview_html_template,
                     Utils.getCssColor(itemWithFeed.getBgColor() != 0 ? itemWithFeed.getBgColor() :
                             color),
+                    Utils.getCssColor(this.textColor),
+                    Utils.getCssColor(backgroundColor),
                     document.body().html());
 
         } else

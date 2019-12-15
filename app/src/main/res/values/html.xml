@@ -25,6 +25,8 @@
 
         body {
             margin: 0px;
+            color: %2$s;
+            background-color: %3$s;
         }
 
         h1, p, div {
@@ -44,7 +46,7 @@
     </head>
 
     <body>
-      %2$s
+      %4$s
     </body>
 </html>]]></string>
 </resources>
