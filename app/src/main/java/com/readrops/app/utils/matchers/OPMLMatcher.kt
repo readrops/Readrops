@@ -20,12 +20,10 @@ object OPMLMatcher {
 
             val feeds = arrayListOf<Feed>()
             outline.outlines?.forEach { feedOutline ->
-                val feed = Feed().let {
-                    it.name = feedOutline.title
-                    it.url = feedOutline.xmlUrl
-                    it.siteUrl = feedOutline.htmlUrl
-
-                    it
+                val feed = Feed().apply {
+                    name = feedOutline.title
+                    url = feedOutline.xmlUrl
+                    siteUrl = feedOutline.htmlUrl
                 }
 
                 feeds.add(feed)
