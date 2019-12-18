@@ -7,6 +7,8 @@
 
         <item name="actionModeBackground">@color/colorPrimary</item>
         <item name="actionBarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+
+        <item name="bottomSheetDialogTheme">@style/Theme.Design.BottomSheetDialog</item>
     </style>
     
 </resources>
