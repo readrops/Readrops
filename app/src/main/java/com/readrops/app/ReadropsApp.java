@@ -29,8 +29,11 @@ public class ReadropsApp extends Application {
         }
 
         createNotificationChannels();
+
         if (Boolean.valueOf(SharedPreferencesManager.readString(this, SharedPreferencesManager.SharedPrefKey.DARK_THEME)))
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        else
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
     }
 
     private void createNotificationChannels() {
