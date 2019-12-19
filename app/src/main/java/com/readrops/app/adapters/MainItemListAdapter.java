@@ -2,7 +2,6 @@ package com.readrops.app.adapters;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -352,16 +351,17 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
 
         private void setSelected(boolean selected) {
             Context context = itemView.getContext();
+            TypedValue outValue = new TypedValue();
 
             if (selected) {
-                itemView.setBackground(new ColorDrawable(ContextCompat.getColor(context, R.color.selected_background)));
+                context.getTheme().resolveAttribute(
+                        android.R.attr.colorControlHighlight, outValue, true);
             } else {
-                TypedValue outValue = new TypedValue();
                 context.getTheme().resolveAttribute(
                         android.R.attr.selectableItemBackground, outValue, true);
-
-                itemView.setBackgroundResource(outValue.resourceId);
             }
+
+            itemView.setBackgroundResource(outValue.resourceId);
         }
 
         public ImageView getItemImage() {
