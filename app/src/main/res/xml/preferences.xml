@@ -16,14 +16,14 @@
             android:title="@string/reload_feeds_colors" />
 
         <ListPreference
-            android:defaultValue="1"
+            android:defaultValue="0"
             android:entries="@array/open_items_in"
             android:entryValues="@array/open_item_in_values"
             android:key="open_items_in"
             android:title="@string/open_items_in" />
 
         <ListPreference
-            android:defaultValue="1"
+            android:defaultValue="false"
             android:entries="@array/themes"
             android:entryValues="@array/themes_values"
             android:key="dark_theme"

@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.os.Build;
 
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.preference.PreferenceManager;
 
 import com.facebook.stetho.Stetho;
 import com.readrops.app.utils.SharedPreferencesManager;
@@ -29,6 +30,7 @@ public class ReadropsApp extends Application {
         }
 
         createNotificationChannels();
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         if (Boolean.valueOf(SharedPreferencesManager.readString(this, SharedPreferencesManager.SharedPrefKey.DARK_THEME)))
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
