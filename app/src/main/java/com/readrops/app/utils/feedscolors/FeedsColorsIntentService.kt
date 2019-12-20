@@ -4,7 +4,6 @@ import android.app.IntentService
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
 import com.readrops.app.R
 import com.readrops.app.ReadropsApp
 import com.readrops.app.database.Database
@@ -20,8 +19,7 @@ class FeedsColorsIntentService : IntentService("FeedsColorsIntentService") {
         val notificationBuilder = NotificationCompat.Builder(this, ReadropsApp.FEEDS_COLORS_CHANNEL_ID)
                 .setContentTitle(getString(R.string.get_feeds_colors))
                 .setProgress(feeds.size, 0, false)
-                .setSmallIcon(R.drawable.ic_readrops)
-                .setColor(ContextCompat.getColor(this, R.color.colorPrimary))
+                .setSmallIcon(R.drawable.ic_notif)
                 .setOnlyAlertOnce(true)
 
         startForeground(NOTIFICATION_ID, notificationBuilder.build())
