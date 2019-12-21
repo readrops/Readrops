@@ -1,0 +1,5 @@
+- OPML import/export for local account
+- Dark theme
+- Share or download item image
+- Open item in webview
+- Minor bug fixes and improvements  
