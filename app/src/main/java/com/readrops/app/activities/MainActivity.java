@@ -307,8 +307,11 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     updateDrawerFeeds();
                 } else {
                     adapter.toggleSelection(position);
+                    int selectionSize = adapter.getSelection().size();
 
-                    if (adapter.getSelection().isEmpty())
+                    if (selectionSize > 0)
+                        actionMode.setTitle(String.valueOf(selectionSize));
+                    else
                         actionMode.finish();
                 }
             }
@@ -320,7 +323,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
                 selectedItemWithFeed = itemWithFeed;
                 adapter.toggleSelection(position);
+                
                 actionMode = startActionMode(MainActivity.this);
+                actionMode.setTitle(String.valueOf(adapter.getSelection().size()));
             }
         });
 
