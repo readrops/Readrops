@@ -46,6 +46,7 @@ public class ReadropsApp extends Application {
 
             NotificationChannel opmlExportChannel = new NotificationChannel(OPML_EXPORT_CHANNEL_ID,
                     getString(R.string.opml_export), NotificationManager.IMPORTANCE_DEFAULT);
+            opmlExportChannel.setDescription(getString(R.string.opml_export_description));
 
             NotificationManager manager = getSystemService(NotificationManager.class);
 
