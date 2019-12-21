@@ -35,7 +35,7 @@ public interface FreshRSSService {
     Single<FreshRSSFeeds> getFeeds();
 
     @GET("reader/api/0/stream/contents/user/-/state/com.google/reading-list")
-    Single<FreshRSSItems> getItems(@Query("xt") String excludeTarget, @Query("n") Integer max, @Query("ot") Long lastModified);
+    Single<FreshRSSItems> getItems(@Query("xt") String excludeTarget, @Query("n") int max, @Query("ot") Long lastModified);
 
     @GET("reader/api/0/tag/list?output=json")
     Single<FreshRSSFolders> getFolders();

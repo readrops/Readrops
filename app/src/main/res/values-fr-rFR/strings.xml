@@ -20,7 +20,7 @@
     <string name="read_time">%1$s min</string>
     <string name="read_time_lower_than_1">Moins d\'une minute</string>
     <string name="read_time_one_minute">1 min</string>
-    <string name="share">Partager l\'article</string>
+    <string name="share_article">Partager l\'article</string>
     <string name="open_url">Ouvrir le lien</string>
     <string name="add_folder">Ajouter un dossier</string>
     <string name="feed_folder">Dossier du flux</string>
@@ -84,5 +84,31 @@
     <string name="no_item">Aucun item</string>
     <string name="no_feed_found">Aucun flux trouvé</string>
     <string name="feed_insertion_error">Erreur pour le flux %1$s</string>
+    <string name="get_feeds_colors">Récupération des couleurs des flux</string>
+    <string name="feeds_colors">Couleurs des flux</string>
+    <string name="global">Général</string>
+    <string name="reload_feeds_colors">Recharger les couleurs des flux</string>
+    <string name="open_items_in">Ouvrir les articles avec</string>
+    <string name="webview">Vue web</string>
+    <string name="external_navigator">Navigateur externe</string>
+    <string name="actualize">Actualiser</string>
+    <string name="share_url">Partager le lien</string>
+    <string name="opml_import_export">Import/Export OPML</string>
+    <string name="opml_processing">Traitement du fichier OPML</string>
+    <string name="operation_takes_time">Cette opération peut prendre un certain temps car il faut interroger chaque flux.</string>
+    <string name="processing_file_failed">Une erreur s\'est produite lors du traitement du fichier</string>
+    <string name="opml_import">Import OPML</string>
+    <string name="opml_export">Export OPML</string>
+    <string name="external_storage_opml_export">L\'export des soubscriptions nécessite l\'accès au stockage</string>
+    <string name="try_again">Réessayer</string>
+    <string name="permissions">Permissions</string>
+    <string name="or">Ou</string>
+    <string name="image_options">Options de l\'image</string>
+    <string name="download_image">Télécharger l\'image</string>
+    <string name="share_image">Partager l\'image</string>
+    <string name="theme">Thème</string>
+    <string name="light">Clair</string>
+    <string name="dark">Sombre</string>
+    <string name="opml_export_description">Export des flux et dossiers</string>
 
 </resources>

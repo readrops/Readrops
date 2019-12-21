@@ -9,9 +9,11 @@ import androidx.annotation.NonNull;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.items.AbstractItem;
 import com.readrops.app.R;
+import com.readrops.app.database.entities.Feed;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ParsingResult extends AbstractItem<ParsingResult, ParsingResult.ParsingResultViewHolder> {
@@ -21,6 +23,8 @@ public class ParsingResult extends AbstractItem<ParsingResult, ParsingResult.Par
     private String label;
 
     private boolean checked;
+
+    private Integer folderId;
 
     public ParsingResult(String url, String label) {
         this.url = url;
@@ -39,6 +43,18 @@ public class ParsingResult extends AbstractItem<ParsingResult, ParsingResult.Par
         return label;
     }
 
+    public static List<ParsingResult> toParsingResults(List<Feed> feeds) {
+        List<ParsingResult> parsingResults = new ArrayList<>();
+
+        for (Feed feed : feeds) {
+            ParsingResult parsingResult = new ParsingResult(feed.getUrl(), null);
+            parsingResult.setFolderId(feed.getFolderId());
+            parsingResults.add(parsingResult);
+        }
+
+        return parsingResults;
+    }
+
     public void setLabel(String label) {
         this.label = label;
     }
@@ -49,6 +65,14 @@ public class ParsingResult extends AbstractItem<ParsingResult, ParsingResult.Par
 
     public boolean isChecked() {
         return checked;
+    }
+
+    public Integer getFolderId() {
+        return folderId;
+    }
+
+    public void setFolderId(Integer folderId) {
+        this.folderId = folderId;
     }
 
     @Override
@@ -116,7 +140,18 @@ public class ParsingResult extends AbstractItem<ParsingResult, ParsingResult.Par
         public void unbindView(@NotNull ParsingResult item) {
             // not useful
         }
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null)
+            return false;
+        else if (!(o instanceof ParsingResult))
+            return false;
+        else {
+            ParsingResult parsingResult = (ParsingResult) o;
 
+            return parsingResult.getUrl().equals(this.getUrl());
+        }
     }
 }

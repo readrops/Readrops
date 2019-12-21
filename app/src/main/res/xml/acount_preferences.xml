@@ -12,6 +12,11 @@
         android:title="@string/credentials" />
 
     <PreferenceScreen
+        android:icon="@drawable/ic_import_export"
+        android:key="opml_import_export"
+        android:title="@string/opml_import_export" />
+
+    <PreferenceScreen
         android:icon="@drawable/ic_delete_grey"
         android:key="delete_account_key"
         android:title="@string/delete_account" />

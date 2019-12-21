@@ -6,6 +6,7 @@ import androidx.paging.DataSource;
 import androidx.room.Dao;
 import androidx.room.Query;
 import androidx.room.RawQuery;
+import androidx.room.RoomWarnings;
 import androidx.sqlite.db.SupportSQLiteQuery;
 
 import com.readrops.app.database.entities.Feed;
@@ -51,6 +52,7 @@ public abstract class ItemDao implements BaseDao<Item> {
     @Query("Select count(*) From Item Where feed_id = :feedId And read = 0")
     public abstract int getUnreadCount(int feedId);
 
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Query("Select title, Item.description, content, link, pub_date, image_link, author, read, text_color, " +
             "background_color, read_time, Feed.name, Feed.id as feedId, siteUrl, Folder.id as folder_id, " +
             "Folder.name as folder_name from Item Inner Join Feed On Item.feed_id = Feed.id Left Join Folder on Folder.id = Feed.folder_id Where Item.id = :id")
@@ -64,4 +66,7 @@ public abstract class ItemDao implements BaseDao<Item> {
 
     @Query("Update Item set read_changed = 0 Where feed_id in (Select id From Feed Where account_id = :accountId)")
     public abstract void resetReadChanges(int accountId);
+
+    @Query("Update Item set read = :read Where remoteId = :remoteId")
+    public abstract void setReadState(String remoteId, boolean read);
 }

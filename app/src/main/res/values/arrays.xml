@@ -5,6 +5,16 @@
         <item>@string/filter_oldest</item>
     </string-array>
 
+    <string-array name="opml_import_export">
+        <item>@string/opml_import</item>
+        <item>@string/opml_export</item>
+    </string-array>
+
+    <string-array name="image_options">
+        <item>@string/share_image</item>
+        <item>@string/download_image</item>
+    </string-array>
+
     <string-array name="items_per_feed_numbers_values">
         <item>20</item>
         <item>50</item>
@@ -19,4 +29,23 @@
         <item>@string/unlimited</item>
     </string-array>
 
+    <string-array name="open_items_in">
+        <item>@string/external_navigator</item>
+        <item>@string/webview</item>
+    </string-array>
+
+    <string-array name="open_item_in_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+    <string-array name="themes">
+        <item>@string/light</item>
+        <item>@string/dark</item>
+    </string-array>
+
+    <string-array name="themes_values">
+        <item>false</item>
+        <item>true</item>
+    </string-array>
 </resources>

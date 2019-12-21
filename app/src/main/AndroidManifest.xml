@@ -5,9 +5,11 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
-        android:name=".utils.ReadropsApp"
+        android:name=".ReadropsApp"
         android:allowBackup="true"
         android:icon="@drawable/ic_readrops"
         android:label="@string/app_name"
@@ -15,10 +17,26 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
-        tools:ignore="GoogleAppIndexingWarning">
+        android:requestLegacyExternalStorage="true"
+        tools:ignore="AllowBackup,GoogleAppIndexingWarning,UnusedAttribute">
+
+        <provider
+            android:authorities="${applicationId}"
+            android:name="androidx.core.content.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity
+            android:name=".activities.WebViewActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <service android:name=".utils.feedscolors.FeedsColorsIntentService" />
 
         <activity android:name=".activities.SettingsActivity" />
-
         <activity
             android:name=".activities.SplashActivity"
             android:theme="@style/SplashTheme">
@@ -28,32 +46,27 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".activities.AccountTypeListActivity" />
-
         <activity
             android:name=".activities.AddAccountActivity"
             android:label="@string/add_account" />
-
         <activity
             android:name=".activities.ManageFeedsFoldersActivity"
             android:label="@string/manage_feeds_folders"
             android:parentActivityName=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".activities.MainActivity"
             android:label="@string/articles"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".activities.ItemActivity"
             android:parentActivityName=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".activities.AddFeedActivity"
             android:label="@string/add_feed_title"
             android:parentActivityName=".activities.MainActivity" />
     </application>
+
 </manifest>

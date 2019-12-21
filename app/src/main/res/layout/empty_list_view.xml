@@ -2,31 +2,26 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal|center_vertical"
+        android:orientation="vertical"
+        tools:ignore="UseCompoundDrawables">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_horizontal|center_vertical"
-            android:orientation="vertical"
-            tools:ignore="UseCompoundDrawables">
+        <ImageView
+            android:id="@+id/empty_list_image"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            tools:src="@drawable/ic_rss_feed_grey" />
 
-            <ImageView
-                android:id="@+id/empty_list_image"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                tools:src="@drawable/ic_rss_feed_grey" />
-
-            <TextView
-                android:id="@+id/empty_list_text_v"
-                style="@style/TextAppearance.AppCompat.Large"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="@string/no_feed" />
-        </LinearLayout>
-
-    </FrameLayout>
+        <TextView
+            android:id="@+id/empty_list_text_v"
+            style="@style/TextAppearance.AppCompat.Large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="@string/no_feed" />
+        
+    </LinearLayout>
 
 </layout>

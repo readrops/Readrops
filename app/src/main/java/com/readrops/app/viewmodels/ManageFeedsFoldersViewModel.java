@@ -17,6 +17,7 @@ import com.readrops.app.repositories.ARepository;
 import java.util.List;
 
 import io.reactivex.Completable;
+import io.reactivex.Single;
 
 public class ManageFeedsFoldersViewModel extends AndroidViewModel {
 
@@ -69,7 +70,7 @@ public class ManageFeedsFoldersViewModel extends AndroidViewModel {
         return db.folderDao().getFoldersWithFeedCount(account.getId());
     }
 
-    public Completable addFolder(Folder folder) {
+    public Single<Long> addFolder(Folder folder) {
         return repository.addFolder(folder);
     }
 

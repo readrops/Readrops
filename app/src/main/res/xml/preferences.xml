@@ -10,4 +10,24 @@
             android:title="@string/number_items_to_parse" />
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/global">
+        <Preference
+            android:key="reload_feeds_colors"
+            android:title="@string/reload_feeds_colors" />
+
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/open_items_in"
+            android:entryValues="@array/open_item_in_values"
+            android:key="open_items_in"
+            android:title="@string/open_items_in" />
+
+        <ListPreference
+            android:defaultValue="false"
+            android:entries="@array/themes"
+            android:entryValues="@array/themes_values"
+            android:key="dark_theme"
+            android:title="@string/theme" />
+    </PreferenceCategory>
+
 </PreferenceScreen>

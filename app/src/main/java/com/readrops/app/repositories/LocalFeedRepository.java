@@ -10,9 +10,9 @@ import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Item;
 import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.utils.FeedInsertionResult;
-import com.readrops.app.utils.FeedMatcher;
+import com.readrops.app.utils.matchers.FeedMatcher;
 import com.readrops.app.utils.HtmlParser;
-import com.readrops.app.utils.ItemMatcher;
+import com.readrops.app.utils.matchers.ItemMatcher;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
@@ -47,6 +47,11 @@ public class LocalFeedRepository extends ARepository<Void> {
     }
 
     @Override
+    protected Void createAPI() {
+        return null;
+    }
+
+    @Override
     public Single<Boolean> login(Account account, boolean insert) {
         return null;
     }
@@ -57,7 +62,7 @@ public class LocalFeedRepository extends ARepository<Void> {
             List<Feed> feedList;
 
             if (feeds == null || feeds.size() == 0)
-                feedList = database.feedDao().getAllFeeds(account.getId());
+                feedList = database.feedDao().getFeeds(account.getId());
             else
                 feedList = new ArrayList<>(feeds);
 
@@ -117,7 +122,7 @@ public class LocalFeedRepository extends ARepository<Void> {
                     RSSQueryResult queryResult = rssNet.queryUrl(parsingResult.getUrl(), new HashMap<>());
 
                     if (queryResult != null && queryResult.getException() == null) {
-                        Feed feed = insertFeed(queryResult.getFeed(), queryResult.getRssType());
+                        Feed feed = insertFeed(queryResult.getFeed(), queryResult.getRssType(), parsingResult);
                         if (feed != null) {
                             insertionResult.setFeed(feed);
                             insertionResult.setParsingResult(parsingResult);
@@ -128,8 +133,6 @@ public class LocalFeedRepository extends ARepository<Void> {
                         insertionResult.setInsertionError(getErrorFromException(queryResult.getException()));
 
                         insertionResults.add(insertionResult);
-                    } else {
-                        // error 304
                     }
                 } catch (Exception e) {
                     if (e instanceof IOException)
@@ -147,8 +150,8 @@ public class LocalFeedRepository extends ARepository<Void> {
     }
 
     private void insertNewItems(AFeed feed, RSSQuery.RSSType type) throws ParseException {
-        Feed dbFeed = null;
-        List<Item> items = null;
+        Feed dbFeed;
+        List<Item> items;
 
         switch (type) {
             case RSS_2:
@@ -163,6 +166,8 @@ public class LocalFeedRepository extends ARepository<Void> {
                 dbFeed = database.feedDao().getFeedByUrl(((JSONFeed) feed).getFeedUrl(), account.getId());
                 items = ItemMatcher.itemsFromJSON(((JSONFeed) feed).getItems(), dbFeed);
                 break;
+            default:
+                throw new IllegalArgumentException("Unknown RSS type");
         }
 
         database.feedDao().updateHeaders(dbFeed.getEtag(), dbFeed.getLastModified(), dbFeed.getId());
@@ -175,8 +180,8 @@ public class LocalFeedRepository extends ARepository<Void> {
         insertItems(items, dbFeed);
     }
 
-    private Feed insertFeed(AFeed feed, RSSQuery.RSSType type) throws IOException {
-        Feed dbFeed = null;
+    private Feed insertFeed(AFeed feed, RSSQuery.RSSType type, ParsingResult parsingResult) {
+        Feed dbFeed;
         switch (type) {
             case RSS_2:
                 dbFeed = FeedMatcher.feedFromRSS((RSSFeed) feed);
@@ -187,19 +192,23 @@ public class LocalFeedRepository extends ARepository<Void> {
             case RSS_JSON:
                 dbFeed = FeedMatcher.feedFromJSON((JSONFeed) feed);
                 break;
+            default:
+                throw new IllegalArgumentException("Unknown RSS type");
         }
+
+        dbFeed.setFolderId(parsingResult.getFolderId());
 
         if (database.feedDao().feedExists(dbFeed.getUrl(), account.getId()))
             return null; // feed already inserted
 
-        setFavIconUtils(dbFeed);
+        setFeedColors(dbFeed);
         dbFeed.setAccountId(account.getId());
 
         // we need empty headers to query the feed just after, without any 304 result
         dbFeed.setEtag(null);
         dbFeed.setLastModified(null);
 
-        dbFeed.setId((int) (database.feedDao().insert(dbFeed)));
+        dbFeed.setId((int) (database.feedDao().compatInsert(dbFeed)));
         return dbFeed;
     }
 

@@ -2,7 +2,6 @@ package com.readrops.app.adapters;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -38,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItemListAdapter.ItemViewHolder> implements ListPreloader.PreloadModelProvider<String> {
 
@@ -63,18 +63,18 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
 
         @Override
         public boolean areContentsTheSame(@NonNull ItemWithFeed itemWithFeed, @NonNull ItemWithFeed t1) {
-            Item item = itemWithFeed.getItem();
-            Item item1 = t1.getItem();
+            Item oldItem = itemWithFeed.getItem();
+            Item newItem = t1.getItem();
 
             boolean folder = false;
             if (itemWithFeed.getFolder() != null && t1.getFolder() != null)
                 folder = itemWithFeed.getFolder().getName().equals(t1.getFolder().getName());
 
-            return item.getTitle().equals(item1.getTitle()) &&
+            return oldItem.getTitle().equals(newItem.getTitle()) &&
                     itemWithFeed.getFeedName().equals(t1.getFeedName()) &&
                     folder &&
-                    item.isRead() == item1.isRead() &&
-                    item.isReadItLater() == item1.isReadItLater() &&
+                    oldItem.isRead() == newItem.isRead() &&
+                    oldItem.isReadItLater() == newItem.isReadItLater() &&
                     itemWithFeed.getColor() == t1.getColor() &&
                     itemWithFeed.getBgColor() == t1.getBgColor();
         }
@@ -87,7 +87,7 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
 
     private static final DrawableCrossFadeFactory FADE_FACTORY = new DrawableCrossFadeFactory.Builder().setCrossFadeEnabled(true).build();
 
-    private static final RequestOptions REQUEST_OPTIONS = new RequestOptions().transforms(new CenterCrop(), new RoundedCorners(16));
+    private static final RequestOptions REQUEST_OPTIONS = new RequestOptions().transform(new CenterCrop(), new RoundedCorners(16));
 
     @NonNull
     @Override
@@ -102,7 +102,7 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
 
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position, @NonNull List<Object> payloads) {
-        if (payloads.size() > 0) {
+        if (!payloads.isEmpty()) {
             ItemWithFeed itemWithFeed = (ItemWithFeed) payloads.get(0);
 
             holder.bind(itemWithFeed);
@@ -171,7 +171,7 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
         }
     }
 
-    public LinkedHashSet<Integer> getSelection() {
+    public Set<Integer> getSelection() {
         return selection;
     }
 
@@ -250,7 +250,7 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
     public class ItemViewHolder extends RecyclerView.ViewHolder {
 
         private ListItemBinding binding;
-        View[] alphaViews;
+        private View[] alphaViews;
 
         ItemViewHolder(ListItemBinding binding) {
             super(binding.getRoot());
@@ -352,16 +352,17 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
 
         private void setSelected(boolean selected) {
             Context context = itemView.getContext();
+            TypedValue outValue = new TypedValue();
 
             if (selected) {
-                itemView.setBackground(new ColorDrawable(ContextCompat.getColor(context, R.color.selected_background)));
+                context.getTheme().resolveAttribute(
+                        android.R.attr.colorControlHighlight, outValue, true);
             } else {
-                TypedValue outValue = new TypedValue();
                 context.getTheme().resolveAttribute(
                         android.R.attr.selectableItemBackground, outValue, true);
-
-                itemView.setBackgroundResource(outValue.resourceId);
             }
+
+            itemView.setBackgroundResource(outValue.resourceId);
         }
 
         public ImageView getItemImage() {

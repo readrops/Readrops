@@ -1,7 +1,9 @@
-package com.readrops.app.utils;
+package com.readrops.app.utils.matchers;
 
 import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.Item;
+import com.readrops.app.utils.DateUtils;
+import com.readrops.app.utils.Utils;
 import com.readrops.readropslibrary.localfeed.atom.ATOMEntry;
 import com.readrops.readropslibrary.localfeed.json.JSONItem;
 import com.readrops.readropslibrary.localfeed.rss.RSSEnclosure;
@@ -13,7 +15,6 @@ import com.readrops.readropslibrary.utils.ParseException;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
-import org.jsoup.Jsoup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +59,7 @@ public final class ItemMatcher {
         newItem.setLink(item.getAlternate().get(0).getHref());
         newItem.setFeedId(feedId);
         newItem.setRemoteId(item.getId());
+        newItem.setRead(item.isRead());
 
         return newItem;
     }
@@ -72,7 +74,7 @@ public final class ItemMatcher {
             newItem.setContent(item.getContent()); // Jsoup.clean(item.getContent(), Whitelist.relaxed())
             newItem.setDescription(item.getDescription());
             newItem.setGuid(item.getGuid());
-            newItem.setTitle(Jsoup.parse(item.getTitle()).text().trim());
+            newItem.setTitle(Utils.cleanText(item.getTitle()));
 
             try {
                 newItem.setPubDate(DateUtils.stringToLocalDateTime(item.getDate()));
@@ -117,13 +119,14 @@ public final class ItemMatcher {
             dbItem.setContent(item.getContent()); // Jsoup.clean(item.getContent(), Whitelist.relaxed())
             dbItem.setDescription(item.getSummary());
             dbItem.setGuid(item.getId());
-            dbItem.setTitle(Jsoup.parse(item.getTitle()).text().trim());
+            dbItem.setTitle(Utils.cleanText(item.getTitle()));
 
             try {
                 dbItem.setPubDate(DateUtils.stringToLocalDateTime(item.getUpdated()));
             } catch (Exception e) {
                 throw new ParseException();
             }
+
             dbItem.setLink(item.getUrl());
 
             dbItem.setFeedId(feed.getId());
@@ -146,7 +149,7 @@ public final class ItemMatcher {
             dbItem.setContent(item.getContent()); // Jsoup.clean(item.getContent(), Whitelist.relaxed())
             dbItem.setDescription(item.getSummary());
             dbItem.setGuid(item.getId());
-            dbItem.setTitle(Jsoup.parse(item.getTitle()).text().trim());
+            dbItem.setTitle(Utils.cleanText(item.getTitle()));
 
             try {
                 dbItem.setPubDate(DateUtils.stringToLocalDateTime(item.getPubDate()));

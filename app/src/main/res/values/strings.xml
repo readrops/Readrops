@@ -22,7 +22,7 @@
     <string name="read_time_lower_than_1">Less than a minute</string>
     <string name="read_time_one_minute">1 min</string>
     <string name="interpoint" translatable="false">·</string>
-    <string name="share">Share Article</string>
+    <string name="share_article">Share Article</string>
     <string name="open_url">Open url</string>
     <string name="add_folder">Add folder</string>
     <string name="feed_folder">Feed folder</string>
@@ -92,4 +92,31 @@
     <string name="no_item">No item</string>
     <string name="no_feed_found">No feed found</string>
     <string name="feed_insertion_error">Error for feed %1$s</string>
+    <string name="get_feeds_colors">Get feeds colors</string>
+    <string name="feeds_colors">Feeds Colors</string>
+    <string name="global">Global</string>
+    <string name="reload_feeds_colors">Reload feeds colors</string>
+    <string name="open_items_in">Open items in</string>
+    <string name="webview">Webview</string>
+    <string name="external_navigator">External navigator</string>
+    <string name="actualize">Actualize</string>
+    <string name="share_url">Share url</string>
+    <string name="opml_import_export">OPML Import/Export</string>
+    <string name="opml_processing">Processing OPML file</string>
+    <string name="operation_takes_time">This operation can take a significant time as each feed needs to be queried.</string>
+    <string name="processing_file_failed">An error occurred during the file processing</string>
+    <string name="opml_import">OPML import</string>
+    <string name="opml_export">OPML export</string>
+    <string name="subscriptions" translatable="false">Subscriptions</string>
+    <string name="external_storage_opml_export">Subscriptions export needs external storage permission</string>
+    <string name="try_again">Try again</string>
+    <string name="permissions">Permissions</string>
+    <string name="or">Or</string>
+    <string name="image_options">Image Options</string>
+    <string name="download_image">Download image</string>
+    <string name="share_image">Share image</string>
+    <string name="theme">Theme</string>
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
+    <string name="opml_export_description">Export feeds and folders</string>
 </resources>

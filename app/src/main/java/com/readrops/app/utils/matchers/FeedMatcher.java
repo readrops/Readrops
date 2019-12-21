@@ -1,7 +1,7 @@
-package com.readrops.app.utils;
+package com.readrops.app.utils.matchers;
 
-import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.Feed;
+import com.readrops.app.database.entities.account.Account;
 import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
 import com.readrops.readropslibrary.localfeed.json.JSONFeed;
 import com.readrops.readropslibrary.localfeed.rss.RSSChannel;

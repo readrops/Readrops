@@ -10,7 +10,7 @@
 
     <item
         android:id="@+id/item_share"
-        android:title="@string/share"
+        android:title="@string/share_article"
         android:icon="@drawable/ic_share_white"
         app:showAsAction="ifRoom" />
 

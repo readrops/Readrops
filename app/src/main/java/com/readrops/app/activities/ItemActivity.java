@@ -1,22 +1,35 @@
 package com.readrops.app.activities;
 
+import android.app.DownloadManager;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.lifecycle.ViewModelProvider;
+import androidx.core.app.ShareCompat;
+import androidx.lifecycle.ViewModelProviders;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -26,10 +39,18 @@ import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.utils.DateUtils;
 import com.readrops.app.utils.GlideApp;
 import com.readrops.app.utils.ReadropsWebView;
+import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.ItemViewModel;
 
+import static com.readrops.app.utils.ReadropsKeys.ACTION_BAR_COLOR;
+import static com.readrops.app.utils.ReadropsKeys.IMAGE_URL;
+import static com.readrops.app.utils.ReadropsKeys.ITEM_ID;
+import static com.readrops.app.utils.ReadropsKeys.WEB_URL;
+
 public class ItemActivity extends AppCompatActivity {
+
+    private static final String TAG = ItemActivity.class.getSimpleName();
 
     private ItemViewModel viewModel;
     private TextView date;
@@ -44,9 +65,6 @@ public class ItemActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private FloatingActionButton actionButton;
     private ReadropsWebView webView;
-
-    public static final String ITEM_ID = "itemId";
-    public static final String IMAGE_URL = "imageUrl";
 
     private ItemWithFeed itemWithFeed;
 
@@ -81,6 +99,8 @@ public class ItemActivity extends AppCompatActivity {
         readTimeLayout = findViewById(R.id.activity_item_readtime_layout);
         dateLayout = findViewById(R.id.activity_item_date_layout);
 
+        registerForContextMenu(webView);
+
         if (imageUrl == null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
             toolbarLayout.setTitleEnabled(false);
@@ -111,9 +131,9 @@ public class ItemActivity extends AppCompatActivity {
             }
         }));
 
-        viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(ItemViewModel.class);
+        viewModel = ViewModelProviders.of(this).get(ItemViewModel.class);
         viewModel.getItemById(itemId).observe(this, this::bindUI);
-        actionButton.setOnClickListener(v -> openLink());
+        actionButton.setOnClickListener(v -> openInNavigator());
     }
 
     private void bindUI(ItemWithFeed itemWithFeed) {
@@ -188,11 +208,7 @@ public class ItemActivity extends AppCompatActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item = menu.findItem(R.id.item_open);
-
-        if (appBarCollapsed)
-            item.setVisible(true);
-        else
-            item.setVisible(false);
+        item.setVisible(appBarCollapsed);
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -207,10 +223,16 @@ public class ItemActivity extends AppCompatActivity {
                 shareArticle();
                 return true;
             case R.id.item_open:
-                openLink();
+                int value = Integer.valueOf(SharedPreferencesManager.readString(this,
+                        SharedPreferencesManager.SharedPrefKey.OPEN_ITEMS_IN));
+                if (value == 0)
+                    openInNavigator();
+                else
+                    openInWebView();
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -219,15 +241,86 @@ public class ItemActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    private void openLink() {
+    private void openInNavigator() {
         Intent urlIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(itemWithFeed.getItem().getLink()));
         startActivity(urlIntent);
+    }
+
+    private void openInWebView() {
+        Intent intent = new Intent(this, WebViewActivity.class);
+        intent.putExtra(WEB_URL, itemWithFeed.getItem().getLink());
+        intent.putExtra(ACTION_BAR_COLOR, itemWithFeed.getColor() != 0 ? itemWithFeed.getColor() : itemWithFeed.getBgColor());
+
+        startActivity(intent);
     }
 
     private void shareArticle() {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, itemWithFeed.getItem().getTitle() + " - " + itemWithFeed.getItem().getLink());
-        startActivity(Intent.createChooser(shareIntent, getString(R.string.share)));
+        startActivity(Intent.createChooser(shareIntent, getString(R.string.share_article)));
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        WebView.HitTestResult hitTestResult = webView.getHitTestResult();
+
+        if (hitTestResult.getType() == WebView.HitTestResult.IMAGE_TYPE ||
+                hitTestResult.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {
+            new MaterialDialog.Builder(this)
+                    .title(R.string.image_options)
+                    .items(R.array.image_options)
+                    .itemsCallback((dialog, itemView, position, text) -> {
+                        if (position == 0)
+                            shareImage(hitTestResult.getExtra());
+                        else
+                            downloadImage(hitTestResult.getExtra());
+                    })
+                    .show();
+        }
+    }
+
+    private void downloadImage(String url) {
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url))
+                .setTitle(getString(R.string.download_image))
+                .setMimeType("image/png")
+                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "image.png");
+
+        request.allowScanningByMediaScanner();
+
+        DownloadManager downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+        downloadManager.enqueue(request);
+    }
+
+    private void shareImage(String url) {
+        GlideApp.with(this)
+                .asBitmap()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .load(url)
+                .into(new CustomTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                        try {
+                            Uri uri = viewModel.saveImageInCache(resource);
+                            Intent intent = ShareCompat.IntentBuilder.from(ItemActivity.this)
+                                    .setType("image/png")
+                                    .setStream(uri)
+                                    .setChooserTitle(R.string.share_image)
+                                    .createChooserIntent()
+                                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                            startActivity(intent);
+                        } catch (Exception e) {
+                            Log.e(TAG, e.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+                        // not useful
+                    }
+                });
+
     }
 }

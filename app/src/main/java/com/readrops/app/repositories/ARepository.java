@@ -1,12 +1,10 @@
 package com.readrops.app.repositories;
 
 import android.app.Application;
-import android.graphics.Bitmap;
-import android.util.Patterns;
+import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.palette.graphics.Palette;
 
 import com.readrops.app.database.Database;
 import com.readrops.app.database.entities.Feed;
@@ -15,17 +13,20 @@ import com.readrops.app.database.entities.Item;
 import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.account.AccountType;
 import com.readrops.app.utils.FeedInsertionResult;
-import com.readrops.app.utils.HtmlParser;
 import com.readrops.app.utils.ParsingResult;
-import com.readrops.app.utils.Utils;
+import com.readrops.app.utils.feedscolors.FeedColorsKt;
+import com.readrops.app.utils.feedscolors.FeedsColorsIntentService;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.schedulers.Schedulers;
+
+import static com.readrops.app.utils.ReadropsKeys.FEEDS;
 
 public abstract class ARepository<T> {
 
@@ -39,13 +40,47 @@ public abstract class ARepository<T> {
         this.application = application;
         this.database = Database.getInstance(application);
         this.account = account;
+
+        api = createAPI();
     }
+
+    protected abstract T createAPI();
 
     public abstract Single<Boolean> login(Account account, boolean insert);
 
     public abstract Observable<Feed> sync(List<Feed> feeds);
 
     public abstract Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results);
+
+    public Completable insertOPMLFoldersAndFeeds(Map<Folder, List<Feed>> foldersAndFeeds) {
+        List<Completable> completableList = new ArrayList<>();
+
+        for (Map.Entry<Folder, List<Feed>> entry : foldersAndFeeds.entrySet()) {
+            Folder folder = entry.getKey();
+            folder.setAccountId(account.getId());
+
+            Completable completable = Single.<Integer>create(emitter -> {
+                Folder dbFolder = database.folderDao().getFolderByName(folder.getName(), account.getId());
+
+                if (dbFolder != null)
+                    emitter.onSuccess(dbFolder.getId());
+                else
+                    emitter.onSuccess((int) database.folderDao().compatInsert(folder));
+            }).flatMap(folderId -> {
+                List<Feed> feeds = entry.getValue();
+                for (Feed feed : feeds) {
+                    feed.setFolderId(folderId);
+                }
+
+                List<ParsingResult> parsingResults = ParsingResult.toParsingResults(feeds);
+                return addFeeds(parsingResults);
+            }).flatMapCompletable(feedInsertionResults -> Completable.complete());
+
+            completableList.add(completable);
+        }
+
+        return Completable.concat(completableList);
+    }
 
     public Completable updateFeed(Feed feed) {
         return Completable.create(emitter -> {
@@ -58,11 +93,8 @@ public abstract class ARepository<T> {
         return database.feedDao().delete(feed);
     }
 
-    public Completable addFolder(Folder folder) {
-        return Completable.create(emitter -> {
-            database.folderDao().insert(folder);
-            emitter.onComplete();
-        });
+    public Single<Long> addFolder(Folder folder) {
+        return database.folderDao().insert(folder);
     }
 
     public Completable updateFolder(Folder folder) {
@@ -75,10 +107,9 @@ public abstract class ARepository<T> {
 
     public Completable setItemReadState(Item item, boolean read) {
         return database.itemDao().setReadState(item.getId(), read ? 1 : 0, !item.isReadChanged() ? 1 : 0);
-
     }
 
-    public Completable setAllItemsReadState(Boolean read) {
+    public Completable setAllItemsReadState(boolean read) {
         return database.itemDao().setAllItemsReadState(read ? 1 : 0, account.getId());
     }
 
@@ -90,48 +121,46 @@ public abstract class ARepository<T> {
         return database.feedDao().getFeedCount(accountId);
     }
 
-    protected void setFaviconUtils(List<Feed> feeds) {
-        Observable.<Feed>create(emitter -> {
-            for (Feed feed : feeds) {
-                setFavIconUtils(feed);
-                emitter.onNext(feed);
+    public Single<Map<Folder, List<Feed>>> getFoldersWithFeeds() {
+        return Single.create(emitter -> {
+            List<Folder> folders = database.folderDao().getFolders(account.getId());
+            Map<Folder, List<Feed>> foldersWithFeeds = new TreeMap<>(Folder::compareTo);
+
+            for (Folder folder : folders) {
+                List<Feed> feeds = database.feedDao().getFeedsByFolder(folder.getId());
+
+                for (Feed feed : feeds) {
+                    int unreadCount = database.itemDao().getUnreadCount(feed.getId());
+                    feed.setUnreadCount(unreadCount);
+                }
+
+                foldersWithFeeds.put(folder, feeds);
             }
-        }).subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .doOnNext(feed1 -> database.feedDao().updateColors(feed1.getId(),
-                        feed1.getTextColor(), feed1.getBackgroundColor()))
-                .subscribe();
+
+            Folder noFolder = new Folder("no folder");
+
+            List<Feed> feedsWithoutFolder = database.feedDao().getFeedsWithoutFolder(account.getId());
+            for (Feed feed : feedsWithoutFolder) {
+                feed.setUnreadCount(database.itemDao().getUnreadCount(feed.getId()));
+            }
+
+            foldersWithFeeds.put(noFolder, feedsWithoutFolder);
+
+            emitter.onSuccess(foldersWithFeeds);
+        });
     }
 
-    protected void setFavIconUtils(Feed feed) throws IOException {
-        String favUrl;
-
-        if (feed.getIconUrl() != null)
-            favUrl = feed.getIconUrl();
-        else
-            favUrl = HtmlParser.getFaviconLink(feed.getSiteUrl());
-
-        if (favUrl != null && Patterns.WEB_URL.matcher(favUrl).matches()) {
-            feed.setIconUrl(favUrl);
-            setFeedColors(favUrl, feed);
-        }
+    protected void setFeedColors(Feed feed) {
+        FeedColorsKt.setFeedColors(feed);
+        database.feedDao().updateColors(feed.getId(),
+                feed.getTextColor(), feed.getBackgroundColor());
     }
 
-    protected void setFeedColors(String favUrl, Feed feed) {
-        Bitmap favicon = Utils.getImageFromUrl(favUrl);
+    protected void setFeedsColors(List<Feed> feeds) {
+        Intent intent = new Intent(application, FeedsColorsIntentService.class);
+        intent.putParcelableArrayListExtra(FEEDS, new ArrayList<>(feeds));
 
-        if (favicon != null) {
-            Palette palette = Palette.from(favicon).generate();
-
-            if (palette.getDominantSwatch() != null) {
-                feed.setTextColor(palette.getDominantSwatch().getRgb());
-            }
-
-            if (palette.getMutedSwatch() != null) {
-                feed.setBackgroundColor(palette.getMutedSwatch().getRgb());
-            }
-
-        }
+        application.startService(intent);
     }
 
     public static ARepository repositoryFactory(Account account, AccountType accountType, Application application) throws Exception {

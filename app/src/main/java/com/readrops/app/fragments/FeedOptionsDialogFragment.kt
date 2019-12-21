@@ -9,10 +9,10 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.readrops.app.R
-import com.readrops.app.activities.ManageFeedsFoldersActivity.ACCOUNT
 import com.readrops.app.database.entities.account.Account
 import com.readrops.app.database.pojo.FeedWithFolder
 import com.readrops.app.databinding.FeedOptionsLayoutBinding
+import com.readrops.app.utils.ReadropsKeys.ACCOUNT
 
 class FeedOptionsDialogFragment : BottomSheetDialogFragment() {
 
@@ -21,7 +21,7 @@ class FeedOptionsDialogFragment : BottomSheetDialogFragment() {
     private lateinit var binding: FeedOptionsLayoutBinding
 
     companion object {
-        val FEED_KEY = "FEED_KEY"
+        const val FEED_KEY = "FEED_KEY"
 
         fun newInstance(feedWithFolder: FeedWithFolder, account: Account): FeedOptionsDialogFragment {
             val bundle = Bundle()

@@ -12,8 +12,8 @@ import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.Item;
 import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.utils.FeedInsertionResult;
-import com.readrops.app.utils.FeedMatcher;
-import com.readrops.app.utils.ItemMatcher;
+import com.readrops.app.utils.matchers.FeedMatcher;
+import com.readrops.app.utils.matchers.ItemMatcher;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.utils.Utils;
 import com.readrops.readropslibrary.services.SyncType;
@@ -46,14 +46,19 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
 
     public NextNewsRepository(@NonNull Application application, @Nullable Account account) {
         super(application, account);
+    }
 
+    @Override
+    protected NextNewsAPI createAPI() {
         if (account != null)
-            api = new NextNewsAPI(account.toCredentials());
+            return new NextNewsAPI(account.toCredentials());
+
+        return null;
     }
 
     @Override
     public Single<Boolean> login(Account account, boolean insert) {
-        return Single.create(emitter -> {
+        return Single.<NextNewsUser>create(emitter -> {
             if (api == null)
                 api = new NextNewsAPI(account.toCredentials());
             else
@@ -61,15 +66,23 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
 
             NextNewsUser user = api.login();
 
+            emitter.onSuccess(user);
+        }).flatMap(user -> {
             if (user != null) {
                 account.setDisplayedName(user.getDisplayName());
                 account.setCurrentAccount(true);
 
-                if (insert)
-                    account.setId((int) database.accountDao().insert(account));
-                emitter.onSuccess(true);
+                if (insert) {
+                    return database.accountDao().insert(account)
+                            .flatMap(id -> {
+                                account.setId(id.intValue());
+                                return Single.just(true);
+                            });
+                }
+
+                return Single.just(true);
             } else
-                emitter.onSuccess(false);
+                return Single.just(false);
         });
     }
 
@@ -201,8 +214,8 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
     }
 
     @Override
-    public Completable addFolder(Folder folder) {
-        return Completable.create(emitter -> {
+    public Single<Long> addFolder(Folder folder) {
+        return Single.<Folder>create(emitter -> {
             try {
                 int folderRemoteId = folder.getRemoteId() == null ? 0 : Integer.parseInt(folder.getRemoteId());
                 NextNewsFolders folders = api.createFolder(new NextNewsFolder(folderRemoteId, folder.getName()));
@@ -212,15 +225,13 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
 
                     folder.setName(nextNewsFolder.getName());
                     folder.setRemoteId(String.valueOf(nextNewsFolder.getId()));
-                    database.folderDao().insert(folder);
+                    emitter.onSuccess(folder);
                 } else
                     emitter.onError(new Exception("Unknown error"));
             } catch (Exception e) {
                 emitter.onError(e);
             }
-
-            emitter.onComplete();
-        });
+        }).flatMap(folder1 -> database.folderDao().insert(folder));
     }
 
     @Override
@@ -269,7 +280,7 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
         List<Feed> insertedFeeds = new ArrayList<>();
         if (!insertedFeedsIds.isEmpty()) {
             insertedFeeds.addAll(database.feedDao().selectFromIdList(insertedFeedsIds));
-            setFaviconUtils(insertedFeeds);
+            setFeedsColors(insertedFeeds);
         }
 
         return insertedFeeds;
@@ -295,9 +306,9 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
         for (NextNewsItem nextNewsItem : items) {
             int feedId = database.feedDao().getFeedIdByRemoteId(String.valueOf(nextNewsItem.getFeedId()), account.getId());
 
-            if (!initialSync && feedId > 0) {
-                if (database.itemDao().remoteItemExists(String.valueOf(nextNewsItem.getId()), feedId))
-                    break;
+            if (!initialSync && feedId > 0 && database.itemDao().remoteItemExists(String.valueOf(nextNewsItem.getId()), feedId)) {
+                database.itemDao().setReadState(String.valueOf(nextNewsItem.getId()), !nextNewsItem.isUnread());
+                break;
             }
 
             Item item = ItemMatcher.nextNewsItemToItem(nextNewsItem, feedId);
@@ -306,7 +317,9 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
             newItems.add(item);
         }
 
-        Collections.sort(newItems, Item::compareTo);
-        database.itemDao().insert(newItems);
+        if (!newItems.isEmpty()) {
+            Collections.sort(newItems, Item::compareTo);
+            database.itemDao().insert(newItems);
+        }
     }
 }

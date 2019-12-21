@@ -20,7 +20,6 @@ import com.readrops.app.database.entities.Feed;
 import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.pojo.FeedWithFolder;
 import com.readrops.app.databinding.FragmentFeedsBinding;
-import com.readrops.app.fragments.settings.AccountSettingsFragment;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.ManageFeedsFoldersViewModel;
@@ -29,7 +28,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.readrops.app.activities.ManageFeedsFoldersActivity.ACCOUNT;
+import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
 
 
 public class FeedsFragment extends Fragment {
@@ -48,7 +47,7 @@ public class FeedsFragment extends Fragment {
         FeedsFragment fragment = new FeedsFragment();
         Bundle args = new Bundle();
 
-        args.putParcelable(AccountSettingsFragment.ACCOUNT, account);
+        args.putParcelable(ACCOUNT, account);
         fragment.setArguments(args);
 
         return fragment;

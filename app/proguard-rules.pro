@@ -23,3 +23,10 @@
 -dontwarn org.xmlpull.v1.XmlPullParser
 -dontwarn org.xmlpull.v1.XmlSerializer
 -keep class org.xmlpull.v1.* {*;}
+
+-keep class org.simpleframework.xml.** { *; }
+
+-keep class com.readrops.readropslibrary.services.freshrss.json.** { *; }
+-keep class com.readrops.readropslibrary.services.nextcloudnews.json.** { *; }
+
+-keep class com.readrops.readropslibrary.localfeed.** { *; }

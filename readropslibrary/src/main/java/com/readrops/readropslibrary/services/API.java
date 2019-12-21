@@ -15,6 +15,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public abstract class API<T> {
 
+    protected static final int MAX_ITEMS = 5000;
+
     protected T api;
 
     public API(Credentials credentials, @NonNull Class<T> clazz, @NonNull String endPoint) {
