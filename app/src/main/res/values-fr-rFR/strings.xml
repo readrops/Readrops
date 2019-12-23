@@ -110,5 +110,6 @@
     <string name="light">Clair</string>
     <string name="dark">Sombre</string>
     <string name="opml_export_description">Export des flux et dossiers</string>
+    <string name="new_feed">Nouveau flux</string>
 
 </resources>

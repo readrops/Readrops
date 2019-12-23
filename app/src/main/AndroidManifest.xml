@@ -13,16 +13,16 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_readrops"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@drawable/ic_readrops"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
-        android:requestLegacyExternalStorage="true"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning,UnusedAttribute">
 
         <provider
-            android:authorities="${applicationId}"
             android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -34,19 +34,21 @@
             android:name=".activities.WebViewActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <service android:name=".utils.feedscolors.FeedsColorsIntentService" />
+        <service
+            android:name=".utils.feedscolors.FeedsColorsIntentService" />
 
-        <activity android:name=".activities.SettingsActivity" />
+        <activity
+            android:name=".activities.SettingsActivity" />
         <activity
             android:name=".activities.SplashActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.AccountTypeListActivity" />
+        <activity
+            android:name=".activities.AccountTypeListActivity" />
         <activity
             android:name=".activities.AddAccountActivity"
             android:label="@string/add_account" />
@@ -66,7 +68,14 @@
         <activity
             android:name=".activities.AddFeedActivity"
             android:label="@string/add_feed_title"
-            android:parentActivityName=".activities.MainActivity" />
+            android:parentActivityName=".activities.MainActivity">
+            <intent-filter android:label="@string/new_feed">
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>
