@@ -134,7 +134,7 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         feedsToUpdate = new ArrayList<>();
 
         // new feed intent
-        if (getIntent().getAction().equals(Intent.ACTION_SEND)) {
+        if (getIntent().getAction() != null && getIntent().getAction().equals(Intent.ACTION_SEND)) {
             String text = getIntent().getStringExtra(Intent.EXTRA_TEXT);
             binding.addFeedTextInput.setText(text);
             onClick(binding.addFeedLoad);
