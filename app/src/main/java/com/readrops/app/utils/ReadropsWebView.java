@@ -96,7 +96,7 @@ public class ReadropsWebView extends WebView {
         }
 
         elements.clear();
-        elements = document.select("div");
+        elements = document.select("div,span");
 
         for (Element element : elements) {
             element.clearAttributes();
