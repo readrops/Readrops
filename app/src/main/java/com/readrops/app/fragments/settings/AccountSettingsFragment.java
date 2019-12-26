@@ -16,7 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.preference.Preference;
@@ -29,6 +28,7 @@ import com.readrops.app.activities.AddAccountActivity;
 import com.readrops.app.activities.ManageFeedsFoldersActivity;
 import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.database.entities.account.AccountType;
+import com.readrops.app.utils.PermissionManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.utils.matchers.OPMLMatcher;
 import com.readrops.app.viewmodels.AccountViewModel;
@@ -122,7 +122,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
                         if (position == 0) {
                             openOPMLFile();
                         } else {
-                            if (isExternalStoragePermissionGranted())
+                            if (PermissionManager.isPermissionGranted(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE))
                                 exportAsOPMLFile();
                             else
                                 requestExternalStoragePermission();
@@ -266,14 +266,13 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
 
     private void displayNotification(File file) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(file.getAbsolutePath()));
+        intent.setDataAndType(Uri.parse(file.getAbsolutePath()), "text/plain");
 
         Notification notification = new NotificationCompat.Builder(getContext(), ReadropsApp.OPML_EXPORT_CHANNEL_ID)
                 .setContentTitle(getString(R.string.opml_export))
                 .setContentText(file.getName())
-                .setSmallIcon(R.drawable.ic_readrops)
+                .setSmallIcon(R.drawable.ic_notif)
                 .setContentIntent(PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
-                .setDeleteIntent(PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
                 .setAutoCancel(true)
                 .build();
 
@@ -281,12 +280,9 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
         manager.notify(2, notification);
     }
 
-    private boolean isExternalStoragePermissionGranted() {
-        return ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-    }
-
     private void requestExternalStoragePermission() {
-        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE_REQUEST);
+        PermissionManager.requestPermissions(this, WRITE_EXTERNAL_STORAGE_REQUEST,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 
     @Override
@@ -310,8 +306,6 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
                 exportAsOPMLFile();
             }
         }
-
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     //endregion
