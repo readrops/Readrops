@@ -120,4 +120,5 @@
     <string name="dark">Dark</string>
     <string name="opml_export_description">Export feeds and folders</string>
     <string name="new_feed">New feed</string>
+    <string name="download_image_permission">To download the image, storage permission is needed</string>
 </resources>

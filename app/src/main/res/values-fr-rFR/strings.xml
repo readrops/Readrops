@@ -111,5 +111,6 @@
     <string name="dark">Sombre</string>
     <string name="opml_export_description">Export des flux et dossiers</string>
     <string name="new_feed">Nouveau flux</string>
+    <string name="download_image_permission">Le téléchargement de l\'image nécessite l\'accès au stockage</string>
 
 </resources>

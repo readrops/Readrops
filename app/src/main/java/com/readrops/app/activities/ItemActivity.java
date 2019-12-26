@@ -1,7 +1,9 @@
 package com.readrops.app.activities;
 
+import android.Manifest;
 import android.app.DownloadManager;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -9,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -23,6 +26,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.ShareCompat;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -38,6 +43,7 @@ import com.readrops.app.database.entities.Item;
 import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.utils.DateUtils;
 import com.readrops.app.utils.GlideApp;
+import com.readrops.app.utils.PermissionManager;
 import com.readrops.app.utils.ReadropsWebView;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
@@ -51,6 +57,7 @@ import static com.readrops.app.utils.ReadropsKeys.WEB_URL;
 public class ItemActivity extends AppCompatActivity {
 
     private static final String TAG = ItemActivity.class.getSimpleName();
+    private static final int WRITE_EXTERNAL_STORAGE_REQUEST = 1;
 
     private ItemViewModel viewModel;
     private TextView date;
@@ -69,6 +76,9 @@ public class ItemActivity extends AppCompatActivity {
     private ItemWithFeed itemWithFeed;
 
     private boolean appBarCollapsed;
+
+    private CoordinatorLayout rootLayout;
+    private String urlToDownload;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +108,7 @@ public class ItemActivity extends AppCompatActivity {
         readTime = findViewById(R.id.activity_item_readtime);
         readTimeLayout = findViewById(R.id.activity_item_readtime_layout);
         dateLayout = findViewById(R.id.activity_item_date_layout);
+        rootLayout = findViewById(R.id.item_root);
 
         registerForContextMenu(webView);
 
@@ -273,11 +284,45 @@ public class ItemActivity extends AppCompatActivity {
                     .itemsCallback((dialog, itemView, position, text) -> {
                         if (position == 0)
                             shareImage(hitTestResult.getExtra());
-                        else
-                            downloadImage(hitTestResult.getExtra());
+                        else {
+                            if (PermissionManager.isPermissionGranted(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))
+                                downloadImage(hitTestResult.getExtra());
+                            else {
+                                urlToDownload = hitTestResult.getExtra();
+                                PermissionManager.requestPermissions(this, WRITE_EXTERNAL_STORAGE_REQUEST, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                            }
+                        }
+
                     })
                     .show();
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == WRITE_EXTERNAL_STORAGE_REQUEST) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                downloadImage(urlToDownload);
+            } else {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0])) {
+                    Utils.showSnackBarWithAction(rootLayout, getString(R.string.download_image_permission),
+                            getString(R.string.try_again),
+                            v -> PermissionManager.requestPermissions(this, WRITE_EXTERNAL_STORAGE_REQUEST,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE));
+                } else {
+                    Utils.showSnackBarWithAction(rootLayout, getString(R.string.download_image_permission),
+                            getString(R.string.permissions), v -> {
+                                Intent intent = new Intent();
+                                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                intent.setData(Uri.fromParts("package", getPackageName(), null));
+                                startActivity(intent);
+                            });
+                }
+
+            }
+        }
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     private void downloadImage(String url) {
