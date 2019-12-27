@@ -1,3 +1,7 @@
+#v1.1.1
+
+Request write storage permission before downloading image.
+
 #v1.1.0
 
 - OPML import/export for local account
