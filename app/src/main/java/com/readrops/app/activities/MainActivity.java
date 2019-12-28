@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.paging.PagedList;
@@ -405,6 +406,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         refreshLayout.setEnabled(false);
         actionMode.getMenuInflater().inflate(R.menu.item_list_contextual_menu, menu);
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.primary_dark));
 
         return true;
     }
