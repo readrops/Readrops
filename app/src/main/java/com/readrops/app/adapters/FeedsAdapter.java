@@ -72,10 +72,10 @@ public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.ViewH
             GlideApp.with(viewHolder.itemView.getContext())
                     .load(feedWithFolder.getFeed().getIconUrl())
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .placeholder(R.drawable.ic_rss_feed)
+                    .placeholder(R.drawable.ic_rss_feed_grey)
                     .into(viewHolder.feedIcon);
         } else
-            viewHolder.feedIcon.setImageResource(R.drawable.ic_rss_feed);
+            viewHolder.feedIcon.setImageResource(R.drawable.ic_rss_feed_grey);
 
         viewHolder.feedName.setText(feedWithFolder.getFeed().getName());
         if (feedWithFolder.getFeed().getDescription() != null) {
