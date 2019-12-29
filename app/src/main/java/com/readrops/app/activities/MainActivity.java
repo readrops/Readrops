@@ -14,6 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -32,6 +33,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
 import com.bumptech.glide.util.ViewPreloadSizeProvider;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -99,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private RelativeLayout syncProgressLayout;
     private TextView syncProgress;
     private ProgressBar syncProgressBar;
+    private FloatingActionButton actionButton;
 
     private int feedCount;
     private int feedNb;
@@ -127,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         syncProgressLayout = findViewById(R.id.sync_progress_layout);
         syncProgress = findViewById(R.id.sync_progress_text_view);
         syncProgressBar = findViewById(R.id.sync_progress_bar);
-        syncProgressBar = findViewById(R.id.sync_progress_bar);
+        actionButton = findViewById(R.id.add_feed_fab);
 
         feedCount = 0;
         initRecyclerView();
@@ -324,7 +327,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
                 selectedItemWithFeed = itemWithFeed;
                 adapter.toggleSelection(position);
-                
+
                 actionMode = startActionMode(MainActivity.this);
                 actionMode.setTitle(String.valueOf(adapter.getSelection().size()));
             }
@@ -371,6 +374,17 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     scrollToTop = false;
                 } else
                     super.onItemRangeMoved(fromPosition, toPosition, itemCount);
+            }
+        });
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0) {
+                    actionButton.hide();
+                } else {
+                    actionButton.show();
+                }
             }
         });
     }
