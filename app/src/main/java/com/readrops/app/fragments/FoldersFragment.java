@@ -27,6 +27,7 @@ import com.readrops.readropslibrary.utils.ConflictException;
 import com.readrops.readropslibrary.utils.UnknownFormatException;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
@@ -68,10 +69,28 @@ public class FoldersFragment extends Fragment {
         viewModel = ViewModelProviders.of(this).get(ManageFeedsFoldersViewModel.class);
 
         viewModel.setAccount(account);
+        viewModel.getFeedCountByAccount()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableSingleObserver<Integer>() {
+                    @Override
+                    public void onSuccess(Integer feedCount) {
+                        adapter.setTotalFeedCount(feedCount);
+                        getFoldersWithFeedCount();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Utils.showSnackbar(binding.foldersRoot, e.getMessage());
+                    }
+                });
+    }
+
+    private void getFoldersWithFeedCount() {
         viewModel.getFoldersWithFeedCount().observe(this, folders -> {
             adapter.submitList(folders);
 
-            if (folders.size() > 0) {
+            if (!folders.isEmpty()) {
                 binding.foldersEmptyList.setVisibility(View.GONE);
             } else {
                 binding.foldersEmptyList.setVisibility(View.VISIBLE);

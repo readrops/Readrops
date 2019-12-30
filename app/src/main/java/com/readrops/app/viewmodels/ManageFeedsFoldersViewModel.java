@@ -85,4 +85,8 @@ public class ManageFeedsFoldersViewModel extends AndroidViewModel {
     public Completable deleteFeed(Feed feed) {
         return repository.deleteFeed(feed);
     }
+
+    public Single<Integer> getFeedCountByAccount() {
+        return db.feedDao().getFeedCount(account.getId());
+    }
 }
