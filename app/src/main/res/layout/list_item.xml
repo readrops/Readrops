@@ -106,14 +106,16 @@
 
                 <ImageView
                     android:id="@+id/item_readtime_icon"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/ic_read_time_grey" />
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_reading_time" />
 
                 <TextView
                     android:id="@+id/item_readtime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:layout_marginStart="4dp"
                     android:layout_toEndOf="@id/item_readtime_icon"
                     tools:text="3 mins" />
