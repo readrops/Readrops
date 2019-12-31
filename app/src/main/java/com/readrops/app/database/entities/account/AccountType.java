@@ -9,7 +9,7 @@ import androidx.annotation.StringRes;
 import com.readrops.app.R;
 
 public enum AccountType implements Parcelable {
-    LOCAL(R.drawable.ic_readrops, R.string.local_account, AccountConfig.LOCAL),
+    LOCAL(R.mipmap.ic_launcher, R.string.local_account, AccountConfig.LOCAL),
     NEXTCLOUD_NEWS(R.drawable.ic_nextcloud_news, R.string.nextcloud_news, AccountConfig.NEXTNEWS),
     FEEDLY(R.drawable.ic_feedly, R.string.feedly, null),
     FRESHRSS(R.drawable.ic_freshrss, R.string.freshrss, AccountConfig.FRESHRSS);
