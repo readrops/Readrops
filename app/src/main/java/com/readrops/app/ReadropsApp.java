@@ -8,7 +8,6 @@ import android.os.Build;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.PreferenceManager;
 
-import com.facebook.stetho.Stetho;
 import com.readrops.app.utils.SharedPreferencesManager;
 
 import io.reactivex.plugins.RxJavaPlugins;
@@ -25,11 +24,8 @@ public class ReadropsApp extends Application {
         RxJavaPlugins.setErrorHandler(e -> {
         });
 
-        if (BuildConfig.DEBUG) {
-            Stetho.initializeWithDefaults(this);
-        }
-
         createNotificationChannels();
+
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         if (Boolean.valueOf(SharedPreferencesManager.readString(this, SharedPreferencesManager.SharedPrefKey.DARK_THEME)))

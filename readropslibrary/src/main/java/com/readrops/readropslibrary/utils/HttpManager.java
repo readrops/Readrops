@@ -1,6 +1,5 @@
 package com.readrops.readropslibrary.utils;
 
-import com.readrops.readropslibrary.BuildConfig;
 import com.readrops.readropslibrary.services.Credentials;
 
 import java.io.IOException;
@@ -10,7 +9,6 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.logging.HttpLoggingInterceptor;
 
 public class HttpManager {
 
@@ -21,26 +19,12 @@ public class HttpManager {
         buildOkHttp();
     }
 
-    public HttpManager(final Credentials credentials) {
-        this.credentials = credentials;
-
-        buildOkHttp();
-    }
-
     private void buildOkHttp() {
-        OkHttpClient.Builder httpBuilder = new OkHttpClient.Builder()
+        okHttpClient = new OkHttpClient.Builder()
                 .callTimeout(1, TimeUnit.MINUTES)
-                .readTimeout(1, TimeUnit.HOURS);
-
-        httpBuilder.addInterceptor(new AuthInterceptor());
-
-        if (BuildConfig.DEBUG) {
-            HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-            interceptor.level(HttpLoggingInterceptor.Level.BASIC);
-            httpBuilder.addInterceptor(interceptor);
-        }
-
-        okHttpClient = httpBuilder.build();
+                .readTimeout(1, TimeUnit.HOURS)
+                .addInterceptor(new AuthInterceptor())
+                .build();
     }
 
     public OkHttpClient getOkHttpClient() {
@@ -55,7 +39,6 @@ public class HttpManager {
         return credentials;
     }
 
-
     private static HttpManager instance;
 
     public static HttpManager getInstance() {
@@ -64,6 +47,10 @@ public class HttpManager {
         }
 
         return instance;
+    }
+
+    public static void setInstance(OkHttpClient client) {
+        instance.okHttpClient = client;
     }
 
     public class AuthInterceptor implements Interceptor {
