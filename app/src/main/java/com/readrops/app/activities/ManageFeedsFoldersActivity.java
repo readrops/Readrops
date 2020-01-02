@@ -14,8 +14,8 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.readrops.app.R;
-import com.readrops.app.database.entities.Folder;
-import com.readrops.app.database.entities.account.Account;
+import com.readrops.readropsdb.entities.Folder;
+import com.readrops.readropsdb.entities.account.Account;
 import com.readrops.app.databinding.ActivityManageFeedsFoldersBinding;
 import com.readrops.app.fragments.FeedsFragment;
 import com.readrops.app.fragments.FoldersFragment;

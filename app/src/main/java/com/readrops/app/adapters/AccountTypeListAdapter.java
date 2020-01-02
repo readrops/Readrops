@@ -8,7 +8,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.readrops.app.R;
-import com.readrops.app.database.entities.account.AccountType;
+import com.readrops.readropsdb.entities.account.AccountType;
 import com.readrops.app.databinding.AccountTypeItemBinding;
 
 import java.util.List;

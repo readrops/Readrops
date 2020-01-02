@@ -7,8 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.readrops.app.database.Database;
-import com.readrops.app.database.entities.account.Account;
+import com.readrops.readropsdb.Database;
+import com.readrops.readropsdb.entities.account.Account;
 import com.readrops.app.repositories.ARepository;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.HtmlParser;

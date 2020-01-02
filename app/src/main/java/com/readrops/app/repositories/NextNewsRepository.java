@@ -7,15 +7,16 @@ import android.util.TimingLogger;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.readrops.app.database.entities.Feed;
-import com.readrops.app.database.entities.Folder;
-import com.readrops.app.database.entities.Item;
-import com.readrops.app.database.entities.account.Account;
+import com.readrops.readropsdb.entities.Feed;
+import com.readrops.readropsdb.entities.Folder;
+import com.readrops.readropsdb.entities.Item;
+import com.readrops.readropsdb.entities.account.Account;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.matchers.FeedMatcher;
 import com.readrops.app.utils.matchers.ItemMatcher;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.utils.Utils;
+import com.readrops.readropslibrary.services.Credentials;
 import com.readrops.readropslibrary.services.SyncType;
 import com.readrops.readropslibrary.services.nextcloudnews.NextNewsAPI;
 import com.readrops.readropslibrary.services.nextcloudnews.NextNewsSyncData;
@@ -51,7 +52,7 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
     @Override
     protected NextNewsAPI createAPI() {
         if (account != null)
-            return new NextNewsAPI(account.toCredentials());
+            return new NextNewsAPI(Credentials.toCredentials(account));
 
         return null;
     }
@@ -60,9 +61,9 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
     public Single<Boolean> login(Account account, boolean insert) {
         return Single.<NextNewsUser>create(emitter -> {
             if (api == null)
-                api = new NextNewsAPI(account.toCredentials());
+                api = new NextNewsAPI(Credentials.toCredentials(account));
             else
-                api.setCredentials(account.toCredentials());
+                api.setCredentials(Credentials.toCredentials(account));
 
             NextNewsUser user = api.login();
 

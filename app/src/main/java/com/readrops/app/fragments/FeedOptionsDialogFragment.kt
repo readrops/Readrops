@@ -9,8 +9,8 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.readrops.app.R
-import com.readrops.app.database.entities.account.Account
-import com.readrops.app.database.pojo.FeedWithFolder
+import com.readrops.readropsdb.entities.account.Account
+import com.readrops.readropsdb.pojo.FeedWithFolder
 import com.readrops.app.databinding.FeedOptionsLayoutBinding
 import com.readrops.app.utils.ReadropsKeys.ACCOUNT
 

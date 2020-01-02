@@ -12,7 +12,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
 import com.readrops.app.R;
-import com.readrops.app.database.pojo.ItemWithFeed;
+import com.readrops.readropsdb.pojo.ItemWithFeed;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

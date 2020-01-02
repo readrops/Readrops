@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">readropsdb</string>
+
+    <string name="freshrss" translatable="false">Freshrss</string>
+    <string name="feedly" translatable="false">Feedly</string>
+    <string name="nextcloud_news" translatable="false">Nextcloud News</string>
+
+    <string name="local_account">Local account</string>
+
+</resources>

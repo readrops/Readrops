@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.readrops.app.R;
-import com.readrops.app.database.entities.Folder;
-import com.readrops.app.database.pojo.FolderWithFeedCount;
+import com.readrops.readropsdb.entities.Folder;
+import com.readrops.readropsdb.pojo.FolderWithFeedCount;
 import com.readrops.app.databinding.FolderLayoutBinding;
 
 import java.util.List;

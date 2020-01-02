@@ -42,10 +42,12 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.readrops.app.R;
 import com.readrops.app.adapters.MainItemListAdapter;
-import com.readrops.app.database.entities.Feed;
-import com.readrops.app.database.entities.Folder;
-import com.readrops.app.database.entities.account.Account;
-import com.readrops.app.database.pojo.ItemWithFeed;
+import com.readrops.readropsdb.entities.Feed;
+import com.readrops.readropsdb.entities.Folder;
+import com.readrops.readropsdb.entities.account.Account;
+import com.readrops.readropsdb.filters.FilterType;
+import com.readrops.readropsdb.filters.ListSortType;
+import com.readrops.readropsdb.pojo.ItemWithFeed;
 import com.readrops.app.utils.DrawerManager;
 import com.readrops.app.utils.GlideApp;
 import com.readrops.app.utils.ReadropsItemTouchCallback;
@@ -233,12 +235,12 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
             switch (id) {
                 case DrawerManager.ARTICLES_ITEM_ID:
-                    viewModel.setFilterType(MainViewModel.FilterType.NO_FILTER);
+                    viewModel.setFilterType(FilterType.NO_FILTER);
                     scrollToTop = true;
                     viewModel.invalidate();
                     break;
                 case DrawerManager.READ_LATER_ID:
-                    viewModel.setFilterType(MainViewModel.FilterType.READ_IT_LATER_FILTER);
+                    viewModel.setFilterType(FilterType.READ_IT_LATER_FILTER);
                     viewModel.invalidate();
                     break;
                 case DrawerManager.ABOUT_ID:
@@ -255,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             drawer.closeDrawer();
 
             viewModel.setFilterFeedId((int) drawerItem.getIdentifier());
-            viewModel.setFilterType(MainViewModel.FilterType.FEED_FILTER);
+            viewModel.setFilterType(FilterType.FEED_FILTER);
             viewModel.invalidate();
         }
     }
@@ -410,7 +412,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     .doOnError(throwable -> Utils.showSnackbar(rootLayout, throwable.getMessage()))
                     .subscribe();
 
-            if (viewModel.getFilterType() == MainViewModel.FilterType.READ_IT_LATER_FILTER)
+            if (viewModel.getFilterType() == FilterType.READ_IT_LATER_FILTER)
                 adapter.notifyItemChanged(viewHolder.getAdapterPosition());
         }
     }
@@ -726,8 +728,4 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         super.onSaveInstanceState(outState);
     }
 
-    public enum ListSortType {
-        NEWEST_TO_OLDEST,
-        OLDEST_TO_NEWEST
-    }
 }

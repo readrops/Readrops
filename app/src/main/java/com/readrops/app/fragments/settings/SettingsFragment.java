@@ -8,7 +8,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.readrops.app.R;
-import com.readrops.app.database.Database;
+import com.readrops.readropsdb.Database;
 import com.readrops.app.utils.feedscolors.FeedsColorsIntentService;
 
 import java.util.ArrayList;

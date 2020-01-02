@@ -1,1 +1,1 @@
-include ':app', ':readropslibrary'
+include ':app', ':readropslibrary', ':readropsdb'

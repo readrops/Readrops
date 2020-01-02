@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.readrops.app.R
-import com.readrops.app.database.entities.Folder
+import com.readrops.readropsdb.entities.Folder
 import com.readrops.app.databinding.FolderOptionsLayoutBinding
 
 class FolderOptionsDialogFragment : BottomSheetDialogFragment() {

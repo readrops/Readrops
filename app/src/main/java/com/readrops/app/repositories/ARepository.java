@@ -6,12 +6,12 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.readrops.app.database.Database;
-import com.readrops.app.database.entities.Feed;
-import com.readrops.app.database.entities.Folder;
-import com.readrops.app.database.entities.Item;
-import com.readrops.app.database.entities.account.Account;
-import com.readrops.app.database.entities.account.AccountType;
+import com.readrops.readropsdb.Database;
+import com.readrops.readropsdb.entities.Feed;
+import com.readrops.readropsdb.entities.Folder;
+import com.readrops.readropsdb.entities.Item;
+import com.readrops.readropsdb.entities.account.Account;
+import com.readrops.readropsdb.entities.account.AccountType;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.utils.feedscolors.FeedColorsKt;

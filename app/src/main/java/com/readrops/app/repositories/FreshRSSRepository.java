@@ -7,15 +7,16 @@ import android.util.TimingLogger;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.readrops.app.database.entities.Feed;
-import com.readrops.app.database.entities.Folder;
-import com.readrops.app.database.entities.Item;
-import com.readrops.app.database.entities.account.Account;
+import com.readrops.readropsdb.entities.Feed;
+import com.readrops.readropsdb.entities.Folder;
+import com.readrops.readropsdb.entities.Item;
+import com.readrops.readropsdb.entities.account.Account;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.matchers.FeedMatcher;
 import com.readrops.app.utils.matchers.ItemMatcher;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.utils.Utils;
+import com.readrops.readropslibrary.services.Credentials;
 import com.readrops.readropslibrary.services.SyncType;
 import com.readrops.readropslibrary.services.freshrss.FreshRSSAPI;
 import com.readrops.readropslibrary.services.freshrss.FreshRSSCredentials;
@@ -44,7 +45,7 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
     @Override
     protected FreshRSSAPI createAPI() {
         if (account != null)
-            return new FreshRSSAPI(account.toCredentials());
+            return new FreshRSSAPI(Credentials.toCredentials(account));
 
         return null;
     }
@@ -52,9 +53,9 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
     @Override
     public Single<Boolean> login(Account account, boolean insert) {
         if (api == null)
-            api = new FreshRSSAPI(account.toCredentials());
+            api = new FreshRSSAPI(Credentials.toCredentials(account));
         else
-            api.setCredentials(account.toCredentials());
+            api.setCredentials(Credentials.toCredentials(account));
 
         return api.login(account.getLogin(), account.getPassword())
                 .flatMap(token -> {

@@ -6,8 +6,8 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.readrops.app.R
 import com.readrops.app.ReadropsApp
-import com.readrops.app.database.Database
-import com.readrops.app.database.entities.Feed
+import com.readrops.readropsdb.Database
+import com.readrops.readropsdb.entities.Feed
 import com.readrops.app.utils.ReadropsKeys.FEEDS
 
 class FeedsColorsIntentService : IntentService("FeedsColorsIntentService") {

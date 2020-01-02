@@ -9,9 +9,9 @@ import androidx.core.content.FileProvider;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.readrops.app.database.Database;
-import com.readrops.app.database.dao.ItemDao;
-import com.readrops.app.database.pojo.ItemWithFeed;
+import com.readrops.readropsdb.Database;
+import com.readrops.readropsdb.dao.ItemDao;
+import com.readrops.readropsdb.pojo.ItemWithFeed;
 
 import java.io.File;
 import java.io.FileOutputStream;

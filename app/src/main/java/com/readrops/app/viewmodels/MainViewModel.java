@@ -9,14 +9,15 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
-import com.readrops.app.activities.MainActivity;
-import com.readrops.app.database.Database;
-import com.readrops.app.database.ItemsListQueryBuilder;
-import com.readrops.app.database.RoomFactoryWrapper;
-import com.readrops.app.database.entities.Feed;
-import com.readrops.app.database.entities.Folder;
-import com.readrops.app.database.entities.account.Account;
-import com.readrops.app.database.pojo.ItemWithFeed;
+import com.readrops.readropsdb.Database;
+import com.readrops.readropsdb.ItemsListQueryBuilder;
+import com.readrops.readropsdb.RoomFactoryWrapper;
+import com.readrops.readropsdb.entities.Feed;
+import com.readrops.readropsdb.entities.Folder;
+import com.readrops.readropsdb.entities.account.Account;
+import com.readrops.readropsdb.filters.FilterType;
+import com.readrops.readropsdb.filters.ListSortType;
+import com.readrops.readropsdb.pojo.ItemWithFeed;
 import com.readrops.app.repositories.ARepository;
 
 import java.util.ArrayList;
@@ -48,7 +49,7 @@ public class MainViewModel extends AndroidViewModel {
         queryBuilder = new ItemsListQueryBuilder();
 
         queryBuilder.setFilterType(FilterType.NO_FILTER);
-        queryBuilder.setSortType(MainActivity.ListSortType.NEWEST_TO_OLDEST);
+        queryBuilder.setSortType(ListSortType.NEWEST_TO_OLDEST);
 
         db = Database.getInstance(application);
         itemsWithFeed = new MediatorLiveData<>();
@@ -99,11 +100,11 @@ public class MainViewModel extends AndroidViewModel {
         return queryBuilder.getFilterType();
     }
 
-    public void setSortType(MainActivity.ListSortType sortType) {
+    public void setSortType(ListSortType sortType) {
         queryBuilder.setSortType(sortType);
     }
 
-    public MainActivity.ListSortType getSortType() {
+    public ListSortType getSortType() {
         return queryBuilder.getSortType();
     }
 
@@ -240,12 +241,6 @@ public class MainViewModel extends AndroidViewModel {
             db.itemDao().setReadItLater(itemId);
             emitter.onComplete();
         });
-    }
-
-    public enum FilterType {
-        FEED_FILTER,
-        READ_IT_LATER_FILTER,
-        NO_FILTER
     }
 
     //endregion

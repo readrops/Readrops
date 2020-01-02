@@ -51,14 +51,10 @@
     <string name="account_name">Account name</string>
     <string name="login">Login</string>
     <string name="password">Password</string>
-    <string name="nextcloud_news" translatable="false">Nextcloud News</string>
     <string name="account_settings">Account settings</string>
     <string name="add_account">Add account</string>
     <string name="no_feed">No feed</string>
     <string name="choose_account">Choose an account</string>
-    <string name="local_account">Local account</string>
-    <string name="freshrss" translatable="false">Freshrss</string>
-    <string name="feedly" translatable="false">Feedly</string>
     <string name="feeds_and_folders">Feeds and folders</string>
     <string name="account">Account</string>
     <string name="manage_feeds_folders">Manage feeds and folders</string>

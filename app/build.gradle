@@ -13,13 +13,6 @@ android {
         versionName "1.1.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments = [
-                        "room.incremental": "true"
-                ]
-            }
-        }
 
     }
     testOptions {
@@ -53,6 +46,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':readropslibrary')
+    implementation project(':readropsdb')
 
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'com.google.android.material:material:1.0.0'
@@ -80,14 +74,6 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
     kapt 'androidx.lifecycle:lifecycle-common-java8:2.1.0'
 
-    implementation 'androidx.room:room-runtime:2.2.2'
-    kapt 'androidx.room:room-compiler:2.2.2'
-    implementation 'androidx.room:room-rxjava2:2.2.2'
-
-    implementation 'androidx.paging:paging-runtime:2.1.0'
-    implementation 'androidx.paging:paging-common:2.1.0'
-
-    implementation 'joda-time:joda-time:2.10.5'
     implementation 'org.jsoup:jsoup:1.12.1'
 
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'

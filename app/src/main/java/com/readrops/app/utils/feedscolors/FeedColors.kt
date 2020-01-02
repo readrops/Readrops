@@ -1,7 +1,7 @@
 package com.readrops.app.utils.feedscolors
 
 import androidx.palette.graphics.Palette
-import com.readrops.app.database.entities.Feed
+import com.readrops.readropsdb.entities.Feed
 import com.readrops.app.utils.HtmlParser
 import com.readrops.app.utils.Utils
 
