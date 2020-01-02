@@ -74,10 +74,6 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
     kapt 'androidx.lifecycle:lifecycle-common-java8:2.1.0'
 
-    implementation 'org.jsoup:jsoup:1.12.1'
-
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
-
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
 
     implementation 'com.mikepenz:fastadapter:3.3.1'
