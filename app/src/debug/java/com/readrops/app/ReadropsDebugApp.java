@@ -10,6 +10,7 @@ import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
 import com.facebook.flipper.plugins.navigation.NavigationFlipperPlugin;
 import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor;
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
+import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin;
 import com.facebook.soloader.SoLoader;
 import com.readrops.readropslibrary.utils.HttpManager;
 
@@ -41,6 +42,7 @@ public class ReadropsDebugApp extends ReadropsApp {
             client.addPlugin(new DatabasesFlipperPlugin(this));
             client.addPlugin(CrashReporterPlugin.getInstance());
             client.addPlugin(NavigationFlipperPlugin.getInstance());
+            client.addPlugin(new SharedPreferencesFlipperPlugin(this));
 
             client.start();
         }
