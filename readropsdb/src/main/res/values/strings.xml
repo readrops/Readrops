@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">readropsdb</string>
+    <string name="app_name" translatable="false">readropsdb</string>
 
     <string name="freshrss" translatable="false">Freshrss</string>
     <string name="feedly" translatable="false">Feedly</string>
