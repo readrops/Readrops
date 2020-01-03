@@ -26,13 +26,13 @@ class FreshRSSFeedAdapter {
             val feed = Feed()
             while (reader.hasNext()) {
                 with(feed) {
-                    when (reader.nextName()) {
-                        "title" -> name = reader.nextString()
-                        "url" -> url = reader.nextString()
-                        "htmlUrl" -> siteUrl = reader.nextString()
-                        "iconUrl" -> iconUrl = reader.nextString()
-                        "id" -> remoteId = reader.nextString()
-                        "categories" -> remoteFolderId = getCategoryId(reader)
+                    when (reader.selectName(NAMES)) {
+                        0 -> name = reader.nextString()
+                        1 -> url = reader.nextString()
+                        2 -> siteUrl = reader.nextString()
+                        3 -> iconUrl = reader.nextString()
+                        4 -> remoteId = reader.nextString()
+                        5 -> remoteFolderId = getCategoryId(reader)
                         else -> reader.skipValue()
                     }
                 }
@@ -69,5 +69,9 @@ class FreshRSSFeedAdapter {
 
         reader.endArray()
         return id
+    }
+
+    companion object {
+        val NAMES: JsonReader.Options = JsonReader.Options.of("title", "url", "htmlUrl", "iconUrl", "id", "categories")
     }
 }
