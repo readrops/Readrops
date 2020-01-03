@@ -1,7 +1,7 @@
 package com.readrops.readropslibrary.services.freshrss;
 
 import com.readrops.readropsdb.entities.Feed;
-import com.readrops.readropslibrary.services.freshrss.json.FreshRSSFolders;
+import com.readrops.readropsdb.entities.Folder;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSItems;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSUserInfo;
 
@@ -38,7 +38,7 @@ public interface FreshRSSService {
     Single<FreshRSSItems> getItems(@Query("xt") String excludeTarget, @Query("n") int max, @Query("ot") Long lastModified);
 
     @GET("reader/api/0/tag/list?output=json")
-    Single<FreshRSSFolders> getFolders();
+    Single<List<Folder>> getFolders();
 
     @FormUrlEncoded
     @POST("reader/api/0/edit-tag")

@@ -20,13 +20,11 @@ import com.readrops.readropslibrary.services.SyncType;
 import com.readrops.readropslibrary.services.freshrss.FreshRSSAPI;
 import com.readrops.readropslibrary.services.freshrss.FreshRSSCredentials;
 import com.readrops.readropslibrary.services.freshrss.FreshRSSSyncData;
-import com.readrops.readropslibrary.services.freshrss.json.FreshRSSFolder;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSItem;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -199,22 +197,8 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
 
     }
 
-    private void insertFolders(List<FreshRSSFolder> freshRSSFolders) {
-        List<Folder> folders = new ArrayList<>();
-
-        for (FreshRSSFolder freshRSSFolder : freshRSSFolders) {
-            if (freshRSSFolder.getType() != null && freshRSSFolder.getType().equals("folder")) {
-                List<Object> tokens = Collections.list(new StringTokenizer(freshRSSFolder.getId(), "/"));
-
-                Folder folder = new Folder((String) tokens.get(tokens.size() - 1));
-                folder.setRemoteId(freshRSSFolder.getId());
-                folder.setAccountId(account.getId());
-
-                folders.add(folder);
-            }
-        }
-
-        database.folderDao().foldersUpsert(folders, account);
+    private void insertFolders(List<Folder> freshRSSFolders) {
+        database.folderDao().foldersUpsert(freshRSSFolders, account);
     }
 
     private void insertItems(List<FreshRSSItem> items, boolean initialSync) {

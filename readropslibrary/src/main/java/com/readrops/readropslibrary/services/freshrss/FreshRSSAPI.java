@@ -4,11 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.readrops.readropsdb.entities.Feed;
+import com.readrops.readropsdb.entities.Folder;
 import com.readrops.readropslibrary.services.API;
 import com.readrops.readropslibrary.services.Credentials;
 import com.readrops.readropslibrary.services.SyncType;
-import com.readrops.readropslibrary.services.freshrss.adapters.FreshRSSFeedAdapter;
-import com.readrops.readropslibrary.services.freshrss.json.FreshRSSFolders;
+import com.readrops.readropslibrary.services.freshrss.adapters.FreshRSSFeedsAdapter;
+import com.readrops.readropslibrary.services.freshrss.adapters.FreshRSSFoldersAdapter;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSItems;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSUserInfo;
 import com.squareup.moshi.Moshi;
@@ -35,7 +36,8 @@ public class FreshRSSAPI extends API<FreshRSSService> {
     @Override
     protected Moshi buildMoshi() {
         return new Moshi.Builder()
-                .add(new FreshRSSFeedAdapter())
+                .add(new FreshRSSFeedsAdapter())
+                .add(new FreshRSSFoldersAdapter())
                 .build();
     }
 
@@ -122,6 +124,10 @@ public class FreshRSSAPI extends API<FreshRSSService> {
                 .flatMap(freshRSSFeeds -> {
                     syncResult.setFeeds(freshRSSFeeds);
 
+                    return getFolders();
+                }).flatMap(folders -> {
+                    syncResult.setFolders(folders);
+
                     return Single.just(syncResult);
                 });
     }
@@ -131,7 +137,7 @@ public class FreshRSSAPI extends API<FreshRSSService> {
      *
      * @return the feeds folders
      */
-    public Single<FreshRSSFolders> getFolders() {
+    public Single<List<Folder>> getFolders() {
         return api.getFolders();
     }
 
