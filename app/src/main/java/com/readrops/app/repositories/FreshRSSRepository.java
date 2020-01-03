@@ -7,21 +7,19 @@ import android.util.TimingLogger;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.readrops.app.utils.FeedInsertionResult;
+import com.readrops.app.utils.ParsingResult;
+import com.readrops.app.utils.Utils;
+import com.readrops.app.utils.matchers.ItemMatcher;
 import com.readrops.readropsdb.entities.Feed;
 import com.readrops.readropsdb.entities.Folder;
 import com.readrops.readropsdb.entities.Item;
 import com.readrops.readropsdb.entities.account.Account;
-import com.readrops.app.utils.FeedInsertionResult;
-import com.readrops.app.utils.matchers.FeedMatcher;
-import com.readrops.app.utils.matchers.ItemMatcher;
-import com.readrops.app.utils.ParsingResult;
-import com.readrops.app.utils.Utils;
 import com.readrops.readropslibrary.services.Credentials;
 import com.readrops.readropslibrary.services.SyncType;
 import com.readrops.readropslibrary.services.freshrss.FreshRSSAPI;
 import com.readrops.readropslibrary.services.freshrss.FreshRSSCredentials;
 import com.readrops.readropslibrary.services.freshrss.FreshRSSSyncData;
-import com.readrops.readropslibrary.services.freshrss.json.FreshRSSFeed;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSFolder;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSItem;
 
@@ -192,14 +190,8 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
                 .andThen(super.deleteFolder(folder));
     }
 
-    private void insertFeeds(List<FreshRSSFeed> freshRSSFeeds) {
-        List<Feed> feeds = new ArrayList<>();
-
-        for (FreshRSSFeed freshRSSFeed : freshRSSFeeds) {
-            feeds.add(FeedMatcher.freshRSSFeedToFeed(freshRSSFeed, account));
-        }
-
-        List<Long> insertedFeedsIds = database.feedDao().feedsUpsert(feeds, account);
+    private void insertFeeds(List<Feed> freshRSSFeeds) {
+        List<Long> insertedFeedsIds = database.feedDao().feedsUpsert(freshRSSFeeds, account);
 
         if (!insertedFeedsIds.isEmpty()) {
             setFeedsColors(database.feedDao().selectFromIdList(insertedFeedsIds));

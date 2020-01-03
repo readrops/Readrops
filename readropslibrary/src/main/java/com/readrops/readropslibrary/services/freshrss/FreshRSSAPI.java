@@ -3,13 +3,15 @@ package com.readrops.readropslibrary.services.freshrss;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.readrops.readropsdb.entities.Feed;
 import com.readrops.readropslibrary.services.API;
 import com.readrops.readropslibrary.services.Credentials;
 import com.readrops.readropslibrary.services.SyncType;
-import com.readrops.readropslibrary.services.freshrss.json.FreshRSSFeeds;
+import com.readrops.readropslibrary.services.freshrss.adapters.FreshRSSFeedAdapter;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSFolders;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSItems;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSUserInfo;
+import com.squareup.moshi.Moshi;
 
 import java.io.StringReader;
 import java.util.List;
@@ -28,6 +30,13 @@ public class FreshRSSAPI extends API<FreshRSSService> {
 
     public FreshRSSAPI(Credentials credentials) {
         super(credentials, FreshRSSService.class, FreshRSSService.END_POINT);
+    }
+
+    @Override
+    protected Moshi buildMoshi() {
+        return new Moshi.Builder()
+                .add(new FreshRSSFeedAdapter())
+                .build();
     }
 
     /**
@@ -83,7 +92,7 @@ public class FreshRSSAPI extends API<FreshRSSService> {
     public Single<FreshRSSSyncResult> sync(@NonNull SyncType syncType, @NonNull FreshRSSSyncData syncData, @NonNull String writeToken) {
         FreshRSSSyncResult syncResult = new FreshRSSSyncResult();
 
-        return setItemsReadState(syncData, writeToken)
+        /*return setItemsReadState(syncData, writeToken)
                 .andThen(getFolders()
                         .flatMap(freshRSSFolders -> {
                             syncResult.setFolders(freshRSSFolders.getTags());
@@ -107,7 +116,14 @@ public class FreshRSSAPI extends API<FreshRSSService> {
                             syncResult.setLastUpdated(freshRSSItems.getUpdated());
 
                             return Single.just(syncResult);
-                        }));
+                        }));*/
+
+        return getFeeds()
+                .flatMap(freshRSSFeeds -> {
+                    syncResult.setFeeds(freshRSSFeeds);
+
+                    return Single.just(syncResult);
+                });
     }
 
     /**
@@ -124,7 +140,7 @@ public class FreshRSSAPI extends API<FreshRSSService> {
      *
      * @return the feeds
      */
-    public Single<FreshRSSFeeds> getFeeds() {
+    public Single<List<Feed>> getFeeds() {
         return api.getFeeds();
     }
 

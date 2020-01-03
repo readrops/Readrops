@@ -3,10 +3,11 @@ package com.readrops.readropslibrary.services;
 import androidx.annotation.NonNull;
 
 import com.readrops.readropslibrary.utils.HttpManager;
+import com.squareup.moshi.Moshi;
 
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.moshi.MoshiConverterFactory;
 
 /**
  * Abstraction level for services APIs
@@ -23,10 +24,12 @@ public abstract class API<T> {
         api = createAPI(credentials, clazz, endPoint);
     }
 
+    protected abstract Moshi buildMoshi();
+
     protected Retrofit getConfiguredRetrofitInstance(@NonNull String endPoint) {
         return new Retrofit.Builder()
                 .baseUrl(HttpManager.getInstance().getCredentials().getUrl() + endPoint)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(MoshiConverterFactory.create(buildMoshi()))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(HttpManager.getInstance().getOkHttpClient())
                 .build();

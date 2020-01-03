@@ -19,6 +19,7 @@ import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
 import com.readrops.readropslibrary.utils.ConflictException;
 import com.readrops.readropslibrary.utils.LibUtils;
 import com.readrops.readropslibrary.utils.UnknownFormatException;
+import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -32,6 +33,12 @@ public class NextNewsAPI extends API<NextNewsService> {
 
     public NextNewsAPI(Credentials credentials) {
         super(credentials, NextNewsService.class, NextNewsService.END_POINT);
+    }
+
+    @Override
+    protected Moshi buildMoshi() {
+        return new Moshi.Builder()
+                .build();
     }
 
     public NextNewsUser login() throws IOException {
