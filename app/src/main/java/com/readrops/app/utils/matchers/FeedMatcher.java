@@ -6,7 +6,6 @@ import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
 import com.readrops.readropslibrary.localfeed.json.JSONFeed;
 import com.readrops.readropslibrary.localfeed.rss.RSSChannel;
 import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
-import com.readrops.readropslibrary.services.freshrss.json.FreshRSSFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeed;
 
 import org.jsoup.Jsoup;
@@ -28,22 +27,6 @@ public final class FeedMatcher {
         newFeed.setRemoteFolderId(String.valueOf(feed.getFolderId()));
 
         newFeed.setAccountId(account.getId());
-
-        return newFeed;
-    }
-
-    public static Feed freshRSSFeedToFeed(FreshRSSFeed feed, Account account) {
-        Feed newFeed = new Feed();
-
-        newFeed.setName(feed.getTitle());
-        newFeed.setUrl(feed.getUrl());
-        newFeed.setSiteUrl(feed.getHtmlUrl());
-
-        newFeed.setIconUrl(feed.getIconUrl());
-
-        newFeed.setRemoteFolderId(feed.getCategories().get(0).getId());
-        newFeed.setAccountId(account.getId());
-        newFeed.setRemoteId(feed.getId());
 
         return newFeed;
     }

@@ -1,15 +1,14 @@
 package com.readrops.app.utils.matchers;
 
-import com.readrops.readropsdb.entities.Feed;
-import com.readrops.readropsdb.entities.Item;
 import com.readrops.app.utils.DateUtils;
 import com.readrops.app.utils.Utils;
+import com.readrops.readropsdb.entities.Feed;
+import com.readrops.readropsdb.entities.Item;
 import com.readrops.readropslibrary.localfeed.atom.ATOMEntry;
 import com.readrops.readropslibrary.localfeed.json.JSONItem;
 import com.readrops.readropslibrary.localfeed.rss.RSSEnclosure;
 import com.readrops.readropslibrary.localfeed.rss.RSSItem;
 import com.readrops.readropslibrary.localfeed.rss.RSSMediaContent;
-import com.readrops.readropslibrary.services.freshrss.json.FreshRSSItem;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItem;
 import com.readrops.readropslibrary.utils.ParseException;
 
@@ -44,24 +43,6 @@ public final class ItemMatcher {
         item.setFeedId(feedId);
 
         return item;
-    }
-
-    public static Item freshRSSItemtoItem(FreshRSSItem item, int feedId) {
-        Item newItem = new Item();
-
-        newItem.setTitle(item.getTitle());
-        newItem.setAuthor(item.getAuthor());
-
-        newItem.setPubDate(new LocalDateTime(item.getPublished() * 1000L,
-                DateTimeZone.getDefault()));
-        newItem.setContent(item.getSummary().getContent());
-
-        newItem.setLink(item.getAlternate().get(0).getHref());
-        newItem.setFeedId(feedId);
-        newItem.setRemoteId(item.getId());
-        newItem.setRead(item.isRead());
-
-        return newItem;
     }
 
     public static List<Item> itemsFromRSS(List<RSSItem> items, Feed feed) throws ParseException {
