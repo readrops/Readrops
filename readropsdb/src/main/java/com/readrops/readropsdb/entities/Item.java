@@ -3,6 +3,7 @@ package com.readrops.readropsdb.entities;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import org.joda.time.LocalDateTime;
@@ -10,8 +11,7 @@ import org.joda.time.LocalDateTime;
 import static androidx.room.ForeignKey.CASCADE;
 
 
-@Entity
-(foreignKeys = @ForeignKey(entity = Feed.class, parentColumns = "id", childColumns = "feed_id", onDelete = CASCADE))
+@Entity(foreignKeys = @ForeignKey(entity = Feed.class, parentColumns = "id", childColumns = "feed_id", onDelete = CASCADE))
 public class Item implements Comparable<Item> {
 
     @PrimaryKey(autoGenerate = true)
@@ -54,6 +54,9 @@ public class Item implements Comparable<Item> {
     private boolean readItLater;
 
     private String remoteId;
+
+    @Ignore
+    private String feedRemoteId;
 
     public int getId() {
         return id;
@@ -192,6 +195,14 @@ public class Item implements Comparable<Item> {
 
     public void setRemoteId(String remoteId) {
         this.remoteId = remoteId;
+    }
+
+    public String getFeedRemoteId() {
+        return feedRemoteId;
+    }
+
+    public void setFeedRemoteId(String feedRemoteId) {
+        this.feedRemoteId = feedRemoteId;
     }
 
     @Override

@@ -5,14 +5,16 @@ import androidx.annotation.Nullable;
 
 import com.readrops.readropsdb.entities.Feed;
 import com.readrops.readropsdb.entities.Folder;
+import com.readrops.readropsdb.entities.Item;
 import com.readrops.readropslibrary.services.API;
 import com.readrops.readropslibrary.services.Credentials;
 import com.readrops.readropslibrary.services.SyncType;
 import com.readrops.readropslibrary.services.freshrss.adapters.FreshRSSFeedsAdapter;
 import com.readrops.readropslibrary.services.freshrss.adapters.FreshRSSFoldersAdapter;
-import com.readrops.readropslibrary.services.freshrss.json.FreshRSSItems;
+import com.readrops.readropslibrary.services.freshrss.adapters.FreshRSSItemsAdapter;
 import com.readrops.readropslibrary.services.freshrss.json.FreshRSSUserInfo;
 import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
 
 import java.io.StringReader;
 import java.util.List;
@@ -36,6 +38,7 @@ public class FreshRSSAPI extends API<FreshRSSService> {
     @Override
     protected Moshi buildMoshi() {
         return new Moshi.Builder()
+                .add(Types.newParameterizedType(List.class, Item.class), new FreshRSSItemsAdapter())
                 .add(new FreshRSSFeedsAdapter())
                 .add(new FreshRSSFoldersAdapter())
                 .build();
@@ -94,39 +97,23 @@ public class FreshRSSAPI extends API<FreshRSSService> {
     public Single<FreshRSSSyncResult> sync(@NonNull SyncType syncType, @NonNull FreshRSSSyncData syncData, @NonNull String writeToken) {
         FreshRSSSyncResult syncResult = new FreshRSSSyncResult();
 
-        /*return setItemsReadState(syncData, writeToken)
-                .andThen(getFolders()
-                        .flatMap(freshRSSFolders -> {
-                            syncResult.setFolders(freshRSSFolders.getTags());
+        return getFolders()
+                .flatMap(freshRSSFolders -> {
+                    syncResult.setFolders(freshRSSFolders);
 
-                            return getFeeds();
-                        })
-                        .flatMap(freshRSSFeeds -> {
-                            syncResult.setFeeds(freshRSSFeeds.getSubscriptions());
-
-                            switch (syncType) {
-                                case INITIAL_SYNC:
-                                    return getItems(GOOGLE_READ, MAX_ITEMS, null);
-                                case CLASSIC_SYNC:
-                                    return getItems(GOOGLE_READ, MAX_ITEMS, syncData.getLastModified());
-                            }
-
-                            return Single.error(new Exception("Unknown sync type"));
-                        })
-                        .flatMap(freshRSSItems -> {
-                            syncResult.setItems(freshRSSItems.getItems());
-                            syncResult.setLastUpdated(freshRSSItems.getUpdated());
-
-                            return Single.just(syncResult);
-                        }));*/
-
-        return getFeeds()
+                    return getFeeds();
+                })
                 .flatMap(freshRSSFeeds -> {
                     syncResult.setFeeds(freshRSSFeeds);
 
-                    return getFolders();
-                }).flatMap(folders -> {
-                    syncResult.setFolders(folders);
+                    if (syncType == SyncType.INITIAL_SYNC) {
+                        return getItems(GOOGLE_READ, MAX_ITEMS, null);
+                    } else {
+                        return getItems(GOOGLE_READ, MAX_ITEMS, syncData.getLastModified());
+                    }
+                })
+                .flatMap(freshRSSItems -> {
+                    syncResult.setItems(freshRSSItems);
 
                     return Single.just(syncResult);
                 });
@@ -158,7 +145,7 @@ public class FreshRSSAPI extends API<FreshRSSService> {
      * @param lastModified  fetch only items created after this timestamp
      * @return the items
      */
-    public Single<FreshRSSItems> getItems(@Nullable String excludeTarget, int max, @Nullable Long lastModified) {
+    public Single<List<Item>> getItems(@Nullable String excludeTarget, int max, @Nullable Long lastModified) {
         return api.getItems(excludeTarget, max, lastModified);
     }
 

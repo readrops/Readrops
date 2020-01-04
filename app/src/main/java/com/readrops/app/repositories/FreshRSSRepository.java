@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.utils.Utils;
-import com.readrops.app.utils.matchers.ItemMatcher;
 import com.readrops.readropsdb.entities.Feed;
 import com.readrops.readropsdb.entities.Folder;
 import com.readrops.readropsdb.entities.Item;
@@ -20,7 +19,6 @@ import com.readrops.readropslibrary.services.SyncType;
 import com.readrops.readropslibrary.services.freshrss.FreshRSSAPI;
 import com.readrops.readropslibrary.services.freshrss.FreshRSSCredentials;
 import com.readrops.readropslibrary.services.freshrss.FreshRSSSyncData;
-import com.readrops.readropslibrary.services.freshrss.json.FreshRSSItem;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -111,10 +109,10 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
                     insertItems(syncResult.getItems(), syncType == SyncType.INITIAL_SYNC);
                     logger.addSplit("items insertion");
 
-                    account.setLastModified(syncResult.getLastUpdated());
-                    database.accountDao().updateLastModified(account.getId(), syncResult.getLastUpdated());
+                    //account.setLastModified(syncResult.getLastUpdated());
+                    //database.accountDao().updateLastModified(account.getId(), syncResult.getLastUpdated());
 
-                    database.itemDao().resetReadChanges(account.getId());
+                    //database.itemDao().resetReadChanges(account.getId());
                     logger.dumpToLog();
 
                     return Observable.empty();
@@ -189,6 +187,10 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
     }
 
     private void insertFeeds(List<Feed> freshRSSFeeds) {
+        for (Feed feed : freshRSSFeeds) {
+            feed.setAccountId(account.getId());
+        }
+
         List<Long> insertedFeedsIds = database.feedDao().feedsUpsert(freshRSSFeeds, account);
 
         if (!insertedFeedsIds.isEmpty()) {
@@ -198,27 +200,27 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
     }
 
     private void insertFolders(List<Folder> freshRSSFolders) {
+        for (Folder folder : freshRSSFolders) {
+            folder.setAccountId(account.getId());
+        }
+
         database.folderDao().foldersUpsert(freshRSSFolders, account);
     }
 
-    private void insertItems(List<FreshRSSItem> items, boolean initialSync) {
-        List<Item> newItems = new ArrayList<>();
+    private void insertItems(List<Item> items, boolean initialSync) {
+        for (Item item : items) {
+            int feedId = database.feedDao().getFeedIdByRemoteId(item.getFeedRemoteId(), account.getId());
 
-        for (FreshRSSItem freshRSSItem : items) {
-            int feedId = database.feedDao().getFeedIdByRemoteId(String.valueOf(freshRSSItem.getOrigin().getStreamId()), account.getId());
-
-            if (!initialSync && feedId > 0 && database.itemDao().remoteItemExists(freshRSSItem.getId(), feedId)) {
-                database.itemDao().setReadState(freshRSSItem.getId(), freshRSSItem.isRead());
+            if (!initialSync && feedId > 0 && database.itemDao().remoteItemExists(item.getRemoteId(), feedId)) {
+                database.itemDao().setReadState(item.getRemoteId(), item.isRead());
                 break;
             }
 
-            Item item = ItemMatcher.freshRSSItemtoItem(freshRSSItem, feedId);
+            item.setFeedId(feedId);
             item.setReadTime(Utils.readTimeFromString(item.getContent()));
-
-            newItems.add(item);
         }
 
-        Collections.sort(newItems, Item::compareTo);
-        database.itemDao().insert(newItems);
+        Collections.sort(items, Item::compareTo);
+        database.itemDao().insert(items);
     }
 }
