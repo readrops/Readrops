@@ -97,26 +97,27 @@ public class FreshRSSAPI extends API<FreshRSSService> {
     public Single<FreshRSSSyncResult> sync(@NonNull SyncType syncType, @NonNull FreshRSSSyncData syncData, @NonNull String writeToken) {
         FreshRSSSyncResult syncResult = new FreshRSSSyncResult();
 
-        return getFolders()
-                .flatMap(freshRSSFolders -> {
-                    syncResult.setFolders(freshRSSFolders);
+        return setItemsReadState(syncData, writeToken)
+                .andThen(getFolders()
+                        .flatMap(freshRSSFolders -> {
+                            syncResult.setFolders(freshRSSFolders);
 
-                    return getFeeds();
-                })
-                .flatMap(freshRSSFeeds -> {
-                    syncResult.setFeeds(freshRSSFeeds);
+                            return getFeeds();
+                        })
+                        .flatMap(freshRSSFeeds -> {
+                            syncResult.setFeeds(freshRSSFeeds);
 
-                    if (syncType == SyncType.INITIAL_SYNC) {
-                        return getItems(GOOGLE_READ, MAX_ITEMS, null);
-                    } else {
-                        return getItems(GOOGLE_READ, MAX_ITEMS, syncData.getLastModified());
-                    }
-                })
-                .flatMap(freshRSSItems -> {
-                    syncResult.setItems(freshRSSItems);
+                            if (syncType == SyncType.INITIAL_SYNC) {
+                                return getItems(GOOGLE_READ, MAX_ITEMS, null);
+                            } else {
+                                return getItems(GOOGLE_READ, MAX_ITEMS, syncData.getLastModified());
+                            }
+                        })
+                        .flatMap(freshRSSItems -> {
+                            syncResult.setItems(freshRSSItems);
 
-                    return Single.just(syncResult);
-                });
+                            return Single.just(syncResult);
+                        }));
     }
 
     /**

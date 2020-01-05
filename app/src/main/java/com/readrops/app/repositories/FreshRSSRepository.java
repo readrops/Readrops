@@ -20,6 +20,8 @@ import com.readrops.readropslibrary.services.freshrss.FreshRSSAPI;
 import com.readrops.readropslibrary.services.freshrss.FreshRSSCredentials;
 import com.readrops.readropslibrary.services.freshrss.FreshRSSSyncData;
 
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -90,6 +92,7 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
         } else
             syncType = SyncType.INITIAL_SYNC;
 
+        long newLastModified = DateTime.now().getMillis() / 1000L;
         TimingLogger logger = new TimingLogger(TAG, "FreshRSS sync timer");
 
         return Single.<FreshRSSSyncData>create(emitter -> {
@@ -109,10 +112,11 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
                     insertItems(syncResult.getItems(), syncType == SyncType.INITIAL_SYNC);
                     logger.addSplit("items insertion");
 
-                    //account.setLastModified(syncResult.getLastUpdated());
-                    //database.accountDao().updateLastModified(account.getId(), syncResult.getLastUpdated());
+                    account.setLastModified(newLastModified);
+                    database.accountDao().updateLastModified(account.getId(), newLastModified);
 
-                    //database.itemDao().resetReadChanges(account.getId());
+                    database.itemDao().resetReadChanges();
+                    logger.addSplit("reset read changes");
                     logger.dumpToLog();
 
                     return Observable.empty();
