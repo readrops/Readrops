@@ -110,7 +110,7 @@ public class FreshRSSAPI extends API<FreshRSSService> {
                             if (syncType == SyncType.INITIAL_SYNC) {
                                 return getItems(GOOGLE_READ, MAX_ITEMS, null);
                             } else {
-                                return getItems(GOOGLE_READ, MAX_ITEMS, syncData.getLastModified());
+                                return getItems(null, MAX_ITEMS, syncData.getLastModified());
                             }
                         })
                         .flatMap(freshRSSItems -> {

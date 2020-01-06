@@ -2,6 +2,7 @@ package com.readrops.readropslibrary.services.freshrss.adapters
 
 import android.util.TimingLogger
 import com.readrops.readropsdb.entities.Item
+import com.readrops.readropslibrary.services.freshrss.FreshRSSAPI.GOOGLE_READ
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
@@ -47,8 +48,9 @@ class FreshRSSItemsAdapter : JsonAdapter<List<Item>>() {
                         2 -> title = reader.nextString()
                         3 -> content = getContent(reader)
                         4 -> link = getLink(reader)
-                        5 -> feedRemoteId = getRemoteFeedId(reader)
-                        6 -> author = reader.nextString()
+                        5 -> isRead = getReadState(reader)
+                        6 -> feedRemoteId = getRemoteFeedId(reader)
+                        7 -> author = reader.nextString()
                         else -> reader.skipValue()
                     }
                 }
@@ -95,6 +97,20 @@ class FreshRSSItemsAdapter : JsonAdapter<List<Item>>() {
         return href
     }
 
+    private fun getReadState(reader: JsonReader): Boolean {
+        var isRead = false
+        reader.beginArray()
+
+        while (reader.hasNext()) {
+            when (reader.nextString()) {
+                GOOGLE_READ -> isRead = true
+            }
+        }
+
+        reader.endArray()
+        return isRead
+    }
+
     private fun getRemoteFeedId(reader: JsonReader): String? {
         var remoteFeedId: String? = null
         reader.beginObject()
@@ -111,7 +127,7 @@ class FreshRSSItemsAdapter : JsonAdapter<List<Item>>() {
     }
 
     companion object {
-        val NAMES: JsonReader.Options = JsonReader.Options.of("id", "published", "title", "summary", "alternate", "origin", "author")
+        val NAMES: JsonReader.Options = JsonReader.Options.of("id", "published", "title", "summary", "alternate", "categories", "origin", "author")
 
         val TAG = FreshRSSItemsAdapter::class.java.simpleName
     }
