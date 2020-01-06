@@ -115,7 +115,7 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
                     account.setLastModified(newLastModified);
                     database.accountDao().updateLastModified(account.getId(), newLastModified);
 
-                    database.itemDao().resetReadChanges();
+                    database.itemDao().resetReadChanges(account.getId());
                     logger.addSplit("reset read changes");
                     logger.dumpToLog();
 
