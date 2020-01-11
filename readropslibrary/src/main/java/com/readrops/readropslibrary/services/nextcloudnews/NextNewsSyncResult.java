@@ -1,14 +1,14 @@
 package com.readrops.readropslibrary.services.nextcloudnews;
 
 import com.readrops.readropsdb.entities.Feed;
-import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
+import com.readrops.readropsdb.entities.Folder;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItem;
 
 import java.util.List;
 
 public class NextNewsSyncResult {
 
-    private List<NextNewsFolder> folders;
+    private List<Folder> folders;
 
     private List<Feed> feeds;
 
@@ -20,11 +20,11 @@ public class NextNewsSyncResult {
         // empty constructor
     }
 
-    public List<NextNewsFolder> getFolders() {
+    public List<Folder> getFolders() {
         return folders;
     }
 
-    public void setFolders(List<NextNewsFolder> folders) {
+    public void setFolders(List<Folder> folders) {
         this.folders = folders;
     }
 

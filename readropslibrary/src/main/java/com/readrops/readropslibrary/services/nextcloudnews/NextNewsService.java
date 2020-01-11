@@ -1,6 +1,7 @@
 package com.readrops.readropslibrary.services.nextcloudnews;
 
 import com.readrops.readropsdb.entities.Feed;
+import com.readrops.readropsdb.entities.Folder;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeeds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolders;
@@ -30,7 +31,7 @@ public interface NextNewsService {
     Call<NextNewsUser> getUser();
 
     @GET("folders")
-    Call<NextNewsFolders> getFolders();
+    Call<List<Folder>> getFolders();
 
     @GET("feeds")
     Call<List<Feed>> getFeeds();

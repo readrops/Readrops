@@ -6,10 +6,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.readrops.readropsdb.entities.Feed;
+import com.readrops.readropsdb.entities.Folder;
 import com.readrops.readropslibrary.services.API;
 import com.readrops.readropslibrary.services.Credentials;
 import com.readrops.readropslibrary.services.SyncType;
 import com.readrops.readropslibrary.services.nextcloudnews.adapters.NextNewsFeedsAdapter;
+import com.readrops.readropslibrary.services.nextcloudnews.adapters.NextNewsFoldersAdapter;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeeds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
@@ -42,6 +44,7 @@ public class NextNewsAPI extends API<NextNewsService> {
     protected Moshi buildMoshi() {
         return new Moshi.Builder()
                 .add(new NextNewsFeedsAdapter())
+                .add(new NextNewsFoldersAdapter())
                 .build();
     }
 
@@ -121,14 +124,14 @@ public class NextNewsAPI extends API<NextNewsService> {
         if (!feedResponse.isSuccessful())
             syncResult.setError(true);
 
-        /*Response<NextNewsFolders> folderResponse = api.getFolders().execute();
-        NextNewsFolders folderList = folderResponse.body();
+        Response<List<Folder>> folderResponse = api.getFolders().execute();
+        List<Folder> folderList = folderResponse.body();
 
         if (!folderResponse.isSuccessful())
             syncResult.setError(true);
 
         if (folderList != null)
-            syncResult.setFolders(folderList.getFolders());*/
+            syncResult.setFolders(folderList);
 
         if (feedList != null)
             syncResult.setFeeds(feedList);
