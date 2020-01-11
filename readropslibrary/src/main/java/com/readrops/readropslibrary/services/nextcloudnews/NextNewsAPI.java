@@ -41,6 +41,7 @@ public class NextNewsAPI extends API<NextNewsService> {
                 .build();
     }
 
+    @Nullable
     public NextNewsUser login() throws IOException {
         Response<NextNewsUser> response = api.getUser().execute();
 
