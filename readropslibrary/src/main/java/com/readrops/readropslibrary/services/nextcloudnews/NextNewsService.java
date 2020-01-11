@@ -1,5 +1,6 @@
 package com.readrops.readropslibrary.services.nextcloudnews;
 
+import com.readrops.readropsdb.entities.Feed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeeds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolders;
@@ -8,6 +9,7 @@ import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItems;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsRenameFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
 
+import java.util.List;
 import java.util.Map;
 
 import okhttp3.ResponseBody;
@@ -31,7 +33,7 @@ public interface NextNewsService {
     Call<NextNewsFolders> getFolders();
 
     @GET("feeds")
-    Call<NextNewsFeeds> getFeeds();
+    Call<List<Feed>> getFeeds();
 
     @GET("items")
     Call<NextNewsItems> getItems(@Query("type") int type, @Query("getRead") boolean read, @Query("batchSize") int batchSize);

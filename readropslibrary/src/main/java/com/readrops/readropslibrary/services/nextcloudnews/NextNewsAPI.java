@@ -5,9 +5,11 @@ import android.content.res.Resources;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.readrops.readropsdb.entities.Feed;
 import com.readrops.readropslibrary.services.API;
 import com.readrops.readropslibrary.services.Credentials;
 import com.readrops.readropslibrary.services.SyncType;
+import com.readrops.readropslibrary.services.nextcloudnews.adapters.NextNewsFeedsAdapter;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeeds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
@@ -23,6 +25,7 @@ import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import retrofit2.Response;
@@ -38,6 +41,7 @@ public class NextNewsAPI extends API<NextNewsService> {
     @Override
     protected Moshi buildMoshi() {
         return new Moshi.Builder()
+                .add(new NextNewsFeedsAdapter())
                 .build();
     }
 
@@ -86,14 +90,14 @@ public class NextNewsAPI extends API<NextNewsService> {
     private void initialSync(NextNewsSyncResult syncResult) throws IOException {
         getFeedsAndFolders(syncResult);
 
-        Response<NextNewsItems> itemsResponse = api.getItems(3, false, MAX_ITEMS).execute();
+        /*Response<NextNewsItems> itemsResponse = api.getItems(3, false, MAX_ITEMS).execute();
         NextNewsItems itemList = itemsResponse.body();
 
         if (!itemsResponse.isSuccessful())
             syncResult.setError(true);
 
         if (itemList != null)
-            syncResult.setItems(itemList.getItems());
+            syncResult.setItems(itemList.getItems());*/
     }
 
     private void classicSync(NextNewsSyncResult syncResult, NextNewsSyncData data) throws IOException {
@@ -111,23 +115,23 @@ public class NextNewsAPI extends API<NextNewsService> {
     }
 
     private void getFeedsAndFolders(NextNewsSyncResult syncResult) throws IOException {
-        Response<NextNewsFeeds> feedResponse = api.getFeeds().execute();
-        NextNewsFeeds feedList = feedResponse.body();
+        Response<List<Feed>> feedResponse = api.getFeeds().execute();
+        List<Feed> feedList = feedResponse.body();
 
         if (!feedResponse.isSuccessful())
             syncResult.setError(true);
 
-        Response<NextNewsFolders> folderResponse = api.getFolders().execute();
+        /*Response<NextNewsFolders> folderResponse = api.getFolders().execute();
         NextNewsFolders folderList = folderResponse.body();
 
         if (!folderResponse.isSuccessful())
             syncResult.setError(true);
 
         if (folderList != null)
-            syncResult.setFolders(folderList.getFolders());
+            syncResult.setFolders(folderList.getFolders());*/
 
         if (feedList != null)
-            syncResult.setFeeds(feedList.getFeeds());
+            syncResult.setFeeds(feedList);
 
     }
 

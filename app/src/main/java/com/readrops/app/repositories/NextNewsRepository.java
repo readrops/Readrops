@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.utils.Utils;
-import com.readrops.app.utils.matchers.FeedMatcher;
 import com.readrops.app.utils.matchers.ItemMatcher;
 import com.readrops.readropsdb.entities.Feed;
 import com.readrops.readropsdb.entities.Folder;
@@ -113,14 +112,14 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
 
                 if (!syncResult.isError()) {
 
-                    insertFolders(syncResult.getFolders());
-                    timings.addSplit("insert folders");
+                    /*insertFolders(syncResult.getFolders());
+                    timings.addSplit("insert folders");*/
 
                     insertFeeds(syncResult.getFeeds());
                     timings.addSplit("insert feeds");
 
-                    insertItems(syncResult.getItems(), syncType == SyncType.INITIAL_SYNC);
-                    timings.addSplit("insert items");
+                    /*insertItems(syncResult.getItems(), syncType == SyncType.INITIAL_SYNC);
+                    timings.addSplit("insert items");*/
                     timings.dumpToLog();
 
                     account.setLastModified(lastModified);
@@ -150,9 +149,9 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
                     NextNewsFeeds nextNewsFeeds = api.createFeed(result.getUrl(), 0);
 
                     if (nextNewsFeeds != null) {
-                        List<Feed> newFeeds = insertFeeds(nextNewsFeeds.getFeeds());
+                        /*List<Feed> newFeeds = insertFeeds(nextNewsFeeds.getFeeds());
                         // there is always only one object in the list, see nextcloud news api doc
-                        insertionResult.setFeed(newFeeds.get(0));
+                        insertionResult.setFeed(newFeeds.get(0));*/
                     } else
                         insertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.UNKNOWN_ERROR);
 
@@ -269,14 +268,12 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
         }).andThen(super.deleteFolder(folder));
     }
 
-    private List<Feed> insertFeeds(List<NextNewsFeed> nextNewsFeeds) {
-        List<Feed> feeds = new ArrayList<>();
-
-        for (NextNewsFeed nextNewsFeed : nextNewsFeeds) {
-            feeds.add(FeedMatcher.nextNewsFeedToFeed(nextNewsFeed, account));
+    private List<Feed> insertFeeds(List<Feed> nextNewsFeeds) {
+        for (Feed nextNewsFeed : nextNewsFeeds) {
+            nextNewsFeed.setAccountId(account.getId());
         }
 
-        List<Long> insertedFeedsIds = database.feedDao().feedsUpsert(feeds, account);
+        List<Long> insertedFeedsIds = database.feedDao().feedsUpsert(nextNewsFeeds, account);
 
         List<Feed> insertedFeeds = new ArrayList<>();
         if (!insertedFeedsIds.isEmpty()) {

@@ -1,6 +1,6 @@
 package com.readrops.readropslibrary.services.nextcloudnews;
 
-import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeed;
+import com.readrops.readropsdb.entities.Feed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItem;
 
@@ -10,7 +10,7 @@ public class NextNewsSyncResult {
 
     private List<NextNewsFolder> folders;
 
-    private List<NextNewsFeed> feeds;
+    private List<Feed> feeds;
 
     private List<NextNewsItem> items;
 
@@ -28,11 +28,11 @@ public class NextNewsSyncResult {
         this.folders = folders;
     }
 
-    public List<NextNewsFeed> getFeeds() {
+    public List<Feed> getFeeds() {
         return feeds;
     }
 
-    public void setFeeds(List<NextNewsFeed> feeds) {
+    public void setFeeds(List<Feed> feeds) {
         this.feeds = feeds;
     }
 
