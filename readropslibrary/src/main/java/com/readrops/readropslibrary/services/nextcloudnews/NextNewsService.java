@@ -2,11 +2,11 @@ package com.readrops.readropslibrary.services.nextcloudnews;
 
 import com.readrops.readropsdb.entities.Feed;
 import com.readrops.readropsdb.entities.Folder;
+import com.readrops.readropsdb.entities.Item;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeeds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolders;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItemIds;
-import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItems;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsRenameFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
 
@@ -37,10 +37,10 @@ public interface NextNewsService {
     Call<List<Feed>> getFeeds();
 
     @GET("items")
-    Call<NextNewsItems> getItems(@Query("type") int type, @Query("getRead") boolean read, @Query("batchSize") int batchSize);
+    Call<List<Item>> getItems(@Query("type") int type, @Query("getRead") boolean read, @Query("batchSize") int batchSize);
 
     @GET("items/updated")
-    Call<NextNewsItems> getNewItems(@Query("lastModified") long lastModified, @Query("type") int type);
+    Call<List<Item>> getNewItems(@Query("lastModified") long lastModified, @Query("type") int type);
 
     @PUT("items/{stateType}/multiple")
     Call<ResponseBody> setArticlesState(@Path("stateType") String stateType, @Body NextNewsItemIds items);

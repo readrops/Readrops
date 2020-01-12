@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.utils.Utils;
-import com.readrops.app.utils.matchers.ItemMatcher;
 import com.readrops.readropsdb.entities.Feed;
 import com.readrops.readropsdb.entities.Folder;
 import com.readrops.readropsdb.entities.Item;
@@ -24,7 +23,6 @@ import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeeds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolders;
-import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItem;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsRenameFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
 import com.readrops.readropslibrary.utils.UnknownFormatException;
@@ -118,8 +116,8 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
                     insertFeeds(syncResult.getFeeds());
                     timings.addSplit("insert feeds");
 
-                    /*insertItems(syncResult.getItems(), syncType == SyncType.INITIAL_SYNC);
-                    timings.addSplit("insert items");*/
+                    insertItems(syncResult.getItems(), syncType == SyncType.INITIAL_SYNC);
+                    timings.addSplit("insert items");
                     timings.dumpToLog();
 
                     account.setLastModified(lastModified);
@@ -292,26 +290,27 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
         database.folderDao().foldersUpsert(nextNewsFolders, account);
     }
 
-    private void insertItems(List<NextNewsItem> items, boolean initialSync) {
-        List<Item> newItems = new ArrayList<>();
+    private void insertItems(List<Item> items, boolean initialSync) {
+        List<Item> itemsToInsert = new ArrayList<>();
 
-        for (NextNewsItem nextNewsItem : items) {
-            int feedId = database.feedDao().getFeedIdByRemoteId(String.valueOf(nextNewsItem.getFeedId()), account.getId());
+        for (Item item : items) {
+            int feedId = database.feedDao().getFeedIdByRemoteId(item.getFeedRemoteId(), account.getId());
 
-            if (!initialSync && feedId > 0 && database.itemDao().remoteItemExists(String.valueOf(nextNewsItem.getId()), feedId)) {
-                database.itemDao().setReadState(String.valueOf(nextNewsItem.getId()), !nextNewsItem.isUnread());
+            //if the item already exists, update only its read state
+            if (!initialSync && feedId > 0 && database.itemDao().remoteItemExists(String.valueOf(item.getRemoteId()), feedId)) {
+                database.itemDao().setReadState(item.getRemoteId(), item.isRead());
                 break;
             }
 
-            Item item = ItemMatcher.nextNewsItemToItem(nextNewsItem, feedId);
+            item.setFeedId(feedId);
             item.setReadTime(Utils.readTimeFromString(item.getContent()));
 
-            newItems.add(item);
+            itemsToInsert.add(item);
         }
 
-        if (!newItems.isEmpty()) {
-            Collections.sort(newItems, Item::compareTo);
-            database.itemDao().insert(newItems);
+        if (!itemsToInsert.isEmpty()) {
+            Collections.sort(itemsToInsert, Item::compareTo);
+            database.itemDao().insert(itemsToInsert);
         }
     }
 }

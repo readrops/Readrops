@@ -2,7 +2,7 @@ package com.readrops.readropslibrary.services.nextcloudnews;
 
 import com.readrops.readropsdb.entities.Feed;
 import com.readrops.readropsdb.entities.Folder;
-import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItem;
+import com.readrops.readropsdb.entities.Item;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ public class NextNewsSyncResult {
 
     private List<Feed> feeds;
 
-    private List<NextNewsItem> items;
+    private List<Item> items;
 
     private boolean error;
 
@@ -36,11 +36,11 @@ public class NextNewsSyncResult {
         this.feeds = feeds;
     }
 
-    public List<NextNewsItem> getItems() {
+    public List<Item> getItems() {
         return items;
     }
 
-    public void setItems(List<NextNewsItem> items) {
+    public void setItems(List<Item> items) {
         this.items = items;
     }
 

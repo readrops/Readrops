@@ -3,6 +3,8 @@ package com.readrops.readropslibrary.utils;
 import android.content.Context;
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Scanner;
@@ -38,4 +40,8 @@ public final class LibUtils {
         return inputStreamToString(inputStream);
     }
 
+    public static boolean isMimeImage(@NonNull String type) {
+        return type.equals("image") || type.equals("image/jpeg") || type.equals("image/jpg")
+                || type.equals("image/png");
+    }
 }
