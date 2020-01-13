@@ -3,9 +3,7 @@ package com.readrops.readropslibrary.services.nextcloudnews;
 import com.readrops.readropsdb.entities.Feed;
 import com.readrops.readropsdb.entities.Folder;
 import com.readrops.readropsdb.entities.Item;
-import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeeds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
-import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolders;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItemIds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsRenameFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
@@ -46,7 +44,7 @@ public interface NextNewsService {
     Call<ResponseBody> setArticlesState(@Path("stateType") String stateType, @Body NextNewsItemIds items);
 
     @POST("feeds")
-    Call<NextNewsFeeds> createFeed(@Query("url") String url, @Query("folderId") int folderId);
+    Call<List<Feed>> createFeed(@Query("url") String url, @Query("folderId") int folderId);
 
     @DELETE("feeds/{feedId}")
     Call<Void> deleteFeed(@Path("feedId") int feedId);
@@ -58,7 +56,7 @@ public interface NextNewsService {
     Call<ResponseBody> renameFeed(@Path("feedId") int feedId, @Body NextNewsRenameFeed feed);
 
     @POST("folders")
-    Call<NextNewsFolders> createFolder(@Body NextNewsFolder folder);
+    Call<List<Folder>> createFolder(@Body NextNewsFolder folder);
 
     @DELETE("folders/{folderId}")
     Call<ResponseBody> deleteFolder(@Path("folderId") int folderId);

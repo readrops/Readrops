@@ -15,9 +15,7 @@ import com.readrops.readropslibrary.services.nextcloudnews.adapters.NextNewsFeed
 import com.readrops.readropslibrary.services.nextcloudnews.adapters.NextNewsFoldersAdapter;
 import com.readrops.readropslibrary.services.nextcloudnews.adapters.NextNewsItemsAdapter;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeed;
-import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeeds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
-import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolders;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItemIds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsRenameFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
@@ -28,6 +26,7 @@ import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,10 +60,9 @@ public class NextNewsAPI extends API<NextNewsService> {
         return response.body();
     }
 
-    public @Nullable
-    NextNewsFeeds createFeed(String url, int folderId)
-            throws IOException, UnknownFormatException {
-        Response<NextNewsFeeds> response = api.createFeed(url, folderId).execute();
+    @Nullable
+    public List<Feed> createFeed(String url, int folderId) throws IOException, UnknownFormatException {
+        Response<List<Feed>> response = api.createFeed(url, folderId).execute();
 
         if (!response.isSuccessful()) {
             if (response.code() == LibUtils.HTTP_UNPROCESSABLE)
@@ -158,9 +156,8 @@ public class NextNewsAPI extends API<NextNewsService> {
             syncResult.setError(true);
     }
 
-    public @Nullable
-    NextNewsFolders createFolder(NextNewsFolder folder) throws IOException, UnknownFormatException, ConflictException {
-        Response<NextNewsFolders> foldersResponse = api.createFolder(folder).execute();
+    public List<Folder> createFolder(NextNewsFolder folder) throws IOException, UnknownFormatException, ConflictException {
+        Response<List<Folder>> foldersResponse = api.createFolder(folder).execute();
 
         if (foldersResponse.isSuccessful())
             return foldersResponse.body();
@@ -169,7 +166,7 @@ public class NextNewsAPI extends API<NextNewsService> {
         else if (foldersResponse.code() == LibUtils.HTTP_CONFLICT)
             throw new ConflictException();
         else
-            return null;
+            return new ArrayList<>();
     }
 
     public boolean deleteFolder(NextNewsFolder folder) throws IOException {

@@ -20,9 +20,7 @@ import com.readrops.readropslibrary.services.nextcloudnews.NextNewsAPI;
 import com.readrops.readropslibrary.services.nextcloudnews.NextNewsSyncData;
 import com.readrops.readropslibrary.services.nextcloudnews.NextNewsSyncResult;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeed;
-import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeeds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
-import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolders;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsRenameFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
 import com.readrops.readropslibrary.utils.UnknownFormatException;
@@ -144,12 +142,12 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
                 FeedInsertionResult insertionResult = new FeedInsertionResult();
 
                 try {
-                    NextNewsFeeds nextNewsFeeds = api.createFeed(result.getUrl(), 0);
+                    List<Feed> nextNewsFeeds = api.createFeed(result.getUrl(), 0);
 
                     if (nextNewsFeeds != null) {
-                        /*List<Feed> newFeeds = insertFeeds(nextNewsFeeds.getFeeds());
+                        List<Feed> newFeeds = insertFeeds(nextNewsFeeds);
                         // there is always only one object in the list, see nextcloud news api doc
-                        insertionResult.setFeed(newFeeds.get(0));*/
+                        insertionResult.setFeed(newFeeds.get(0));
                     } else
                         insertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.UNKNOWN_ERROR);
 
@@ -216,10 +214,10 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
         return Single.<Folder>create(emitter -> {
             try {
                 int folderRemoteId = folder.getRemoteId() == null ? 0 : Integer.parseInt(folder.getRemoteId());
-                NextNewsFolders folders = api.createFolder(new NextNewsFolder(folderRemoteId, folder.getName()));
+                List<Folder> folders = api.createFolder(new NextNewsFolder(folderRemoteId, folder.getName()));
 
                 if (folders != null) {
-                    NextNewsFolder nextNewsFolder = folders.getFolders().get(0); // always only one item returned by the server, see doc
+                    Folder nextNewsFolder = folders.get(0); // always only one item returned by the server, see doc
 
                     folder.setName(nextNewsFolder.getName());
                     folder.setRemoteId(String.valueOf(nextNewsFolder.getId()));
