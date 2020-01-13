@@ -297,7 +297,7 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
             //if the item already exists, update only its read state
             if (!initialSync && feedId > 0 && database.itemDao().remoteItemExists(String.valueOf(item.getRemoteId()), feedId)) {
                 database.itemDao().setReadState(item.getRemoteId(), item.isRead());
-                break;
+                continue;
             }
 
             item.setFeedId(feedId);
