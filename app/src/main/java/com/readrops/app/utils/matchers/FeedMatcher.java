@@ -1,36 +1,15 @@
 package com.readrops.app.utils.matchers;
 
 import com.readrops.readropsdb.entities.Feed;
-import com.readrops.readropsdb.entities.account.Account;
 import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
 import com.readrops.readropslibrary.localfeed.json.JSONFeed;
 import com.readrops.readropslibrary.localfeed.rss.RSSChannel;
 import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
-import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeed;
 
 import org.jsoup.Jsoup;
 
 public final class FeedMatcher {
-
-    public static Feed nextNewsFeedToFeed(NextNewsFeed feed, Account account) {
-        Feed newFeed = new Feed();
-
-        newFeed.setName(feed.getTitle());
-        newFeed.setUrl(feed.getUrl());
-        newFeed.setSiteUrl(feed.getLink());
-        newFeed.setUnreadCount(feed.getUnreadCount());
-
-        newFeed.setFolderId(feed.getFolderId());
-        newFeed.setIconUrl(feed.getFaviconLink());
-
-        newFeed.setRemoteId(String.valueOf(feed.getId()));
-        newFeed.setRemoteFolderId(String.valueOf(feed.getFolderId()));
-
-        newFeed.setAccountId(account.getId());
-
-        return newFeed;
-    }
-
+    
     public static Feed feedFromRSS(RSSFeed rssFeed) {
         Feed feed = new Feed();
         RSSChannel channel = rssFeed.getChannel();

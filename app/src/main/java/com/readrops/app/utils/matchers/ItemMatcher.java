@@ -9,41 +9,12 @@ import com.readrops.readropslibrary.localfeed.json.JSONItem;
 import com.readrops.readropslibrary.localfeed.rss.RSSEnclosure;
 import com.readrops.readropslibrary.localfeed.rss.RSSItem;
 import com.readrops.readropslibrary.localfeed.rss.RSSMediaContent;
-import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItem;
 import com.readrops.readropslibrary.utils.ParseException;
-
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDateTime;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public final class ItemMatcher {
-
-    public static Item nextNewsItemToItem(NextNewsItem nextNewsItem, int feedId) {
-        Item item = new Item();
-
-        item.setRemoteId(String.valueOf(nextNewsItem.getId()));
-        item.setTitle(nextNewsItem.getTitle());
-
-        if (!nextNewsItem.getAuthor().isEmpty())
-            item.setAuthor(nextNewsItem.getAuthor());
-
-        item.setPubDate(new LocalDateTime(nextNewsItem.getPubDate() * 1000L,
-                DateTimeZone.getDefault()));
-        item.setContent(nextNewsItem.getBody());
-
-        if (nextNewsItem.getEnclosureMime() != null && Utils.isTypeImage(nextNewsItem.getEnclosureMime()))
-            item.setImageLink(nextNewsItem.getEnclosureLink());
-
-        item.setLink(nextNewsItem.getUrl());
-        item.setGuid(nextNewsItem.getGuid());
-        item.setRead(!nextNewsItem.isUnread());
-
-        item.setFeedId(feedId);
-
-        return item;
-    }
 
     public static List<Item> itemsFromRSS(List<RSSItem> items, Feed feed) throws ParseException {
         List<Item> dbItems = new ArrayList<>();

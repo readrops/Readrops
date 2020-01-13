@@ -14,10 +14,8 @@ import com.readrops.readropslibrary.services.SyncType;
 import com.readrops.readropslibrary.services.nextcloudnews.adapters.NextNewsFeedsAdapter;
 import com.readrops.readropslibrary.services.nextcloudnews.adapters.NextNewsFoldersAdapter;
 import com.readrops.readropslibrary.services.nextcloudnews.adapters.NextNewsItemsAdapter;
-import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItemIds;
-import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsRenameFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
 import com.readrops.readropslibrary.utils.ConflictException;
 import com.readrops.readropslibrary.utils.LibUtils;
@@ -210,11 +208,11 @@ public class NextNewsAPI extends API<NextNewsService> {
             return false;
     }
 
-    public boolean changeFeedFolder(NextNewsFeed feed) throws IOException {
+    public boolean changeFeedFolder(Feed feed) throws IOException {
         Map<String, Integer> folderIdMap = new HashMap<>();
-        folderIdMap.put("folderId", feed.getFolderId());
+        folderIdMap.put("folderId", Integer.parseInt(feed.getRemoteFolderId()));
 
-        Response response = api.changeFeedFolder(feed.getId(), folderIdMap).execute();
+        Response response = api.changeFeedFolder(Integer.parseInt(feed.getRemoteId()), folderIdMap).execute();
 
         if (response.isSuccessful())
             return true;
@@ -224,8 +222,11 @@ public class NextNewsAPI extends API<NextNewsService> {
             return false;
     }
 
-    public boolean renameFeed(NextNewsRenameFeed feed) throws IOException {
-        Response response = api.renameFeed(feed.getId(), feed).execute();
+    public boolean renameFeed(Feed feed) throws IOException {
+        Map<String, String> feedTitleMap = new HashMap<>();
+        feedTitleMap.put("feedTitle", feed.getName());
+
+        Response response = api.renameFeed(Integer.parseInt(feed.getRemoteId()), feedTitleMap).execute();
 
         if (response.isSuccessful())
             return true;

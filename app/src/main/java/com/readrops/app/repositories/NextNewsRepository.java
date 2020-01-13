@@ -19,9 +19,7 @@ import com.readrops.readropslibrary.services.SyncType;
 import com.readrops.readropslibrary.services.nextcloudnews.NextNewsAPI;
 import com.readrops.readropslibrary.services.nextcloudnews.NextNewsSyncData;
 import com.readrops.readropslibrary.services.nextcloudnews.NextNewsSyncResult;
-import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
-import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsRenameFeed;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
 import com.readrops.readropslibrary.utils.UnknownFormatException;
 
@@ -174,16 +172,14 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
     public Completable updateFeed(Feed feed) {
         return Completable.create(emitter -> {
             Folder folder = feed.getFolderId() == null ? null : database.folderDao().select(feed.getFolderId());
-            NextNewsRenameFeed newsRenameFeed = new NextNewsRenameFeed(Integer.parseInt(feed.getRemoteId()), feed.getName());
 
-            NextNewsFeed newsFeed;
             if (folder != null)
-                newsFeed = new NextNewsFeed(Integer.parseInt(feed.getRemoteId()), Integer.parseInt(folder.getRemoteId()));
+                feed.setRemoteFolderId(folder.getRemoteId());
             else
-                newsFeed = new NextNewsFeed(Integer.parseInt(feed.getRemoteId()), 0); // 0 for no folder
+                feed.setRemoteFolderId(String.valueOf(0)); // 0 for no folder
 
             try {
-                if (api.renameFeed(newsRenameFeed) && api.changeFeedFolder(newsFeed)) {
+                if (api.renameFeed(feed) && api.changeFeedFolder(feed)) {
                     emitter.onComplete();
                 } else
                     emitter.onError(new Exception("Unknown error when updating feed"));
