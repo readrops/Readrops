@@ -48,6 +48,14 @@ public final class SharedPreferencesManager {
         return sharedPreferences.getString(sharedPrefKey.key, sharedPrefKey.getStringDefaultValue());
     }
 
+    public static void remove(Context context, String key) {
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.remove(key);
+        editor.apply();
+    }
+
     public enum SharedPrefKey {
         SHOW_READ_ARTICLES("show_read_articles", false),
         ITEMS_TO_PARSE_MAX_NB("items_to_parse_max_nb", "20"),
