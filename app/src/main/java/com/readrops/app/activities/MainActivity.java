@@ -42,23 +42,24 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.readrops.app.R;
 import com.readrops.app.adapters.MainItemListAdapter;
-import com.readrops.readropsdb.entities.Feed;
-import com.readrops.readropsdb.entities.Folder;
-import com.readrops.readropsdb.entities.account.Account;
-import com.readrops.readropsdb.filters.FilterType;
-import com.readrops.readropsdb.filters.ListSortType;
-import com.readrops.readropsdb.pojo.ItemWithFeed;
 import com.readrops.app.utils.DrawerManager;
 import com.readrops.app.utils.GlideApp;
 import com.readrops.app.utils.ReadropsItemTouchCallback;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.MainViewModel;
+import com.readrops.readropsdb.entities.Feed;
+import com.readrops.readropsdb.entities.Folder;
+import com.readrops.readropsdb.entities.account.Account;
+import com.readrops.readropsdb.filters.FilterType;
+import com.readrops.readropsdb.filters.ListSortType;
+import com.readrops.readropsdb.pojo.ItemWithFeed;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -551,7 +552,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     if (!viewModel.isAccountLocal()) {
                         refreshLayout.setRefreshing(true);
                         onRefresh();
-                    }
+                    } else
+                        getAccountCredentials(Collections.singletonList(newAccount));
 
                     drawerManager.resetItems();
                     drawerManager.addAccount(newAccount, true);
