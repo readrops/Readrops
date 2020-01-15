@@ -14,7 +14,6 @@ import com.readrops.readropslibrary.services.SyncType;
 import com.readrops.readropslibrary.services.nextcloudnews.adapters.NextNewsFeedsAdapter;
 import com.readrops.readropslibrary.services.nextcloudnews.adapters.NextNewsFoldersAdapter;
 import com.readrops.readropslibrary.services.nextcloudnews.adapters.NextNewsItemsAdapter;
-import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
 import com.readrops.readropslibrary.utils.ConflictException;
 import com.readrops.readropslibrary.utils.LibUtils;
@@ -160,8 +159,11 @@ public class NextNewsAPI extends API<NextNewsService> {
         }
     }
 
-    public List<Folder> createFolder(NextNewsFolder folder) throws IOException, UnknownFormatException, ConflictException {
-        Response<List<Folder>> foldersResponse = api.createFolder(folder).execute();
+    public List<Folder> createFolder(Folder folder) throws IOException, UnknownFormatException, ConflictException {
+        Map<String, String> folderNameMap = new HashMap<>();
+        folderNameMap.put("name", folder.getName());
+
+        Response<List<Folder>> foldersResponse = api.createFolder(folderNameMap).execute();
 
         if (foldersResponse.isSuccessful())
             return foldersResponse.body();
@@ -173,8 +175,8 @@ public class NextNewsAPI extends API<NextNewsService> {
             return new ArrayList<>();
     }
 
-    public boolean deleteFolder(NextNewsFolder folder) throws IOException {
-        Response response = api.deleteFolder(folder.getId()).execute();
+    public boolean deleteFolder(Folder folder) throws IOException {
+        Response response = api.deleteFolder(Integer.parseInt(folder.getRemoteId())).execute();
 
         if (response.isSuccessful())
             return true;
@@ -184,8 +186,11 @@ public class NextNewsAPI extends API<NextNewsService> {
             return false;
     }
 
-    public boolean renameFolder(NextNewsFolder folder) throws IOException, UnknownFormatException, ConflictException {
-        Response response = api.renameFolder(folder.getId(), folder).execute();
+    public boolean renameFolder(Folder folder) throws IOException, UnknownFormatException, ConflictException {
+        Map<String, String> folderNameMap = new HashMap<>();
+        folderNameMap.put("name", folder.getName());
+
+        Response response = api.renameFolder(Integer.parseInt(folder.getRemoteId()), folderNameMap).execute();
 
         if (response.isSuccessful())
             return true;

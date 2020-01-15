@@ -3,7 +3,6 @@ package com.readrops.readropslibrary.services.nextcloudnews;
 import com.readrops.readropsdb.entities.Feed;
 import com.readrops.readropsdb.entities.Folder;
 import com.readrops.readropsdb.entities.Item;
-import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
 
 import java.util.List;
@@ -54,11 +53,11 @@ public interface NextNewsService {
     Call<ResponseBody> renameFeed(@Path("feedId") int feedId, @Body Map<String, String> feedTitleMap);
 
     @POST("folders")
-    Call<List<Folder>> createFolder(@Body NextNewsFolder folder);
+    Call<List<Folder>> createFolder(@Body Map<String, String> folderName);
 
     @DELETE("folders/{folderId}")
     Call<ResponseBody> deleteFolder(@Path("folderId") int folderId);
 
     @PUT("folders/{folderId}")
-    Call<ResponseBody> renameFolder(@Path("folderId") int folderId, @Body NextNewsFolder folder);
+    Call<ResponseBody> renameFolder(@Path("folderId") int folderId, @Body Map<String, String> folderName);
 }

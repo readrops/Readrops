@@ -19,7 +19,6 @@ import com.readrops.readropslibrary.services.SyncType;
 import com.readrops.readropslibrary.services.nextcloudnews.NextNewsAPI;
 import com.readrops.readropslibrary.services.nextcloudnews.NextNewsSyncData;
 import com.readrops.readropslibrary.services.nextcloudnews.NextNewsSyncResult;
-import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
 import com.readrops.readropslibrary.utils.UnknownFormatException;
 
@@ -209,14 +208,12 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
     public Single<Long> addFolder(Folder folder) {
         return Single.<Folder>create(emitter -> {
             try {
-                int folderRemoteId = folder.getRemoteId() == null ? 0 : Integer.parseInt(folder.getRemoteId());
-                List<Folder> folders = api.createFolder(new NextNewsFolder(folderRemoteId, folder.getName()));
+                List<Folder> folders = api.createFolder(folder);
 
                 if (folders != null) {
                     Folder nextNewsFolder = folders.get(0); // always only one item returned by the server, see doc
+                    folder.setRemoteId(nextNewsFolder.getRemoteId());
 
-                    folder.setName(nextNewsFolder.getName());
-                    folder.setRemoteId(String.valueOf(nextNewsFolder.getId()));
                     emitter.onSuccess(folder);
                 } else
                     emitter.onError(new Exception("Unknown error"));
@@ -230,7 +227,7 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
     public Completable updateFolder(Folder folder) {
         return Completable.create(emitter -> {
             try {
-                if (api.renameFolder(new NextNewsFolder(Integer.parseInt(folder.getRemoteId()), folder.getName()))) {
+                if (api.renameFolder(folder)) {
                     emitter.onComplete();
                 } else
                     emitter.onError(new Exception("Unknown error"));
@@ -247,7 +244,7 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
     public Completable deleteFolder(Folder folder) {
         return Completable.create(emitter -> {
             try {
-                if (api.deleteFolder(new NextNewsFolder(Integer.parseInt(folder.getRemoteId()), folder.getName()))) {
+                if (api.deleteFolder(folder)) {
                     emitter.onComplete();
                 } else
                     emitter.onError(new Exception("Unknown error"));
