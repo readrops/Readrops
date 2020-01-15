@@ -73,7 +73,12 @@ public class ReadropsWebView extends WebView {
     @Nullable
     private String getText() {
         if (itemWithFeed.getItem().getText() != null) {
-            Document document = Jsoup.parse(Parser.unescapeEntities(itemWithFeed.getItem().getText(), false), itemWithFeed.getWebsiteUrl());
+            Document document;
+
+            if (itemWithFeed.getWebsiteUrl() != null)
+                document = Jsoup.parse(Parser.unescapeEntities(itemWithFeed.getItem().getText(), false), itemWithFeed.getWebsiteUrl());
+            else
+                document = Jsoup.parse(Parser.unescapeEntities(itemWithFeed.getItem().getText(), false));
 
             formatDocument(document);
 

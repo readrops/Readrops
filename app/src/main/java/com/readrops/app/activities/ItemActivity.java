@@ -172,7 +172,7 @@ public class ItemActivity extends AppCompatActivity {
             Utils.setDrawableColor(dateLayout.getBackground(), itemWithFeed.getColor());
         }
 
-        if (item.getAuthor() != null) {
+        if (item.getAuthor() != null && !item.getAuthor().isEmpty()) {
             author.setText(getString(R.string.by_author, item.getAuthor()));
             author.setVisibility(View.VISIBLE);
         }
