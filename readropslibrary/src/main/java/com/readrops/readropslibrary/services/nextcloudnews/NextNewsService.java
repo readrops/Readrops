@@ -4,7 +4,6 @@ import com.readrops.readropsdb.entities.Feed;
 import com.readrops.readropsdb.entities.Folder;
 import com.readrops.readropsdb.entities.Item;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
-import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItemIds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
 
 import java.util.List;
@@ -40,7 +39,7 @@ public interface NextNewsService {
     Call<List<Item>> getNewItems(@Query("lastModified") long lastModified, @Query("type") int type);
 
     @PUT("items/{stateType}/multiple")
-    Call<ResponseBody> setArticlesState(@Path("stateType") String stateType, @Body NextNewsItemIds items);
+    Call<ResponseBody> setArticlesState(@Path("stateType") String stateType, @Body Map<String, List<String>> itemIdsMap);
 
     @POST("feeds")
     Call<List<Feed>> createFeed(@Query("url") String url, @Query("folderId") int folderId);

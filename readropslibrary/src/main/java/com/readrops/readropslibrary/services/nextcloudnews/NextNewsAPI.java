@@ -15,7 +15,6 @@ import com.readrops.readropslibrary.services.nextcloudnews.adapters.NextNewsFeed
 import com.readrops.readropslibrary.services.nextcloudnews.adapters.NextNewsFoldersAdapter;
 import com.readrops.readropslibrary.services.nextcloudnews.adapters.NextNewsItemsAdapter;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsFolder;
-import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsItemIds;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
 import com.readrops.readropslibrary.utils.ConflictException;
 import com.readrops.readropslibrary.utils.LibUtils;
@@ -138,20 +137,27 @@ public class NextNewsAPI extends API<NextNewsService> {
     }
 
     private void putModifiedItems(NextNewsSyncData data, NextNewsSyncResult syncResult) throws IOException {
-        if (data.getReadItems().size() == 0 && data.getUnreadItems().size() == 0)
-            return;
+        if (!data.getReadItems().isEmpty()) {
+            Map<String, List<String>> itemIdsMap = new HashMap<>();
+            itemIdsMap.put("items", data.getReadItems());
 
-        Response readItemsResponse = api.setArticlesState(StateType.READ.name().toLowerCase(),
-                new NextNewsItemIds(data.getReadItems())).execute();
+            Response readItemsResponse = api.setArticlesState(StateType.READ.name().toLowerCase(),
+                    itemIdsMap).execute();
 
-        Response unreadItemsResponse = api.setArticlesState(StateType.UNREAD.toString().toLowerCase(),
-                new NextNewsItemIds(data.getUnreadItems())).execute();
+            if (!readItemsResponse.isSuccessful())
+                syncResult.setError(true);
+        }
 
-        if (!readItemsResponse.isSuccessful())
-            syncResult.setError(true);
+        if (!data.getUnreadItems().isEmpty()) {
+            Map<String, List<String>> itemIdsMap = new HashMap<>();
+            itemIdsMap.put("items", data.getUnreadItems());
 
-        if (!unreadItemsResponse.isSuccessful())
-            syncResult.setError(true);
+            Response unreadItemsResponse = api.setArticlesState(StateType.UNREAD.toString().toLowerCase(),
+                    itemIdsMap).execute();
+
+            if (!unreadItemsResponse.isSuccessful())
+                syncResult.setError(true);
+        }
     }
 
     public List<Folder> createFolder(NextNewsFolder folder) throws IOException, UnknownFormatException, ConflictException {
