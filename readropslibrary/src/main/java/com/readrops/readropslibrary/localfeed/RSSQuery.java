@@ -3,14 +3,15 @@ package com.readrops.readropslibrary.localfeed;
 import android.accounts.NetworkErrorException;
 import android.util.Log;
 
-import com.google.gson.Gson;
-import com.readrops.readropslibrary.utils.HttpBuilder;
-import com.readrops.readropslibrary.utils.LibUtils;
-import com.readrops.readropslibrary.utils.UnknownFormatException;
 import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
 import com.readrops.readropslibrary.localfeed.json.JSONFeed;
 import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
 import com.readrops.readropslibrary.localfeed.rss.RSSLink;
+import com.readrops.readropslibrary.utils.HttpBuilder;
+import com.readrops.readropslibrary.utils.LibUtils;
+import com.readrops.readropslibrary.utils.UnknownFormatException;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
 
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
@@ -153,8 +154,11 @@ public class RSSQuery {
                 ((ATOMFeed) feed).setUrl(response.request().url().toString());
                 break;
             case RSS_JSON:
-                Gson gson = new Gson();
-                feed = gson.fromJson(xml, JSONFeed.class);
+                Moshi moshi = new Moshi.Builder()
+                        .build();
+
+                JsonAdapter<JSONFeed> jsonFeedAdapter = moshi.adapter(JSONFeed.class);
+                feed = jsonFeedAdapter.fromJson(xml);
                 break;
         }
 

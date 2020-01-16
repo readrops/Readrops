@@ -43,7 +43,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
     implementation 'com.squareup.retrofit2:retrofit:2.7.1'
-    implementation 'com.squareup.retrofit2:converter-gson:2.7.1'
     implementation('com.squareup.retrofit2:converter-moshi:2.7.1') {
         exclude group: 'moshi', module: 'moshi' // moshi converter uses moshi 1.8.0 which breaks codegen 1.9.2
     }
