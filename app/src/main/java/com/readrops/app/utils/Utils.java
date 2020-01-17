@@ -14,12 +14,12 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.readrops.readropslibrary.utils.HttpManager;
 
 import org.jsoup.Jsoup;
 
 import java.io.InputStream;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -35,9 +35,7 @@ public final class Utils {
 
     public static Bitmap getImageFromUrl(String url) {
         try {
-            OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                    .callTimeout(5, TimeUnit.SECONDS)
-                    .build();
+            OkHttpClient okHttpClient = HttpManager.getInstance().getOkHttpClient();
             Request request = new Request.Builder().url(url).build();
 
             Response response = okHttpClient.newCall(request).execute();
@@ -100,6 +98,7 @@ public final class Utils {
 
     /**
      * Remove html tags and trim the text
+     *
      * @param text string to clean
      * @return cleaned text
      */
