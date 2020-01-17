@@ -550,10 +550,10 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     adapter.clearData();
 
                     if (!viewModel.isAccountLocal()) {
+                        getAccountCredentials(Collections.singletonList(newAccount));
                         refreshLayout.setRefreshing(true);
                         onRefresh();
-                    } else
-                        getAccountCredentials(Collections.singletonList(newAccount));
+                    }
 
                     drawerManager.resetItems();
                     drawerManager.addAccount(newAccount, true);
