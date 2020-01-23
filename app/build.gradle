@@ -80,4 +80,8 @@ dependencies {
     implementation 'com.mikepenz:fastadapter-commons:3.3.0'
     implementation 'com.mikepenz:materialdrawer:6.1.2'
     implementation "com.mikepenz:aboutlibraries:6.2.3"
+
+    debugImplementation 'com.facebook.flipper:flipper:0.30.1'
+    debugImplementation 'com.facebook.soloader:soloader:0.8.0'
+    debugImplementation 'com.facebook.flipper:flipper-network-plugin:0.30.1'
 }
