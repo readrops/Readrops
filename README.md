@@ -1,4 +1,4 @@
-# Readrops ![alt text](images/readrops_logo.png "Readrops Logo")
+# Readrops [<img src="fastlane/metadata/android/en-US/images/icon.png" width=60>]()
 
 [![Build Status](https://travis-ci.org/readrops/Readrops.svg?branch=develop)](https://travis-ci.org/readrops/Readrops)
 
