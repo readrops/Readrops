@@ -30,3 +30,5 @@
 -keep class com.readrops.readropslibrary.services.nextcloudnews.json.** { *; }
 
 -keep class com.readrops.readropslibrary.localfeed.** { *; }
+
+-keep class com.readrops.readropslibrary.opml.model.** { *; }
