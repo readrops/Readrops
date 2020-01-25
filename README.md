@@ -8,11 +8,11 @@ Readrops is a multi-services RSS client for Android. Its name is composed of "Re
 
 # Screenshots
 
-[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_1.png" width=300>]()[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_2.png" width=300>]()[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_3.png" width=300>]()
+[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_1.png" width=250>]()[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_2.png" width=250>]()[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_3.png" width=250>]()
 
-[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_4.png" width=300>]()[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_5.png" width=300>]()[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_6.png" width=300>]()
+[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_4.png" width=250>]()[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_5.png" width=250>]()[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_6.png" width=250>]()
 
-[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_7.png" width=300>]()[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_8.png" width=300>]()
+[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_7.png" width=250>]()[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_8.png" width=250>]()
 
 
 # Features
