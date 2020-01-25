@@ -1,8 +1,8 @@
-#v1.1.1
+# v1.1.1
 
 Request write storage permission before downloading image.
 
-#v1.1.0
+# v1.1.0
 
 - OPML import/export for local account
 - Dark theme
@@ -10,15 +10,15 @@ Request write storage permission before downloading image.
 - Open item in webview
 - Minor bug fixes and improvements
 
-#v1.0.2.2
+# v1.0.2.2
 
 Disable Proguard as it makes fail some functionalities.
 
-#v1.0.2.1
+# v1.0.2.1
 
 Fix a crash related to Proguard Rules.
 
-#v1.0.2
+# v1.0.2
 
  - Add swipe background to main list items
  - Add preference to parse a fixed number of items when adding a local feed
