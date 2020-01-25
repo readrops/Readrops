@@ -4,13 +4,16 @@
 
 Readrops is a multi-services RSS client for Android. Its name is composed of "Read" and "drops", where drops are information drops in an ocean of news.
 
-[<img src="images/google-play-badge.png" width=250>](https://play.google.com/store/apps/details?id=com.readrops.app)
+[<img src="images/google-play-badge.png" width=250>](https://play.google.com/store/apps/details?id=com.readrops.app)[<img src="images/fdroid-badge.png" width=250>](https://f-droid.org/fr/packages/com.readrops.app/)
 
 # Screenshots
 
-![](fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_1.png)![](fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_2.png)![](fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_3.png)![](fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_4.png)
-<br/>
-![](fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_5.png)![](fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_6.png)![](fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_7.png)![](fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_8.png)
+[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_1.png" width=300>]()[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_2.png" width=300>]()[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_3.png" width=300>]()
+
+[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_4.png" width=300>]()[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_5.png" width=300>]()[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_6.png" width=300>]()
+
+[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_7.png" width=300>]()[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_8.png" width=300>]()
+
 
 # Features
 
