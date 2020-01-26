@@ -7,7 +7,7 @@ import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
 import com.readrops.readropslibrary.localfeed.json.JSONFeed;
 import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
 import com.readrops.readropslibrary.localfeed.rss.RSSLink;
-import com.readrops.readropslibrary.utils.HttpBuilder;
+import com.readrops.readropslibrary.utils.HttpManager;
 import com.readrops.readropslibrary.utils.LibUtils;
 import com.readrops.readropslibrary.utils.UnknownFormatException;
 import com.squareup.moshi.JsonAdapter;
@@ -75,7 +75,8 @@ public class RSSQuery {
     }
 
     private Response query(String url, Map<String, String> headers) throws IOException {
-        OkHttpClient okHttpClient = HttpBuilder.getBuilder().build();
+        OkHttpClient okHttpClient = HttpManager.getInstance().getOkHttpClient();
+        HttpManager.getInstance().setCredentials(null);
 
         Request.Builder builder = new Request.Builder().url(url);
         for (String header : headers.keySet()) {

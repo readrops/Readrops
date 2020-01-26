@@ -1,5 +1,7 @@
 package com.readrops.readropslibrary.utils;
 
+import androidx.annotation.Nullable;
+
 import com.readrops.readropslibrary.services.Credentials;
 
 import java.io.IOException;
@@ -31,7 +33,7 @@ public class HttpManager {
         return okHttpClient;
     }
 
-    public void setCredentials(Credentials credentials) {
+    public void setCredentials(@Nullable Credentials credentials) {
         this.credentials = credentials;
     }
 
@@ -63,7 +65,7 @@ public class HttpManager {
         public Response intercept(Chain chain) throws IOException {
             Request request = chain.request();
 
-            if (credentials.getAuthorization() != null) {
+            if (credentials != null && credentials.getAuthorization() != null) {
                 request = request.newBuilder()
                         .addHeader("Authorization", credentials.getAuthorization())
                         .build();
