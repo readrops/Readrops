@@ -54,6 +54,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -526,6 +527,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     adapter.clearData();
 
                     if (!viewModel.isAccountLocal()) {
+                        getAccountCredentials(Collections.singletonList(newAccount));
                         refreshLayout.setRefreshing(true);
                         onRefresh();
                     }
