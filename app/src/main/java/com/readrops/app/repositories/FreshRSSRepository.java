@@ -1,6 +1,6 @@
 package com.readrops.app.repositories;
 
-import android.app.Application;
+import android.content.Context;
 import android.util.Log;
 import android.util.TimingLogger;
 
@@ -34,8 +34,8 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
 
     private static final String TAG = FreshRSSRepository.class.getSimpleName();
 
-    public FreshRSSRepository(@NonNull Application application, @Nullable Account account) {
-        super(application, account);
+    public FreshRSSRepository(@NonNull Context context, @Nullable Account account) {
+        super(context, account);
     }
 
     @Override

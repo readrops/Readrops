@@ -1,21 +1,21 @@
 package com.readrops.app.repositories;
 
-import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.readrops.app.utils.FeedInsertionResult;
+import com.readrops.app.utils.ParsingResult;
+import com.readrops.app.utils.feedscolors.FeedColorsKt;
+import com.readrops.app.utils.feedscolors.FeedsColorsIntentService;
 import com.readrops.readropsdb.Database;
 import com.readrops.readropsdb.entities.Feed;
 import com.readrops.readropsdb.entities.Folder;
 import com.readrops.readropsdb.entities.Item;
 import com.readrops.readropsdb.entities.account.Account;
 import com.readrops.readropsdb.entities.account.AccountType;
-import com.readrops.app.utils.FeedInsertionResult;
-import com.readrops.app.utils.ParsingResult;
-import com.readrops.app.utils.feedscolors.FeedColorsKt;
-import com.readrops.app.utils.feedscolors.FeedsColorsIntentService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,15 +30,15 @@ import static com.readrops.app.utils.ReadropsKeys.FEEDS;
 
 public abstract class ARepository<T> {
 
-    protected Application application;
+    protected Context context;
     protected Database database;
     protected Account account;
 
     protected T api;
 
-    protected ARepository(@NonNull Application application, @Nullable Account account) {
-        this.application = application;
-        this.database = Database.getInstance(application);
+    protected ARepository(@NonNull Context context, @Nullable Account account) {
+        this.context = context;
+        this.database = Database.getInstance(context);
         this.account = account;
 
         api = createAPI();
@@ -157,26 +157,26 @@ public abstract class ARepository<T> {
     }
 
     protected void setFeedsColors(List<Feed> feeds) {
-        Intent intent = new Intent(application, FeedsColorsIntentService.class);
+        Intent intent = new Intent(context, FeedsColorsIntentService.class);
         intent.putParcelableArrayListExtra(FEEDS, new ArrayList<>(feeds));
 
-        application.startService(intent);
+        context.startService(intent);
     }
 
-    public static ARepository repositoryFactory(Account account, AccountType accountType, Application application) throws Exception {
+    public static ARepository repositoryFactory(Account account, AccountType accountType, Context context) throws Exception {
         switch (accountType) {
             case LOCAL:
-                return new LocalFeedRepository(application, account);
+                return new LocalFeedRepository(context, account);
             case NEXTCLOUD_NEWS:
-                return new NextNewsRepository(application, account);
+                return new NextNewsRepository(context, account);
             case FRESHRSS:
-                return new FreshRSSRepository(application, account);
+                return new FreshRSSRepository(context, account);
             default:
                 throw new Exception("account type not supported");
         }
     }
 
-    public static ARepository repositoryFactory(Account account, Application application) throws Exception {
-        return ARepository.repositoryFactory(account, account.getAccountType(), application);
+    public static ARepository repositoryFactory(Account account, Context context) throws Exception {
+        return ARepository.repositoryFactory(account, account.getAccountType(), context);
     }
 }

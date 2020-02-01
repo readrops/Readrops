@@ -1,7 +1,7 @@
 package com.readrops.app.repositories;
 
 import android.accounts.NetworkErrorException;
-import android.app.Application;
+import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,8 +42,8 @@ public class LocalFeedRepository extends ARepository<Void> {
 
     private static final String TAG = LocalFeedRepository.class.getSimpleName();
 
-    public LocalFeedRepository(@NonNull Application application, @Nullable Account account) {
-        super(application, account);
+    public LocalFeedRepository(@NonNull Context context, @Nullable Account account) {
+        super(context, account);
     }
 
     @Override
@@ -173,7 +173,7 @@ public class LocalFeedRepository extends ARepository<Void> {
         database.feedDao().updateHeaders(dbFeed.getEtag(), dbFeed.getLastModified(), dbFeed.getId());
         Collections.sort(items, Item::compareTo);
 
-        int maxItems = Integer.parseInt(SharedPreferencesManager.readString(application, SharedPreferencesManager.SharedPrefKey.ITEMS_TO_PARSE_MAX_NB));
+        int maxItems = Integer.parseInt(SharedPreferencesManager.readString(context, SharedPreferencesManager.SharedPrefKey.ITEMS_TO_PARSE_MAX_NB));
         if (maxItems > 0 && items.size() > maxItems)
             items = items.subList(items.size() - maxItems, items.size());
 

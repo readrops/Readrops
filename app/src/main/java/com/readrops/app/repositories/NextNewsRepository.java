@@ -1,6 +1,6 @@
 package com.readrops.app.repositories;
 
-import android.app.Application;
+import android.content.Context;
 import android.database.sqlite.SQLiteConstraintException;
 import android.util.TimingLogger;
 
@@ -37,8 +37,8 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
 
     private static final String TAG = NextNewsRepository.class.getSimpleName();
 
-    public NextNewsRepository(@NonNull Application application, @Nullable Account account) {
-        super(application, account);
+    public NextNewsRepository(@NonNull Context context, @Nullable Account account) {
+        super(context, account);
     }
 
     @Override
