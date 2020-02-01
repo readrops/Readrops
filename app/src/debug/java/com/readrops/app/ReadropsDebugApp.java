@@ -1,5 +1,10 @@
 package com.readrops.app;
 
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.work.Configuration;
+
 import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.android.utils.FlipperUtils;
 import com.facebook.flipper.core.FlipperClient;
@@ -14,7 +19,7 @@ import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPl
 import com.facebook.soloader.SoLoader;
 import com.readrops.readropslibrary.utils.HttpManager;
 
-public class ReadropsDebugApp extends ReadropsApp {
+public class ReadropsDebugApp extends ReadropsApp implements Configuration.Provider {
 
     @Override
     public void onCreate() {
@@ -46,6 +51,14 @@ public class ReadropsDebugApp extends ReadropsApp {
 
             client.start();
         }
+    }
+
+    @NonNull
+    @Override
+    public Configuration getWorkManagerConfiguration() {
+        return new Configuration.Builder()
+                .setMinimumLoggingLevel(Log.DEBUG)
+                .build();
     }
 }
 

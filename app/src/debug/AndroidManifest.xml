@@ -5,5 +5,13 @@
     <application
         android:name=".ReadropsDebugApp"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning"
-        tools:replace="android:name" />
+        tools:replace="android:name">
+
+        <provider
+            android:name="androidx.work.impl.WorkManagerInitializer"
+            android:authorities="${applicationId}.workmanager-init"
+            tools:node="remove"
+            android:exported="false" />
+
+    </application>
 </manifest>
