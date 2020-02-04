@@ -133,7 +133,7 @@ public class MainViewModel extends AndroidViewModel {
     //region Account
 
     public LiveData<List<Account>> getAllAccounts() {
-        return db.accountDao().selectAll();
+        return db.accountDao().selectAllAsync();
     }
 
     private Completable deselectOldCurrentAccount(int accountId) {

@@ -62,6 +62,6 @@ public class AddFeedsViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<Account>> getAccounts() {
-        return database.accountDao().selectAll();
+        return database.accountDao().selectAllAsync();
     }
 }

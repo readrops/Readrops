@@ -14,7 +14,10 @@ import io.reactivex.Single;
 public abstract class AccountDao implements BaseDao<Account> {
 
     @Query("Select * from Account")
-    public abstract LiveData<List<Account>> selectAll();
+    public abstract LiveData<List<Account>> selectAllAsync();
+
+    @Query("Select * from Account")
+    public abstract List<Account> selectAll();
 
     @Query("Update Account set last_modified = :lastModified Where id = :accountId")
     public abstract void updateLastModified(int accountId, long lastModified);
