@@ -48,4 +48,28 @@
         <item>false</item>
         <item>true</item>
     </string-array>
+
+    <string-array name="synchro">
+        <item>@string/manual</item>
+        <item>@string/mins_15</item>
+        <item>@string/min_30</item>
+        <item>@string/hour_1</item>
+        <item>@string/hour_2</item>
+        <item>@string/hour_3</item>
+        <item>@string/hour_6</item>
+        <item>@string/hour_12</item>
+        <item>@string/every_day</item>
+    </string-array>
+
+    <string-array name="synchro_values">
+        <item>0</item>
+        <item>0.15</item>
+        <item>0.30</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>6</item>
+        <item>12</item>
+        <item>24</item>
+    </string-array>
 </resources>

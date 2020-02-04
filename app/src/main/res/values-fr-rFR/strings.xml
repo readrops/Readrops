@@ -111,5 +111,15 @@
     <string name="opml_export_description">Export des flux et dossiers</string>
     <string name="new_feed">Nouveau flux</string>
     <string name="download_image_permission">Le téléchargement de l\'image nécessite l\'accès au stockage</string>
+    <string name="auto_synchro">Synchronisation automatique</string>
+    <string name="manual">Manuel</string>
+    <string name="mins_15">15 min</string>
+    <string name="min_30">30 min</string>
+    <string name="hour_1">1 heure</string>
+    <string name="hour_2">2 heures</string>
+    <string name="hour_3">3 heures</string>
+    <string name="hour_6">6 heures</string>
+    <string name="hour_12">12 heures</string>
+    <string name="every_day">Chaque jour</string>
 
 </resources>

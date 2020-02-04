@@ -117,4 +117,14 @@
     <string name="opml_export_description">Export feeds and folders</string>
     <string name="new_feed">New feed</string>
     <string name="download_image_permission">To download the image, storage permission is needed</string>
+    <string name="auto_synchro">Automatic synchronisation</string>
+    <string name="manual">Manual</string>
+    <string name="mins_15">15 mins</string>
+    <string name="min_30">30 mins</string>
+    <string name="hour_1">1 hour</string>
+    <string name="hour_2">2 hours</string>
+    <string name="hour_3">3 hours</string>
+    <string name="hour_6">6 hours</string>
+    <string name="hour_12">12 hours</string>
+    <string name="every_day">Every day</string>
 </resources>
