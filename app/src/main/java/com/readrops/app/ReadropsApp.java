@@ -1,5 +1,6 @@
 package com.readrops.app;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -12,6 +13,7 @@ import com.readrops.app.utils.SharedPreferencesManager;
 
 import io.reactivex.plugins.RxJavaPlugins;
 
+@SuppressLint("Registered")
 public class ReadropsApp extends Application {
 
     public static final String FEEDS_COLORS_CHANNEL_ID = "feedsColorsChannel";
@@ -47,6 +49,7 @@ public class ReadropsApp extends Application {
 
             NotificationChannel syncChannel = new NotificationChannel(SYNC_CHANNEL_ID,
                     getString(R.string.auto_synchro), NotificationManager.IMPORTANCE_DEFAULT);
+            syncChannel.setDescription(getString(R.string.account_synchro));
 
             NotificationManager manager = getSystemService(NotificationManager.class);
 
