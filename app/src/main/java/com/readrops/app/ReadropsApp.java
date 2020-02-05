@@ -16,6 +16,7 @@ public class ReadropsApp extends Application {
 
     public static final String FEEDS_COLORS_CHANNEL_ID = "feedsColorsChannel";
     public static final String OPML_EXPORT_CHANNEL_ID = "opmlExportChannel";
+    public static final String SYNC_CHANNEL_ID = "syncChannel";
 
     @Override
     public void onCreate() {
@@ -44,10 +45,14 @@ public class ReadropsApp extends Application {
                     getString(R.string.opml_export), NotificationManager.IMPORTANCE_DEFAULT);
             opmlExportChannel.setDescription(getString(R.string.opml_export_description));
 
+            NotificationChannel syncChannel = new NotificationChannel(SYNC_CHANNEL_ID,
+                    getString(R.string.auto_synchro), NotificationManager.IMPORTANCE_DEFAULT);
+
             NotificationManager manager = getSystemService(NotificationManager.class);
 
             manager.createNotificationChannel(feedsColorsChannel);
             manager.createNotificationChannel(opmlExportChannel);
+            manager.createNotificationChannel(syncChannel);
         }
     }
 }

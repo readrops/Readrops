@@ -70,6 +70,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             if (interval != null) {
                 PeriodicWorkRequest request = new PeriodicWorkRequest.Builder(SyncWorker.class, interval.first, interval.second)
                         .addTag(SyncWorker.Companion.getTAG())
+                        .setInitialDelay(15, TimeUnit.MINUTES)
                         .build();
 
                 workManager.enqueueUniquePeriodicWork(SyncWorker.Companion.getTAG(), ExistingPeriodicWorkPolicy.REPLACE, request);
