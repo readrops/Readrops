@@ -121,5 +121,6 @@
     <string name="hour_6">6 heures</string>
     <string name="hour_12">12 heures</string>
     <string name="every_day">Chaque jour</string>
+    <string name="account_synchro">Synchronisation des comptes</string>
 
 </resources>
