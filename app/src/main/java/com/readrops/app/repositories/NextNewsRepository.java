@@ -15,10 +15,10 @@ import com.readrops.readropsdb.entities.Folder;
 import com.readrops.readropsdb.entities.Item;
 import com.readrops.readropsdb.entities.account.Account;
 import com.readrops.readropslibrary.services.Credentials;
+import com.readrops.readropslibrary.services.SyncResult;
 import com.readrops.readropslibrary.services.SyncType;
 import com.readrops.readropslibrary.services.nextcloudnews.NextNewsAPI;
 import com.readrops.readropslibrary.services.nextcloudnews.NextNewsSyncData;
-import com.readrops.readropslibrary.services.nextcloudnews.NextNewsSyncResult;
 import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
 import com.readrops.readropslibrary.utils.UnknownFormatException;
 
@@ -100,7 +100,7 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
                 }
 
                 TimingLogger timings = new TimingLogger(TAG, "nextcloud news " + syncType.name().toLowerCase());
-                NextNewsSyncResult syncResult = api.sync(syncType, syncData);
+                SyncResult syncResult = api.sync(syncType, syncData);
                 timings.addSplit("server queries");
 
                 if (!syncResult.isError()) {

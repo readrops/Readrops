@@ -8,6 +8,7 @@ import com.readrops.readropsdb.entities.Folder;
 import com.readrops.readropsdb.entities.Item;
 import com.readrops.readropslibrary.services.API;
 import com.readrops.readropslibrary.services.Credentials;
+import com.readrops.readropslibrary.services.SyncResult;
 import com.readrops.readropslibrary.services.SyncType;
 import com.readrops.readropslibrary.services.freshrss.adapters.FreshRSSFeedsAdapter;
 import com.readrops.readropslibrary.services.freshrss.adapters.FreshRSSFoldersAdapter;
@@ -94,8 +95,8 @@ public class FreshRSSAPI extends API<FreshRSSService> {
      * @param writeToken token for making modifications on the server
      * @return the result of the synchronization
      */
-    public Single<FreshRSSSyncResult> sync(@NonNull SyncType syncType, @NonNull FreshRSSSyncData syncData, @NonNull String writeToken) {
-        FreshRSSSyncResult syncResult = new FreshRSSSyncResult();
+    public Single<SyncResult> sync(@NonNull SyncType syncType, @NonNull FreshRSSSyncData syncData, @NonNull String writeToken) {
+        SyncResult syncResult = new SyncResult();
 
         return setItemsReadState(syncData, writeToken)
                 .andThen(getFolders()
