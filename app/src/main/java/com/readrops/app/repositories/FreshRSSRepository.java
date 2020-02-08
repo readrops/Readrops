@@ -119,6 +119,8 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
                     logger.addSplit("reset read changes");
                     logger.dumpToLog();
 
+                    this.syncResult = syncResult;
+
                     return Observable.empty();
                 });
     }

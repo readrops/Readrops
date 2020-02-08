@@ -119,6 +119,8 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
                     database.accountDao().updateLastModified(account.getId(), lastModified);
                     database.itemDao().resetReadChanges(account.getId());
 
+                    this.syncResult = syncResult;
+
                     emitter.onComplete();
                 } else
                     emitter.onError(new Throwable());
@@ -300,6 +302,8 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
         }
 
         if (!itemsToInsert.isEmpty()) {
+            syncResult.setItems(itemsToInsert);
+
             Collections.sort(itemsToInsert, Item::compareTo);
             database.itemDao().insert(itemsToInsert);
         }

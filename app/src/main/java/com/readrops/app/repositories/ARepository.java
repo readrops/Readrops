@@ -16,6 +16,7 @@ import com.readrops.readropsdb.entities.Folder;
 import com.readrops.readropsdb.entities.Item;
 import com.readrops.readropsdb.entities.account.Account;
 import com.readrops.readropsdb.entities.account.AccountType;
+import com.readrops.readropslibrary.services.SyncResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,8 @@ public abstract class ARepository<T> {
     protected Account account;
 
     protected T api;
+
+    protected SyncResult syncResult;
 
     protected ARepository(@NonNull Context context, @Nullable Account account) {
         this.context = context;
@@ -178,5 +181,9 @@ public abstract class ARepository<T> {
 
     public static ARepository repositoryFactory(Account account, Context context) throws Exception {
         return ARepository.repositoryFactory(account, account.getAccountType(), context);
+    }
+
+    public SyncResult getSyncResult() {
+        return syncResult;
     }
 }
