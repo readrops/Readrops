@@ -35,7 +35,7 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
         val syncResults = mutableMapOf<Account, SyncResult>()
         accounts.forEach {
             notificationBuilder.setContentText(it.accountName)
-            notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
+            notificationManager.notify(SYNC_NOTIFICATION_ID, notificationBuilder.build())
 
             val repository = ARepository.repositoryFactory(it, applicationContext)
 
@@ -46,7 +46,7 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
             syncResults[it] = repository.syncResult
         }
 
-        notificationManager.cancel(NOTIFICATION_ID)
+        notificationManager.cancel(SYNC_NOTIFICATION_ID)
         displaySyncResultNotif(syncResults)
 
         return result
@@ -56,7 +56,7 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
         super.onStopped()
 
         disposable.dispose()
-        notificationManager.cancel(NOTIFICATION_ID)
+        notificationManager.cancel(SYNC_NOTIFICATION_ID)
     }
 
     private fun displaySyncResultNotif(syncResults: Map<Account, SyncResult>) {
@@ -70,11 +70,12 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
                     .setContentText(notifContent.content)
                     .setSmallIcon(R.drawable.ic_notif)
                     .setContentIntent(PendingIntent.getActivity(applicationContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
+                    .setAutoCancel(true)
 
             if (notifContent.largeIcon != null)
                 notificationBuilder.setLargeIcon(notifContent.largeIcon)
 
-            notificationManager.notify(ITEMS_NOTIFICATION_ID,
+            notificationManager.notify(SYNC_RESULT_NOTIFICATION_ID,
                 notificationBuilder.build())
         }
 
@@ -82,7 +83,7 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
 
     companion object {
         val TAG = SyncWorker::class.java.simpleName
-        private const val NOTIFICATION_ID = 2
-        private const val ITEMS_NOTIFICATION_ID = 3
+        private const val SYNC_NOTIFICATION_ID = 2
+        private const val SYNC_RESULT_NOTIFICATION_ID = 3
     }
 }
