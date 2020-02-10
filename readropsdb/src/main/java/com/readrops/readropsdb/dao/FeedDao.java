@@ -25,6 +25,9 @@ public abstract class FeedDao implements BaseDao<Feed> {
     @Query("Select * from Feed Order By name ASC")
     public abstract LiveData<List<Feed>> getAllFeeds();
 
+    @Query("Select * from Feed Where id = :feedId")
+    public abstract Feed getFeedById(int feedId);
+
     @Query("Select case When :feedUrl In (Select url from Feed Where account_id = :accountId) Then 1 else 0 end")
     public abstract boolean feedExists(String feedUrl, int accountId);
 
