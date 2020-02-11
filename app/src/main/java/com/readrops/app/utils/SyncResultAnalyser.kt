@@ -42,7 +42,6 @@ class SyncResultAnalyser(val context: Context, private val syncResults: Map<Acco
                 } else if (feedsIdsForNewItems.size == 1) { // new items from only one feed from one account
                     val feed = Database.getInstance(context).feedDao().getFeedById(feedsIdsForNewItems.first())
                     title = feed?.name
-                    contentText = syncResult.items.first().title
 
                     val target = GlideApp.with(context)
                             .asBitmap()
@@ -50,6 +49,10 @@ class SyncResultAnalyser(val context: Context, private val syncResults: Map<Acco
                             .diskCacheStrategy(DiskCacheStrategy.ALL)
                             .submit()
                     largeIcon = target.get()
+
+                    contentText = if (syncResult.items.size == 1)
+                        syncResult.items.first().title
+                    else context.getString(R.string.new_items, syncResult.items.size.toString())
                 }
             }
 
