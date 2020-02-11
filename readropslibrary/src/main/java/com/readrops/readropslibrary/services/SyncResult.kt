@@ -6,7 +6,7 @@ import com.readrops.readropsdb.entities.Item
 
 class SyncResult {
 
-    var items: List<Item> = listOf()
+    var items: List<Item> = mutableListOf()
 
     var feeds: List<Feed> = listOf()
 

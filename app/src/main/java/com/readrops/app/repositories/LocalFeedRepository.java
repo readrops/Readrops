@@ -22,6 +22,7 @@ import com.readrops.readropslibrary.localfeed.RSSQueryResult;
 import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
 import com.readrops.readropslibrary.localfeed.json.JSONFeed;
 import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
+import com.readrops.readropslibrary.services.SyncResult;
 import com.readrops.readropslibrary.utils.LibUtils;
 import com.readrops.readropslibrary.utils.ParseException;
 import com.readrops.readropslibrary.utils.UnknownFormatException;
@@ -44,6 +45,8 @@ public class LocalFeedRepository extends ARepository<Void> {
 
     public LocalFeedRepository(@NonNull Context context, @Nullable Account account) {
         super(context, account);
+
+        syncResult = new SyncResult();
     }
 
     @Override
@@ -247,6 +250,7 @@ public class LocalFeedRepository extends ARepository<Void> {
             }
         }
 
+        syncResult.getItems().addAll(itemsToInsert);
         database.itemDao().insert(itemsToInsert);
     }
 
