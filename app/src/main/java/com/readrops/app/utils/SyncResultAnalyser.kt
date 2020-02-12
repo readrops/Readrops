@@ -12,7 +12,7 @@ import com.readrops.readropslibrary.services.SyncResult
 /**
  * Simple class to get synchro notification content (title, content and largeIcon) according to some rules
  */
-class SyncResultAnalyser(val context: Context, private val syncResults: Map<Account, SyncResult>) {
+class SyncResultAnalyser(val context: Context, private val syncResults: Map<Account, SyncResult>, val database: Database) {
 
     fun getSyncNotifContent(): SyncResultNotifContent {
         var title: String? = null
@@ -40,7 +40,7 @@ class SyncResultAnalyser(val context: Context, private val syncResults: Map<Acco
                     contentText = context.getString(R.string.new_items, syncResult.items.size.toString())
                     largeIcon = BitmapFactory.decodeResource(context.resources, account.accountType.iconRes)
                 } else if (feedsIdsForNewItems.size == 1) { // new items from only one feed from one account
-                    val feed = Database.getInstance(context).feedDao().getFeedById(feedsIdsForNewItems.first())
+                    val feed = database.feedDao().getFeedById(feedsIdsForNewItems.first())
                     title = feed?.name
 
                     val target = GlideApp.with(context)

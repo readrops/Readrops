@@ -19,10 +19,12 @@ import io.reactivex.disposables.Disposable
 class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(context, parameters) {
 
     private lateinit var disposable: Disposable
+
     private val notificationManager = NotificationManagerCompat.from(applicationContext)
+    private val database = Database.getInstance(applicationContext)
 
     override fun doWork(): Result {
-        val database = Database.getInstance(applicationContext)
+
         val accounts = database.accountDao().selectAll()
         var result = Result.success()
 
@@ -60,7 +62,7 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
     }
 
     private fun displaySyncResultNotif(syncResults: Map<Account, SyncResult>) {
-        val notifContent = SyncResultAnalyser(applicationContext, syncResults).getSyncNotifContent()
+        val notifContent = SyncResultAnalyser(applicationContext, syncResults, database).getSyncNotifContent()
 
         if (notifContent.title != null && notifContent.content != null) {
             val intent = Intent(applicationContext, MainActivity::class.java)
