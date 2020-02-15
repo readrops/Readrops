@@ -43,12 +43,15 @@ class SyncResultAnalyser(val context: Context, private val syncResults: Map<Acco
                     val feed = database.feedDao().getFeedById(feedsIdsForNewItems.first())
                     title = feed?.name
 
-                    val target = GlideApp.with(context)
-                            .asBitmap()
-                            .load(feed?.iconUrl)
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .submit()
-                    largeIcon = target.get()
+                    feed?.iconUrl?.let {
+                        val target = GlideApp.with(context)
+                                .asBitmap()
+                                .load(it)
+                                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                .submit()
+                        
+                        largeIcon = target.get()
+                    }
 
                     contentText = if (syncResult.items.size == 1)
                         syncResult.items.first().title
