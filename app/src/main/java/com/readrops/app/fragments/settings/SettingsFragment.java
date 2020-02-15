@@ -8,7 +8,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.NetworkType;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
@@ -68,8 +70,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             Pair<Integer, TimeUnit> interval = getWorkerInterval((String) newValue);
 
             if (interval != null) {
+                Constraints constraints = new Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                        .build();
+
                 PeriodicWorkRequest request = new PeriodicWorkRequest.Builder(SyncWorker.class, interval.first, interval.second)
                         .addTag(SyncWorker.Companion.getTAG())
+                        .setConstraints(constraints)
                         .setInitialDelay(15, TimeUnit.MINUTES)
                         .build();
 
