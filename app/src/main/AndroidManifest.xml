@@ -33,11 +33,9 @@
             android:name=".activities.WebViewActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <service
-            android:name=".utils.feedscolors.FeedsColorsIntentService" />
+        <service android:name=".utils.feedscolors.FeedsColorsIntentService" />
 
-        <activity
-            android:name=".activities.SettingsActivity" />
+        <activity android:name=".activities.SettingsActivity" />
         <activity
             android:name=".activities.SplashActivity"
             android:theme="@style/SplashTheme">
@@ -46,8 +44,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activities.AccountTypeListActivity" />
+        <activity android:name=".activities.AccountTypeListActivity" />
         <activity
             android:name=".activities.AddAccountActivity"
             android:label="@string/add_account" />
@@ -67,6 +64,7 @@
         <activity
             android:name=".activities.AddFeedActivity"
             android:label="@string/add_feed_title"
+            android:launchMode="singleTop"
             android:parentActivityName=".activities.MainActivity">
             <intent-filter android:label="@string/new_feed">
                 <action android:name="android.intent.action.SEND" />
