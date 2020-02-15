@@ -308,7 +308,7 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
 
             if (!initialSync && feedId > 0 && database.itemDao().remoteItemExists(String.valueOf(nextNewsItem.getId()), feedId)) {
                 database.itemDao().setReadState(String.valueOf(nextNewsItem.getId()), !nextNewsItem.isUnread());
-                break;
+                continue;
             }
 
             Item item = ItemMatcher.nextNewsItemToItem(nextNewsItem, feedId);

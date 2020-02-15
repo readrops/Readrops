@@ -232,7 +232,7 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
 
             if (!initialSync && feedId > 0 && database.itemDao().remoteItemExists(freshRSSItem.getId(), feedId)) {
                 database.itemDao().setReadState(freshRSSItem.getId(), freshRSSItem.isRead());
-                break;
+                continue;
             }
 
             Item item = ItemMatcher.freshRSSItemtoItem(freshRSSItem, feedId);
