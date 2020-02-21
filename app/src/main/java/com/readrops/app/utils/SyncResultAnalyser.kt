@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.readrops.app.R
 import com.readrops.readropsdb.Database
+import com.readrops.readropsdb.entities.Item
 import com.readrops.readropsdb.entities.account.Account
 import com.readrops.readropslibrary.services.SyncResult
 
@@ -18,6 +19,7 @@ class SyncResultAnalyser(val context: Context, private val syncResults: Map<Acco
         var title: String? = null
         var contentText: String? = null
         var largeIcon: Bitmap? = null
+        var item: Item? = null
 
         if (newItemsInMultipleAccounts()) {
             var itemsNb = 0
@@ -42,6 +44,7 @@ class SyncResultAnalyser(val context: Context, private val syncResults: Map<Acco
                 } else if (feedsIdsForNewItems.size == 1) { // new items from only one feed from one account
                     val feed = database.feedDao().getFeedById(feedsIdsForNewItems.first())
                     title = feed?.name
+                    item = syncResult.items.first()
 
                     feed?.iconUrl?.let {
                         val target = GlideApp.with(context)
@@ -54,7 +57,7 @@ class SyncResultAnalyser(val context: Context, private val syncResults: Map<Acco
                     }
 
                     contentText = if (syncResult.items.size == 1)
-                        syncResult.items.first().title
+                        item.title
                     else context.getString(R.string.new_items, syncResult.items.size.toString())
                 }
             }
@@ -63,7 +66,8 @@ class SyncResultAnalyser(val context: Context, private val syncResults: Map<Acco
 
         return SyncResultNotifContent(title,
                 contentText,
-                largeIcon)
+                largeIcon,
+                item)
     }
 
     private fun newItemsInMultipleAccounts(): Boolean {

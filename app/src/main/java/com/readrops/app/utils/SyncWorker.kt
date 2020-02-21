@@ -67,6 +67,11 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
         if (notifContent.title != null && notifContent.content != null) {
             val intent = Intent(applicationContext, MainActivity::class.java)
 
+            notifContent.item?.let {
+                intent.putExtra(ReadropsKeys.ITEM_ID, it.id)
+                intent.putExtra(ReadropsKeys.IMAGE_URL, it.imageLink)
+            }
+
             val notificationBuilder = NotificationCompat.Builder(applicationContext, ReadropsApp.SYNC_CHANNEL_ID)
                     .setContentTitle(notifContent.title)
                     .setContentText(notifContent.content)
@@ -74,11 +79,12 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
                     .setContentIntent(PendingIntent.getActivity(applicationContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
                     .setAutoCancel(true)
 
-            if (notifContent.largeIcon != null)
-                notificationBuilder.setLargeIcon(notifContent.largeIcon)
+            notifContent.largeIcon?.let {
+                notificationBuilder.setLargeIcon(it)
+            }
 
             notificationManager.notify(SYNC_RESULT_NOTIFICATION_ID,
-                notificationBuilder.build())
+                    notificationBuilder.build())
         }
 
     }
