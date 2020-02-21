@@ -58,7 +58,6 @@ import com.readrops.readropsdb.pojo.ItemWithFeed;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -146,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         viewModel.getItemsWithFeed().observe(this, itemWithFeeds -> {
             allItems = itemWithFeeds;
 
-            if (itemWithFeeds.size() > 0)
+            if (!itemWithFeeds.isEmpty())
                 emptyListLayout.setVisibility(View.GONE);
             else
                 emptyListLayout.setVisibility(View.VISIBLE);
@@ -207,10 +206,10 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 drawer = drawerManager.buildDrawer(accounts);
                 drawer.setSelection(DrawerManager.ARTICLES_ITEM_ID);
                 updateDrawerFeeds();
-            } else if (accounts.size() < drawerManager.getNumberOfProfiles() && accounts.size() > 0) {
+            } else if (accounts.size() < drawerManager.getNumberOfProfiles() && !accounts.isEmpty()) {
                 drawerManager.updateHeader(accounts);
                 updateDrawerFeeds();
-            } else if (accounts.size() == 0) {
+            } else if (accounts.isEmpty()) {
                 Intent intent = new Intent(this, AccountTypeListActivity.class);
                 startActivity(intent);
                 finish();
@@ -422,6 +421,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
         drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         refreshLayout.setEnabled(false);
+
         actionMode.getMenuInflater().inflate(R.menu.item_list_contextual_menu, menu);
         getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.primary_dark));
 
@@ -526,38 +526,34 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == ADD_FEED_REQUEST && resultCode == RESULT_OK) {
-            if (data != null) {
-                ArrayList<Feed> feeds = data.getParcelableArrayListExtra(FEEDS);
+        if (requestCode == ADD_FEED_REQUEST && resultCode == RESULT_OK && data != null) {
+            List<Feed> feeds = data.getParcelableArrayListExtra(FEEDS);
 
-                if (feeds != null && feeds.size() > 0 && viewModel.isAccountLocal()) {
-                    refreshLayout.setRefreshing(true);
-                    feedNb = feeds.size();
-                    sync(feeds);
-                }
+            if (feeds != null && !feeds.isEmpty() && viewModel.isAccountLocal()) {
+                refreshLayout.setRefreshing(true);
+                feedNb = feeds.size();
+                sync(feeds);
             }
 
         } else if (requestCode == MANAGE_ACCOUNT_REQUEST) {
             updateDrawerFeeds();
 
-        } else if (requestCode == ADD_ACCOUNT_REQUEST && resultCode == RESULT_OK) {
-            if (data != null) {
-                Account newAccount = data.getParcelableExtra(ACCOUNT);
+        } else if (requestCode == ADD_ACCOUNT_REQUEST && resultCode == RESULT_OK && data != null) {
+            Account newAccount = data.getParcelableExtra(ACCOUNT);
 
-                if (newAccount != null) {
-                    viewModel.addAccount(newAccount);
+            if (newAccount != null) {
+                viewModel.addAccount(newAccount);
 
-                    adapter.clearData();
+                adapter.clearData();
 
-                    if (!viewModel.isAccountLocal()) {
-                        getAccountCredentials(Collections.singletonList(newAccount));
-                        refreshLayout.setRefreshing(true);
-                        onRefresh();
-                    }
-
-                    drawerManager.resetItems();
-                    drawerManager.addAccount(newAccount, true);
+                if (!viewModel.isAccountLocal()) {
+                    getAccountCredentials(Collections.singletonList(newAccount));
+                    refreshLayout.setRefreshing(true);
+                    onRefresh();
                 }
+
+                drawerManager.resetItems();
+                drawerManager.addAccount(newAccount, true);
             }
 
         }
