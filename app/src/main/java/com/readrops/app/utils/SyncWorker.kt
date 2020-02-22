@@ -1,6 +1,7 @@
 package com.readrops.app.utils
 
 import android.app.PendingIntent
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
@@ -12,9 +13,11 @@ import com.readrops.app.ReadropsApp
 import com.readrops.app.activities.MainActivity
 import com.readrops.app.repositories.ARepository
 import com.readrops.readropsdb.Database
+import com.readrops.readropsdb.entities.Item
 import com.readrops.readropsdb.entities.account.Account
 import com.readrops.readropslibrary.services.SyncResult
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 
 class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(context, parameters) {
 
@@ -24,7 +27,6 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
     private val database = Database.getInstance(applicationContext)
 
     override fun doWork(): Result {
-
         val accounts = database.accountDao().selectAll()
         var result = Result.success()
 
@@ -67,17 +69,25 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
         if (notifContent.title != null && notifContent.content != null) {
             val intent = Intent(applicationContext, MainActivity::class.java)
 
-            notifContent.item?.let {
-                intent.putExtra(ReadropsKeys.ITEM_ID, it.id)
-                intent.putExtra(ReadropsKeys.IMAGE_URL, it.imageLink)
-            }
-
             val notificationBuilder = NotificationCompat.Builder(applicationContext, ReadropsApp.SYNC_CHANNEL_ID)
                     .setContentTitle(notifContent.title)
                     .setContentText(notifContent.content)
                     .setSmallIcon(R.drawable.ic_notif)
-                    .setContentIntent(PendingIntent.getActivity(applicationContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
+                    .setContentIntent(PendingIntent.getActivity(applicationContext, 0, intent, 0))
                     .setAutoCancel(true)
+
+            notifContent.item?.let {
+                with(intent) {
+                    putExtra(ReadropsKeys.ITEM_ID, it.id)
+                    putExtra(ReadropsKeys.IMAGE_URL, it.imageLink)
+                }
+
+                val feed = database.feedDao().getFeedById(it.feedId)
+
+                notificationBuilder.addAction(buildReadlaterAction(it))
+                        .addAction(buildMarkAsRead(it))
+                        .setColor(feed.backgroundColor)
+            }
 
             notifContent.largeIcon?.let {
                 notificationBuilder.setLargeIcon(it)
@@ -89,9 +99,66 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
 
     }
 
+    private fun buildReadlaterAction(item: Item): NotificationCompat.Action {
+        val broadcastIntent = Intent(applicationContext, ReadLaterReceiver::class.java).apply {
+            putExtra(ReadropsKeys.ITEM_ID, item.id)
+        }
+
+        return NotificationCompat.Action.Builder(R.drawable.ic_read_later, applicationContext.getString(R.string.read_later),
+                PendingIntent.getBroadcast(applicationContext, 0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                .setAllowGeneratedReplies(false)
+                .build()
+    }
+
+    private fun buildMarkAsRead(item: Item): NotificationCompat.Action {
+        val broadcastIntent = Intent(applicationContext, MarkReadReceiver::class.java).apply {
+            putExtra(ReadropsKeys.ITEM_ID, item.id)
+        }
+
+        return NotificationCompat.Action.Builder(R.drawable.ic_read, applicationContext.getString(R.string.read),
+                PendingIntent.getBroadcast(applicationContext, 0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                .setAllowGeneratedReplies(false)
+                .build()
+    }
+
+    class MarkReadReceiver : BroadcastReceiver() {
+
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val itemId = intent?.getIntExtra(ReadropsKeys.ITEM_ID, 0)!!
+
+            with(Database.getInstance(context)) {
+                itemDao().setReadState(itemId, true, true)
+                        .subscribeOn(Schedulers.io())
+                        .subscribe()
+            }
+
+            with(NotificationManagerCompat.from(context!!)) {
+                cancel(SYNC_RESULT_NOTIFICATION_ID)
+            }
+        }
+    }
+
+    class ReadLaterReceiver : BroadcastReceiver() {
+
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val itemId = intent?.getIntExtra(ReadropsKeys.ITEM_ID, 0)!!
+
+            with(Database.getInstance(context)) {
+                itemDao().setReadItLater(itemId)
+                        .subscribeOn(Schedulers.io())
+                        .subscribe()
+            }
+
+            with(NotificationManagerCompat.from(context!!)) {
+                cancel(SYNC_RESULT_NOTIFICATION_ID)
+            }
+        }
+
+    }
+
     companion object {
         val TAG = SyncWorker::class.java.simpleName
         private const val SYNC_NOTIFICATION_ID = 2
-        private const val SYNC_RESULT_NOTIFICATION_ID = 3
+        const val SYNC_RESULT_NOTIFICATION_ID = 3
     }
 }

@@ -237,10 +237,7 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     public Completable setItemReadItLater(int itemId) {
-        return Completable.create(emitter -> {
-            db.itemDao().setReadItLater(itemId);
-            emitter.onComplete();
-        });
+        return db.itemDao().setReadItLater(itemId);
     }
 
     //endregion

@@ -34,11 +34,11 @@ public abstract class ItemDao implements BaseDao<Item> {
      * Set an item read or unread
      *
      * @param itemId      id of the item to update
-     * @param readState   1 for read, 0 for unread
+     * @param read   1 for read, 0 for unread
      * @param readChanged
      */
-    @Query("Update Item Set read_changed = :readChanged, read = :readState Where id = :itemId")
-    public abstract Completable setReadState(int itemId, int readState, int readChanged);
+    @Query("Update Item Set read_changed = :readChanged, read = :read Where id = :itemId")
+    public abstract Completable setReadState(int itemId, boolean read, boolean readChanged);
 
     @Query("Update Item set read_changed = 1, read = :readState Where feed_id In (Select id From Feed Where account_id = :accountId)")
     public abstract Completable setAllItemsReadState(int readState, int accountId);
@@ -47,7 +47,7 @@ public abstract class ItemDao implements BaseDao<Item> {
     public abstract Completable setAllFeedItemsReadState(int feedId, int readState);
 
     @Query("Update Item set read_it_later = 1 Where id = :itemId")
-    public abstract void setReadItLater(int itemId);
+    public abstract Completable setReadItLater(int itemId);
 
     @Query("Select count(*) From Item Where feed_id = :feedId And read = 0")
     public abstract int getUnreadCount(int feedId);

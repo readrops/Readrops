@@ -109,7 +109,7 @@ public abstract class ARepository<T> {
     }
 
     public Completable setItemReadState(Item item, boolean read) {
-        return database.itemDao().setReadState(item.getId(), read ? 1 : 0, !item.isReadChanged() ? 1 : 0);
+        return database.itemDao().setReadState(item.getId(), read, !item.isReadChanged());
     }
 
     public Completable setAllItemsReadState(boolean read) {

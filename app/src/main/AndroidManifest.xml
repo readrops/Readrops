@@ -35,6 +35,9 @@
 
         <service android:name=".utils.feedscolors.FeedsColorsIntentService" />
 
+        <receiver android:name=".utils.SyncWorker$MarkReadReceiver" />
+        <receiver android:name=".utils.SyncWorker$ReadLaterReceiver" />
+
         <activity android:name=".activities.SettingsActivity" />
         <activity
             android:name=".activities.SplashActivity"
