@@ -1,3 +1,8 @@
+# v1.1.3
+
+- Fix crash for API < 24 #51
+- Fix item read state not syncing with Nextcloud News #49
+
 # v1.1.2
 
 - Fix opml not working in release version
