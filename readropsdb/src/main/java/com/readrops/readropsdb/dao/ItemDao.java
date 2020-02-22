@@ -19,16 +19,16 @@ import java.util.List;
 import io.reactivex.Completable;
 
 @Dao
-public abstract class ItemDao implements BaseDao<Item> {
+public interface ItemDao extends BaseDao<Item> {
 
     @RawQuery(observedEntities = {Item.class, Folder.class, Feed.class})
-    public abstract DataSource.Factory<Integer, ItemWithFeed> selectAll(SupportSQLiteQuery query);
+    DataSource.Factory<Integer, ItemWithFeed> selectAll(SupportSQLiteQuery query);
 
     @Query("Select case When :guid In (Select guid From Item Inner Join Feed on Item.feed_id = Feed.id and account_id = :accountId) Then 1 else 0 end")
-    public abstract boolean itemExists(String guid, int accountId);
+    boolean itemExists(String guid, int accountId);
 
     @Query("Select case When :remoteId In (Select remoteId from Item) And :feedId In (Select feed_id From Item) Then 1 else 0 end")
-    public abstract boolean remoteItemExists(String remoteId, int feedId);
+    boolean remoteItemExists(String remoteId, int feedId);
 
     /**
      * Set an item read or unread
@@ -38,35 +38,35 @@ public abstract class ItemDao implements BaseDao<Item> {
      * @param readChanged
      */
     @Query("Update Item Set read_changed = :readChanged, read = :read Where id = :itemId")
-    public abstract Completable setReadState(int itemId, boolean read, boolean readChanged);
+    Completable setReadState(int itemId, boolean read, boolean readChanged);
 
     @Query("Update Item set read_changed = 1, read = :readState Where feed_id In (Select id From Feed Where account_id = :accountId)")
-    public abstract Completable setAllItemsReadState(int readState, int accountId);
+    Completable setAllItemsReadState(int readState, int accountId);
 
     @Query("Update Item set read_changed = 1, read = :readState Where feed_id = :feedId")
-    public abstract Completable setAllFeedItemsReadState(int feedId, int readState);
+    Completable setAllFeedItemsReadState(int feedId, int readState);
 
     @Query("Update Item set read_it_later = 1 Where id = :itemId")
-    public abstract Completable setReadItLater(int itemId);
+    Completable setReadItLater(int itemId);
 
     @Query("Select count(*) From Item Where feed_id = :feedId And read = 0")
-    public abstract int getUnreadCount(int feedId);
+    int getUnreadCount(int feedId);
 
     @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Query("Select title, Item.description, content, link, pub_date, image_link, author, read, text_color, " +
             "background_color, read_time, Feed.name, Feed.id as feedId, siteUrl, Folder.id as folder_id, " +
             "Folder.name as folder_name from Item Inner Join Feed On Item.feed_id = Feed.id Left Join Folder on Folder.id = Feed.folder_id Where Item.id = :id")
-    public abstract LiveData<ItemWithFeed> getItemById(int id);
+    LiveData<ItemWithFeed> getItemById(int id);
 
     @Query("Select Item.remoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where read_changed = 1 And read = 1 And account_id = :accountId")
-    public abstract List<String> getReadChanges(int accountId);
+    List<String> getReadChanges(int accountId);
 
     @Query("Select Item.remoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where read_changed = 1 And read = 0 And account_id = :accountId")
-    public abstract List<String> getUnreadChanges(int accountId);
+    List<String> getUnreadChanges(int accountId);
 
     @Query("Update Item set read_changed = 0 Where feed_id in (Select id From Feed Where account_id = :accountId)")
-    public abstract void resetReadChanges(int accountId);
+    void resetReadChanges(int accountId);
 
     @Query("Update Item set read = :read Where remoteId = :remoteId")
-    public abstract void setReadState(String remoteId, boolean read);
+    void setReadState(String remoteId, boolean read);
 }
