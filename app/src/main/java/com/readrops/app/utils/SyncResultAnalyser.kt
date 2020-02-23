@@ -2,7 +2,7 @@ package com.readrops.app.utils
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import androidx.core.content.ContextCompat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.readrops.app.R
 import com.readrops.readropsdb.Database
@@ -40,7 +40,7 @@ class SyncResultAnalyser(val context: Context, private val syncResults: Map<Acco
 
                     title = account.accountName
                     contentText = context.getString(R.string.new_items, syncResult.items.size.toString())
-                    largeIcon = BitmapFactory.decodeResource(context.resources, account.accountType.iconRes)
+                    largeIcon = Utils.getBitmapFromDrawable(ContextCompat.getDrawable(context, account.accountType.iconRes))
                 } else if (feedsIdsForNewItems.size == 1) { // new items from only one feed from one account
                     val feed = database.feedDao().getFeedById(feedsIdsForNewItems.first())
                     title = feed?.name
@@ -52,7 +52,7 @@ class SyncResultAnalyser(val context: Context, private val syncResults: Map<Acco
                                 .load(it)
                                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                                 .submit()
-                        
+
                         largeIcon = target.get()
                     }
 
