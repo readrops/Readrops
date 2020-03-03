@@ -49,7 +49,7 @@ class SyncResultAnalyserTest {
             val feed = Feed().apply {
                 name = "feed ${i + 1}"
                 iconUrl = "https://i0.wp.com/mrmondialisation.org/wp-content/uploads/2017/05/ico_final.gif"
-                this.accountId = if (i %2 == 0) account1Id else account2Id
+                this.accountId = if (i % 2 == 0) account1Id else account2Id
             }
 
             database.feedDao().insert(feed).subscribe()
@@ -68,10 +68,7 @@ class SyncResultAnalyserTest {
             feedId = 1
         }
 
-        val syncResult = SyncResult().apply {
-            items = mutableListOf(item)
-        }
-
+        val syncResult = SyncResult().apply { items = mutableListOf(item) }
         val notifContent = SyncResultAnalyser(context, mapOf(Pair(account1, syncResult)), database).getSyncNotifContent()
 
         assertEquals("caseOneElementEveryWhere", notifContent.content)
@@ -82,59 +79,38 @@ class SyncResultAnalyserTest {
     @Test
     fun caseTwoItemsOneFeed() {
         val item = Item().apply {
-            title = "caseOneElementEveryWhere"
+            title = "caseTwoItemsOneFeed"
             feedId = 1
         }
 
-        val syncResult = SyncResult().apply {
-            items = mutableListOf(item, item, item)
-        }
-
+        val syncResult = SyncResult().apply { items = mutableListOf(item, item, item) }
         val notifContent = SyncResultAnalyser(context, mapOf(Pair(account1, syncResult)), database).getSyncNotifContent()
 
-        assertEquals("3 new articles", notifContent.content)
+        assertEquals(context.getString(R.string.new_items, 3), notifContent.content)
         assertEquals("feed 1", notifContent.title)
         assertTrue(notifContent.largeIcon != null)
     }
 
     @Test
     fun caseMultipleFeeds() {
-        val item = Item().apply {
-            feedId = 1
-        }
+        val item = Item().apply { feedId = 1 }
+        val item2 = Item().apply { feedId = 2 }
 
-        val item2 = Item().apply {
-            feedId = 2
-        }
-
-        val syncResult = SyncResult().apply {
-            items = mutableListOf(item, item2)
-        }
-
+        val syncResult = SyncResult().apply { items = mutableListOf(item, item2) }
         val notifContent = SyncResultAnalyser(context, mapOf(Pair(account1, syncResult)), database).getSyncNotifContent()
 
-        assertEquals("2 new articles", notifContent.content)
+        assertEquals(context.getString(R.string.new_items, 2), notifContent.content)
         assertEquals(account1.accountName, notifContent.title)
-        //assertTrue(notifContent.largeIcon != null) doesn't work currently
+        assertTrue(notifContent.largeIcon != null)
     }
 
     @Test
     fun multipleAccounts() {
-        val item = Item().apply {
-            feedId = 1
-        }
+        val item = Item().apply { feedId = 1 }
+        val item2 = Item().apply { feedId = 2 }
 
-        val item2 = Item().apply {
-            feedId = 2
-        }
-
-        val syncResult = SyncResult().apply {
-            items = mutableListOf(item, item2)
-        }
-
-        val syncResult2 = SyncResult().apply {
-            items = mutableListOf(item, item2)
-        }
+        val syncResult = SyncResult().apply { items = mutableListOf(item, item2) }
+        val syncResult2 = SyncResult().apply { items = mutableListOf(item, item2) }
 
         val syncResults = mutableMapOf<Account, SyncResult>().apply {
             put(account1, syncResult)
@@ -144,6 +120,6 @@ class SyncResultAnalyserTest {
         val notifContent = SyncResultAnalyser(context, syncResults, database).getSyncNotifContent()
 
         assertEquals("Notifications", notifContent.title)
-        assertEquals("4 new articles", notifContent.content)
+        assertEquals(context.getString(R.string.new_items, 4), notifContent.content)
     }
 }
