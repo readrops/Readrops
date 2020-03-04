@@ -4,7 +4,7 @@
 
 Readrops is a multi-services RSS client for Android. Its name is composed of "Read" and "drops", where drops are information drops in an ocean of news.
 
-[<img src="images/google-play-badge.png" width=250>](https://play.google.com/store/apps/details?id=com.readrops.app)[<img src="images/fdroid-badge.png" width=250>](https://f-droid.org/fr/packages/com.readrops.app/)
+[<img src="images/google-play-badge.png" width=250>](https://play.google.com/store/apps/details?id=com.readrops.app)[<img src="images/fdroid-badge.png" width=250>](https://f-droid.org/en/packages/com.readrops.app/)
 
 # Features
 
