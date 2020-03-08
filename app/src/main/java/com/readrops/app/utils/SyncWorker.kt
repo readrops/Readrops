@@ -67,7 +67,12 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
         val notifContent = SyncResultAnalyser(applicationContext, syncResults, database).getSyncNotifContent()
 
         if (notifContent.title != null && notifContent.content != null) {
-            val intent = Intent(applicationContext, MainActivity::class.java)
+            val intent = Intent(applicationContext, MainActivity::class.java).apply {
+                if (notifContent.item != null) {
+                    putExtra(ReadropsKeys.ITEM_ID, notifContent.item.id)
+                    putExtra(ReadropsKeys.IMAGE_URL, notifContent.item.imageLink)
+                }
+            }
 
             val notificationBuilder = NotificationCompat.Builder(applicationContext, ReadropsApp.SYNC_CHANNEL_ID)
                     .setContentTitle(notifContent.title)
@@ -77,11 +82,6 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
                     .setAutoCancel(true)
 
             notifContent.item?.let {
-                with(intent) {
-                    putExtra(ReadropsKeys.ITEM_ID, it.id)
-                    putExtra(ReadropsKeys.IMAGE_URL, it.imageLink)
-                }
-
                 val feed = database.feedDao().getFeedById(it.feedId)
 
                 notificationBuilder.addAction(buildReadlaterAction(it))
