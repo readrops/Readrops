@@ -86,7 +86,7 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
 
                 notificationBuilder.addAction(buildReadlaterAction(it))
                         .addAction(buildMarkAsRead(it))
-                        .setColor(feed.backgroundColor)
+                        .setColor(if (feed.backgroundColor != 0) feed.backgroundColor else feed.textColor)
             }
 
             notifContent.largeIcon?.let {
