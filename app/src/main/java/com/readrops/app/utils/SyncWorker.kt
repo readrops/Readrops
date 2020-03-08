@@ -77,6 +77,7 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
             val notificationBuilder = NotificationCompat.Builder(applicationContext, ReadropsApp.SYNC_CHANNEL_ID)
                     .setContentTitle(notifContent.title)
                     .setContentText(notifContent.content)
+                    .setStyle(NotificationCompat.BigTextStyle().bigText(notifContent.content))
                     .setSmallIcon(R.drawable.ic_notif)
                     .setContentIntent(PendingIntent.getActivity(applicationContext, 0, intent, 0))
                     .setAutoCancel(true)
