@@ -59,6 +59,7 @@
         <activity
             android:name=".activities.MainActivity"
             android:label="@string/articles"
+            android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.ItemActivity"
@@ -67,7 +68,6 @@
         <activity
             android:name=".activities.AddFeedActivity"
             android:label="@string/add_feed_title"
-            android:launchMode="singleTop"
             android:parentActivityName=".activities.MainActivity">
             <intent-filter android:label="@string/new_feed">
                 <action android:name="android.intent.action.SEND" />

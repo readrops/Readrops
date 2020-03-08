@@ -225,15 +225,25 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 savedInstanceState.clear();
             }
         });
-
-        if (getIntent().hasExtra(ITEM_ID) && getIntent().hasExtra(IMAGE_URL)) {
-            Intent intent = new Intent(this, ItemActivity.class);
-            intent.putExtras(getIntent());
-
-            startActivity(intent);
-        }
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        if (intent.hasExtra(ITEM_ID) && intent.hasExtra(IMAGE_URL)) {
+            Intent itemIntent = new Intent(this, ItemActivity.class);
+            itemIntent.putExtras(intent);
+
+            startActivity(itemIntent);
+
+            viewModel.setItemReadState(intent.getIntExtra(ITEM_ID, 0), true, true)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnError(throwable -> Utils.showSnackbar(rootLayout, throwable.getMessage()))
+                    .subscribe();
+        }
+    }
 
     private void handleDrawerClick(IDrawerItem drawerItem) {
         if (drawerItem instanceof PrimaryDrawerItem) {

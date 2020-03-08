@@ -219,6 +219,10 @@ public class MainViewModel extends AndroidViewModel {
         return repository.setItemReadState(itemWithFeed.getItem(), read);
     }
 
+    public Completable setItemReadState(int itemId, boolean read, boolean readChanged) {
+        return repository.setItemReadState(itemId, read, readChanged);
+    }
+
     public Completable setItemsReadState(List<ItemWithFeed> items, boolean read) {
         List<Completable> completableList = new ArrayList<>();
 
