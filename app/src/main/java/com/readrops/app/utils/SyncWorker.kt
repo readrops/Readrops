@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.Worker
@@ -44,10 +45,13 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
             val repository = ARepository.repositoryFactory(it, applicationContext)
 
             disposable = repository.sync(null)
-                    .doOnError { result = Result.failure() }
+                    .doOnError { throwable ->
+                        result = Result.failure()
+                        Log.e(TAG, throwable.message!!, throwable)
+                    }
                     .subscribe()
 
-            syncResults[it] = repository.syncResult
+            if (repository.syncResult != null) syncResults[it] = repository.syncResult
         }
 
         notificationManager.cancel(SYNC_NOTIFICATION_ID)
@@ -106,7 +110,7 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
         }
 
         return NotificationCompat.Action.Builder(R.drawable.ic_read_later, applicationContext.getString(R.string.read_later),
-                PendingIntent.getBroadcast(applicationContext, 0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                        PendingIntent.getBroadcast(applicationContext, 0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                 .setAllowGeneratedReplies(false)
                 .build()
     }
@@ -117,7 +121,7 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
         }
 
         return NotificationCompat.Action.Builder(R.drawable.ic_read, applicationContext.getString(R.string.read),
-                PendingIntent.getBroadcast(applicationContext, 0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                        PendingIntent.getBroadcast(applicationContext, 0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                 .setAllowGeneratedReplies(false)
                 .build()
     }
