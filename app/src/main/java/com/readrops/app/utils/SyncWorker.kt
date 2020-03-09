@@ -79,7 +79,7 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
                     .setContentText(notifContent.content)
                     .setStyle(NotificationCompat.BigTextStyle().bigText(notifContent.content))
                     .setSmallIcon(R.drawable.ic_notif)
-                    .setContentIntent(PendingIntent.getActivity(applicationContext, 0, intent, 0))
+                    .setContentIntent(PendingIntent.getActivity(applicationContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
                     .setAutoCancel(true)
 
             notifContent.item?.let {

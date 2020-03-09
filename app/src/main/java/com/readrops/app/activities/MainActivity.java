@@ -224,6 +224,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 onRefresh();
                 savedInstanceState.clear();
             }
+
+            openItemActivity(getIntent());
         });
     }
 
@@ -231,6 +233,10 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
+        openItemActivity(intent);
+    }
+
+    private void openItemActivity(Intent intent) {
         if (intent.hasExtra(ITEM_ID) && intent.hasExtra(IMAGE_URL)) {
             Intent itemIntent = new Intent(this, ItemActivity.class);
             itemIntent.putExtras(intent);
