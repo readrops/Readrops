@@ -56,7 +56,8 @@ class SyncResultAnalyser(val context: Context, private val syncResults: Map<Acco
                     }
 
                     if (syncResult.items.size == 1) {
-                        item = syncResult.items.first()
+                        item = database.itemDao().selectByRemoteId(syncResult.items.first().remoteId,
+                                syncResult.items.first().feedId)
                         contentText = item.title
                     } else contentText = context.getString(R.string.new_items, syncResult.items.size.toString())
                 }

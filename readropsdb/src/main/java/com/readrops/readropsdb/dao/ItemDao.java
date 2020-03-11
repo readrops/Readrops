@@ -24,11 +24,17 @@ public interface ItemDao extends BaseDao<Item> {
     @RawQuery(observedEntities = {Item.class, Folder.class, Feed.class})
     DataSource.Factory<Integer, ItemWithFeed> selectAll(SupportSQLiteQuery query);
 
+    @Query("Select * From Item Where id = :itemId")
+    Item select(int itemId);
+
     @Query("Select case When :guid In (Select guid From Item Inner Join Feed on Item.feed_id = Feed.id and account_id = :accountId) Then 1 else 0 end")
     boolean itemExists(String guid, int accountId);
 
     @Query("Select case When :remoteId In (Select remoteId from Item) And :feedId In (Select feed_id From Item) Then 1 else 0 end")
     boolean remoteItemExists(String remoteId, int feedId);
+
+    @Query("Select * From Item Where remoteId = :remoteId And feed_id = :feedId")
+    Item selectByRemoteId(String remoteId, int feedId);
 
     /**
      * Set an item read or unread

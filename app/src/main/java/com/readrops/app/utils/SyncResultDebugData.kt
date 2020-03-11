@@ -1,5 +1,7 @@
 package com.readrops.app.utils
 
+import android.content.Context
+import com.readrops.readropsdb.Database
 import com.readrops.readropsdb.entities.Item
 import com.readrops.readropsdb.entities.account.Account
 import com.readrops.readropsdb.entities.account.AccountType
@@ -9,17 +11,13 @@ class SyncResultDebugData {
 
     companion object {
 
-        fun oneAccountOneFeedOneItem(): Map<Account, SyncResult> {
+        fun oneAccountOneFeedOneItem(context: Context): Map<Account, SyncResult> {
             val account1 = Account().apply {
                 id = 1
                 accountType = AccountType.FRESHRSS
             }
 
-            val item = Item().apply {
-                id = 1
-                title = "oneAccountOneFeedOneItem"
-                feedId = 90
-            }
+            val item = Database.getInstance(context).itemDao().select(5362)
 
             return mutableMapOf<Account, SyncResult>().apply {
                 put(account1, SyncResult().apply { items = mutableListOf(item) })
