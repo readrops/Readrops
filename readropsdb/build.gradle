@@ -13,7 +13,8 @@ android {
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = [
-                        "room.incremental": "true"
+                        "room.incremental"   : "true",
+                        "room.schemaLocation": "$projectDir/schemas".toString()
                 ]
             }
         }
