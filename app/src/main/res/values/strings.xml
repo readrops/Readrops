@@ -129,4 +129,5 @@
     <string name="every_day">Every day</string>
     <string name="account_synchro">Accounts synchronisation</string>
     <string name="new_items">%1$s new articles</string>
+    <string name="enable_notifications">Enable notifications</string>
 </resources>

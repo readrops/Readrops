@@ -30,6 +30,10 @@
         </provider>
 
         <activity
+            android:name=".activities.NotificationPermissionActivity"
+            android:theme="@style/AppTheme" />
+
+        <activity
             android:name=".activities.WebViewActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
@@ -44,6 +48,7 @@
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -71,11 +76,12 @@
             android:parentActivityName=".activities.MainActivity">
             <intent-filter android:label="@string/new_feed">
                 <action android:name="android.intent.action.SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
-
     </application>
 
 </manifest>
