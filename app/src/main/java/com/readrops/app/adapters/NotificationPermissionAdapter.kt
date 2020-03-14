@@ -12,10 +12,11 @@ import com.readrops.app.databinding.NotificationLayoutBinding
 import com.readrops.app.utils.GlideApp
 import com.readrops.readropsdb.entities.Feed
 
-class NotificationPermissionAdapter(val listener: (feed: Feed) -> Unit) : ListAdapter<Feed, NotificationPermissionAdapter.NotificationPermissionViewHolder>(DIFF_CALLBACK) {
+class NotificationPermissionAdapter(var enableAll: Boolean, val listener: (feed: Feed) -> Unit) : ListAdapter<Feed, NotificationPermissionAdapter.NotificationPermissionViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotificationPermissionViewHolder {
-        val binding = DataBindingUtil.inflate<NotificationLayoutBinding>(LayoutInflater.from(parent.context), R.layout.notification_layout, parent, false)
+        val binding = DataBindingUtil.inflate<NotificationLayoutBinding>(LayoutInflater.from(parent.context),
+                R.layout.notification_layout, parent, false)
 
         return NotificationPermissionViewHolder(binding)
     }
@@ -25,6 +26,10 @@ class NotificationPermissionAdapter(val listener: (feed: Feed) -> Unit) : ListAd
 
         holder.binding.notificationFeedName.text = feed.name
         holder.binding.notificationSwitch.isChecked = feed.isNotificationEnabled
+
+        holder.binding.notificationSwitch.isEnabled = enableAll
+        holder.binding.notificationSwitch.setOnCheckedChangeListener { _, _ -> listener(feed) }
+        holder.itemView.setOnClickListener { listener(feed) }
 
         GlideApp.with(holder.itemView.context)
                 .load(feed.iconUrl)

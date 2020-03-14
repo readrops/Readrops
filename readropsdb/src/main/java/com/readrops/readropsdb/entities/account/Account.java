@@ -35,6 +35,9 @@ public class Account implements Parcelable {
     private String token;
     private String writeToken; // TODO : see if there is a better solution to store specific service account fields
 
+    @ColumnInfo(name = "notifications_enabled")
+    private boolean notificationsEnabled;
+
     @Ignore
     private String login;
 
@@ -63,6 +66,7 @@ public class Account implements Parcelable {
         password = in.readString();
         token = in.readString();
         writeToken = in.readString();
+        notificationsEnabled = in.readByte() != 0;
     }
 
     public static final Creator<Account> CREATOR = new Creator<Account>() {
@@ -173,6 +177,14 @@ public class Account implements Parcelable {
         this.writeToken = writeToken;
     }
 
+    public boolean isNotificationsEnabled() {
+        return notificationsEnabled;
+    }
+
+    public void setNotificationsEnabled(boolean notificationsEnabled) {
+        this.notificationsEnabled = notificationsEnabled;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -191,6 +203,7 @@ public class Account implements Parcelable {
         dest.writeString(password);
         dest.writeString(token);
         dest.writeString(writeToken);
+        dest.writeByte((byte) (notificationsEnabled ? 1 : 0));
     }
 
     public boolean isLocal() {

@@ -14,6 +14,7 @@ import com.readrops.readropsdb.pojo.FeedWithFolder;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Completable;
 import io.reactivex.Single;
 
 @Dao
@@ -82,6 +83,9 @@ public abstract class FeedDao implements BaseDao<Feed> {
 
     @Query("Select id From Folder Where remoteId = :remoteId And account_id = :accountId")
     abstract int getRemoteFolderLocalId(String remoteId, int accountId);
+
+    @Query("Update Feed set notification_enabled = :enabled Where id = :feedId")
+    public abstract Completable updateNotificationState(int feedId, boolean enabled);
 
     /**
      * Insert, update and delete feeds, by account

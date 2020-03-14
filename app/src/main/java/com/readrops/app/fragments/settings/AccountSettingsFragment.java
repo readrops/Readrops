@@ -47,6 +47,7 @@ import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.schedulers.Schedulers;
 
 import static android.app.Activity.RESULT_OK;
+import static android.drm.DrmInfoRequest.ACCOUNT_ID;
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
 import static com.readrops.app.utils.ReadropsKeys.EDIT_ACCOUNT;
 
@@ -137,7 +138,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
 
         notificationPref.setOnPreferenceClickListener(preference -> {
             Intent intent = new Intent(getContext(), NotificationPermissionActivity.class);
-            intent.putExtra(ACCOUNT, account);
+            intent.putExtra(ACCOUNT_ID, account.getId());
 
             startActivity(intent);
             return true;

@@ -56,7 +56,7 @@ public class Feed implements Parcelable {
     @ColumnInfo(name = "account_id", index = true)
     private int accountId;
 
-    @ColumnInfo(name = "notification_enabled")
+    @ColumnInfo(name = "notification_enabled", defaultValue = "1")
     private boolean notificationEnabled;
 
     @Ignore
@@ -93,6 +93,7 @@ public class Feed implements Parcelable {
         folderId = parcelFolderId == 0 ? null : parcelFolderId;
 
         remoteId = in.readString();
+        notificationEnabled = in.readByte() != 0;
     }
 
     public static final Creator<Feed> CREATOR = new Creator<Feed>() {
@@ -265,5 +266,6 @@ public class Feed implements Parcelable {
         dest.writeString(lastModified);
         dest.writeInt(folderId == null ? 0 : folderId);
         dest.writeString(remoteId);
+        dest.writeByte((byte) (notificationEnabled ? 1 : 0));
     }
 }
