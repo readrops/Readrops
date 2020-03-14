@@ -124,5 +124,6 @@
     <string name="account_synchro">Synchronisation des comptes</string>
     <string name="new_items">%1$s nouveaux articles</string>
     <string name="enable_notifications">Activer les notifications</string>
+    <string name="notifications">Notifications</string>
 
 </resources>

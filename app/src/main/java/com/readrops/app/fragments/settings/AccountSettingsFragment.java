@@ -26,6 +26,7 @@ import com.readrops.app.R;
 import com.readrops.app.ReadropsApp;
 import com.readrops.app.activities.AddAccountActivity;
 import com.readrops.app.activities.ManageFeedsFoldersActivity;
+import com.readrops.app.activities.NotificationPermissionActivity;
 import com.readrops.app.utils.PermissionManager;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
@@ -86,6 +87,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
         Preference credentialsPref = findPreference("credentials_key");
         Preference deleteAccountPref = findPreference("delete_account_key");
         Preference opmlPref = findPreference("opml_import_export");
+        Preference notificationPref = findPreference("notifications");
 
         if (account.is(AccountType.LOCAL))
             credentialsPref.setVisible(false);
@@ -130,6 +132,14 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
                         }
                     }))
                     .show();
+            return true;
+        });
+
+        notificationPref.setOnPreferenceClickListener(preference -> {
+            Intent intent = new Intent(getContext(), NotificationPermissionActivity.class);
+            intent.putExtra(ACCOUNT, account);
+
+            startActivity(intent);
             return true;
         });
     }
