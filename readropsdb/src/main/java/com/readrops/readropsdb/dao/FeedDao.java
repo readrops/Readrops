@@ -67,6 +67,10 @@ public abstract class FeedDao implements BaseDao<Feed> {
             ", Feed.siteUrl as feed_siteUrl, Feed.remoteId as feed_remoteId from Feed Left Join Folder on Feed.folder_id = Folder.id Where Feed.account_id = :accountId Order by Feed.name")
     public abstract LiveData<List<FeedWithFolder>> getAllFeedsWithFolder(int accountId);
 
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @Query("Select id, name, icon_url, notification_enabled, text_color, background_color, account_id From Feed Where account_id = :accountId")
+    public abstract LiveData<List<Feed>> getFeedsForNotifPermission(int accountId);
+
     @Query("Select * From Feed Where id in (:ids)")
     public abstract List<Feed> selectFromIdList(List<Long> ids);
 

@@ -10,15 +10,13 @@ import com.readrops.readropsdb.dao.AccountDao;
 import com.readrops.readropsdb.dao.FeedDao;
 import com.readrops.readropsdb.dao.FolderDao;
 import com.readrops.readropsdb.dao.ItemDao;
-import com.readrops.readropsdb.dao.NotificationPermissionDao;
-import com.readrops.readropsdb.entities.NotificationPermission;
-import com.readrops.readropsdb.entities.account.Account;
 import com.readrops.readropsdb.entities.Feed;
 import com.readrops.readropsdb.entities.Folder;
 import com.readrops.readropsdb.entities.Item;
+import com.readrops.readropsdb.entities.account.Account;
 
 
-@androidx.room.Database(entities = {Feed.class, Item.class, Folder.class, Account.class, NotificationPermission.class}, version = 2)
+@androidx.room.Database(entities = {Feed.class, Item.class, Folder.class, Account.class}, version = 2)
 @TypeConverters({Converters.class})
 public abstract class Database extends RoomDatabase {
 
@@ -29,8 +27,6 @@ public abstract class Database extends RoomDatabase {
     public abstract FolderDao folderDao();
 
     public abstract AccountDao accountDao();
-
-    public abstract NotificationPermissionDao notificationPermissionDao();
 
     private static Database database;
 

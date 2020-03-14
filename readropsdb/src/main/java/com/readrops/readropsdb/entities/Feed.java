@@ -56,6 +56,9 @@ public class Feed implements Parcelable {
     @ColumnInfo(name = "account_id", index = true)
     private int accountId;
 
+    @ColumnInfo(name = "notification_enabled")
+    private boolean notificationEnabled;
+
     @Ignore
     private int unreadCount;
 
@@ -224,6 +227,14 @@ public class Feed implements Parcelable {
 
     public void setAccountId(int accountId) {
         this.accountId = accountId;
+    }
+
+    public boolean isNotificationEnabled() {
+        return notificationEnabled;
+    }
+
+    public void setNotificationEnabled(boolean notificationEnabled) {
+        this.notificationEnabled = notificationEnabled;
     }
 
     public String getRemoteFolderId() {
