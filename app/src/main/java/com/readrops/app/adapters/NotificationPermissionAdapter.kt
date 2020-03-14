@@ -6,8 +6,10 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.readrops.app.R
 import com.readrops.app.databinding.NotificationLayoutBinding
+import com.readrops.app.utils.GlideApp
 import com.readrops.readropsdb.entities.Feed
 
 class NotificationPermissionAdapter(val listener: (feed: Feed) -> Unit) : ListAdapter<Feed, NotificationPermissionAdapter.NotificationPermissionViewHolder>(DIFF_CALLBACK) {
@@ -23,6 +25,12 @@ class NotificationPermissionAdapter(val listener: (feed: Feed) -> Unit) : ListAd
 
         holder.binding.notificationFeedName.text = feed.name
         holder.binding.notificationSwitch.isChecked = feed.isNotificationEnabled
+
+        GlideApp.with(holder.itemView.context)
+                .load(feed.iconUrl)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .placeholder(R.drawable.ic_rss_feed_grey)
+                .into(holder.binding.notificationFeedIcon)
     }
 
     override fun onBindViewHolder(holder: NotificationPermissionViewHolder, position: Int, payloads: MutableList<Any>) {
