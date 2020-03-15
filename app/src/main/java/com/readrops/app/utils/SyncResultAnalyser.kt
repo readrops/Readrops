@@ -1,11 +1,11 @@
 package com.readrops.app.utils
 
 import android.content.Context
-import android.graphics.Bitmap
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.readrops.app.R
 import com.readrops.readropsdb.Database
+import com.readrops.readropsdb.entities.Feed
 import com.readrops.readropsdb.entities.Item
 import com.readrops.readropsdb.entities.account.Account
 import com.readrops.readropslibrary.services.SyncResult
@@ -15,81 +15,100 @@ import com.readrops.readropslibrary.services.SyncResult
  */
 class SyncResultAnalyser(val context: Context, private val syncResults: Map<Account, SyncResult>, val database: Database) {
 
+    private val notifContent = SyncResultNotifContent()
+
     fun getSyncNotifContent(): SyncResultNotifContent {
-        var title: String? = null
-        var contentText: String? = null
-        var largeIcon: Bitmap? = null
-        var item: Item? = null
+        if (newItemsInMultipleAccounts()) { // new items from several accounts
+            var itemCount = 0
+            val feeds = database.feedDao().selectFromIdList(getFeedsIdsForNewItems(syncResults))
 
-        if (newItemsInMultipleAccounts()) {
-            var itemsNb = 0
-            syncResults.values.forEach { itemsNb += it.items.size }
+            syncResults.values.forEach { syncResult ->
+                itemCount += syncResult.items.filter { isFeedNotificationEnabledForItem(feeds, it) }.size
+            }
 
-            title = "Notifications"
-            contentText = context.getString(R.string.new_items, itemsNb.toString())
+            notifContent.title = "Notifications"
+            notifContent.content = context.getString(R.string.new_items, itemCount.toString())
         } else { // new items from only one account
             val syncResultMap = syncResults.filterValues { it.items.isNotEmpty() }
 
             if (syncResultMap.values.isNotEmpty()) {
                 val syncResult = syncResultMap.values.first()
+                val account = syncResultMap.keys.first()
                 val feedsIdsForNewItems = getFeedsIdsForNewItems(syncResult)
 
-                // new items from several feeds from one account
-                if (feedsIdsForNewItems.size > 1) {
-                    val account = syncResultMap.keys.first()
+                if (account.isNotificationsEnabled) {
+                    // new items from several feeds from one account
+                    if (feedsIdsForNewItems.size > 1) {
+                        val feeds = database.feedDao().selectFromIdList(feedsIdsForNewItems)
 
-                    title = account.accountName
-                    contentText = context.getString(R.string.new_items, syncResult.items.size.toString())
-                    largeIcon = Utils.getBitmapFromDrawable(ContextCompat.getDrawable(context, account.accountType.iconRes))
-                } else if (feedsIdsForNewItems.size == 1) { // new items from only one feed from one account
-                    val feed = database.feedDao().getFeedById(feedsIdsForNewItems.first())
-                    title = feed?.name
+                        val itemCount = syncResult.items.filter { isFeedNotificationEnabledForItem(feeds, it) }.size
 
-                    feed?.iconUrl?.let {
-                        val target = GlideApp.with(context)
-                                .asBitmap()
-                                .load(it)
-                                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                .submit()
-
-                        largeIcon = target.get()
-                    }
-
-                    if (syncResult.items.size == 1) {
-                        item = database.itemDao().selectByRemoteId(syncResult.items.first().remoteId,
-                                syncResult.items.first().feedId)
-                        contentText = item.title
-                    } else contentText = context.getString(R.string.new_items, syncResult.items.size.toString())
+                        notifContent.title = account.accountName
+                        notifContent.content = context.getString(R.string.new_items, itemCount.toString())
+                        notifContent.largeIcon = Utils.getBitmapFromDrawable(ContextCompat.getDrawable(context, account.accountType.iconRes))
+                    } else if (feedsIdsForNewItems.size == 1) // new items from only one feed from one account
+                        oneFeedCase(feedsIdsForNewItems.first(), syncResult)
                 }
             }
-
         }
 
-        return SyncResultNotifContent(title,
-                contentText,
-                largeIcon,
-                item)
+        return notifContent
+    }
+
+    private fun oneFeedCase(feedId: Long, syncResult: SyncResult) {
+        val feed = database.feedDao().getFeedById(feedId.toInt())
+
+        if (feed.isNotificationEnabled) {
+            notifContent.title = feed?.name
+
+            feed?.iconUrl?.let {
+                val target = GlideApp.with(context)
+                        .asBitmap()
+                        .load(it)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .submit()
+
+                notifContent.largeIcon = target.get()
+            }
+
+            if (syncResult.items.size == 1) {
+                val item = database.itemDao().selectByRemoteId(syncResult.items.first().remoteId,
+                        syncResult.items.first().feedId)
+                notifContent.content = item.title
+                notifContent.item = item
+            } else notifContent.content = context.getString(R.string.new_items, syncResult.items.size.toString())
+        }
     }
 
     private fun newItemsInMultipleAccounts(): Boolean {
         val itemsNotEmptyByAccount = mutableListOf<Boolean>()
 
-        for ((_, syncResult) in syncResults) {
-            itemsNotEmptyByAccount += syncResult.items.isNotEmpty()
+        for ((account, syncResult) in syncResults) {
+            if (account.isNotificationsEnabled) itemsNotEmptyByAccount += syncResult.items.isNotEmpty()
         }
 
         // return true it there is at least two true booleans in the list
         return itemsNotEmptyByAccount.groupingBy { it }.eachCount()[true] ?: 0 > 1
     }
 
-    private fun getFeedsIdsForNewItems(syncResult: SyncResult): List<Int> {
-        val feedsIds = mutableListOf<Int>()
+    private fun getFeedsIdsForNewItems(syncResult: SyncResult): List<Long> {
+        val feedsIds = mutableListOf<Long>()
 
         syncResult.items.forEach {
-            if (it.feedId !in feedsIds)
-                feedsIds += it.feedId
+            if (it.feedId.toLong() !in feedsIds)
+                feedsIds += it.feedId.toLong()
         }
 
         return feedsIds
     }
+
+    private fun getFeedsIdsForNewItems(syncResults: Map<Account, SyncResult>): List<Long> {
+        val feedsIds = mutableListOf<Long>()
+
+        syncResults.values.forEach { feedsIds += getFeedsIdsForNewItems(it) }
+        return feedsIds
+    }
+
+    private fun isFeedNotificationEnabledForItem(feeds: List<Feed>, item: Item): Boolean =
+            feeds.find { it.id == item.feedId }?.isNotificationEnabled!!
 }

@@ -73,8 +73,8 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
         if (notifContent.title != null && notifContent.content != null) {
             val intent = Intent(applicationContext, MainActivity::class.java).apply {
                 if (notifContent.item != null) {
-                    putExtra(ReadropsKeys.ITEM_ID, notifContent.item.id)
-                    putExtra(ReadropsKeys.IMAGE_URL, notifContent.item.imageLink)
+                    putExtra(ReadropsKeys.ITEM_ID, notifContent.item?.id)
+                    putExtra(ReadropsKeys.IMAGE_URL, notifContent.item?.imageLink)
                 }
             }
 
