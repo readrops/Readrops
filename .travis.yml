@@ -3,7 +3,7 @@ android:
   components:
     - android-29
     - build-tools-29.0.3
-    - sys-img-x86-android-29
+    - sys-img-x86_64-android-29
   licenses:
     - 'android-sdk-preview-license-52d11cd2'
     - 'android-sdk-license-.+'
