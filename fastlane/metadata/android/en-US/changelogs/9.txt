@@ -1,0 +1,4 @@
+<ul>
+	<li>Fix crash for API < 24</li>
+	<li>Fix item read state not syncing with Nextcloud News</li>
+</ul> 

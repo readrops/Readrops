@@ -1,11 +1,11 @@
 <p>Readrops is a multi-services RSS feed client.<br></p>
 <p><b>Features:</b></p>
 <ul>
-  <li>Local RSS parsing
-  <li>RSS 2.0, ATOM and JSON formats support
-  <li>Multiple accounts
-  <li>Feeds and folders management (create, update and delete feeds/folders if your service API supports it)
-  <li>Nextcloud News support
-  <li>FreshRSS support
+  <li>Local RSS parsing</li>
+  <li>RSS 2.0, ATOM and JSON formats support</li>
+  <li>Multiple accounts</li>
+  <li>Feeds and folders management (create, update and delete feeds/folders if your service API supports it)</li>
+  <li>Nextcloud News support</li>
+  <li>FreshRSS support</li>
 </ul>
 <p>Other features will come in the near future.</p>

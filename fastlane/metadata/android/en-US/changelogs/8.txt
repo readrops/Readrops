@@ -1,0 +1,4 @@
+<ul>
+	<li>Fix opml not working in release version</li>
+	<li>Fix account url not being changed when text field in add account activity was edited</li>
+</ul>
