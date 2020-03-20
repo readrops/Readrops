@@ -1,16 +1,23 @@
 language: android
 android:
   components:
-    - android-28
-    - build-tools-28.0.3
+    - android-29
+    - build-tools-29.0.3
+    - sys-img-x86-android-29
   licenses:
     - 'android-sdk-preview-license-52d11cd2'
     - 'android-sdk-license-.+'
     - 'google-gdk-license-.+'
 
 script:
-  - ./gradlew clean assembleDebug assembleRelease testDebug
+  - ./gradlew clean assembleDebug assembleRelease testDebug app:connectedAndroidTest
 
 before_install:
   - yes | sdkmanager "platforms;android-29"
-  - yes | sdkmanager "build-tools;29.0.2"
+  - yes | sdkmanager "build-tools;29.0.3"
+
+before_script:
+  - echo no | android create avd --force -n test -t android-29 --abi x86_64 -c 100M
+  - emulator -avd test -no-audio -no-window &
+  - android-wait-for-emulator
+  - adb shell input keyevent 82 &
