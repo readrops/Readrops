@@ -37,17 +37,20 @@ class SyncResultAnalyser(val context: Context, private val syncResults: Map<Acco
                 val feedsIdsForNewItems = getFeedsIdsForNewItems(syncResult)
 
                 if (account.isNotificationsEnabled) {
+                    val feeds = database.feedDao().selectFromIdList(feedsIdsForNewItems)
+
+                    val items = syncResult.items.filter { isFeedNotificationEnabledForItem(feeds, it) }
+                    val itemCount = items.size
+
                     // new items from several feeds from one account
-                    if (feedsIdsForNewItems.size > 1) {
-                        val feeds = database.feedDao().selectFromIdList(feedsIdsForNewItems)
-
-                        val itemCount = syncResult.items.filter { isFeedNotificationEnabledForItem(feeds, it) }.size
-
+                    if (feedsIdsForNewItems.size > 1 && itemCount > 1) {
                         notifContent.title = account.accountName
                         notifContent.content = context.getString(R.string.new_items, itemCount.toString())
                         notifContent.largeIcon = Utils.getBitmapFromDrawable(ContextCompat.getDrawable(context, account.accountType.iconRes))
                     } else if (feedsIdsForNewItems.size == 1) // new items from only one feed from one account
-                        oneFeedCase(feedsIdsForNewItems.first(), syncResult)
+                        oneFeedCase(feedsIdsForNewItems.first(), syncResult.items)
+                    else if (itemCount == 1)
+                        oneFeedCase(items.first().feedId.toLong(), items)
                 }
             }
         }
@@ -55,7 +58,7 @@ class SyncResultAnalyser(val context: Context, private val syncResults: Map<Acco
         return notifContent
     }
 
-    private fun oneFeedCase(feedId: Long, syncResult: SyncResult) {
+    private fun oneFeedCase(feedId: Long, items: List<Item>) {
         val feed = database.feedDao().getFeedById(feedId.toInt())
 
         if (feed.isNotificationEnabled) {
@@ -71,12 +74,12 @@ class SyncResultAnalyser(val context: Context, private val syncResults: Map<Acco
                 notifContent.largeIcon = target.get()
             }
 
-            if (syncResult.items.size == 1) {
-                val item = database.itemDao().selectByRemoteId(syncResult.items.first().remoteId,
-                        syncResult.items.first().feedId)
+            if (items.size == 1) {
+                val item = database.itemDao().selectByRemoteId(items.first().remoteId,
+                        items.first().feedId)
                 notifContent.content = item.title
                 notifContent.item = item
-            } else notifContent.content = context.getString(R.string.new_items, syncResult.items.size.toString())
+            } else notifContent.content = context.getString(R.string.new_items, items.size.toString())
         }
     }
 

@@ -34,6 +34,12 @@ class SyncResultAnalyserTest {
     private val account2 = Account().apply {
         accountName = "test account 2"
         accountType = AccountType.NEXTCLOUD_NEWS
+        isNotificationsEnabled = false
+    }
+
+    private val account3 = Account().apply {
+        accountName = "test account 3"
+        accountType = AccountType.LOCAL
         isNotificationsEnabled = true
     }
 
@@ -48,12 +54,16 @@ class SyncResultAnalyserTest {
         var account2Id = 0
         database.accountDao().insert(account2).subscribe { id -> account2Id = id.toInt() }
 
-        for (i in 0..3) {
+        var account3Id = 0
+        database.accountDao().insert(account3).subscribe { id -> account3Id = id.toInt() }
+
+        val accountIds = listOf(account1Id, account2Id, account3Id)
+        for (i in 0..2) {
             val feed = Feed().apply {
                 name = "feed ${i + 1}"
                 iconUrl = "https://i0.wp.com/mrmondialisation.org/wp-content/uploads/2017/05/ico_final.gif"
-                this.accountId = if (i % 2 == 0) account1Id else account2Id
-                isNotificationEnabled = true
+                this.accountId = accountIds.find { it == (i + 1) }!!
+                isNotificationEnabled = i % 2 == 0
             }
 
             database.feedDao().insert(feed).subscribe()
@@ -108,7 +118,7 @@ class SyncResultAnalyserTest {
     @Test
     fun testMultipleFeeds() {
         val item = Item().apply { feedId = 1 }
-        val item2 = Item().apply { feedId = 2 }
+        val item2 = Item().apply { feedId = 3 }
 
         val syncResult = SyncResult().apply { items = listOf(item, item2) }
         val notifContent = SyncResultAnalyser(context, mapOf(Pair(account1, syncResult)), database).getSyncNotifContent()
@@ -121,19 +131,170 @@ class SyncResultAnalyserTest {
     @Test
     fun testMultipleAccounts() {
         val item = Item().apply { feedId = 1 }
-        val item2 = Item().apply { feedId = 2 }
+        val item2 = Item().apply { feedId = 3 }
 
         val syncResult = SyncResult().apply { items = listOf(item, item2) }
         val syncResult2 = SyncResult().apply { items = listOf(item, item2) }
 
         val syncResults = mutableMapOf<Account, SyncResult>().apply {
             put(account1, syncResult)
-            put(account2, syncResult2)
+            put(account3, syncResult2)
         }
 
         val notifContent = SyncResultAnalyser(context, syncResults, database).getSyncNotifContent()
 
         assertEquals("Notifications", notifContent.title)
         assertEquals(context.getString(R.string.new_items, 4), notifContent.content)
+    }
+
+    @Test
+    fun testAccountNotificationsDisabled() {
+        val item1 = Item().apply {
+            title = "testAccountNotificationsDisabled"
+            feedId = 1
+        }
+
+        val item2 = Item().apply {
+            title = "testAccountNotificationsDisabled2"
+            feedId = 1
+        }
+
+        val syncResult = SyncResult().apply { items = listOf(item1, item2) }
+        val notifContent = SyncResultAnalyser(context, mapOf(Pair(account2, syncResult)), database).getSyncNotifContent()
+
+        assert(notifContent.title == null)
+        assert(notifContent.content == null)
+        assert(notifContent.largeIcon == null)
+    }
+
+    @Test
+    fun testFeedNotificationsDisabled() {
+        val item1 = Item().apply {
+            title = "testAccountNotificationsDisabled"
+            feedId = 2
+        }
+
+        val item2 = Item().apply {
+            title = "testAccountNotificationsDisabled2"
+            feedId = 2
+        }
+
+        val syncResult = SyncResult().apply { items = listOf(item1, item2) }
+        val notifContent = SyncResultAnalyser(context, mapOf(Pair(account1, syncResult)), database).getSyncNotifContent()
+
+        assert(notifContent.title == null)
+        assert(notifContent.content == null)
+        assert(notifContent.largeIcon == null)
+    }
+
+    @Test
+    fun testTwoAccountsWithOneAccountNotificationsEnabled() {
+        val item1 = Item().apply {
+            title = "testTwoAccountsWithOneAccountNotificationsEnabled"
+            feedId = 1
+            remoteId = "remoteId 1"
+            pubDate = LocalDateTime.now()
+        }
+
+        val item2 = Item().apply {
+            title = "testTwoAccountsWithOneAccountNotificationsEnabled2"
+            feedId = 3
+        }
+
+        val item3 = Item().apply {
+            title = "testTwoAccountsWithOneAccountNotificationsEnabled3"
+            feedId = 3
+        }
+
+        database.itemDao().insert(item1).subscribe()
+
+        val syncResult1 = SyncResult().apply { items = listOf(item1) }
+        val syncResult2 = SyncResult().apply { items = listOf(item2, item3) }
+
+        val syncResults = mutableMapOf<Account, SyncResult>().apply {
+            put(account1, syncResult1)
+            put(account2, syncResult2)
+        }
+
+        val notifContent = SyncResultAnalyser(context, syncResults, database).getSyncNotifContent()
+
+        assertEquals("testTwoAccountsWithOneAccountNotificationsEnabled", notifContent.content)
+        assertEquals("feed 1", notifContent.title)
+        assertTrue(notifContent.largeIcon != null)
+        assertTrue(notifContent.item != null)
+
+        database.itemDao().delete(item1).subscribe()
+    }
+
+    @Test
+    fun testTwoAccountsWithOneFeedNotificationEnabled() {
+        val item1 = Item().apply {
+            title = "testTwoAccountsWithOneAccountNotificationsEnabled"
+            feedId = 1
+            remoteId = "remoteId 1"
+            pubDate = LocalDateTime.now()
+        }
+
+        val item2 = Item().apply {
+            title = "testTwoAccountsWithOneAccountNotificationsEnabled2"
+            feedId = 2
+        }
+
+        val item3 = Item().apply {
+            title = "testTwoAccountsWithOneAccountNotificationsEnabled3"
+            feedId = 2
+        }
+
+        database.itemDao().insert(item1).subscribe()
+
+        val syncResult1 = SyncResult().apply { items = listOf(item1) }
+        val syncResult2 = SyncResult().apply { items = listOf(item2, item3) }
+
+        val syncResults = mutableMapOf<Account, SyncResult>().apply {
+            put(account1, syncResult1)
+            put(account2, syncResult2)
+        }
+
+        val notifContent = SyncResultAnalyser(context, syncResults, database).getSyncNotifContent()
+
+        assertEquals("testTwoAccountsWithOneAccountNotificationsEnabled", notifContent.content)
+        assertEquals("feed 1", notifContent.title)
+        assertTrue(notifContent.largeIcon != null)
+        assertTrue(notifContent.item != null)
+
+        database.itemDao().delete(item1).subscribe()
+    }
+
+
+    @Test
+    fun testOneAccountTwoFeedsWithOneFeedNotificationEnabled() {
+        val item1 = Item().apply {
+            title = "testTwoAccountsWithOneAccountNotificationsEnabled"
+            feedId = 1
+            remoteId = "remoteId 1"
+            pubDate = LocalDateTime.now()
+        }
+
+        val item2 = Item().apply {
+            title = "testTwoAccountsWithOneAccountNotificationsEnabled2"
+            feedId = 2
+        }
+
+        val item3 = Item().apply {
+            title = "testTwoAccountsWithOneAccountNotificationsEnabled3"
+            feedId = 2
+        }
+
+        database.itemDao().insert(item1).subscribe()
+
+        val syncResult = SyncResult().apply { items = listOf(item1, item2, item3) }
+        val notifContent = SyncResultAnalyser(context, mapOf(Pair(account1, syncResult)), database).getSyncNotifContent()
+
+        assertEquals("testTwoAccountsWithOneAccountNotificationsEnabled", notifContent.content)
+        assertEquals("feed 1", notifContent.title)
+        assertTrue(notifContent.largeIcon != null)
+        assertTrue(notifContent.item != null)
+
+        database.itemDao().delete(item1).subscribe()
     }
 }
