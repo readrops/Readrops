@@ -2,8 +2,10 @@ language: android
 android:
   components:
     - android-29
+    - tools
+    - platform-tools
     - build-tools-29.0.3
-    - sys-img-x86_64-android-29
+    - sys-img-armeabi-v7a-android-29
   licenses:
     - 'android-sdk-preview-license-52d11cd2'
     - 'android-sdk-license-.+'
@@ -17,7 +19,7 @@ before_install:
   - yes | sdkmanager "build-tools;29.0.3"
 
 before_script:
-  - echo no | android create avd --force -n test -t android-29 --abi x86_64 -c 100M
+  - echo no | android create avd --force -n test -t android-29 --abi armeabi-v7a -c 100M
   - emulator -avd test -no-audio -no-window &
   - android-wait-for-emulator
   - adb shell input keyevent 82 &
