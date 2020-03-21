@@ -2,9 +2,12 @@ package com.readrops.readropsdb;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.readrops.readropsdb.dao.AccountDao;
 import com.readrops.readropsdb.dao.FeedDao;
@@ -33,8 +36,18 @@ public abstract class Database extends RoomDatabase {
     public static Database getInstance(Context context) {
         if (database == null)
             database = Room.databaseBuilder(context, Database.class, "readrops-db")
+                    .addMigrations(MIGRATION_1_2)
                     .build();
 
         return database;
     }
+
+    public static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("Alter Table Account Add Column notifications_enabled INTEGER Not Null Default 0");
+
+            database.execSQL("Alter Table Feed Add Column notification_enabled INTEGER Not Null Default 1");
+        }
+    };
 }
