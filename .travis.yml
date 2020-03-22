@@ -1,6 +1,7 @@
 language: android
 android:
   components:
+    - android-27
     - android-29
     - tools
     - platform-tools
@@ -19,6 +20,7 @@ before_install:
   - yes | sdkmanager "build-tools;29.0.3"
 
 before_script:
+  - android list target
   - echo no | android create avd --force -n test -t android-27 --abi x86 -c 100M
   - emulator -avd test -no-audio -no-window &
   - android-wait-for-emulator
