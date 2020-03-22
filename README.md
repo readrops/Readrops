@@ -1,6 +1,6 @@
-# Readrops [<img src="fastlane/metadata/android/en-US/images/icon.png" width=60>](https://github.com/readrops/Readrop)
+# Readrops [<img src="fastlane/metadata/android/en-US/images/icon.png" width=60>](https://github.com/readrops/Readrops)
 
-[![Build Status](https://travis-ci.org/readrops/Readrops.svg?branch=develop)](https://travis-ci.org/readrops/Readrops)
+![Build Status](https://github.com/readrops/Readrops/workflows/Android%20CI/badge.svg?branch=develop)
 
 Readrops is a multi-services RSS client for Android. Its name is composed of "Read" and "drops", where drops are information drops in an ocean of news.
 
