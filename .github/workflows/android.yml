@@ -22,7 +22,7 @@ jobs:
       with:
         java-version: 1.8
     - name: Build with Gradle
-      run: ./gradlew clean assembleDebug assembleRelease testDebug
+      run: ./gradlew clean build
     - name: Android Emulator Runner
       uses: ReactiveCircus/android-emulator-runner@v2.5.0
       with:
