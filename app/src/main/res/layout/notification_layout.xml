@@ -35,6 +35,8 @@
                 android:layout_marginEnd="6dp"
                 android:layout_toStartOf="@id/notification_switch"
                 android:layout_toEndOf="@id/notification_feed_icon"
+                android:ellipsize="end"
+                android:maxLines="2"
                 tools:text="Feed 1" />
 
             <Switch

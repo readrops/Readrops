@@ -36,14 +36,6 @@ class NotificationPermissionActivity : AppCompatActivity() {
 
             if (adapter == null) {
                 // execute the following lines only once
-                adapter = NotificationPermissionAdapter(account.isNotificationsEnabled) { feed ->
-                    viewModel.setFeedNotificationState(feed)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .doOnError { Utils.showSnackbar(binding.root, it.message) }
-                            .subscribe()
-                }
-
                 binding.notifPermissionAccountSwitch.isChecked = account.isNotificationsEnabled
                 binding.notifPermissionAccountSwitch.setOnCheckedChangeListener { _, isChecked ->
                     account.isNotificationsEnabled = isChecked
@@ -51,6 +43,14 @@ class NotificationPermissionActivity : AppCompatActivity() {
                     adapter?.notifyDataSetChanged()
 
                     viewModel.setAccountNotificationsState(isChecked)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .doOnError { Utils.showSnackbar(binding.root, it.message) }
+                            .subscribe()
+                }
+
+                adapter = NotificationPermissionAdapter(account.isNotificationsEnabled) { feed ->
+                    viewModel.setFeedNotificationState(feed)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .doOnError { Utils.showSnackbar(binding.root, it.message) }

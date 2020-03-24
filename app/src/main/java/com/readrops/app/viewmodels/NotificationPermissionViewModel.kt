@@ -10,10 +10,10 @@ import io.reactivex.Completable
 
 class NotificationPermissionViewModel(application: Application) : AndroidViewModel(application) {
 
-    val database = Database.getInstance(application)
+    val database: Database = Database.getInstance(application)
     var account: Account? = null
 
-    fun getAccount(accountId: Int) = database.accountDao().selectAsync(accountId)
+    fun getAccount(accountId: Int): LiveData<Account> = database.accountDao().selectAsync(accountId)
 
     fun getFeedsWithNotifPermission(): LiveData<List<Feed>> = database.feedDao()
             .getFeedsForNotifPermission(account?.id!!)
