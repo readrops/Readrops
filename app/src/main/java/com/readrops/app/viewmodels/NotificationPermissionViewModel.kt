@@ -22,5 +22,8 @@ class NotificationPermissionViewModel(application: Application) : AndroidViewMod
             .updateNotificationState(account?.id!!, enabled)
 
     fun setFeedNotificationState(feed: Feed): Completable = database.feedDao()
-            .updateNotificationState(feed.id, !feed.isNotificationEnabled)
+            .updateFeedNotificationState(feed.id, !feed.isNotificationEnabled)
+
+    fun setAllFeedsNotificationState(enabled: Boolean) = database.feedDao()
+            .updateAllFeedsNotificationState(account?.id!!, enabled)
 }

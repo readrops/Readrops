@@ -85,7 +85,10 @@ public abstract class FeedDao implements BaseDao<Feed> {
     abstract int getRemoteFolderLocalId(String remoteId, int accountId);
 
     @Query("Update Feed set notification_enabled = :enabled Where id = :feedId")
-    public abstract Completable updateNotificationState(int feedId, boolean enabled);
+    public abstract Completable updateFeedNotificationState(int feedId, boolean enabled);
+
+    @Query("Update Feed set notification_enabled = :enabled Where account_id = :accountId")
+    public abstract Completable updateAllFeedsNotificationState(int accountId, boolean enabled);
 
     /**
      * Insert, update and delete feeds, by account

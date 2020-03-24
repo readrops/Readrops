@@ -9,7 +9,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.readrops.app.R
-import com.readrops.app.adapters.NotificationPermissionAdapter
+import com.readrops.app.adapters.NotificationPermissionListAdapter
 import com.readrops.app.databinding.ActivityNotificationPermissionBinding
 import com.readrops.app.utils.Utils
 import com.readrops.app.viewmodels.NotificationPermissionViewModel
@@ -29,7 +29,7 @@ class NotificationPermissionActivity : AppCompatActivity() {
 
         val accountId = intent.getIntExtra(ACCOUNT_ID, 0)
         val viewModel by viewModels<NotificationPermissionViewModel>()
-        var adapter: NotificationPermissionAdapter? = null
+        var adapter: NotificationPermissionListAdapter? = null
 
         viewModel.getAccount(accountId).observe(this, Observer { account ->
             viewModel.account = account
@@ -39,6 +39,8 @@ class NotificationPermissionActivity : AppCompatActivity() {
                 binding.notifPermissionAccountSwitch.isChecked = account.isNotificationsEnabled
                 binding.notifPermissionAccountSwitch.setOnCheckedChangeListener { _, isChecked ->
                     account.isNotificationsEnabled = isChecked
+                    binding.notifPermissionFeedsSwitch.isEnabled = isChecked
+
                     adapter?.enableAll = isChecked
                     adapter?.notifyDataSetChanged()
 
@@ -49,7 +51,16 @@ class NotificationPermissionActivity : AppCompatActivity() {
                             .subscribe()
                 }
 
-                adapter = NotificationPermissionAdapter(account.isNotificationsEnabled) { feed ->
+                binding.notifPermissionFeedsSwitch.isEnabled = account.isNotificationsEnabled
+                binding.notifPermissionFeedsSwitch.setOnCheckedChangeListener { _, isChecked ->
+                    viewModel.setAllFeedsNotificationState(isChecked)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .doOnError { Utils.showSnackbar(binding.root, it.message) }
+                            .subscribe()
+                }
+
+                adapter = NotificationPermissionListAdapter(account.isNotificationsEnabled) { feed ->
                     viewModel.setFeedNotificationState(feed)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
@@ -60,8 +71,9 @@ class NotificationPermissionActivity : AppCompatActivity() {
                 binding.notifPermissionAccountList.layoutManager = LinearLayoutManager(this)
                 binding.notifPermissionAccountList.adapter = adapter
 
-                viewModel.getFeedsWithNotifPermission().observe(this, Observer {
-                    adapter?.submitList(it)
+                viewModel.getFeedsWithNotifPermission().observe(this, Observer { feeds ->
+                    binding.notifPermissionFeedsSwitch.isChecked = feeds.all { it.isNotificationEnabled }
+                    adapter?.submitList(feeds)
                 })
             }
 

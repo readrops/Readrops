@@ -39,7 +39,7 @@ class SyncResultDebugData {
 
             val database = Database.getInstance(context)
             val item = database.itemDao().select(5055)
-            database.feedDao().updateNotificationState(item.feedId, false).subscribe()
+            database.feedDao().updateFeedNotificationState(item.feedId, false).subscribe()
 
             val item2 = database.itemDao().select(5056)
 

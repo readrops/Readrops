@@ -12,8 +12,8 @@ import com.readrops.app.databinding.NotificationLayoutBinding
 import com.readrops.app.utils.GlideApp
 import com.readrops.readropsdb.entities.Feed
 
-class NotificationPermissionAdapter(var enableAll: Boolean, val listener: (feed: Feed) -> Unit) :
-        ListAdapter<Feed, NotificationPermissionAdapter.NotificationPermissionViewHolder>(DIFF_CALLBACK) {
+class NotificationPermissionListAdapter(var enableAll: Boolean, val listener: (feed: Feed) -> Unit) :
+        ListAdapter<Feed, NotificationPermissionListAdapter.NotificationPermissionViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotificationPermissionViewHolder {
         val binding = DataBindingUtil.inflate<NotificationLayoutBinding>(LayoutInflater.from(parent.context),
@@ -49,7 +49,8 @@ class NotificationPermissionAdapter(var enableAll: Boolean, val listener: (feed:
         } else onBindViewHolder(holder, position)
     }
 
-    inner class NotificationPermissionViewHolder(val binding: NotificationLayoutBinding) : RecyclerView.ViewHolder(binding.root)
+    inner class NotificationPermissionViewHolder(val binding: NotificationLayoutBinding) :
+            RecyclerView.ViewHolder(binding.root)
 
     companion object {
         val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Feed>() {
@@ -59,6 +60,10 @@ class NotificationPermissionAdapter(var enableAll: Boolean, val listener: (feed:
 
             override fun areContentsTheSame(oldItem: Feed, newItem: Feed): Boolean {
                 return oldItem.isNotificationEnabled == newItem.isNotificationEnabled
+            }
+
+            override fun getChangePayload(oldItem: Feed, newItem: Feed): Any? {
+                return newItem
             }
         }
     }
