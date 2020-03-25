@@ -29,11 +29,8 @@ class NotificationPermissionListAdapter(var enableAll: Boolean, val listener: (f
         holder.binding.notificationSwitch.isChecked = feed.isNotificationEnabled
 
         holder.binding.notificationSwitch.isEnabled = enableAll
-        holder.binding.notificationSwitch.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked != feed.isNotificationEnabled) listener(feed)
-        }
 
-        holder.itemView.setOnClickListener { if (enableAll) listener(feed) }
+        holder.itemView.setOnClickListener { if (enableAll) listener(getItem(position)) }
 
         GlideApp.with(holder.itemView.context)
                 .load(feed.iconUrl)
