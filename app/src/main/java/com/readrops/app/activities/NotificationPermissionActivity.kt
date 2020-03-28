@@ -34,6 +34,7 @@ class NotificationPermissionActivity : AppCompatActivity() {
         val accountId = intent.getIntExtra(ACCOUNT_ID, 0)
         val viewModel by viewModels<NotificationPermissionViewModel>()
         var adapter: NotificationPermissionListAdapter? = null
+        var feedStateChanged = false
 
         viewModel.getAccount(accountId).observe(this, Observer { account ->
             viewModel.account = account
@@ -59,14 +60,20 @@ class NotificationPermissionActivity : AppCompatActivity() {
 
                 binding.notifPermissionFeedsSwitch.isEnabled = account.isNotificationsEnabled
                 binding.notifPermissionFeedsSwitch.setOnCheckedChangeListener { _, isChecked ->
-                    viewModel.setAllFeedsNotificationState(isChecked)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .doOnError { Utils.showSnackbar(binding.root, it.message) }
-                            .subscribe()
+                    if (!feedStateChanged) {
+                        viewModel.setAllFeedsNotificationState(isChecked)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .doOnError { Utils.showSnackbar(binding.root, it.message) }
+                                .subscribe()
+                    }
+
+                    feedStateChanged = false
                 }
 
                 adapter = NotificationPermissionListAdapter(account.isNotificationsEnabled) { feed ->
+                    feedStateChanged = true
+
                     viewModel.setFeedNotificationState(feed)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
