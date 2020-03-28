@@ -1,5 +1,6 @@
 package com.readrops.app.activities
 
+import android.content.Intent
 import android.drm.DrmInfoRequest.ACCOUNT_ID
 import android.os.Bundle
 import android.view.MenuItem
@@ -8,9 +9,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.afollestad.materialdialogs.MaterialDialog
 import com.readrops.app.R
 import com.readrops.app.adapters.NotificationPermissionListAdapter
 import com.readrops.app.databinding.ActivityNotificationPermissionBinding
+import com.readrops.app.utils.ReadropsKeys
+import com.readrops.app.utils.SharedPreferencesManager
 import com.readrops.app.utils.Utils
 import com.readrops.app.viewmodels.NotificationPermissionViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -49,6 +53,8 @@ class NotificationPermissionActivity : AppCompatActivity() {
                             .observeOn(AndroidSchedulers.mainThread())
                             .doOnError { Utils.showSnackbar(binding.root, it.message) }
                             .subscribe()
+
+                    if (isChecked) displayAutoSynchroPopup()
                 }
 
                 binding.notifPermissionFeedsSwitch.isEnabled = account.isNotificationsEnabled
@@ -80,6 +86,26 @@ class NotificationPermissionActivity : AppCompatActivity() {
         })
 
 
+    }
+
+    private fun displayAutoSynchroPopup() {
+        val autoSynchroValue = SharedPreferencesManager.readString(this, SharedPreferencesManager.SharedPrefKey.AUTO_SYNCHRO)
+
+        if (autoSynchroValue.toFloat() <= 0) {
+            MaterialDialog.Builder(this)
+                    .title(R.string.auto_synchro_disabled)
+                    .content(R.string.enable_auto_synchro_text)
+                    .positiveText(R.string.open)
+                    .neutralText(R.string.cancel)
+                    .onPositive { _, _ ->
+                        val intent = Intent(this, SettingsActivity::class.java).apply {
+                            putExtra(ReadropsKeys.SETTINGS, SettingsActivity.SettingsKey.SETTINGS.ordinal)
+                        }
+
+                        startActivity(intent)
+                    }
+                    .show()
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

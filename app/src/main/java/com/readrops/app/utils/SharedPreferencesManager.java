@@ -60,7 +60,8 @@ public final class SharedPreferencesManager {
         SHOW_READ_ARTICLES("show_read_articles", false),
         ITEMS_TO_PARSE_MAX_NB("items_to_parse_max_nb", "20"),
         OPEN_ITEMS_IN("open_items_in", "0"),
-        DARK_THEME("dark_theme", "false");
+        DARK_THEME("dark_theme", "false"),
+        AUTO_SYNCHRO("auto_synchro", "0");
 
         @NonNull
         private String key;

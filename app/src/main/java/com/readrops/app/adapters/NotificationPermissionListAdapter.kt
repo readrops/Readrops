@@ -8,7 +8,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.readrops.app.R
-import com.readrops.app.databinding.NotificationLayoutBinding
+import com.readrops.app.databinding.NotificationPermissionLayoutBinding
+import com.readrops.app.databinding.NotificationPermissionLayoutBindingImpl
 import com.readrops.app.utils.GlideApp
 import com.readrops.readropsdb.entities.Feed
 
@@ -16,8 +17,8 @@ class NotificationPermissionListAdapter(var enableAll: Boolean, val listener: (f
         ListAdapter<Feed, NotificationPermissionListAdapter.NotificationPermissionViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotificationPermissionViewHolder {
-        val binding = DataBindingUtil.inflate<NotificationLayoutBinding>(LayoutInflater.from(parent.context),
-                R.layout.notification_layout, parent, false)
+        val binding = DataBindingUtil.inflate<NotificationPermissionLayoutBinding>(LayoutInflater.from(parent.context),
+                R.layout.notification_permission_layout, parent, false)
 
         return NotificationPermissionViewHolder(binding)
     }
@@ -46,7 +47,7 @@ class NotificationPermissionListAdapter(var enableAll: Boolean, val listener: (f
         } else onBindViewHolder(holder, position)
     }
 
-    inner class NotificationPermissionViewHolder(val binding: NotificationLayoutBinding) :
+    inner class NotificationPermissionViewHolder(val binding: NotificationPermissionLayoutBinding) :
             RecyclerView.ViewHolder(binding.root)
 
     companion object {
