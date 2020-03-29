@@ -125,7 +125,7 @@
     <string name="new_items">%1$s nouveaux articles</string>
     <string name="enable_notifications">Activer les notifications</string>
     <string name="notifications">Notifications</string>
-    <string name="enable_all_feeds">Activer tous les flux</string>
+    <string name="enable_all_feeds">Activer tous les notifications des flux</string>
     <string name="auto_synchro_disabled">La synchronisation automatique est désactivée</string>
     <string name="enable_auto_synchro_text">Les notifications nécessitent l\'activation de la synchronisation automatique pour fonctionner.\nVoulez-vous ouvrir les paramètres ?</string>
     <string name="open">Ouvrir</string>
