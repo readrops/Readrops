@@ -3,7 +3,7 @@ package com.readrops.app.utils
 object ReadropsKeys {
 
     const val ACCOUNT = "ACCOUNT_KEY"
-    const val ACOUNT_ID = "ACCOUNT_ID"
+    const val ACCOUNT_ID = "ACCOUNT_ID"
     const val ACCOUNT_TYPE = "ACCOUNT_TYPE_KEY"
     const val EDIT_ACCOUNT = "EDIT_ACCOUNT"
 
