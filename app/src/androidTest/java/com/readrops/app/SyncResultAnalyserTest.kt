@@ -143,8 +143,7 @@ class SyncResultAnalyserTest {
 
         val notifContent = SyncResultAnalyser(context, syncResults, database).getSyncNotifContent()
 
-        assertEquals("Notifications", notifContent.title)
-        assertEquals(context.getString(R.string.new_items, 4), notifContent.content)
+        assertEquals(context.getString(R.string.new_items, 4), notifContent.title)
     }
 
     @Test

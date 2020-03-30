@@ -78,11 +78,13 @@ class SyncResultDebugData {
             val account1 = Account().apply {
                 id = 1
                 accountType = AccountType.FRESHRSS
+                isNotificationsEnabled = true
             }
 
             val account2 = Account().apply {
                 id = 2
                 accountType = AccountType.LOCAL
+                isNotificationsEnabled = true
             }
 
             val item = Item().apply {

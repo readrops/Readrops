@@ -26,8 +26,7 @@ class SyncResultAnalyser(val context: Context, private val syncResults: Map<Acco
                 itemCount += syncResult.items.filter { isFeedNotificationEnabledForItem(feeds, it) }.size
             }
 
-            notifContent.title = "Notifications"
-            notifContent.content = context.getString(R.string.new_items, itemCount.toString())
+            notifContent.title = context.getString(R.string.new_items, itemCount.toString())
         } else { // new items from only one account
             val syncResultMap = syncResults.filterValues { it.items.isNotEmpty() }
 
