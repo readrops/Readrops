@@ -83,6 +83,9 @@ public class AddAccountActivity extends AppCompatActivity {
             String login = binding.addAccountLogin.getText().toString().trim();
             String password = binding.addAccountPassword.getText().toString().trim();
 
+            if (!(url.toLowerCase().contains("http://") || url.toLowerCase().contains("https://"))) {
+                url = "https://" + url;
+            }
 
             if (editAccount) {
                 accountToEdit.setUrl(url);
