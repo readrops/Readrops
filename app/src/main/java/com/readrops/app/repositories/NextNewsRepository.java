@@ -12,10 +12,10 @@ import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.Item;
 import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.utils.FeedInsertionResult;
-import com.readrops.app.utils.matchers.FeedMatcher;
-import com.readrops.app.utils.matchers.ItemMatcher;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.utils.Utils;
+import com.readrops.app.utils.matchers.FeedMatcher;
+import com.readrops.app.utils.matchers.ItemMatcher;
 import com.readrops.readropslibrary.services.SyncType;
 import com.readrops.readropslibrary.services.nextcloudnews.NextNewsAPI;
 import com.readrops.readropslibrary.services.nextcloudnews.NextNewsSyncData;
@@ -115,7 +115,7 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
                     insertFolders(syncResult.getFolders());
                     timings.addSplit("insert folders");
 
-                    insertFeeds(syncResult.getFeeds());
+                    insertFeeds(syncResult.getFeeds(), false);
                     timings.addSplit("insert feeds");
 
                     insertItems(syncResult.getItems(), syncType == SyncType.INITIAL_SYNC);
@@ -149,7 +149,7 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
                     NextNewsFeeds nextNewsFeeds = api.createFeed(result.getUrl(), 0);
 
                     if (nextNewsFeeds != null) {
-                        List<Feed> newFeeds = insertFeeds(nextNewsFeeds.getFeeds());
+                        List<Feed> newFeeds = insertFeeds(nextNewsFeeds.getFeeds(), true);
                         // there is always only one object in the list, see nextcloud news api doc
                         insertionResult.setFeed(newFeeds.get(0));
                     } else
@@ -268,14 +268,19 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
         }).andThen(super.deleteFolder(folder));
     }
 
-    private List<Feed> insertFeeds(List<NextNewsFeed> nextNewsFeeds) {
+    private List<Feed> insertFeeds(List<NextNewsFeed> nextNewsFeeds, boolean newFeeds) {
         List<Feed> feeds = new ArrayList<>();
 
         for (NextNewsFeed nextNewsFeed : nextNewsFeeds) {
             feeds.add(FeedMatcher.nextNewsFeedToFeed(nextNewsFeed, account));
         }
 
-        List<Long> insertedFeedsIds = database.feedDao().feedsUpsert(feeds, account);
+        List<Long> insertedFeedsIds;
+        if (newFeeds) {
+            insertedFeedsIds = database.feedDao().insert(feeds);
+        } else {
+            insertedFeedsIds = database.feedDao().feedsUpsert(feeds, account);
+        }
 
         List<Feed> insertedFeeds = new ArrayList<>();
         if (!insertedFeedsIds.isEmpty()) {

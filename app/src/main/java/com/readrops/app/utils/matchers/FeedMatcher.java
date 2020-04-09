@@ -21,7 +21,7 @@ public final class FeedMatcher {
         newFeed.setSiteUrl(feed.getLink());
         newFeed.setUnreadCount(feed.getUnreadCount());
 
-        newFeed.setFolderId(feed.getFolderId());
+        newFeed.setFolderId(feed.getFolderId() > 0 ? feed.getFolderId() : null);
         newFeed.setIconUrl(feed.getFaviconLink());
 
         newFeed.setRemoteId(String.valueOf(feed.getId()));
