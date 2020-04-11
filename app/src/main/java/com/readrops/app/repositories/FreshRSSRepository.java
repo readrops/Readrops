@@ -12,10 +12,10 @@ import com.readrops.app.database.entities.Folder;
 import com.readrops.app.database.entities.Item;
 import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.utils.FeedInsertionResult;
-import com.readrops.app.utils.matchers.FeedMatcher;
-import com.readrops.app.utils.matchers.ItemMatcher;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.utils.Utils;
+import com.readrops.app.utils.matchers.FeedMatcher;
+import com.readrops.app.utils.matchers.ItemMatcher;
 import com.readrops.readropslibrary.services.SyncType;
 import com.readrops.readropslibrary.services.freshrss.FreshRSSAPI;
 import com.readrops.readropslibrary.services.freshrss.FreshRSSCredentials;
@@ -27,7 +27,6 @@ import com.readrops.readropslibrary.services.freshrss.json.FreshRSSItem;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -211,9 +210,9 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
 
         for (FreshRSSFolder freshRSSFolder : freshRSSFolders) {
             if (freshRSSFolder.getType() != null && freshRSSFolder.getType().equals("folder")) {
-                List<Object> tokens = Collections.list(new StringTokenizer(freshRSSFolder.getId(), "/"));
+                String id = freshRSSFolder.getId().replace("user/-/label/", "");
 
-                Folder folder = new Folder((String) tokens.get(tokens.size() - 1));
+                Folder folder = new Folder(id);
                 folder.setRemoteId(freshRSSFolder.getId());
                 folder.setAccountId(account.getId());
 
