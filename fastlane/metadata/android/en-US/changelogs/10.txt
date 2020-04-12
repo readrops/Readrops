@@ -1,0 +1,6 @@
+<ul>
+	<li>Fix app crash when using an account url without http scheme</li>
+	<li>Fix FreshRSS folder name parsing</li>
+	<li>Fix feeds being deleted when adding a new feed with a NC News account</li>
+</ul> 
+ 

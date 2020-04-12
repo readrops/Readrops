@@ -1,3 +1,9 @@
+# v1.1.4
+
+- Fix app crash when using an account url without http scheme #55
+- Fix FreshRSS folder name parsing #61
+- Fix feeds being deleted when adding a new feed with a NC News account #59
+
 # v1.1.3
 
 - Fix crash for API < 24 #51
