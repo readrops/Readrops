@@ -68,6 +68,9 @@ public class AddAccountActivity extends AppCompatActivity {
                 binding.providerImage.setImageResource(accountType.getIconRes());
                 binding.providerName.setText(accountType.getName());
                 binding.addAccountName.setText(accountType.getName());
+                if (accountType.getName() == R.string.freshrss) {
+                    binding.addAccountPasswordLayout.setHelperText(getString(R.string.password_helper));
+                }
             }
         } catch (Exception e) {
             // TODO : see how to handle this exception
