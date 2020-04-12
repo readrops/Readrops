@@ -51,6 +51,7 @@
     <string name="account_name">Account name</string>
     <string name="login">Login</string>
     <string name="password">Password</string>
+    <string name="password_helper">This is your FreshRSS API password (Configuration > Profile)</string>
     <string name="account_settings">Account settings</string>
     <string name="add_account">Add account</string>
     <string name="no_feed">No feed</string>
