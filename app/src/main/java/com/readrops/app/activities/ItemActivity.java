@@ -1,6 +1,7 @@
 package com.readrops.app.activities;
 
 import android.Manifest;
+import android.app.DialogFragment;
 import android.app.DownloadManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -39,6 +40,7 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.readrops.app.R;
+import com.readrops.app.fragments.ImageCaptionFragment;
 import com.readrops.readropsdb.entities.Item;
 import com.readrops.readropsdb.pojo.ItemWithFeed;
 import com.readrops.app.utils.DateUtils;
@@ -48,6 +50,9 @@ import com.readrops.app.utils.ReadropsWebView;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.ItemViewModel;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.readrops.app.utils.ReadropsKeys.ACTION_BAR_COLOR;
 import static com.readrops.app.utils.ReadropsKeys.IMAGE_URL;
@@ -79,6 +84,7 @@ public class ItemActivity extends AppCompatActivity {
 
     private CoordinatorLayout rootLayout;
     private String urlToDownload;
+    private String imageTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -278,23 +284,47 @@ public class ItemActivity extends AppCompatActivity {
 
         if (hitTestResult.getType() == WebView.HitTestResult.IMAGE_TYPE ||
                 hitTestResult.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {
-            new MaterialDialog.Builder(this)
-                    .title(R.string.image_options)
-                    .items(R.array.image_options)
-                    .itemsCallback((dialog, itemView, position, text) -> {
-                        if (position == 0)
-                            shareImage(hitTestResult.getExtra());
+            MaterialDialog.Builder builder = new MaterialDialog.Builder(this);
+            builder.title(R.string.image_options);
+            builder.items(R.array.image_options);
+            builder.itemsCallback((dialog, itemView, position, text) -> {
+                switch (position) {
+                    case 0:
+                        shareImage(hitTestResult.getExtra());
+                        break;
+                    case 1:
+                        if (PermissionManager.isPermissionGranted(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))
+                            downloadImage(hitTestResult.getExtra());
                         else {
-                            if (PermissionManager.isPermissionGranted(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))
-                                downloadImage(hitTestResult.getExtra());
-                            else {
-                                urlToDownload = hitTestResult.getExtra();
-                                PermissionManager.requestPermissions(this, WRITE_EXTERNAL_STORAGE_REQUEST, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                            urlToDownload = hitTestResult.getExtra();
+                            PermissionManager.requestPermissions(this, WRITE_EXTERNAL_STORAGE_REQUEST, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                        }
+                        break;
+                    case 2:
+                        urlToDownload = hitTestResult.getExtra();
+                        String content = webView.getItemContent();
+
+                        Pattern p = Pattern.compile("(<img.*src=\"" + urlToDownload + "\".*>)");
+                        Matcher m = p.matcher(content);
+                        if (m.matches()) {
+                            Pattern p2 = Pattern.compile("<img.*(title|alt)=\"(.*?)\".*>");
+                            Matcher m2 = p2.matcher(content);
+                            if (m2.matches()) {
+                                imageTitle = m2.group(2);
+                            } else {
+                                imageTitle = "";
                             }
                         }
 
-                    })
-                    .show();
+                        DialogFragment newFragment = ImageCaptionFragment.newInstance(urlToDownload, imageTitle);
+                        newFragment.show(getFragmentManager(), "dialog");
+                        break;
+                    default:
+                        throw new IllegalStateException("Unexpected value: " + position);
+                }
+
+            });
+            builder.show();
         }
     }
 

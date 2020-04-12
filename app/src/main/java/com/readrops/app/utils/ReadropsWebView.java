@@ -48,6 +48,11 @@ public class ReadropsWebView extends WebView {
         loadData(base64Content, "text/html; charset=utf-8", "base64");
     }
 
+    public String getItemContent() {
+        String content = itemWithFeed.getItem().getContent();
+        return content;
+    }
+
     private void getColors(Context context, AttributeSet attrs) {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ReadropsWebView);
         textColor = typedArray.getColor(R.styleable.ReadropsWebView_textColor, 0);
