@@ -108,7 +108,7 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
                     insertFolders(syncResult.getFolders());
                     timings.addSplit("insert folders");
 
-                    insertFeeds(syncResult.getFeeds());
+                    insertFeeds(syncResult.getFeeds(), false);
                     timings.addSplit("insert feeds");
 
                     insertItems(syncResult.getItems(), syncType == SyncType.INITIAL_SYNC);
@@ -144,7 +144,7 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
                     List<Feed> nextNewsFeeds = api.createFeed(result.getUrl(), 0);
 
                     if (nextNewsFeeds != null) {
-                        List<Feed> newFeeds = insertFeeds(nextNewsFeeds);
+                        List<Feed> newFeeds = insertFeeds(nextNewsFeeds, true);
                         // there is always only one object in the list, see nextcloud news api doc
                         insertionResult.setFeed(newFeeds.get(0));
                     } else
@@ -259,12 +259,17 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
         }).andThen(super.deleteFolder(folder));
     }
 
-    private List<Feed> insertFeeds(List<Feed> nextNewsFeeds) {
+    private List<Feed> insertFeeds(List<Feed> nextNewsFeeds, boolean newFeeds) {
         for (Feed nextNewsFeed : nextNewsFeeds) {
             nextNewsFeed.setAccountId(account.getId());
         }
 
-        List<Long> insertedFeedsIds = database.feedDao().feedsUpsert(nextNewsFeeds, account);
+        List<Long> insertedFeedsIds;
+        if (newFeeds) {
+            insertedFeedsIds = database.feedDao().insert(nextNewsFeeds);
+        } else {
+            insertedFeedsIds = database.feedDao().feedsUpsert(nextNewsFeeds, account);
+        }
 
         List<Feed> insertedFeeds = new ArrayList<>();
         if (!insertedFeedsIds.isEmpty()) {
