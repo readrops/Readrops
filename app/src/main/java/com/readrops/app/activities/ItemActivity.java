@@ -1,7 +1,6 @@
 package com.readrops.app.activities;
 
 import android.Manifest;
-import android.app.DialogFragment;
 import android.app.DownloadManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -40,7 +39,6 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.readrops.app.R;
-import com.readrops.app.fragments.ImageCaptionFragment;
 import com.readrops.readropsdb.entities.Item;
 import com.readrops.readropsdb.pojo.ItemWithFeed;
 import com.readrops.app.utils.DateUtils;
@@ -315,9 +313,10 @@ public class ItemActivity extends AppCompatActivity {
                                 imageTitle = "";
                             }
                         }
-
-                        DialogFragment newFragment = ImageCaptionFragment.newInstance(urlToDownload, imageTitle);
-                        newFragment.show(getFragmentManager(), "dialog");
+                        MaterialDialog.Builder captionBuilder = new MaterialDialog.Builder(this);
+                        captionBuilder.title(urlToDownload);
+                        captionBuilder.content(imageTitle);
+                        captionBuilder.show();
                         break;
                     default:
                         throw new IllegalStateException("Unexpected value: " + position);
