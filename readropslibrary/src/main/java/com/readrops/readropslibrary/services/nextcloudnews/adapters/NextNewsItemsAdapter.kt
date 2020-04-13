@@ -1,7 +1,9 @@
 package com.readrops.readropslibrary.services.nextcloudnews.adapters
 
+import android.annotation.SuppressLint
 import com.readrops.readropsdb.entities.Item
 import com.readrops.readropslibrary.utils.LibUtils
+import com.readrops.readropslibrary.utils.nextNullableString
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
@@ -14,6 +16,7 @@ class NextNewsItemsAdapter : JsonAdapter<List<Item>>() {
         // no need of this
     }
 
+    @SuppressLint("CheckResult")
     @Override
     override fun fromJson(reader: JsonReader): List<Item> {
         val items = mutableListOf<Item>()
@@ -33,13 +36,13 @@ class NextNewsItemsAdapter : JsonAdapter<List<Item>>() {
                 with(item) {
                     when (reader.selectName(NAMES)) {
                         0 -> remoteId = reader.nextInt().toString()
-                        1 -> link = reader.nextString()
+                        1 -> link = reader.nextNullableString()
                         2 -> title = reader.nextString()
                         3 -> author = reader.nextString()
                         4 -> pubDate = LocalDateTime(reader.nextLong() * 1000L, DateTimeZone.getDefault())
                         5 -> content = reader.nextString()
-                        6 -> enclosureMime = if (reader.peek() != JsonReader.Token.NULL) reader.nextString() else reader.nextNull()
-                        7 -> enclosureLink = if (reader.peek() != JsonReader.Token.NULL) reader.nextString() else reader.nextNull()
+                        6 -> enclosureMime = reader.nextNullableString()
+                        7 -> enclosureLink = reader.nextNullableString()
                         8 -> feedRemoteId = reader.nextInt().toString()
                         9 -> isRead = !reader.nextBoolean()
                         else -> reader.skipValue()

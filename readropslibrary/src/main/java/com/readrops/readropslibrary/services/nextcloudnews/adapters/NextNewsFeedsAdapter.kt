@@ -2,6 +2,7 @@ package com.readrops.readropslibrary.services.nextcloudnews.adapters
 
 import android.annotation.SuppressLint
 import com.readrops.readropsdb.entities.Feed
+import com.readrops.readropslibrary.utils.nextNullableString
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.ToJson
@@ -41,8 +42,11 @@ class NextNewsFeedsAdapter {
                         1 -> url = reader.nextString()
                         2 -> name = reader.nextString()
                         3 -> iconUrl = reader.nextString()
-                        4 -> remoteFolderId = reader.nextInt().toString()
-                        5 -> siteUrl = if (reader.peek() != JsonReader.Token.NULL) reader.nextString() else reader.nextNull()
+                        4 -> {
+                            val nextInt = reader.nextInt()
+                            remoteFolderId = if (nextInt > 0) nextInt.toString() else null
+                        }
+                        5 -> siteUrl = reader.nextNullableString()
                         else -> reader.skipValue()
                     }
                 }

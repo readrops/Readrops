@@ -100,26 +100,25 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
                 }
 
                 TimingLogger timings = new TimingLogger(TAG, "nextcloud news " + syncType.name().toLowerCase());
-                SyncResult syncResult = api.sync(syncType, syncData);
+                SyncResult result = api.sync(syncType, syncData);
                 timings.addSplit("server queries");
 
-                if (!syncResult.isError()) {
+                if (!result.isError()) {
+                    syncResult = new SyncResult();
 
-                    insertFolders(syncResult.getFolders());
+                    insertFolders(result.getFolders());
                     timings.addSplit("insert folders");
 
-                    insertFeeds(syncResult.getFeeds(), false);
+                    insertFeeds(result.getFeeds(), false);
                     timings.addSplit("insert feeds");
 
-                    insertItems(syncResult.getItems(), syncType == SyncType.INITIAL_SYNC);
+                    insertItems(result.getItems(), syncType == SyncType.INITIAL_SYNC);
                     timings.addSplit("insert items");
                     timings.dumpToLog();
 
                     account.setLastModified(lastModified);
                     database.accountDao().updateLastModified(account.getId(), lastModified);
                     database.itemDao().resetReadChanges(account.getId());
-
-                    this.syncResult = syncResult;
 
                     emitter.onComplete();
                 } else
