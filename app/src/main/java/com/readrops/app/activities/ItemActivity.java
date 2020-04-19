@@ -282,48 +282,48 @@ public class ItemActivity extends AppCompatActivity {
 
         if (hitTestResult.getType() == WebView.HitTestResult.IMAGE_TYPE ||
                 hitTestResult.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {
-            MaterialDialog.Builder builder = new MaterialDialog.Builder(this);
-            builder.title(R.string.image_options);
-            builder.items(R.array.image_options);
-            builder.itemsCallback((dialog, itemView, position, text) -> {
-                switch (position) {
-                    case 0:
-                        shareImage(hitTestResult.getExtra());
-                        break;
-                    case 1:
-                        if (PermissionManager.isPermissionGranted(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))
-                            downloadImage(hitTestResult.getExtra());
-                        else {
-                            urlToDownload = hitTestResult.getExtra();
-                            PermissionManager.requestPermissions(this, WRITE_EXTERNAL_STORAGE_REQUEST, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                        }
-                        break;
-                    case 2:
-                        urlToDownload = hitTestResult.getExtra();
-                        String content = webView.getItemContent();
+            new MaterialDialog.Builder(this)
+                    .title(R.string.image_options)
+                    .items(R.array.image_options)
+                    .itemsCallback((dialog, itemView, position, text) -> {
+                        switch (position) {
+                            case 0:
+                                shareImage(hitTestResult.getExtra());
+                                break;
+                            case 1:
+                                if (PermissionManager.isPermissionGranted(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))
+                                    downloadImage(hitTestResult.getExtra());
+                                else {
+                                    urlToDownload = hitTestResult.getExtra();
+                                    PermissionManager.requestPermissions(this, WRITE_EXTERNAL_STORAGE_REQUEST, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                                }
+                                break;
+                            case 2:
+                                urlToDownload = hitTestResult.getExtra();
+                                String content = webView.getItemContent();
 
-                        Pattern p = Pattern.compile("(<img.*src=\"" + urlToDownload + "\".*>)");
-                        Matcher m = p.matcher(content);
-                        if (m.matches()) {
-                            Pattern p2 = Pattern.compile("<img.*(title|alt)=\"(.*?)\".*>");
-                            Matcher m2 = p2.matcher(content);
-                            if (m2.matches()) {
-                                imageTitle = m2.group(2);
-                            } else {
-                                imageTitle = "";
-                            }
+                                Pattern p = Pattern.compile("(<img.*src=\"" + urlToDownload + "\".*>)");
+                                Matcher m = p.matcher(content);
+                                if (m.matches()) {
+                                    Pattern p2 = Pattern.compile("<img.*(title|alt)=\"(.*?)\".*>");
+                                    Matcher m2 = p2.matcher(content);
+                                    if (m2.matches()) {
+                                        imageTitle = m2.group(2);
+                                    } else {
+                                        imageTitle = "";
+                                    }
+                                }
+                                new MaterialDialog.Builder(this)
+                                    .title(urlToDownload)
+                                    .content(imageTitle)
+                                    .show();
+                                break;
+                            default:
+                                throw new IllegalStateException("Unexpected value: " + position);
                         }
-                        MaterialDialog.Builder captionBuilder = new MaterialDialog.Builder(this);
-                        captionBuilder.title(urlToDownload);
-                        captionBuilder.content(imageTitle);
-                        captionBuilder.show();
-                        break;
-                    default:
-                        throw new IllegalStateException("Unexpected value: " + position);
-                }
 
-            });
-            builder.show();
+                    })
+                    .show();
         }
     }
 
