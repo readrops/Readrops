@@ -50,12 +50,15 @@ class SyncResultAnalyserTest {
 
         var account1Id = 0
         database.accountDao().insert(account1).subscribe { id -> account1Id = id.toInt() }
+        account1.id = account1Id
 
         var account2Id = 0
         database.accountDao().insert(account2).subscribe { id -> account2Id = id.toInt() }
+        account2.id = account2Id
 
         var account3Id = 0
         database.accountDao().insert(account3).subscribe { id -> account3Id = id.toInt() }
+        account3.id = account3Id
 
         val accountIds = listOf(account1Id, account2Id, account3Id)
         for (i in 0..2) {
@@ -94,6 +97,7 @@ class SyncResultAnalyserTest {
         assertEquals("caseOneElementEveryWhere", notifContent.content)
         assertEquals("feed 1", notifContent.title)
         assertTrue(notifContent.largeIcon != null)
+        assertTrue(notifContent.accountId!! > 0)
 
         database.itemDao()
                 .delete(item)
@@ -113,6 +117,7 @@ class SyncResultAnalyserTest {
         assertEquals(context.getString(R.string.new_items, 3), notifContent.content)
         assertEquals("feed 1", notifContent.title)
         assertTrue(notifContent.largeIcon != null)
+        assertTrue(notifContent.accountId!! > 0)
     }
 
     @Test
@@ -126,6 +131,7 @@ class SyncResultAnalyserTest {
         assertEquals(context.getString(R.string.new_items, 2), notifContent.content)
         assertEquals(account1.accountName, notifContent.title)
         assertTrue(notifContent.largeIcon != null)
+        assertTrue(notifContent.accountId!! > 0)
     }
 
     @Test
@@ -293,6 +299,7 @@ class SyncResultAnalyserTest {
         assertEquals("feed 1", notifContent.title)
         assertTrue(notifContent.largeIcon != null)
         assertTrue(notifContent.item != null)
+        assertTrue(notifContent.accountId!! > 0)
 
         database.itemDao().delete(item1).subscribe()
     }

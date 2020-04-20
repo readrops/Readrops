@@ -69,6 +69,7 @@ import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
+import static com.readrops.app.utils.ReadropsKeys.ACCOUNT_ID;
 import static com.readrops.app.utils.ReadropsKeys.FEEDS;
 import static com.readrops.app.utils.ReadropsKeys.FROM_MAIN_ACTIVITY;
 import static com.readrops.app.utils.ReadropsKeys.IMAGE_URL;
@@ -204,7 +205,13 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
             // the activity was just opened
             if (drawer == null) {
-                drawer = drawerManager.buildDrawer(accounts);
+                int currentAccountId = 0;
+                if (getIntent().hasExtra(ACCOUNT_ID)) { // coming from a notification
+                    currentAccountId = getIntent().getIntExtra(ACCOUNT_ID, 1);
+                    viewModel.setCurrentAccount(currentAccountId);
+                }
+
+                drawer = drawerManager.buildDrawer(accounts, currentAccountId);
                 drawer.setSelection(DrawerManager.ARTICLES_ITEM_ID);
                 updateDrawerFeeds();
 

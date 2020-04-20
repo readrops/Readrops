@@ -35,6 +35,8 @@ class SyncResultAnalyser(val context: Context, private val syncResults: Map<Acco
                 val account = syncResultMap.keys.first()
                 val feedsIdsForNewItems = getFeedsIdsForNewItems(syncResult)
 
+                notifContent.accountId = account.id
+
                 if (account.isNotificationsEnabled) {
                     val feeds = database.feedDao().selectFromIdList(feedsIdsForNewItems)
 

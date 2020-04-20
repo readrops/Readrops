@@ -75,6 +75,8 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
                 if (notifContent.item != null) {
                     putExtra(ReadropsKeys.ITEM_ID, notifContent.item?.id)
                     putExtra(ReadropsKeys.IMAGE_URL, notifContent.item?.imageLink)
+
+                    if (notifContent.accountId != null) putExtra(ReadropsKeys.ACCOUNT_ID, notifContent.accountId!!)
                 }
             }
 

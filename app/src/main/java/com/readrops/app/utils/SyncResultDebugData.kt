@@ -14,14 +14,11 @@ class SyncResultDebugData {
 
         @TestOnly
         fun oneAccountOneFeedOneItem(context: Context): Map<Account, SyncResult> {
-            val account1 = Account().apply {
-                id = 1
-                accountType = AccountType.FRESHRSS
-                isNotificationsEnabled = true
-            }
-
             val database = Database.getInstance(context)
-            val item = database.itemDao().select(5056)
+            val account1 = database.accountDao().select(2)
+
+
+            val item = database.itemDao().select(5000)
             // database.feedDao().updateNotificationState(item.feedId, false).subscribe()
 
             return mutableMapOf<Account, SyncResult>().apply {

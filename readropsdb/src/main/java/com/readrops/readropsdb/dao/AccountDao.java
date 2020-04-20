@@ -23,6 +23,9 @@ public interface AccountDao extends BaseDao<Account> {
     @Query("Select * from Account")
     List<Account> selectAll();
 
+    @Query("Select * From Account Where id = :accountId")
+    Account select(int accountId);
+
     @Query("Update Account set last_modified = :lastModified Where id = :accountId")
     void updateLastModified(int accountId, long lastModified);
 
