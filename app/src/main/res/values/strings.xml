@@ -136,4 +136,6 @@
     <string name="auto_synchro_disabled">Automatic synchronization is disabled</string>
     <string name="enable_auto_synchro_text">To be displayed, notifications need auto synchronization to be activated.\nDo you want to open settings ?</string>
     <string name="open">Open</string>
+    <string name="back">Back</string>
+    <string name="show_caption">Show caption</string>
 </resources>

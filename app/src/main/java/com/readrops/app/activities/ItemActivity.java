@@ -49,6 +49,9 @@ import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.ItemViewModel;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import static com.readrops.app.utils.ReadropsKeys.ACTION_BAR_COLOR;
 import static com.readrops.app.utils.ReadropsKeys.IMAGE_URL;
 import static com.readrops.app.utils.ReadropsKeys.ITEM_ID;
@@ -79,6 +82,7 @@ public class ItemActivity extends AppCompatActivity {
 
     private CoordinatorLayout rootLayout;
     private String urlToDownload;
+    private String imageTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -282,15 +286,40 @@ public class ItemActivity extends AppCompatActivity {
                     .title(R.string.image_options)
                     .items(R.array.image_options)
                     .itemsCallback((dialog, itemView, position, text) -> {
-                        if (position == 0)
-                            shareImage(hitTestResult.getExtra());
-                        else {
-                            if (PermissionManager.isPermissionGranted(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))
-                                downloadImage(hitTestResult.getExtra());
-                            else {
+                        switch (position) {
+                            case 0:
+                                shareImage(hitTestResult.getExtra());
+                                break;
+                            case 1:
+                                if (PermissionManager.isPermissionGranted(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))
+                                    downloadImage(hitTestResult.getExtra());
+                                else {
+                                    urlToDownload = hitTestResult.getExtra();
+                                    PermissionManager.requestPermissions(this, WRITE_EXTERNAL_STORAGE_REQUEST, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                                }
+                                break;
+                            case 2:
                                 urlToDownload = hitTestResult.getExtra();
-                                PermissionManager.requestPermissions(this, WRITE_EXTERNAL_STORAGE_REQUEST, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                            }
+                                String content = webView.getItemContent();
+
+                                Pattern p = Pattern.compile("(<img.*src=\"" + urlToDownload + "\".*>)");
+                                Matcher m = p.matcher(content);
+                                if (m.matches()) {
+                                    Pattern p2 = Pattern.compile("<img.*(title|alt)=\"(.*?)\".*>");
+                                    Matcher m2 = p2.matcher(content);
+                                    if (m2.matches()) {
+                                        imageTitle = m2.group(2);
+                                    } else {
+                                        imageTitle = "";
+                                    }
+                                }
+                                new MaterialDialog.Builder(this)
+                                    .title(urlToDownload)
+                                    .content(imageTitle)
+                                    .show();
+                                break;
+                            default:
+                                throw new IllegalStateException("Unexpected value: " + position);
                         }
 
                     })

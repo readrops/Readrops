@@ -129,5 +129,7 @@
     <string name="auto_synchro_disabled">La synchronisation automatique est désactivée</string>
     <string name="enable_auto_synchro_text">Les notifications nécessitent l\'activation de la synchronisation automatique pour fonctionner.\nVoulez-vous ouvrir les paramètres ?</string>
     <string name="open">Ouvrir</string>
+    <string name="back">Retour</string>
+    <string name="show_caption">Afficher la légende</string>
 
 </resources>
