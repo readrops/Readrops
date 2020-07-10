@@ -7,6 +7,8 @@
         tools:ignore="AllowBackup,GoogleAppIndexingWarning"
         tools:replace="android:name">
 
+        <meta-data android:name="com.niddler.icon" android:value="android"/>
+
         <provider
             android:name="androidx.work.impl.WorkManagerInitializer"
             android:authorities="${applicationId}.workmanager-init"
