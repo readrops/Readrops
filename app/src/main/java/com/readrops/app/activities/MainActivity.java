@@ -554,6 +554,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     public void openAddFeedActivity(View view) {
         Intent intent = new Intent(this, AddFeedActivity.class);
+        intent.putExtra(ACCOUNT_ID, viewModel.getCurrentAccount().getId());
         startActivityForResult(intent, ADD_FEED_REQUEST);
     }
 
