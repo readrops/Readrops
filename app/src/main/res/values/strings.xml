@@ -120,7 +120,6 @@
     <string name="download_image_permission">To download the image, storage permission is needed</string>
     <string name="auto_synchro">Automatic synchronisation</string>
     <string name="manual">Manual</string>
-    <string name="mins_15">15 mins</string>
     <string name="min_30">30 mins</string>
     <string name="hour_1">1 hour</string>
     <string name="hour_2">2 hours</string>

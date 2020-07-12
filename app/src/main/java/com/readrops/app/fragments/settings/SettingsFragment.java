@@ -95,10 +95,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         TimeUnit timeUnit;
 
         switch (newValue) {
-            case "0.15":
-                interval = 15;
-                timeUnit = TimeUnit.MINUTES;
-                break;
             case "0.30":
                 interval = 30;
                 timeUnit = TimeUnit.MINUTES;
