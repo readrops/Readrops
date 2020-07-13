@@ -6,7 +6,6 @@ import com.readrops.app.utils.ParsingResult;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +27,7 @@ public class HtmlParserTest {
     }
 
     @Test
-    public void getFaviconLinkTest() throws IOException {
+    public void getFaviconLinkTest() {
         String url = "https://github.com/readrops/Readrops";
 
         assertEquals("https://github.com/fluidicon.png", HtmlParser.getFaviconLink(url));
