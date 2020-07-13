@@ -1,95 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="16dp">
+
+    <LinearLayout
+        android:id="@+id/feed_options_edit_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="16dp">
-
-        <LinearLayout
-            android:id="@+id/feed_options_edit_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:orientation="horizontal"
-            android:paddingStart="16dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/feed_options_title">
-
-            <TextView
-                android:id="@+id/feed_edit_feed"
-                style="@style/TextAppearance.AppCompat.Subhead"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_edit"
-                android:drawablePadding="16dp"
-                android:text="@string/edit_feed" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/feed_options_open_root_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:orientation="horizontal"
-            android:paddingStart="16dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/feed_options_edit_layout">
-
-            <TextView
-                android:id="@+id/feed_open_root"
-                style="@style/TextAppearance.AppCompat.Subhead"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_open_in_browser"
-                android:drawablePadding="16dp"
-                android:text="@string/open_url" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/feed_options_delete_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:orientation="horizontal"
-            android:paddingStart="16dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/feed_options_open_root_layout">
-
-            <TextView
-                android:id="@+id/feed_options_delete"
-                style="@style/TextAppearance.AppCompat.Subhead"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_delete_grey"
-                android:drawablePadding="16dp"
-                android:text="@string/delete" />
-        </LinearLayout>
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/feed_options_title">
 
         <TextView
-            android:id="@+id/feed_options_title"
-            style="@style/TextAppearance.AppCompat.Small"
+            android:id="@+id/feed_edit_feed"
+            style="@style/TextAppearance.AppCompat.Subhead"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="16dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Feed 1" />
+            android:drawableStart="@drawable/ic_edit"
+            android:drawablePadding="16dp"
+            android:text="@string/edit_feed" />
+    </LinearLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:id="@+id/feed_options_open_root_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/feed_options_edit_layout">
 
-</layout>
+        <TextView
+            android:id="@+id/feed_open_root"
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/ic_open_in_browser"
+            android:drawablePadding="16dp"
+            android:text="@string/open_url" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/feed_options_delete_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/feed_options_open_root_layout">
+
+        <TextView
+            android:id="@+id/feed_options_delete"
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/ic_delete_grey"
+            android:drawablePadding="16dp"
+            android:text="@string/delete" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/feed_options_title"
+        style="@style/TextAppearance.AppCompat.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Feed 1" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

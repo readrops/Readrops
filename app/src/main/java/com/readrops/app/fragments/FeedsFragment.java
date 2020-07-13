@@ -16,13 +16,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.readrops.app.R;
 import com.readrops.app.adapters.FeedsAdapter;
-import com.readrops.readropsdb.entities.Feed;
-import com.readrops.readropsdb.entities.account.Account;
-import com.readrops.readropsdb.pojo.FeedWithFolder;
 import com.readrops.app.databinding.FragmentFeedsBinding;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.ManageFeedsFoldersViewModel;
+import com.readrops.readropsdb.entities.Feed;
+import com.readrops.readropsdb.entities.account.Account;
+import com.readrops.readropsdb.pojo.FeedWithFolder;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableCompletableObserver;
@@ -81,7 +81,7 @@ public class FeedsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = FragmentFeedsBinding.inflate(inflater);
+        binding = FragmentFeedsBinding.inflate(inflater, container, false);
 
         return binding.getRoot();
     }
@@ -105,6 +105,12 @@ public class FeedsFragment extends Fragment {
         });
 
         binding.feedsRecyclerview.setAdapter(adapter);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
     public void deleteFeed(Feed feed) {

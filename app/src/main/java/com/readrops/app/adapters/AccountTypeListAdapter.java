@@ -4,12 +4,10 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.readrops.app.R;
-import com.readrops.readropsdb.entities.account.AccountType;
 import com.readrops.app.databinding.AccountTypeItemBinding;
+import com.readrops.readropsdb.entities.account.AccountType;
 
 import java.util.List;
 
@@ -25,8 +23,8 @@ public class AccountTypeListAdapter extends RecyclerView.Adapter<AccountTypeList
     @NonNull
     @Override
     public AccountTypeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        AccountTypeItemBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
-                R.layout.account_type_item, parent, false);
+        AccountTypeItemBinding binding = AccountTypeItemBinding.inflate(LayoutInflater.from(parent.getContext()),
+                parent, false);
 
         return new AccountTypeViewHolder(binding);
     }

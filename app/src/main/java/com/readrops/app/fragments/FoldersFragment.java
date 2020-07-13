@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,12 +16,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.readrops.app.R;
 import com.readrops.app.adapters.FoldersAdapter;
-import com.readrops.readropsdb.entities.Folder;
-import com.readrops.readropsdb.entities.account.Account;
 import com.readrops.app.databinding.FragmentFoldersBinding;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.ManageFeedsFoldersViewModel;
+import com.readrops.readropsdb.entities.Folder;
+import com.readrops.readropsdb.entities.account.Account;
 import com.readrops.readropslibrary.utils.ConflictException;
 import com.readrops.readropslibrary.utils.UnknownFormatException;
 
@@ -101,7 +100,7 @@ public class FoldersFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_folders, container, false);
+        binding = FragmentFoldersBinding.inflate(inflater, container, false);
 
         return binding.getRoot();
     }

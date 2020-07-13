@@ -6,7 +6,6 @@ import android.view.MenuItem;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -14,13 +13,13 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.readrops.app.R;
-import com.readrops.readropsdb.entities.Folder;
-import com.readrops.readropsdb.entities.account.Account;
 import com.readrops.app.databinding.ActivityManageFeedsFoldersBinding;
 import com.readrops.app.fragments.FeedsFragment;
 import com.readrops.app.fragments.FoldersFragment;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.ManageFeedsFoldersViewModel;
+import com.readrops.readropsdb.entities.Folder;
+import com.readrops.readropsdb.entities.account.Account;
 import com.readrops.readropslibrary.utils.ConflictException;
 import com.readrops.readropslibrary.utils.UnknownFormatException;
 
@@ -31,7 +30,6 @@ import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
 
 public class ManageFeedsFoldersActivity extends AppCompatActivity {
 
-
     private ActivityManageFeedsFoldersBinding binding;
     private ManageFeedsFoldersViewModel viewModel;
 
@@ -41,7 +39,9 @@ public class ManageFeedsFoldersActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_manage_feeds_folders);
+        binding = ActivityManageFeedsFoldersBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
         setSupportActionBar(binding.manageFeedsFoldersToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 

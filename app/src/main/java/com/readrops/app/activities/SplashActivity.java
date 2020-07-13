@@ -47,5 +47,12 @@ public class SplashActivity extends AppCompatActivity {
                         
                     }
                 });
+
+
+        /*PeriodicWorkRequest request = new PeriodicWorkRequest.Builder(SyncWorker.class, 15, TimeUnit.MINUTES)
+                .addTag(SyncWorker.Companion.getTAG())
+                .build();
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(SyncWorker.Companion.getTAG(), ExistingPeriodicWorkPolicy.REPLACE, request);*/
     }
 }

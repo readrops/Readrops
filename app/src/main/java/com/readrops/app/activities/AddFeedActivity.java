@@ -12,7 +12,6 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -63,7 +62,9 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_add_feed);
+
+        binding = ActivityAddFeedBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         binding.addFeedLoad.setOnClickListener(this);
         binding.addFeedOk.setOnClickListener(this);

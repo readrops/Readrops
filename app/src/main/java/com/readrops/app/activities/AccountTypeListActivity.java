@@ -11,7 +11,6 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -19,11 +18,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.readrops.app.R;
 import com.readrops.app.adapters.AccountTypeListAdapter;
-import com.readrops.readropsdb.entities.account.Account;
-import com.readrops.readropsdb.entities.account.AccountType;
 import com.readrops.app.databinding.ActivityAccountTypeListBinding;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.AccountViewModel;
+import com.readrops.readropsdb.entities.account.Account;
+import com.readrops.readropsdb.entities.account.AccountType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +51,9 @@ public class AccountTypeListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_account_type_list);
+        binding = ActivityAccountTypeListBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
         viewModel = ViewModelProviders.of(this).get(AccountViewModel.class);
 
         setTitle(R.string.new_account);

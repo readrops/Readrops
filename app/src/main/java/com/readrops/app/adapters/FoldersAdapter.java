@@ -6,15 +6,14 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.readrops.app.R;
+import com.readrops.app.databinding.FolderLayoutBinding;
 import com.readrops.readropsdb.entities.Folder;
 import com.readrops.readropsdb.pojo.FolderWithFeedCount;
-import com.readrops.app.databinding.FolderLayoutBinding;
 
 import java.util.List;
 
@@ -55,8 +54,8 @@ public class FoldersAdapter extends ListAdapter<FolderWithFeedCount, FoldersAdap
     @NonNull
     @Override
     public FolderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        FolderLayoutBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
-                R.layout.folder_layout, parent, false);
+        FolderLayoutBinding binding = FolderLayoutBinding.inflate(LayoutInflater.from(parent.getContext()),
+                parent, false);
 
         return new FolderViewHolder(binding);
     }

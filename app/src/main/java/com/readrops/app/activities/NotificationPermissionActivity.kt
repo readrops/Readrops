@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.MaterialDialog
@@ -34,7 +33,8 @@ class NotificationPermissionActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_notification_permission)
+        binding = ActivityNotificationPermissionBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         setTitle(R.string.notifications)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

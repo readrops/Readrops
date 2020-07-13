@@ -8,16 +8,15 @@ import android.view.MenuItem;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.readrops.app.R;
-import com.readrops.readropsdb.entities.account.Account;
-import com.readrops.readropsdb.entities.account.AccountType;
 import com.readrops.app.databinding.ActivityAddAccountBinding;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.AccountViewModel;
+import com.readrops.readropsdb.entities.account.Account;
+import com.readrops.readropsdb.entities.account.AccountType;
 
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
@@ -44,7 +43,9 @@ public class AddAccountActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_add_account);
+        binding = ActivityAddAccountBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
         viewModel = ViewModelProviders.of(this).get(AccountViewModel.class);
 
         accountType = getIntent().getParcelableExtra(ACCOUNT_TYPE);
