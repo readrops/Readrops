@@ -15,7 +15,7 @@
         tools:src="@drawable/ic_rss_feed_grey" />
 
     <TextView
-        android:id="@+id/empty_list_text_v"
+        android:id="@+id/empty_list_text"
         style="@style/TextAppearance.AppCompat.Large"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
