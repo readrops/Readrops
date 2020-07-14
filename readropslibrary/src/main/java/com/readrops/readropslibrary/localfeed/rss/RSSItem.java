@@ -15,11 +15,7 @@ public class RSSItem {
 
     @Element(name = "link", required = false)
     private String link;
-
-    @ElementList(name = "link", inline = true, required = false)
-    @Namespace(prefix = "atom")
-    private List<String> otherLinks;
-
+    
     @Element(name = "imageLink", required = false)
     private String imageLink;
 
@@ -30,9 +26,9 @@ public class RSSItem {
     @ElementList(name = "enclosure", inline = true, required = false)
     private List<RSSEnclosure> enclosures;
 
-    @Element(name = "creator", required = false)
+    @ElementList(name = "creator", inline = true, required = false)
     @Namespace(prefix = "dc", reference = "http://purl.org/dc/elements/1.1/")
-    private String creator;
+    private List<String> creator;
 
     @Element(required = false)
     private String author;
@@ -86,11 +82,11 @@ public class RSSItem {
         this.imageLink = imageLink;
     }
 
-    public String getCreator() {
+    public List<String> getCreator() {
         return creator;
     }
 
-    public void setCreator(String creator) {
+    public void setCreator(List<String> creator) {
         this.creator = creator;
     }
 
@@ -146,21 +142,13 @@ public class RSSItem {
     }
 
     public String getAuthor() {
-        if (creator != null)
-            return creator;
+        if (creator != null && !creator.isEmpty())
+            return creator.get(0);
         else
             return author;
     }
 
     public void setAuthor(String author) {
         this.author = author;
-    }
-
-    public List<String> getOtherLinks() {
-        return otherLinks;
-    }
-
-    public void setOtherLinks(List<String> otherLinks) {
-        this.otherLinks = otherLinks;
     }
 }

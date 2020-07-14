@@ -22,7 +22,7 @@ public final class ItemMatcher {
         for (RSSItem item : items) {
             Item newItem = new Item();
 
-            newItem.setAuthor(item.getCreator());
+            newItem.setAuthor(item.getAuthor());
             newItem.setContent(item.getContent()); // Jsoup.clean(item.getContent(), Whitelist.relaxed())
             newItem.setDescription(item.getDescription());
             newItem.setGuid(item.getGuid() != null ? item.getGuid() : item.getLink());
