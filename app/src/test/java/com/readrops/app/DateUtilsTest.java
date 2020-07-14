@@ -41,4 +41,12 @@ public class DateUtilsTest {
 
         assertEquals(0, dateTime.compareTo(DateUtils.stringToLocalDateTime("2019-01-04T22:21:46-0000")));
     }
+
+    @Test
+    public void isoPatternTest() {
+        LocalDateTime dateTime = new LocalDateTime(2020, 6, 30, 11, 39, 37, 206);
+
+
+        assertEquals(0, dateTime.compareTo(DateUtils.stringToLocalDateTime("2020-06-30T11:39:37.206-07:00")));
+    }
 }

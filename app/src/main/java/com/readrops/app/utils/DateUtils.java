@@ -21,6 +21,8 @@ public final class DateUtils {
 
     private static final String OFFSET_PATTERN = "Z";
 
+    private static final String ISO_PATTERN = ".SSSZZ";
+
     /**
      * Date pattern for format : 2019-01-04T22:21:46+00:00
      */
@@ -32,6 +34,7 @@ public final class DateUtils {
                 .appendOptional(DateTimeFormat.forPattern(ATOM_JSON_DATE_FORMAT).getParser())
                 .appendOptional(DateTimeFormat.forPattern(GMT_PATTERN).getParser())
                 .appendOptional(DateTimeFormat.forPattern(OFFSET_PATTERN).getParser())
+                .appendOptional(DateTimeFormat.forPattern(ISO_PATTERN).getParser())
                 .toFormatter()
                 .withLocale(Locale.ENGLISH)
                 .withOffsetParsed();
