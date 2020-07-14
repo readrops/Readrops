@@ -6,10 +6,10 @@ import org.simpleframework.xml.Root;
 @Root(name = "enclosure", strict = false)
 public class RSSEnclosure {
 
-    @Attribute
+    @Attribute(required = false)
     private String type;
 
-    @Attribute
+    @Attribute(required = false)
     private String url;
 
     public String getType() {

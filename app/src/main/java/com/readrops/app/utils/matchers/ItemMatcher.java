@@ -47,7 +47,8 @@ public final class ItemMatcher {
             } else {
                 if (item.getEnclosures() != null) {
                     for (RSSEnclosure enclosure : item.getEnclosures()) {
-                        if (enclosure.getType() != null && Utils.isTypeImage(enclosure.getType())) {
+                        if (enclosure.getType() != null && Utils.isTypeImage(enclosure.getType())
+                                && enclosure.getUrl() != null) {
                             newItem.setImageLink(enclosure.getUrl());
                             break;
                         }
