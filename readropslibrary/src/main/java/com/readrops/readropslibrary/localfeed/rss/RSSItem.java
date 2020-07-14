@@ -51,7 +51,7 @@ public class RSSItem {
     @Namespace(prefix = "content")
     private String content;
 
-    @Element
+    @Element(required = false)
     private String guid;
 
     public String getTitle() {

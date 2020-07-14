@@ -25,7 +25,7 @@ public final class ItemMatcher {
             newItem.setAuthor(item.getCreator());
             newItem.setContent(item.getContent()); // Jsoup.clean(item.getContent(), Whitelist.relaxed())
             newItem.setDescription(item.getDescription());
-            newItem.setGuid(item.getGuid());
+            newItem.setGuid(item.getGuid() != null ? item.getGuid() : item.getLink());
             newItem.setTitle(Utils.cleanText(item.getTitle()));
 
             try {
