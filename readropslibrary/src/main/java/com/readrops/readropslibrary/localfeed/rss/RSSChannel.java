@@ -22,9 +22,6 @@ public class RSSChannel {
     @Element(name = "lastBuildDate", required = false)
     private String lastUpdated;
 
-    @Element(required = false)
-    private RSSImage image;
-
     @ElementList(inline = true, required = false)
     private List<RSSItem> items;
 
@@ -67,15 +64,7 @@ public class RSSChannel {
     public void setLastUpdated(String lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
-
-    public RSSImage getImage() {
-        return image;
-    }
-
-    public void setImage(RSSImage image) {
-        this.image = image;
-    }
-
+    
     public String getFeedUrl() {
         if (links.size() > 1) {
             if (links.get(0).getHref() != null)
