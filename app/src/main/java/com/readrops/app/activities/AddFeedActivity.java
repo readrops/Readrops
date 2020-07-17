@@ -12,7 +12,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -83,7 +83,7 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
             return false;
         });
 
-        viewModel = ViewModelProviders.of(this).get(AddFeedsViewModel.class);
+        viewModel = new ViewModelProvider(this).get(AddFeedsViewModel.class);
 
         parseItemsAdapter = new ItemAdapter<>();
         fastAdapter = FastAdapter.with(parseItemsAdapter);

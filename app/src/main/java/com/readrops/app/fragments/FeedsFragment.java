@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -64,7 +64,7 @@ public class FeedsFragment extends Fragment {
         if (account.getPassword() == null)
             account.setPassword(SharedPreferencesManager.readString(getContext(), account.getPasswordKey()));
 
-        viewModel = ViewModelProviders.of(this).get(ManageFeedsFoldersViewModel.class);
+        viewModel = new ViewModelProvider(this).get(ManageFeedsFoldersViewModel.class);
         viewModel.setAccount(account);
 
         viewModel.getFeedsWithFolder().observe(this, feedWithFolders -> {

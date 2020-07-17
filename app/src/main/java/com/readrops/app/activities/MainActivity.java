@@ -21,7 +21,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         feedCount = 0;
         initRecyclerView();
 
-        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        viewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
         viewModel.setShowReadItems(SharedPreferencesManager.readBoolean(this,
                 SharedPreferencesManager.SharedPrefKey.SHOW_READ_ARTICLES));

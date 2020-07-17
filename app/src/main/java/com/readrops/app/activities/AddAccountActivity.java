@@ -8,7 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.readrops.app.R;
 import com.readrops.app.databinding.ActivityAddAccountBinding;
@@ -46,7 +46,7 @@ public class AddAccountActivity extends AppCompatActivity {
         binding = ActivityAddAccountBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        viewModel = ViewModelProviders.of(this).get(AccountViewModel.class);
+        viewModel = new ViewModelProvider(this).get(AccountViewModel.class);
 
         accountType = getIntent().getParcelableExtra(ACCOUNT_TYPE);
 

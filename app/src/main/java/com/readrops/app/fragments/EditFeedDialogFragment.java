@@ -11,15 +11,15 @@ import android.widget.Spinner;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.readrops.app.R;
+import com.readrops.app.viewmodels.ManageFeedsFoldersViewModel;
 import com.readrops.readropsdb.entities.Feed;
 import com.readrops.readropsdb.entities.Folder;
 import com.readrops.readropsdb.entities.account.Account;
 import com.readrops.readropsdb.pojo.FeedWithFolder;
-import com.readrops.app.viewmodels.ManageFeedsFoldersViewModel;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -59,7 +59,7 @@ public class EditFeedDialogFragment extends DialogFragment implements AdapterVie
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        viewModel = ViewModelProviders.of(getActivity()).get(ManageFeedsFoldersViewModel.class);
+        viewModel = new ViewModelProvider(getActivity()).get(ManageFeedsFoldersViewModel.class);
 
         feedWithFolder = getArguments().getParcelable("feedWithFolder");
         account = getArguments().getParcelable(ACCOUNT);

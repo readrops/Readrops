@@ -29,7 +29,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ShareCompat;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -39,8 +39,6 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.readrops.app.R;
-import com.readrops.readropsdb.entities.Item;
-import com.readrops.readropsdb.pojo.ItemWithFeed;
 import com.readrops.app.utils.DateUtils;
 import com.readrops.app.utils.GlideApp;
 import com.readrops.app.utils.PermissionManager;
@@ -48,6 +46,8 @@ import com.readrops.app.utils.ReadropsWebView;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.ItemViewModel;
+import com.readrops.readropsdb.entities.Item;
+import com.readrops.readropsdb.pojo.ItemWithFeed;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -146,7 +146,7 @@ public class ItemActivity extends AppCompatActivity {
             }
         }));
 
-        viewModel = ViewModelProviders.of(this).get(ItemViewModel.class);
+        viewModel = new ViewModelProvider(this).get(ItemViewModel.class);
         viewModel.getItemById(itemId).observe(this, this::bindUI);
         actionButton.setOnClickListener(v -> openInNavigator());
     }
@@ -314,9 +314,9 @@ public class ItemActivity extends AppCompatActivity {
                                     }
                                 }
                                 new MaterialDialog.Builder(this)
-                                    .title(urlToDownload)
-                                    .content(imageTitle)
-                                    .show();
+                                        .title(urlToDownload)
+                                        .content(imageTitle)
+                                        .show();
                                 break;
                             default:
                                 throw new IllegalStateException("Unexpected value: " + position);

@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.readrops.app.R;
 import com.readrops.app.viewmodels.AccountViewModel;
@@ -22,7 +22,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        viewModel = ViewModelProviders.of(this).get(AccountViewModel.class);
+        viewModel = new ViewModelProvider(this).get(AccountViewModel.class);
 
         viewModel.getAccountCount()
                 .subscribeOn(Schedulers.io())

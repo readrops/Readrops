@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.readrops.app.R;
@@ -52,7 +52,7 @@ public class ManageFeedsFoldersActivity extends AppCompatActivity {
         binding.manageFeedsFoldersViewpager.setAdapter(pageAdapter);
         binding.manageFeedsFoldersTablayout.setupWithViewPager(binding.manageFeedsFoldersViewpager);
 
-        viewModel = ViewModelProviders.of(this).get(ManageFeedsFoldersViewModel.class);
+        viewModel = new ViewModelProvider(this).get(ManageFeedsFoldersViewModel.class);
         viewModel.setAccount(account);
     }
 

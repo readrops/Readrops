@@ -11,7 +11,7 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -54,7 +54,7 @@ public class AccountTypeListActivity extends AppCompatActivity {
         binding = ActivityAccountTypeListBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        viewModel = ViewModelProviders.of(this).get(AccountViewModel.class);
+        viewModel = new ViewModelProvider(this).get(AccountViewModel.class);
 
         setTitle(R.string.new_account);
 

@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -65,7 +65,7 @@ public class FoldersFragment extends Fragment {
             account.setPassword(SharedPreferencesManager.readString(getContext(), account.getPasswordKey()));
 
         adapter = new FoldersAdapter(this::openFolderOptionsDialog);
-        viewModel = ViewModelProviders.of(this).get(ManageFeedsFoldersViewModel.class);
+        viewModel = new ViewModelProvider(this).get(ManageFeedsFoldersViewModel.class);
 
         viewModel.setAccount(account);
         viewModel.getFeedCountByAccount()
