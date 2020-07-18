@@ -7,11 +7,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
- */
 public class DateUtilsTest {
 
     @Test
@@ -46,7 +41,13 @@ public class DateUtilsTest {
     public void isoPatternTest() {
         LocalDateTime dateTime = new LocalDateTime(2020, 6, 30, 11, 39, 37, 206);
 
-
         assertEquals(0, dateTime.compareTo(DateUtils.stringToLocalDateTime("2020-06-30T11:39:37.206-07:00")));
+    }
+
+    @Test
+    public void edtPatternTest() {
+        LocalDateTime dateTime = new LocalDateTime(2020, 7, 17, 16, 30, 0);
+
+        assertEquals(0, dateTime.compareTo(DateUtils.stringToLocalDateTime("Fri, 17 Jul 2020 16:30:00 EDT")));
     }
 }
