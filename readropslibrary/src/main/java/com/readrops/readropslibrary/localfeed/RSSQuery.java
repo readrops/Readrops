@@ -35,6 +35,8 @@ public class RSSQuery {
 
     private static final String RSS_2_REGEX = "rss.*version=\"2.0\"";
 
+    private static final String ATOM_REGEX = "<feed.* xmlns=\"http://www.w3.org/2005/Atom\"";
+
     /**
      * Request the url given in parameter.
      * This method is synchronous, it <b>has</b> to be called from another thread than the main one.
@@ -177,7 +179,7 @@ public class RSSQuery {
 
         if (Pattern.compile(RSS_2_REGEX).matcher(content).find())
             type = RSSType.RSS_2;
-        else if (content.contains("<feed xmlns=\"http://www.w3.org/2005/Atom\""))
+        else if (Pattern.compile(ATOM_REGEX).matcher(content).find())
             type = RSSType.RSS_ATOM;
         else
             type = RSSType.RSS_UNKNOWN;
