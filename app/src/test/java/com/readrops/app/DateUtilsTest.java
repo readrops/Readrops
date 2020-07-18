@@ -24,6 +24,13 @@ public class DateUtilsTest {
     }
 
     @Test
+    public void rssDate3Test() {
+        LocalDateTime dateTime = new LocalDateTime(2019, 1, 4, 22, 21, 46);
+
+        assertEquals(0, dateTime.compareTo(DateUtils.stringToLocalDateTime("Fri, 04 Jan 2019 22:21:46")));
+    }
+
+    @Test
     public void atomJsonDateTest() {
         LocalDateTime dateTime = new LocalDateTime(2019, 1, 4, 22, 21, 46);
 
