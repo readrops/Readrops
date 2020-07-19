@@ -137,4 +137,5 @@
     <string name="open">Open</string>
     <string name="back">Back</string>
     <string name="show_caption">Show caption</string>
+    <string name="synchronize">Synchronize</string>
 </resources>

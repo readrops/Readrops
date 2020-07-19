@@ -548,8 +548,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                             Utils.showSnackbar(rootLayout, e.getMessage());
                         }
                     });
-        } else
+        } else {
             sync(null);
+        }
     }
 
     public void openAddFeedActivity(View view) {
@@ -688,6 +689,12 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             case R.id.item_sort:
                 displayFilterDialog();
                 return true;
+            case R.id.start_sync:
+                if (!viewModel.isAccountLocal()) {
+                    refreshLayout.setRefreshing(true);
+                }
+                onRefresh();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
