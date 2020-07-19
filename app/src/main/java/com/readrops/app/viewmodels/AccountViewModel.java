@@ -14,7 +14,7 @@ import com.readrops.readropsdb.entities.account.Account;
 import com.readrops.readropsdb.entities.account.AccountType;
 import com.readrops.app.repositories.ARepository;
 import com.readrops.app.utils.matchers.OPMLMatcher;
-import com.readrops.readropslibrary.opml.OPMLParser;
+import com.readrops.api.opml.OPMLParser;
 
 import java.util.List;
 import java.util.Map;

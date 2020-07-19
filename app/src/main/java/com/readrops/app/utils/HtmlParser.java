@@ -5,8 +5,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.readrops.readropslibrary.utils.HttpManager;
-import com.readrops.readropslibrary.utils.LibUtils;
+import com.readrops.api.utils.HttpManager;
+import com.readrops.api.utils.LibUtils;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

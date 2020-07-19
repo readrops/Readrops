@@ -16,7 +16,7 @@ import com.readrops.app.repositories.ARepository
 import com.readrops.readropsdb.Database
 import com.readrops.readropsdb.entities.Item
 import com.readrops.readropsdb.entities.account.Account
-import com.readrops.readropslibrary.services.SyncResult
+import com.readrops.api.services.SyncResult
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 

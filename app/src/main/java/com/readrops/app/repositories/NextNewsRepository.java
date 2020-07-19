@@ -14,13 +14,13 @@ import com.readrops.readropsdb.entities.Feed;
 import com.readrops.readropsdb.entities.Folder;
 import com.readrops.readropsdb.entities.Item;
 import com.readrops.readropsdb.entities.account.Account;
-import com.readrops.readropslibrary.services.Credentials;
-import com.readrops.readropslibrary.services.SyncResult;
-import com.readrops.readropslibrary.services.SyncType;
-import com.readrops.readropslibrary.services.nextcloudnews.NextNewsAPI;
-import com.readrops.readropslibrary.services.nextcloudnews.NextNewsSyncData;
-import com.readrops.readropslibrary.services.nextcloudnews.json.NextNewsUser;
-import com.readrops.readropslibrary.utils.UnknownFormatException;
+import com.readrops.api.services.Credentials;
+import com.readrops.api.services.SyncResult;
+import com.readrops.api.services.SyncType;
+import com.readrops.api.services.nextcloudnews.NextNewsAPI;
+import com.readrops.api.services.nextcloudnews.NextNewsSyncData;
+import com.readrops.api.services.nextcloudnews.json.NextNewsUser;
+import com.readrops.api.utils.UnknownFormatException;
 
 import org.joda.time.LocalDateTime;
 

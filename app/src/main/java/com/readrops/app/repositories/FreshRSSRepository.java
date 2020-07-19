@@ -14,11 +14,11 @@ import com.readrops.readropsdb.entities.Feed;
 import com.readrops.readropsdb.entities.Folder;
 import com.readrops.readropsdb.entities.Item;
 import com.readrops.readropsdb.entities.account.Account;
-import com.readrops.readropslibrary.services.Credentials;
-import com.readrops.readropslibrary.services.SyncType;
-import com.readrops.readropslibrary.services.freshrss.FreshRSSAPI;
-import com.readrops.readropslibrary.services.freshrss.FreshRSSCredentials;
-import com.readrops.readropslibrary.services.freshrss.FreshRSSSyncData;
+import com.readrops.api.services.Credentials;
+import com.readrops.api.services.SyncType;
+import com.readrops.api.services.freshrss.FreshRSSAPI;
+import com.readrops.api.services.freshrss.FreshRSSCredentials;
+import com.readrops.api.services.freshrss.FreshRSSSyncData;
 
 import org.joda.time.DateTime;
 

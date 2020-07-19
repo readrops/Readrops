@@ -10,7 +10,7 @@ import com.readrops.readropsdb.entities.Feed
 import com.readrops.readropsdb.entities.Item
 import com.readrops.readropsdb.entities.account.Account
 import com.readrops.readropsdb.entities.account.AccountType
-import com.readrops.readropslibrary.services.SyncResult
+import com.readrops.api.services.SyncResult
 import org.joda.time.LocalDateTime
 import org.junit.After
 import org.junit.Assert.assertEquals

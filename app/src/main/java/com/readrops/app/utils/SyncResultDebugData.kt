@@ -5,7 +5,7 @@ import com.readrops.readropsdb.Database
 import com.readrops.readropsdb.entities.Item
 import com.readrops.readropsdb.entities.account.Account
 import com.readrops.readropsdb.entities.account.AccountType
-import com.readrops.readropslibrary.services.SyncResult
+import com.readrops.api.services.SyncResult
 import org.jetbrains.annotations.TestOnly
 
 class SyncResultDebugData {

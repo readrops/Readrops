@@ -15,7 +15,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.readrops.readropslibrary.utils.HttpManager;
+import com.readrops.api.utils.HttpManager;
 
 import org.jsoup.Jsoup;
 

@@ -34,8 +34,8 @@ import com.readrops.app.utils.matchers.OPMLMatcher;
 import com.readrops.app.viewmodels.AccountViewModel;
 import com.readrops.readropsdb.entities.account.Account;
 import com.readrops.readropsdb.entities.account.AccountType;
-import com.readrops.readropslibrary.opml.OPMLParser;
-import com.readrops.readropslibrary.opml.model.OPML;
+import com.readrops.api.opml.OPMLParser;
+import com.readrops.api.opml.model.OPML;
 
 import java.io.File;
 import java.io.FileOutputStream;

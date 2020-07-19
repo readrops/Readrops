@@ -4,10 +4,10 @@ import android.content.Context
 import com.readrops.app.R
 import com.readrops.readropsdb.entities.Feed
 import com.readrops.readropsdb.entities.Folder
-import com.readrops.readropslibrary.opml.model.Body
-import com.readrops.readropslibrary.opml.model.Head
-import com.readrops.readropslibrary.opml.model.OPML
-import com.readrops.readropslibrary.opml.model.Outline
+import com.readrops.api.opml.model.Body
+import com.readrops.api.opml.model.Head
+import com.readrops.api.opml.model.OPML
+import com.readrops.api.opml.model.Outline
 
 object OPMLMatcher {
 

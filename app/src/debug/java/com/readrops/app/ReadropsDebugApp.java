@@ -19,7 +19,7 @@ import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPl
 import com.facebook.soloader.SoLoader;
 import com.icapps.niddler.core.AndroidNiddler;
 import com.icapps.niddler.interceptor.okhttp.NiddlerOkHttpInterceptor;
-import com.readrops.readropslibrary.utils.HttpManager;
+import com.readrops.api.utils.HttpManager;
 
 public class ReadropsDebugApp extends ReadropsApp implements Configuration.Provider {
 

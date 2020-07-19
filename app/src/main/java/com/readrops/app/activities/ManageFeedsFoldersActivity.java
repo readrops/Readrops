@@ -20,8 +20,8 @@ import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.ManageFeedsFoldersViewModel;
 import com.readrops.readropsdb.entities.Folder;
 import com.readrops.readropsdb.entities.account.Account;
-import com.readrops.readropslibrary.utils.ConflictException;
-import com.readrops.readropslibrary.utils.UnknownFormatException;
+import com.readrops.api.utils.ConflictException;
+import com.readrops.api.utils.UnknownFormatException;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;

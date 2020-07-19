@@ -1,10 +1,10 @@
 package com.readrops.app.utils.matchers;
 
 import com.readrops.readropsdb.entities.Feed;
-import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
-import com.readrops.readropslibrary.localfeed.json.JSONFeed;
-import com.readrops.readropslibrary.localfeed.rss.RSSChannel;
-import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
+import com.readrops.api.localfeed.atom.ATOMFeed;
+import com.readrops.api.localfeed.json.JSONFeed;
+import com.readrops.api.localfeed.rss.RSSChannel;
+import com.readrops.api.localfeed.rss.RSSFeed;
 
 import org.jsoup.Jsoup;
 

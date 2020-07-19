@@ -16,16 +16,16 @@ import com.readrops.app.utils.matchers.ItemMatcher;
 import com.readrops.readropsdb.entities.Feed;
 import com.readrops.readropsdb.entities.Item;
 import com.readrops.readropsdb.entities.account.Account;
-import com.readrops.readropslibrary.localfeed.AFeed;
-import com.readrops.readropslibrary.localfeed.RSSQuery;
-import com.readrops.readropslibrary.localfeed.RSSQueryResult;
-import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
-import com.readrops.readropslibrary.localfeed.json.JSONFeed;
-import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
-import com.readrops.readropslibrary.services.SyncResult;
-import com.readrops.readropslibrary.utils.LibUtils;
-import com.readrops.readropslibrary.utils.ParseException;
-import com.readrops.readropslibrary.utils.UnknownFormatException;
+import com.readrops.api.localfeed.AFeed;
+import com.readrops.api.localfeed.RSSQuery;
+import com.readrops.api.localfeed.RSSQueryResult;
+import com.readrops.api.localfeed.atom.ATOMFeed;
+import com.readrops.api.localfeed.json.JSONFeed;
+import com.readrops.api.localfeed.rss.RSSFeed;
+import com.readrops.api.services.SyncResult;
+import com.readrops.api.utils.LibUtils;
+import com.readrops.api.utils.ParseException;
+import com.readrops.api.utils.UnknownFormatException;
 
 import org.jsoup.Jsoup;
 

@@ -16,7 +16,7 @@ import com.readrops.readropsdb.entities.Folder;
 import com.readrops.readropsdb.entities.Item;
 import com.readrops.readropsdb.entities.account.Account;
 import com.readrops.readropsdb.entities.account.AccountType;
-import com.readrops.readropslibrary.services.SyncResult;
+import com.readrops.api.services.SyncResult;
 
 import java.util.ArrayList;
 import java.util.List;

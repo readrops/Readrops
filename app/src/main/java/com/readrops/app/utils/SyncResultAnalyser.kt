@@ -8,7 +8,7 @@ import com.readrops.readropsdb.Database
 import com.readrops.readropsdb.entities.Feed
 import com.readrops.readropsdb.entities.Item
 import com.readrops.readropsdb.entities.account.Account
-import com.readrops.readropslibrary.services.SyncResult
+import com.readrops.api.services.SyncResult
 
 /**
  * Simple class to get synchro notification content (title, content and largeIcon) according to some rules

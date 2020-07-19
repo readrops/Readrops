@@ -13,7 +13,7 @@ import com.readrops.app.repositories.ARepository;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.HtmlParser;
 import com.readrops.app.utils.ParsingResult;
-import com.readrops.readropslibrary.localfeed.RSSQuery;
+import com.readrops.api.localfeed.RSSQuery;
 
 import java.util.ArrayList;
 import java.util.List;

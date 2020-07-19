@@ -4,12 +4,12 @@ import com.readrops.app.utils.DateUtils;
 import com.readrops.app.utils.Utils;
 import com.readrops.readropsdb.entities.Feed;
 import com.readrops.readropsdb.entities.Item;
-import com.readrops.readropslibrary.localfeed.atom.ATOMEntry;
-import com.readrops.readropslibrary.localfeed.json.JSONItem;
-import com.readrops.readropslibrary.localfeed.rss.RSSEnclosure;
-import com.readrops.readropslibrary.localfeed.rss.RSSItem;
-import com.readrops.readropslibrary.localfeed.rss.RSSMediaContent;
-import com.readrops.readropslibrary.utils.ParseException;
+import com.readrops.api.localfeed.atom.ATOMEntry;
+import com.readrops.api.localfeed.json.JSONItem;
+import com.readrops.api.localfeed.rss.RSSEnclosure;
+import com.readrops.api.localfeed.rss.RSSItem;
+import com.readrops.api.localfeed.rss.RSSMediaContent;
+import com.readrops.api.utils.ParseException;
 
 import java.util.ArrayList;
 import java.util.List;
