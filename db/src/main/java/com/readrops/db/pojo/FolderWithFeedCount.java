@@ -1,9 +1,9 @@
-package com.readrops.readropsdb.pojo;
+package com.readrops.db.pojo;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Embedded;
 
-import com.readrops.readropsdb.entities.Folder;
+import com.readrops.db.entities.Folder;
 
 public class FolderWithFeedCount {
 

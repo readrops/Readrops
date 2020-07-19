@@ -1,8 +1,8 @@
 package com.readrops.api.services
 
-import com.readrops.readropsdb.entities.Feed
-import com.readrops.readropsdb.entities.Folder
-import com.readrops.readropsdb.entities.Item
+import com.readrops.db.entities.Feed
+import com.readrops.db.entities.Folder
+import com.readrops.db.entities.Item
 
 class SyncResult {
 

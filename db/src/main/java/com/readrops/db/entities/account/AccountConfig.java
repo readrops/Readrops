@@ -1,4 +1,4 @@
-package com.readrops.readropsdb.entities.account;
+package com.readrops.db.entities.account;
 
 public class AccountConfig {
 

@@ -1,10 +1,10 @@
-package com.readrops.readropsdb;
+package com.readrops.db;
 
 import androidx.sqlite.db.SupportSQLiteQuery;
 import androidx.sqlite.db.SupportSQLiteQueryBuilder;
 
-import com.readrops.readropsdb.filters.FilterType;
-import com.readrops.readropsdb.filters.ListSortType;
+import com.readrops.db.filters.FilterType;
+import com.readrops.db.filters.ListSortType;
 
 public class ItemsListQueryBuilder {
 

@@ -1,4 +1,4 @@
-package com.readrops.readropsdb.entities;
+package com.readrops.db.entities;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -9,7 +9,7 @@ import androidx.room.ForeignKey;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
-import com.readrops.readropsdb.entities.account.Account;
+import com.readrops.db.entities.account.Account;
 
 @Entity(foreignKeys = @ForeignKey(entity = Account.class, parentColumns = "id",
         childColumns = "account_id", onDelete = ForeignKey.CASCADE))

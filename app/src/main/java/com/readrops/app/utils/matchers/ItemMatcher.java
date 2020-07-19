@@ -2,8 +2,8 @@ package com.readrops.app.utils.matchers;
 
 import com.readrops.app.utils.DateUtils;
 import com.readrops.app.utils.Utils;
-import com.readrops.readropsdb.entities.Feed;
-import com.readrops.readropsdb.entities.Item;
+import com.readrops.db.entities.Feed;
+import com.readrops.db.entities.Item;
 import com.readrops.api.localfeed.atom.ATOMEntry;
 import com.readrops.api.localfeed.json.JSONItem;
 import com.readrops.api.localfeed.rss.RSSEnclosure;

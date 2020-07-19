@@ -1,11 +1,11 @@
-package com.readrops.readropsdb.pojo;
+package com.readrops.db.pojo;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Embedded;
 import androidx.annotation.ColorInt;
 
-import com.readrops.readropsdb.entities.Folder;
-import com.readrops.readropsdb.entities.Item;
+import com.readrops.db.entities.Folder;
+import com.readrops.db.entities.Item;
 
 public class ItemWithFeed {
 

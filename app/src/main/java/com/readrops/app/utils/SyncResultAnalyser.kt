@@ -4,10 +4,10 @@ import android.content.Context
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.readrops.app.R
-import com.readrops.readropsdb.Database
-import com.readrops.readropsdb.entities.Feed
-import com.readrops.readropsdb.entities.Item
-import com.readrops.readropsdb.entities.account.Account
+import com.readrops.db.Database
+import com.readrops.db.entities.Feed
+import com.readrops.db.entities.Item
+import com.readrops.db.entities.account.Account
 import com.readrops.api.services.SyncResult
 
 /**

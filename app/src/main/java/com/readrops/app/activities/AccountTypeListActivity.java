@@ -21,8 +21,8 @@ import com.readrops.app.adapters.AccountTypeListAdapter;
 import com.readrops.app.databinding.ActivityAccountTypeListBinding;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.AccountViewModel;
-import com.readrops.readropsdb.entities.account.Account;
-import com.readrops.readropsdb.entities.account.AccountType;
+import com.readrops.db.entities.account.Account;
+import com.readrops.db.entities.account.AccountType;
 
 import java.util.ArrayList;
 import java.util.List;

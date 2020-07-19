@@ -1,7 +1,7 @@
 package com.readrops.app.utils
 
 import android.graphics.Bitmap
-import com.readrops.readropsdb.entities.Item
+import com.readrops.db.entities.Item
 
 class SyncResultNotifContent {
     var title: String? = null

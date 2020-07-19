@@ -5,11 +5,11 @@ import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.readrops.app.utils.SyncResultAnalyser
-import com.readrops.readropsdb.Database
-import com.readrops.readropsdb.entities.Feed
-import com.readrops.readropsdb.entities.Item
-import com.readrops.readropsdb.entities.account.Account
-import com.readrops.readropsdb.entities.account.AccountType
+import com.readrops.db.Database
+import com.readrops.db.entities.Feed
+import com.readrops.db.entities.Item
+import com.readrops.db.entities.account.Account
+import com.readrops.db.entities.account.AccountType
 import com.readrops.api.services.SyncResult
 import org.joda.time.LocalDateTime
 import org.junit.After

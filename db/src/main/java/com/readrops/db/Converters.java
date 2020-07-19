@@ -1,8 +1,8 @@
-package com.readrops.readropsdb;
+package com.readrops.db;
 
 import androidx.room.TypeConverter;
 
-import com.readrops.readropsdb.entities.account.AccountType;
+import com.readrops.db.entities.account.AccountType;
 
 import org.joda.time.LocalDateTime;
 

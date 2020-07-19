@@ -1,6 +1,6 @@
 package com.readrops.app.utils.matchers;
 
-import com.readrops.readropsdb.entities.Feed;
+import com.readrops.db.entities.Feed;
 import com.readrops.api.localfeed.atom.ATOMFeed;
 import com.readrops.api.localfeed.json.JSONFeed;
 import com.readrops.api.localfeed.rss.RSSChannel;

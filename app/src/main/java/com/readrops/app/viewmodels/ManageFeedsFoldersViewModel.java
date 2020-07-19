@@ -6,12 +6,12 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.readrops.readropsdb.Database;
-import com.readrops.readropsdb.entities.Feed;
-import com.readrops.readropsdb.entities.Folder;
-import com.readrops.readropsdb.entities.account.Account;
-import com.readrops.readropsdb.pojo.FeedWithFolder;
-import com.readrops.readropsdb.pojo.FolderWithFeedCount;
+import com.readrops.db.Database;
+import com.readrops.db.entities.Feed;
+import com.readrops.db.entities.Folder;
+import com.readrops.db.entities.account.Account;
+import com.readrops.db.pojo.FeedWithFolder;
+import com.readrops.db.pojo.FolderWithFeedCount;
 import com.readrops.app.repositories.ARepository;
 
 import java.util.List;

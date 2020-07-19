@@ -15,8 +15,8 @@ import com.readrops.app.databinding.ActivityAddAccountBinding;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.AccountViewModel;
-import com.readrops.readropsdb.entities.account.Account;
-import com.readrops.readropsdb.entities.account.AccountType;
+import com.readrops.db.entities.account.Account;
+import com.readrops.db.entities.account.AccountType;
 
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;

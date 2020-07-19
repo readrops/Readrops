@@ -3,9 +3,9 @@ package com.readrops.api.services.freshrss;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.readrops.readropsdb.entities.Feed;
-import com.readrops.readropsdb.entities.Folder;
-import com.readrops.readropsdb.entities.Item;
+import com.readrops.db.entities.Feed;
+import com.readrops.db.entities.Folder;
+import com.readrops.db.entities.Item;
 import com.readrops.api.services.API;
 import com.readrops.api.services.Credentials;
 import com.readrops.api.services.SyncResult;

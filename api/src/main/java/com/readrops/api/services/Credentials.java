@@ -2,7 +2,7 @@ package com.readrops.api.services;
 
 import androidx.annotation.Nullable;
 
-import com.readrops.readropsdb.entities.account.Account;
+import com.readrops.db.entities.account.Account;
 import com.readrops.api.services.freshrss.FreshRSSCredentials;
 import com.readrops.api.services.nextcloudnews.NextNewsCredentials;
 

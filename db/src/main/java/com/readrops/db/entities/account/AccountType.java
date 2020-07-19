@@ -1,4 +1,4 @@
-package com.readrops.readropsdb.entities.account;
+package com.readrops.db.entities.account;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
-import com.readrops.readropsdb.R;
+import com.readrops.db.R;
 
 
 public enum AccountType implements Parcelable {

@@ -20,9 +20,9 @@ import com.readrops.app.databinding.FragmentFeedsBinding;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.ManageFeedsFoldersViewModel;
-import com.readrops.readropsdb.entities.Feed;
-import com.readrops.readropsdb.entities.account.Account;
-import com.readrops.readropsdb.pojo.FeedWithFolder;
+import com.readrops.db.entities.Feed;
+import com.readrops.db.entities.account.Account;
+import com.readrops.db.pojo.FeedWithFolder;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableCompletableObserver;

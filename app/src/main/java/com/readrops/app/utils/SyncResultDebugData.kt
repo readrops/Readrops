@@ -1,10 +1,10 @@
 package com.readrops.app.utils
 
 import android.content.Context
-import com.readrops.readropsdb.Database
-import com.readrops.readropsdb.entities.Item
-import com.readrops.readropsdb.entities.account.Account
-import com.readrops.readropsdb.entities.account.AccountType
+import com.readrops.db.Database
+import com.readrops.db.entities.Item
+import com.readrops.db.entities.account.Account
+import com.readrops.db.entities.account.AccountType
 import com.readrops.api.services.SyncResult
 import org.jetbrains.annotations.TestOnly
 

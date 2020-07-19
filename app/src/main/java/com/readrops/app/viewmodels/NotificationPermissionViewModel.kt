@@ -3,9 +3,9 @@ package com.readrops.app.viewmodels
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import com.readrops.readropsdb.Database
-import com.readrops.readropsdb.entities.Feed
-import com.readrops.readropsdb.entities.account.Account
+import com.readrops.db.Database
+import com.readrops.db.entities.Feed
+import com.readrops.db.entities.account.Account
 import io.reactivex.Completable
 
 class NotificationPermissionViewModel(application: Application) : AndroidViewModel(application) {

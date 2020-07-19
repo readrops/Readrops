@@ -10,12 +10,12 @@ import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.utils.feedscolors.FeedColorsKt;
 import com.readrops.app.utils.feedscolors.FeedsColorsIntentService;
-import com.readrops.readropsdb.Database;
-import com.readrops.readropsdb.entities.Feed;
-import com.readrops.readropsdb.entities.Folder;
-import com.readrops.readropsdb.entities.Item;
-import com.readrops.readropsdb.entities.account.Account;
-import com.readrops.readropsdb.entities.account.AccountType;
+import com.readrops.db.Database;
+import com.readrops.db.entities.Feed;
+import com.readrops.db.entities.Folder;
+import com.readrops.db.entities.Item;
+import com.readrops.db.entities.account.Account;
+import com.readrops.db.entities.account.AccountType;
 import com.readrops.api.services.SyncResult;
 
 import java.util.ArrayList;

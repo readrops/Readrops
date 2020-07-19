@@ -9,15 +9,15 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
-import com.readrops.readropsdb.Database;
-import com.readrops.readropsdb.ItemsListQueryBuilder;
-import com.readrops.readropsdb.RoomFactoryWrapper;
-import com.readrops.readropsdb.entities.Feed;
-import com.readrops.readropsdb.entities.Folder;
-import com.readrops.readropsdb.entities.account.Account;
-import com.readrops.readropsdb.filters.FilterType;
-import com.readrops.readropsdb.filters.ListSortType;
-import com.readrops.readropsdb.pojo.ItemWithFeed;
+import com.readrops.db.Database;
+import com.readrops.db.ItemsListQueryBuilder;
+import com.readrops.db.RoomFactoryWrapper;
+import com.readrops.db.entities.Feed;
+import com.readrops.db.entities.Folder;
+import com.readrops.db.entities.account.Account;
+import com.readrops.db.filters.FilterType;
+import com.readrops.db.filters.ListSortType;
+import com.readrops.db.pojo.ItemWithFeed;
 import com.readrops.app.repositories.ARepository;
 
 import java.util.ArrayList;

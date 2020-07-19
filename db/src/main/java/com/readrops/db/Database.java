@@ -1,4 +1,4 @@
-package com.readrops.readropsdb;
+package com.readrops.db;
 
 import android.content.Context;
 
@@ -9,14 +9,14 @@ import androidx.room.TypeConverters;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-import com.readrops.readropsdb.dao.AccountDao;
-import com.readrops.readropsdb.dao.FeedDao;
-import com.readrops.readropsdb.dao.FolderDao;
-import com.readrops.readropsdb.dao.ItemDao;
-import com.readrops.readropsdb.entities.Feed;
-import com.readrops.readropsdb.entities.Folder;
-import com.readrops.readropsdb.entities.Item;
-import com.readrops.readropsdb.entities.account.Account;
+import com.readrops.db.dao.AccountDao;
+import com.readrops.db.dao.FeedDao;
+import com.readrops.db.dao.FolderDao;
+import com.readrops.db.dao.ItemDao;
+import com.readrops.db.entities.Feed;
+import com.readrops.db.entities.Folder;
+import com.readrops.db.entities.Item;
+import com.readrops.db.entities.account.Account;
 
 
 @androidx.room.Database(entities = {Feed.class, Item.class, Folder.class, Account.class}, version = 2)

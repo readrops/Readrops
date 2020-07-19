@@ -1,4 +1,4 @@
-package com.readrops.readropsdb.filters;
+package com.readrops.db.filters;
 
 public enum FilterType {
     FEED_FILTER,

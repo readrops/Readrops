@@ -46,8 +46,8 @@ import com.readrops.app.utils.ReadropsWebView;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.ItemViewModel;
-import com.readrops.readropsdb.entities.Item;
-import com.readrops.readropsdb.pojo.ItemWithFeed;
+import com.readrops.db.entities.Item;
+import com.readrops.db.pojo.ItemWithFeed;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

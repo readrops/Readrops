@@ -1,8 +1,8 @@
 package com.readrops.api.services.nextcloudnews;
 
-import com.readrops.readropsdb.entities.Feed;
-import com.readrops.readropsdb.entities.Folder;
-import com.readrops.readropsdb.entities.Item;
+import com.readrops.db.entities.Feed;
+import com.readrops.db.entities.Folder;
+import com.readrops.db.entities.Item;
 import com.readrops.api.services.nextcloudnews.json.NextNewsUser;
 
 import java.util.List;

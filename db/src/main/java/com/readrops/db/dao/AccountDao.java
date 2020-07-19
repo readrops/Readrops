@@ -1,10 +1,10 @@
-package com.readrops.readropsdb.dao;
+package com.readrops.db.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Query;
 
-import com.readrops.readropsdb.entities.account.Account;
+import com.readrops.db.entities.account.Account;
 
 import java.util.List;
 

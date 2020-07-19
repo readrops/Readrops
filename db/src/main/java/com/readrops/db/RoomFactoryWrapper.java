@@ -1,4 +1,4 @@
-package com.readrops.readropsdb;
+package com.readrops.db;
 
 import androidx.annotation.NonNull;
 import androidx.paging.DataSource;

@@ -9,7 +9,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.readrops.app.R
 import com.readrops.app.databinding.NotificationPermissionLayoutBinding
 import com.readrops.app.utils.GlideApp
-import com.readrops.readropsdb.entities.Feed
+import com.readrops.db.entities.Feed
 
 class NotificationPermissionListAdapter(var enableAll: Boolean, val listener: (feed: Feed) -> Unit) :
         ListAdapter<Feed, NotificationPermissionListAdapter.NotificationPermissionViewHolder>(DIFF_CALLBACK) {

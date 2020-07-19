@@ -2,8 +2,8 @@ package com.readrops.app.utils.matchers
 
 import android.content.Context
 import com.readrops.app.R
-import com.readrops.readropsdb.entities.Feed
-import com.readrops.readropsdb.entities.Folder
+import com.readrops.db.entities.Feed
+import com.readrops.db.entities.Folder
 import com.readrops.api.opml.model.Body
 import com.readrops.api.opml.model.Head
 import com.readrops.api.opml.model.OPML

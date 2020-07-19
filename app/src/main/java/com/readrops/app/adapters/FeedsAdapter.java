@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.readrops.app.R;
-import com.readrops.readropsdb.pojo.FeedWithFolder;
+import com.readrops.db.pojo.FeedWithFolder;
 import com.readrops.app.utils.GlideApp;
 
 import java.util.List;

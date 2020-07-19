@@ -1,4 +1,4 @@
-package com.readrops.readropsdb.entities;
+package com.readrops.db.entities;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;

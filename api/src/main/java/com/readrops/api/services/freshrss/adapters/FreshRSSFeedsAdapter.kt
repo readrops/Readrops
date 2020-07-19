@@ -1,7 +1,7 @@
 package com.readrops.api.services.freshrss.adapters
 
 import android.annotation.SuppressLint
-import com.readrops.readropsdb.entities.Feed
+import com.readrops.db.entities.Feed
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.ToJson

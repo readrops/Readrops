@@ -1,12 +1,9 @@
-package com.readrops.readropsdb
+package com.readrops.db
 
 import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.readrops.readropsdb.entities.Feed
-import com.readrops.readropsdb.entities.account.Account
-import com.readrops.readropsdb.entities.account.AccountType
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

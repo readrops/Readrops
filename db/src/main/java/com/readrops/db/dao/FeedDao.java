@@ -1,4 +1,4 @@
-package com.readrops.readropsdb.dao;
+package com.readrops.db.dao;
 
 
 import androidx.lifecycle.LiveData;
@@ -7,9 +7,9 @@ import androidx.room.Query;
 import androidx.room.RoomWarnings;
 import androidx.room.Transaction;
 
-import com.readrops.readropsdb.entities.Feed;
-import com.readrops.readropsdb.entities.account.Account;
-import com.readrops.readropsdb.pojo.FeedWithFolder;
+import com.readrops.db.entities.Feed;
+import com.readrops.db.entities.account.Account;
+import com.readrops.db.pojo.FeedWithFolder;
 
 import java.util.ArrayList;
 import java.util.List;

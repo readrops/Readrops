@@ -17,7 +17,7 @@ import androidx.work.WorkManager;
 import com.readrops.app.R;
 import com.readrops.app.utils.SyncWorker;
 import com.readrops.app.utils.feedscolors.FeedsColorsIntentService;
-import com.readrops.readropsdb.Database;
+import com.readrops.db.Database;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;

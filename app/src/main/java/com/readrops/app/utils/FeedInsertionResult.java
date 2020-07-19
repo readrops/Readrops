@@ -10,7 +10,7 @@ import androidx.annotation.StringRes;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.items.AbstractItem;
 import com.readrops.app.R;
-import com.readrops.readropsdb.entities.Feed;
+import com.readrops.db.entities.Feed;
 
 import org.jetbrains.annotations.NotNull;
 

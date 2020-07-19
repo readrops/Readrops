@@ -1,4 +1,4 @@
-package com.readrops.readropsdb.dao;
+package com.readrops.db.dao;
 
 import androidx.room.Delete;
 import androidx.room.Insert;

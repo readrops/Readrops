@@ -1,12 +1,12 @@
-package com.readrops.readropsdb.pojo;
+package com.readrops.db.pojo;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.room.Embedded;
 
-import com.readrops.readropsdb.entities.Feed;
-import com.readrops.readropsdb.entities.Folder;
+import com.readrops.db.entities.Feed;
+import com.readrops.db.entities.Folder;
 
 public class FeedWithFolder implements Parcelable {
 

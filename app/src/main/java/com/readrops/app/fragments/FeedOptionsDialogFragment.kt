@@ -9,8 +9,8 @@ import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.readrops.app.databinding.FeedOptionsLayoutBinding
 import com.readrops.app.utils.ReadropsKeys.ACCOUNT
-import com.readrops.readropsdb.entities.account.Account
-import com.readrops.readropsdb.pojo.FeedWithFolder
+import com.readrops.db.entities.account.Account
+import com.readrops.db.pojo.FeedWithFolder
 
 class FeedOptionsDialogFragment : BottomSheetDialogFragment() {
 

@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.readrops.app.databinding.AccountTypeItemBinding;
-import com.readrops.readropsdb.entities.account.AccountType;
+import com.readrops.db.entities.account.AccountType;
 
 import java.util.List;
 

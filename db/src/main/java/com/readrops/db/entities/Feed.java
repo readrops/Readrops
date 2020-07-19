@@ -1,4 +1,4 @@
-package com.readrops.readropsdb.entities;
+package com.readrops.db.entities;
 
 
 import android.os.Parcel;
@@ -11,7 +11,7 @@ import androidx.room.ForeignKey;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
-import com.readrops.readropsdb.entities.account.Account;
+import com.readrops.db.entities.account.Account;
 
 @Entity(foreignKeys = {@ForeignKey(entity = Folder.class, parentColumns = "id",
         childColumns = "folder_id", onDelete = ForeignKey.SET_NULL),

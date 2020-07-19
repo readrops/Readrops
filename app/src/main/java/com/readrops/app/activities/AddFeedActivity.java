@@ -31,8 +31,8 @@ import com.readrops.app.utils.ReadropsItemTouchCallback;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.AddFeedsViewModel;
-import com.readrops.readropsdb.entities.Feed;
-import com.readrops.readropsdb.entities.account.Account;
+import com.readrops.db.entities.Feed;
+import com.readrops.db.entities.account.Account;
 
 import java.util.ArrayList;
 import java.util.Collections;

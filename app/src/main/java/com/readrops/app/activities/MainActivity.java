@@ -48,12 +48,12 @@ import com.readrops.app.utils.ReadropsItemTouchCallback;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.MainViewModel;
-import com.readrops.readropsdb.entities.Feed;
-import com.readrops.readropsdb.entities.Folder;
-import com.readrops.readropsdb.entities.account.Account;
-import com.readrops.readropsdb.filters.FilterType;
-import com.readrops.readropsdb.filters.ListSortType;
-import com.readrops.readropsdb.pojo.ItemWithFeed;
+import com.readrops.db.entities.Feed;
+import com.readrops.db.entities.Folder;
+import com.readrops.db.entities.account.Account;
+import com.readrops.db.filters.FilterType;
+import com.readrops.db.filters.ListSortType;
+import com.readrops.db.pojo.ItemWithFeed;
 
 import org.jetbrains.annotations.NotNull;
 

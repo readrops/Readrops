@@ -1,4 +1,4 @@
-package com.readrops.readropsdb.dao;
+package com.readrops.db.dao;
 
 
 import androidx.lifecycle.LiveData;
@@ -9,10 +9,10 @@ import androidx.room.RawQuery;
 import androidx.room.RoomWarnings;
 import androidx.sqlite.db.SupportSQLiteQuery;
 
-import com.readrops.readropsdb.entities.Feed;
-import com.readrops.readropsdb.entities.Folder;
-import com.readrops.readropsdb.entities.Item;
-import com.readrops.readropsdb.pojo.ItemWithFeed;
+import com.readrops.db.entities.Feed;
+import com.readrops.db.entities.Folder;
+import com.readrops.db.entities.Item;
+import com.readrops.db.pojo.ItemWithFeed;
 
 import java.util.List;
 
