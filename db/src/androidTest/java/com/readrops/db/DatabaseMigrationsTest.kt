@@ -17,7 +17,7 @@ class DatabaseMigrationsTest {
     @get:Rule
     val helper = MigrationTestHelper(
             InstrumentationRegistry.getInstrumentation(),
-            "com.readrops.readropsdb.Database/",
+            "com.readrops.db.Database/",
             FrameworkSQLiteOpenHelperFactory()
     )
 
