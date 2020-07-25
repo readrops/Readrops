@@ -115,7 +115,8 @@ class NotificationPermissionActivity : AppCompatActivity() {
      * do not execute the request as it would be pointless
      */
     private fun canUpdateAllFeedsPermissions(isChecked: Boolean): Boolean {
-        return !isFirstCheck && (!feedStateChanged || (isChecked && !feeds.all { it.isNotificationEnabled }))
+        return (!isFirstCheck || !feeds.all { it.isNotificationEnabled }) &&
+                (!feedStateChanged || (isChecked && !feeds.all { it.isNotificationEnabled }))
     }
 
     private fun displayAutoSynchroPopup() {
