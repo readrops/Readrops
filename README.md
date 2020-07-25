@@ -33,5 +33,5 @@ This project is released under the GPLv3 licence.
 
 [<img src="images/paypal-badge.png" width=250>](https://paypal.me/readropsapp)
 
-Bitcoin address : `bc1qlkzlcsvvtn3y6mek5umv5tc4ln09l64x6y42hr`
+Bitcoin address : `bc1qlkzlcsvvtn3y6mek5umv5tc4ln09l64x6y42hr` <br />
 Litecoin address : `MTuf45ZvxhMWWo4v8YBbFDTLsFcGtpcPNT`
