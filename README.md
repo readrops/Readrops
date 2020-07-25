@@ -1,4 +1,4 @@
-# Readrops [<img src="fastlane/metadata/android/en-US/images/icon.png" width=60>](https://github.com/readrops/Readrops)
+# Readrops <img src="fastlane/metadata/android/en-US/images/icon.png" width=60>
 
 ![Build Status](https://github.com/readrops/Readrops/workflows/Android%20CI/badge.svg?branch=develop)
 
@@ -19,16 +19,19 @@ Other features will come in the near future.
 
 # Screenshots
 
-[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_1.png" width=250>]()[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_2.png" width=250>]()[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_3.png" width=250>]()
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_1.png" width=250> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_2.png" width=250> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_3.png" width=250> 
 
-[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_4.png" width=250>]()[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_5.png" width=250>]()[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_6.png" width=250>]()
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_4.png" width=250> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_5.png" width=250> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_6.png" width=250>
 
-[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_7.png" width=250>]()[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_8.png" width=250>]()
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_7.png" width=250> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_8.png" width=250>
 
 # Licence
 
 This project is released under the GPLv3 licence.
 
 # Donations
-Bitcoin address : bc1qlkzlcsvvtn3y6mek5umv5tc4ln09l64x6y42hr<br/>
-Litecoin address : MTuf45ZvxhMWWo4v8YBbFDTLsFcGtpcPNT
+
+[<img src="images/paypal-badge.png" width=250>](https://paypal.me/readropsapp)
+
+Bitcoin address : `bc1qlkzlcsvvtn3y6mek5umv5tc4ln09l64x6y42hr`
+Litecoin address : `MTuf45ZvxhMWWo4v8YBbFDTLsFcGtpcPNT`
