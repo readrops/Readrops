@@ -9,6 +9,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import com.readrops.api.services.SyncResult
 import com.readrops.app.R
 import com.readrops.app.ReadropsApp
 import com.readrops.app.activities.MainActivity
@@ -16,59 +17,68 @@ import com.readrops.app.repositories.ARepository
 import com.readrops.db.Database
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
-import com.readrops.api.services.SyncResult
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
 class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(context, parameters) {
 
-    private lateinit var disposable: Disposable
+    private var disposable: Disposable? = null
 
     private val notificationManager = NotificationManagerCompat.from(applicationContext)
     private val database = Database.getInstance(applicationContext)
 
     override fun doWork(): Result {
-        val accounts = database.accountDao().selectAll()
         var result = Result.success()
-
-        val notificationBuilder = NotificationCompat.Builder(applicationContext, ReadropsApp.SYNC_CHANNEL_ID)
-                .setContentTitle(applicationContext.getString(R.string.auto_synchro))
-                .setProgress(0, 0, true)
-                .setSmallIcon(R.drawable.ic_notif)
-                .setOnlyAlertOnce(true)
-
         val syncResults = mutableMapOf<Account, SyncResult>()
-        accounts.forEach {
-            notificationBuilder.setContentText(it.accountName)
-            notificationManager.notify(SYNC_NOTIFICATION_ID, notificationBuilder.build())
 
-            val repository = ARepository.repositoryFactory(it, applicationContext)
+        try {
+            val accounts = database.accountDao().selectAll()
 
-            disposable = repository.sync(null)
-                    .doOnError { throwable ->
-                        result = Result.failure()
-                        Log.e(TAG, throwable.message!!, throwable)
-                    }
-                    .subscribe()
+            val notificationBuilder = NotificationCompat.Builder(applicationContext, ReadropsApp.SYNC_CHANNEL_ID)
+                    .setContentTitle(applicationContext.getString(R.string.auto_synchro))
+                    .setProgress(0, 0, true)
+                    .setSmallIcon(R.drawable.ic_notif)
+                    .setOnlyAlertOnce(true)
+            
+            accounts.forEach {
+                notificationBuilder.setContentText(it.accountName)
+                notificationManager.notify(SYNC_NOTIFICATION_ID, notificationBuilder.build())
 
-            if (repository.syncResult != null) syncResults[it] = repository.syncResult
+                it.login = SharedPreferencesManager.readString(applicationContext, it.loginKey)
+                it.password = SharedPreferencesManager.readString(applicationContext, it.passwordKey)
+
+                val repository = ARepository.repositoryFactory(it, applicationContext)
+
+                disposable = repository.sync(null)
+                        .doOnError { throwable ->
+                            result = Result.failure()
+                            Log.e(TAG, throwable.message!!, throwable)
+                        }
+                        .subscribe()
+
+                if (repository.syncResult != null) syncResults[it] = repository.syncResult
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, e.message!!)
+            result = Result.failure()
+        } finally {
+            notificationManager.cancel(SYNC_NOTIFICATION_ID)
+            displaySyncResultNotif(syncResults)
+
+            return result
         }
-
-        notificationManager.cancel(SYNC_NOTIFICATION_ID)
-        displaySyncResultNotif(syncResults)
-
-        return result
     }
 
     override fun onStopped() {
         super.onStopped()
 
-        disposable.dispose()
+        disposable?.dispose()
         notificationManager.cancel(SYNC_NOTIFICATION_ID)
     }
 
     private fun displaySyncResultNotif(syncResults: Map<Account, SyncResult>) {
-        val notifContent = SyncResultAnalyser(applicationContext, syncResults, database).getSyncNotifContent()
+        val notifContent = SyncResultAnalyser(applicationContext, syncResults, database)
+                .getSyncNotifContent()
 
         if (notifContent.title != null) {
             val intent = Intent(applicationContext, MainActivity::class.java).apply {
@@ -85,7 +95,8 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
                     .setContentText(notifContent.content)
                     .setStyle(NotificationCompat.BigTextStyle().bigText(notifContent.content))
                     .setSmallIcon(R.drawable.ic_notif)
-                    .setContentIntent(PendingIntent.getActivity(applicationContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
+                    .setContentIntent(PendingIntent.getActivity(applicationContext, 0,
+                            intent, PendingIntent.FLAG_UPDATE_CURRENT))
                     .setAutoCancel(true)
 
             notifContent.item?.let {
@@ -100,8 +111,7 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
                 notificationBuilder.setLargeIcon(it)
             }
 
-            notificationManager.notify(SYNC_RESULT_NOTIFICATION_ID,
-                    notificationBuilder.build())
+            notificationManager.notify(SYNC_RESULT_NOTIFICATION_ID, notificationBuilder.build())
         }
 
     }
@@ -112,7 +122,7 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
         }
 
         return NotificationCompat.Action.Builder(R.drawable.ic_read_later, applicationContext.getString(R.string.read_later),
-                        PendingIntent.getBroadcast(applicationContext, 0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                PendingIntent.getBroadcast(applicationContext, 0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                 .setAllowGeneratedReplies(false)
                 .build()
     }
@@ -123,7 +133,7 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
         }
 
         return NotificationCompat.Action.Builder(R.drawable.ic_read, applicationContext.getString(R.string.read),
-                        PendingIntent.getBroadcast(applicationContext, 0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                PendingIntent.getBroadcast(applicationContext, 0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                 .setAllowGeneratedReplies(false)
                 .build()
     }
