@@ -117,4 +117,20 @@ public final class Utils {
         return bitmap;
 
     }
+
+    public static boolean isColorTooBright(@ColorInt int color) {
+        return getColorLuma(color) > 210;
+    }
+
+    public static boolean isColorTooDark(@ColorInt int color) {
+        return getColorLuma(color) < 40;
+    }
+
+    private static double getColorLuma(@ColorInt int color) {
+        int r = (color >> 16) & 0xff;
+        int g = (color >>  8) & 0xff;
+        int b = (color >>  0) & 0xff;
+
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    }
 }
