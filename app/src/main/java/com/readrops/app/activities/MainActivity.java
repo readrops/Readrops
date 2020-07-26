@@ -577,12 +577,16 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             Account newAccount = data.getParcelableExtra(ACCOUNT);
 
             if (newAccount != null) {
-                viewModel.addAccount(newAccount);
+                // get credentials before creating the repository
+                if (!newAccount.isLocal()) {
+                    getAccountCredentials(Collections.singletonList(newAccount));
+                }
 
+                viewModel.addAccount(newAccount);
                 adapter.clearData();
 
+                // start syncing only if the account is not local
                 if (!viewModel.isAccountLocal()) {
-                    getAccountCredentials(Collections.singletonList(newAccount));
                     refreshLayout.setRefreshing(true);
                     onRefresh();
                 }
