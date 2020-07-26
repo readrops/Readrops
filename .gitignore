@@ -126,4 +126,8 @@ Temporary Items
 
 \.idea/
 
-readropsdb/schemas/
+fastlane/Appfile
+
+fastlane/Fastfile
+
+Gemfile
