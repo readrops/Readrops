@@ -1,7 +1,7 @@
 package com.readrops.app.activities;
 
 import android.content.Intent;
-import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.paging.PagedList;
@@ -384,12 +385,16 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         recyclerView.setAdapter(adapter);
 
+
+        Drawable readLater = getDrawable(R.drawable.ic_read_later);
+        DrawableCompat.setTint(readLater, ContextCompat.getColor(this, android.R.color.white));
+
         new ItemTouchHelper(new ReadropsItemTouchCallback(this,
                 new ReadropsItemTouchCallback.Config.Builder()
                         .swipeDirs(ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT)
                         .swipeCallback(this)
-                        .leftDraw(Color.DKGRAY, R.drawable.ic_read_later)
-                        .rightDraw(Color.DKGRAY, R.drawable.ic_read)
+                        .leftDraw(ContextCompat.getColor(this, R.color.colorAccent), R.drawable.ic_read_later, readLater)
+                        .rightDraw(ContextCompat.getColor(this, R.color.colorAccent), R.drawable.ic_read, null)
                         .build()))
                 .attachToRecyclerView(recyclerView);
 
@@ -404,7 +409,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
             @Override
             public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
-                if (scrollToTop) {
+                ;if (scrollToTop) {
                     recyclerView.scrollToPosition(0);
                     scrollToTop = false;
                 } else

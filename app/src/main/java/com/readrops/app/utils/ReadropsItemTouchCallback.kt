@@ -7,12 +7,14 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
+import androidx.annotation.Nullable
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.abs
 
-class ReadropsItemTouchCallback(private val context: Context, private val config: Config) : ItemTouchHelper.SimpleCallback(config.dragDirs, config.swipeDirs) {
+class ReadropsItemTouchCallback(private val context: Context, private val config: Config) :
+        ItemTouchHelper.SimpleCallback(config.dragDirs, config.swipeDirs) {
 
     private val iconHorizontalMargin = 40
 
@@ -45,7 +47,8 @@ class ReadropsItemTouchCallback(private val context: Context, private val config
             background = ColorDrawable(config.leftDraw.bgColor)
             background.setBounds(itemView.left, itemView.top, dX.toInt(), itemView.bottom)
 
-            icon = ContextCompat.getDrawable(context, config.leftDraw.icon)!!
+            icon = config.leftDraw.drawable
+                    ?: ContextCompat.getDrawable(context, config.leftDraw.iconRes)!!
             val iconMargin = (itemView.height - icon.intrinsicHeight) / 2
             icon.setBounds(itemView.left + iconHorizontalMargin, itemView.top + iconMargin,
                     itemView.left + iconHorizontalMargin + icon.intrinsicWidth, itemView.bottom - iconMargin)
@@ -54,7 +57,8 @@ class ReadropsItemTouchCallback(private val context: Context, private val config
             background = ColorDrawable(config.rightDraw.bgColor)
             background.setBounds(itemView.right + dX.toInt(), itemView.top, itemView.right, itemView.bottom)
 
-            icon = ContextCompat.getDrawable(context, config.rightDraw.icon)!!
+            icon = config.rightDraw.drawable
+                    ?: ContextCompat.getDrawable(context, config.rightDraw.iconRes)!!
             val iconMargin = (itemView.height - icon.intrinsicHeight) / 2
             icon.setBounds(itemView.right - iconHorizontalMargin - icon.intrinsicWidth, itemView.top + iconMargin,
                     itemView.right - iconHorizontalMargin, itemView.bottom - iconMargin)
@@ -88,7 +92,7 @@ class ReadropsItemTouchCallback(private val context: Context, private val config
         fun onSwipe(viewHolder: RecyclerView.ViewHolder, direction: Int)
     }
 
-    class SwipeDraw(@ColorInt val bgColor: Int, @DrawableRes val icon: Int)
+    class SwipeDraw(@ColorInt val bgColor: Int, @DrawableRes val iconRes: Int = 0, val drawable: Drawable?)
 
     class Config(val dragDirs: Int = 0, val swipeDirs: Int = 0, val moveCallback: MoveCallback? = null,
                  val swipeCallback: SwipeCallback? = null, val leftDraw: SwipeDraw? = null, val rightDraw: SwipeDraw? = null) {
@@ -123,9 +127,9 @@ class ReadropsItemTouchCallback(private val context: Context, private val config
 
             fun swipeCallback(swipeCallback: SwipeCallback) = apply { this.swipeCallback = swipeCallback }
 
-            fun leftDraw(@ColorInt bgColor: Int, @DrawableRes icon: Int) = apply { this.leftDraw = SwipeDraw(bgColor, icon) }
+            fun leftDraw(@ColorInt bgColor: Int, @DrawableRes iconRes: Int, @Nullable icon: Drawable? = null) = apply { leftDraw = SwipeDraw(bgColor, iconRes, icon) }
 
-            fun rightDraw(@ColorInt bgColor: Int, @DrawableRes icon: Int) = apply { this.rightDraw = SwipeDraw(bgColor, icon) }
+            fun rightDraw(@ColorInt bgColor: Int, @DrawableRes iconRes: Int, @Nullable icon: Drawable? = null) = apply { this.rightDraw = SwipeDraw(bgColor, iconRes, icon) }
 
             fun build(): Config {
                 return Config(this)

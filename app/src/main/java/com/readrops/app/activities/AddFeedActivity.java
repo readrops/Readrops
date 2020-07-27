@@ -109,8 +109,8 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         new ItemTouchHelper(new ReadropsItemTouchCallback(this,
                 new ReadropsItemTouchCallback.Config.Builder()
                         .swipeDirs(ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT)
-                        .leftDraw(Color.RED, R.drawable.ic_delete)
-                        .rightDraw(Color.RED, R.drawable.ic_delete)
+                        .leftDraw(Color.RED, R.drawable.ic_delete, null)
+                        .rightDraw(Color.RED, R.drawable.ic_delete, null)
                         .swipeCallback((viewHolder, direction) -> {
                             parseItemsAdapter.remove(viewHolder.getAdapterPosition());
 
