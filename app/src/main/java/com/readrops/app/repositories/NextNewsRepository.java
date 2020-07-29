@@ -7,13 +7,6 @@ import android.util.TimingLogger;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.readrops.app.utils.FeedInsertionResult;
-import com.readrops.app.utils.ParsingResult;
-import com.readrops.app.utils.Utils;
-import com.readrops.db.entities.Feed;
-import com.readrops.db.entities.Folder;
-import com.readrops.db.entities.Item;
-import com.readrops.db.entities.account.Account;
 import com.readrops.api.services.Credentials;
 import com.readrops.api.services.SyncResult;
 import com.readrops.api.services.SyncType;
@@ -21,6 +14,13 @@ import com.readrops.api.services.nextcloudnews.NextNewsAPI;
 import com.readrops.api.services.nextcloudnews.NextNewsSyncData;
 import com.readrops.api.services.nextcloudnews.json.NextNewsUser;
 import com.readrops.api.utils.UnknownFormatException;
+import com.readrops.app.utils.FeedInsertionResult;
+import com.readrops.app.utils.ParsingResult;
+import com.readrops.app.utils.Utils;
+import com.readrops.db.entities.Feed;
+import com.readrops.db.entities.Folder;
+import com.readrops.db.entities.Item;
+import com.readrops.db.entities.account.Account;
 
 import org.joda.time.LocalDateTime;
 
@@ -59,23 +59,24 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
 
             NextNewsUser user = api.login();
 
-            emitter.onSuccess(user);
-        }).flatMap(user -> {
             if (user != null) {
-                account.setDisplayedName(user.getDisplayName());
-                account.setCurrentAccount(true);
+                emitter.onSuccess(user);
+            } else {
+                emitter.onError(new Exception("Login failed. Please check your credentials and your Nextcloud News setup."));
+            }
+        }).flatMap(user -> {
+            account.setDisplayedName(user.getDisplayName());
+            account.setCurrentAccount(true);
 
-                if (insert) {
-                    return database.accountDao().insert(account)
-                            .flatMap(id -> {
-                                account.setId(id.intValue());
-                                return Single.just(true);
-                            });
-                }
+            if (insert) {
+                return database.accountDao().insert(account)
+                        .flatMap(id -> {
+                            account.setId(id.intValue());
+                            return Single.just(true);
+                        });
+            }
 
-                return Single.just(true);
-            } else
-                return Single.just(false);
+            return Single.just(true);
         });
     }
 

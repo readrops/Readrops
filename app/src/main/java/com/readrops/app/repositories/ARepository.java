@@ -49,6 +49,7 @@ public abstract class ARepository<T> {
 
     protected abstract T createAPI();
 
+    // TODO : replace Single by Completable
     public abstract Single<Boolean> login(Account account, boolean insert);
 
     public abstract Observable<Feed> sync(List<Feed> feeds);
