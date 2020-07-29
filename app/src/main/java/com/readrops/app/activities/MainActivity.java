@@ -386,7 +386,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         recyclerView.setAdapter(adapter);
 
 
-        Drawable readLater = getDrawable(R.drawable.ic_read_later);
+        Drawable readLater = ContextCompat.getDrawable(this, R.drawable.ic_read_later).mutate();
         DrawableCompat.setTint(readLater, ContextCompat.getColor(this, android.R.color.white));
 
         new ItemTouchHelper(new ReadropsItemTouchCallback(this,
