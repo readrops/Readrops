@@ -15,11 +15,15 @@ public final class DateUtils {
      * Fri, 04 Jan 2019 22:21:46 GMT
      * Fri, 04 Jan 2019 22:21:46 +0000
      */
-    private static final String RSS_2_BASE_PATTERN = "EEE, dd MMM yyyy HH:mm:ss ";
+    private static final String RSS_2_BASE_PATTERN = "EEE, dd MMM yyyy HH:mm:ss";
 
     private static final String GMT_PATTERN = "ZZZ";
 
     private static final String OFFSET_PATTERN = "Z";
+
+    private static final String ISO_PATTERN = ".SSSZZ";
+
+    private static final String EDT_PATTERN = "zzz";
 
     /**
      * Date pattern for format : 2019-01-04T22:21:46+00:00
@@ -28,10 +32,13 @@ public final class DateUtils {
 
     public static LocalDateTime stringToLocalDateTime(String value) {
         DateTimeFormatter formatter = new DateTimeFormatterBuilder()
-                .appendOptional(DateTimeFormat.forPattern(RSS_2_BASE_PATTERN).getParser())
+                .appendOptional(DateTimeFormat.forPattern(RSS_2_BASE_PATTERN + " ").getParser()) // with timezone
+                .appendOptional(DateTimeFormat.forPattern(RSS_2_BASE_PATTERN).getParser()) // no timezone, important order here
                 .appendOptional(DateTimeFormat.forPattern(ATOM_JSON_DATE_FORMAT).getParser())
                 .appendOptional(DateTimeFormat.forPattern(GMT_PATTERN).getParser())
                 .appendOptional(DateTimeFormat.forPattern(OFFSET_PATTERN).getParser())
+                .appendOptional(DateTimeFormat.forPattern(ISO_PATTERN).getParser())
+                .appendOptional(DateTimeFormat.forPattern(EDT_PATTERN).getParser())
                 .toFormatter()
                 .withLocale(Locale.ENGLISH)
                 .withOffsetParsed();

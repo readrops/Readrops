@@ -2,12 +2,12 @@ package com.readrops.app.utils.matchers
 
 import android.content.Context
 import com.readrops.app.R
-import com.readrops.app.database.entities.Feed
-import com.readrops.app.database.entities.Folder
-import com.readrops.readropslibrary.opml.model.Body
-import com.readrops.readropslibrary.opml.model.Head
-import com.readrops.readropslibrary.opml.model.OPML
-import com.readrops.readropslibrary.opml.model.Outline
+import com.readrops.db.entities.Feed
+import com.readrops.db.entities.Folder
+import com.readrops.api.opml.model.Body
+import com.readrops.api.opml.model.Head
+import com.readrops.api.opml.model.OPML
+import com.readrops.api.opml.model.Outline
 
 object OPMLMatcher {
 

@@ -7,6 +7,11 @@
         android:title="@string/feeds_and_folders" />
 
     <PreferenceScreen
+        android:icon="@drawable/ic_notifications"
+        android:key="notifications"
+        android:title="@string/notifications" />
+
+    <PreferenceScreen
         android:icon="@drawable/ic_account"
         android:key="credentials_key"
         android:title="@string/credentials" />

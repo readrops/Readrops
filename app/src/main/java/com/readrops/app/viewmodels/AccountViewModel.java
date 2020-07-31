@@ -7,14 +7,14 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 
-import com.readrops.app.database.Database;
-import com.readrops.app.database.entities.Feed;
-import com.readrops.app.database.entities.Folder;
-import com.readrops.app.database.entities.account.Account;
-import com.readrops.app.database.entities.account.AccountType;
+import com.readrops.db.Database;
+import com.readrops.db.entities.Feed;
+import com.readrops.db.entities.Folder;
+import com.readrops.db.entities.account.Account;
+import com.readrops.db.entities.account.AccountType;
 import com.readrops.app.repositories.ARepository;
 import com.readrops.app.utils.matchers.OPMLMatcher;
-import com.readrops.readropslibrary.opml.OPMLParser;
+import com.readrops.api.opml.OPMLParser;
 
 import java.util.List;
 import java.util.Map;

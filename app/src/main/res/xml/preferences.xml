@@ -28,6 +28,13 @@
             android:entryValues="@array/themes_values"
             android:key="dark_theme"
             android:title="@string/theme" />
+
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/synchro"
+            android:entryValues="@array/synchro_values"
+            android:key="auto_synchro"
+            android:title="@string/auto_synchro" />
     </PreferenceCategory>
 
 </PreferenceScreen>

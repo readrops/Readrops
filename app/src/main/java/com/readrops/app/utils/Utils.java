@@ -2,6 +2,7 @@ package com.readrops.app.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
@@ -14,12 +15,12 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.readrops.api.utils.HttpManager;
 
 import org.jsoup.Jsoup;
 
 import java.io.InputStream;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -35,9 +36,7 @@ public final class Utils {
 
     public static Bitmap getImageFromUrl(String url) {
         try {
-            OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                    .callTimeout(5, TimeUnit.SECONDS)
-                    .build();
+            OkHttpClient okHttpClient = HttpManager.getInstance().getOkHttpClient();
             Request request = new Request.Builder().url(url).build();
 
             Response response = okHttpClient.newCall(request).execute();
@@ -100,10 +99,38 @@ public final class Utils {
 
     /**
      * Remove html tags and trim the text
+     *
      * @param text string to clean
      * @return cleaned text
      */
     public static String cleanText(String text) {
         return Jsoup.parse(text).text().trim();
+    }
+
+    public static Bitmap getBitmapFromDrawable(Drawable drawable) {
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        return bitmap;
+
+    }
+
+    public static boolean isColorTooBright(@ColorInt int color) {
+        return getColorLuma(color) > 210;
+    }
+
+    public static boolean isColorTooDark(@ColorInt int color) {
+        return getColorLuma(color) < 40;
+    }
+
+    private static double getColorLuma(@ColorInt int color) {
+        int r = (color >> 16) & 0xff;
+        int g = (color >>  8) & 0xff;
+        int b = (color >>  0) & 0xff;
+
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
     }
 }

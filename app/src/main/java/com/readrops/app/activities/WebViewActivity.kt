@@ -2,22 +2,22 @@ package com.readrops.app.activities
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
-import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.webkit.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
 import com.readrops.app.R
 import com.readrops.app.databinding.ActivityWebViewBinding
+import com.readrops.app.utils.ReadropsKeys
 import com.readrops.app.utils.ReadropsKeys.ACTION_BAR_COLOR
-import com.readrops.app.utils.ReadropsKeys.WEB_URL
 
 class WebViewActivity : AppCompatActivity() {
 
@@ -25,21 +25,26 @@ class WebViewActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_web_view)
+        binding = ActivityWebViewBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         setSupportActionBar(binding.activityWebViewToolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         title = ""
+
         val actionBarColor = intent.getIntExtra(ACTION_BAR_COLOR, ContextCompat.getColor(this, R.color.colorPrimary))
         supportActionBar?.setBackgroundDrawable(ColorDrawable(actionBarColor))
         setWebViewSettings()
 
-        binding.activityWebViewSwipe.setOnRefreshListener { binding.webView.reload() }
-        binding.activityWebViewProgress.indeterminateDrawable.setColorFilter(actionBarColor, PorterDuff.Mode.SRC_IN)
-        binding.activityWebViewProgress.max = 100
+        with(binding) {
+            activityWebViewSwipe.setOnRefreshListener { binding.webView.reload() }
+            activityWebViewProgress.progressTintList = ColorStateList.valueOf(actionBarColor)
+            activityWebViewProgress.max = 100
 
-        val url: String = intent.getStringExtra(WEB_URL)
-        binding.webView.loadUrl(url)
+            val url: String = intent.getStringExtra(ReadropsKeys.WEB_URL)!!
+            webView.loadUrl(url)
+        }
+
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -56,9 +61,11 @@ class WebViewActivity : AppCompatActivity() {
             }
 
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                binding.activityWebViewSwipe.isRefreshing = false
-                binding.activityWebViewProgress.progress = 0
-                binding.activityWebViewProgress.visibility = View.VISIBLE
+                with(binding) {
+                    activityWebViewSwipe.isRefreshing = false
+                    activityWebViewProgress.progress = 0
+                    activityWebViewProgress.visibility = View.VISIBLE
+                }
 
                 super.onPageStarted(view, url, favicon)
             }
@@ -73,9 +80,11 @@ class WebViewActivity : AppCompatActivity() {
             }
 
             override fun onProgressChanged(view: WebView?, newProgress: Int) {
-                binding.activityWebViewProgress.progress = newProgress
-                if (newProgress == 100)
-                    binding.activityWebViewProgress.visibility = View.GONE
+                with(binding) {
+                    activityWebViewProgress.progress = newProgress
+                    if (newProgress == 100) activityWebViewProgress.visibility = View.GONE
+                }
+
 
                 super.onProgressChanged(view, newProgress)
             }
@@ -106,13 +115,15 @@ class WebViewActivity : AppCompatActivity() {
             }
         }
 
-        return super.onOptionsItemSelected(item)
+        return super.onOptionsItemSelected(item!!)
     }
 
     private fun shareLink() {
-        val intent = Intent(Intent.ACTION_SEND)
-        intent.type = "text/plain"
-        intent.putExtra(Intent.EXTRA_TEXT, binding.webView.url.toString())
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, binding.webView.url.toString())
+        }
+
         startActivity(Intent.createChooser(intent, getString(R.string.share_url)))
     }
 

@@ -12,7 +12,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
 import com.readrops.app.R;
-import com.readrops.app.database.pojo.ItemWithFeed;
+import com.readrops.db.pojo.ItemWithFeed;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -48,6 +48,11 @@ public class ReadropsWebView extends WebView {
         loadData(base64Content, "text/html; charset=utf-8", "base64");
     }
 
+    public String getItemContent() {
+        String content = itemWithFeed.getItem().getContent();
+        return content;
+    }
+
     private void getColors(Context context, AttributeSet attrs) {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ReadropsWebView);
         textColor = typedArray.getColor(R.styleable.ReadropsWebView_textColor, 0);
@@ -73,7 +78,12 @@ public class ReadropsWebView extends WebView {
     @Nullable
     private String getText() {
         if (itemWithFeed.getItem().getText() != null) {
-            Document document = Jsoup.parse(Parser.unescapeEntities(itemWithFeed.getItem().getText(), false), itemWithFeed.getWebsiteUrl());
+            Document document;
+
+            if (itemWithFeed.getWebsiteUrl() != null)
+                document = Jsoup.parse(Parser.unescapeEntities(itemWithFeed.getItem().getText(), false), itemWithFeed.getWebsiteUrl());
+            else
+                document = Jsoup.parse(Parser.unescapeEntities(itemWithFeed.getItem().getText(), false));
 
             formatDocument(document);
 
@@ -96,7 +106,7 @@ public class ReadropsWebView extends WebView {
         }
 
         elements.clear();
-        elements = document.select("div");
+        elements = document.select("div,span");
 
         for (Element element : elements) {
             element.clearAttributes();

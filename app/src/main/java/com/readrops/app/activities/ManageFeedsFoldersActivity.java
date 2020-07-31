@@ -6,23 +6,22 @@ import android.view.MenuItem;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.readrops.app.R;
-import com.readrops.app.database.entities.Folder;
-import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.databinding.ActivityManageFeedsFoldersBinding;
 import com.readrops.app.fragments.FeedsFragment;
 import com.readrops.app.fragments.FoldersFragment;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.ManageFeedsFoldersViewModel;
-import com.readrops.readropslibrary.utils.ConflictException;
-import com.readrops.readropslibrary.utils.UnknownFormatException;
+import com.readrops.db.entities.Folder;
+import com.readrops.db.entities.account.Account;
+import com.readrops.api.utils.ConflictException;
+import com.readrops.api.utils.UnknownFormatException;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -30,7 +29,6 @@ import io.reactivex.schedulers.Schedulers;
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
 
 public class ManageFeedsFoldersActivity extends AppCompatActivity {
-
 
     private ActivityManageFeedsFoldersBinding binding;
     private ManageFeedsFoldersViewModel viewModel;
@@ -41,7 +39,9 @@ public class ManageFeedsFoldersActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_manage_feeds_folders);
+        binding = ActivityManageFeedsFoldersBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
         setSupportActionBar(binding.manageFeedsFoldersToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -52,7 +52,7 @@ public class ManageFeedsFoldersActivity extends AppCompatActivity {
         binding.manageFeedsFoldersViewpager.setAdapter(pageAdapter);
         binding.manageFeedsFoldersTablayout.setupWithViewPager(binding.manageFeedsFoldersViewpager);
 
-        viewModel = ViewModelProviders.of(this).get(ManageFeedsFoldersViewModel.class);
+        viewModel = new ViewModelProvider(this).get(ManageFeedsFoldersViewModel.class);
         viewModel.setAccount(account);
     }
 

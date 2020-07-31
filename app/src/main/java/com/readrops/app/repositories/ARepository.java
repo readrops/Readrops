@@ -1,21 +1,22 @@
 package com.readrops.app.repositories;
 
-import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.readrops.app.database.Database;
-import com.readrops.app.database.entities.Feed;
-import com.readrops.app.database.entities.Folder;
-import com.readrops.app.database.entities.Item;
-import com.readrops.app.database.entities.account.Account;
-import com.readrops.app.database.entities.account.AccountType;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.utils.feedscolors.FeedColorsKt;
 import com.readrops.app.utils.feedscolors.FeedsColorsIntentService;
+import com.readrops.db.Database;
+import com.readrops.db.entities.Feed;
+import com.readrops.db.entities.Folder;
+import com.readrops.db.entities.Item;
+import com.readrops.db.entities.account.Account;
+import com.readrops.db.entities.account.AccountType;
+import com.readrops.api.services.SyncResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,15 +31,17 @@ import static com.readrops.app.utils.ReadropsKeys.FEEDS;
 
 public abstract class ARepository<T> {
 
-    protected Application application;
+    protected Context context;
     protected Database database;
     protected Account account;
 
     protected T api;
 
-    protected ARepository(@NonNull Application application, @Nullable Account account) {
-        this.application = application;
-        this.database = Database.getInstance(application);
+    protected SyncResult syncResult;
+
+    protected ARepository(@NonNull Context context, @Nullable Account account) {
+        this.context = context;
+        this.database = Database.getInstance(context);
         this.account = account;
 
         api = createAPI();
@@ -46,6 +49,7 @@ public abstract class ARepository<T> {
 
     protected abstract T createAPI();
 
+    // TODO : replace Single by Completable
     public abstract Single<Boolean> login(Account account, boolean insert);
 
     public abstract Observable<Feed> sync(List<Feed> feeds);
@@ -106,7 +110,11 @@ public abstract class ARepository<T> {
     }
 
     public Completable setItemReadState(Item item, boolean read) {
-        return database.itemDao().setReadState(item.getId(), read ? 1 : 0, !item.isReadChanged() ? 1 : 0);
+        return setItemReadState(item.getId(), read, !item.isReadChanged());
+    }
+
+    public Completable setItemReadState(int itemId, boolean read, boolean readChanged) {
+        return database.itemDao().setReadState(itemId, read, readChanged);
     }
 
     public Completable setAllItemsReadState(boolean read) {
@@ -157,26 +165,30 @@ public abstract class ARepository<T> {
     }
 
     protected void setFeedsColors(List<Feed> feeds) {
-        Intent intent = new Intent(application, FeedsColorsIntentService.class);
+        Intent intent = new Intent(context, FeedsColorsIntentService.class);
         intent.putParcelableArrayListExtra(FEEDS, new ArrayList<>(feeds));
 
-        application.startService(intent);
+        context.startService(intent);
     }
 
-    public static ARepository repositoryFactory(Account account, AccountType accountType, Application application) throws Exception {
+    public static ARepository repositoryFactory(Account account, AccountType accountType, Context context) throws Exception {
         switch (accountType) {
             case LOCAL:
-                return new LocalFeedRepository(application, account);
+                return new LocalFeedRepository(context, account);
             case NEXTCLOUD_NEWS:
-                return new NextNewsRepository(application, account);
+                return new NextNewsRepository(context, account);
             case FRESHRSS:
-                return new FreshRSSRepository(application, account);
+                return new FreshRSSRepository(context, account);
             default:
                 throw new Exception("account type not supported");
         }
     }
 
-    public static ARepository repositoryFactory(Account account, Application application) throws Exception {
-        return ARepository.repositoryFactory(account, account.getAccountType(), application);
+    public static ARepository repositoryFactory(Account account, Context context) throws Exception {
+        return ARepository.repositoryFactory(account, account.getAccountType(), context);
+    }
+
+    public SyncResult getSyncResult() {
+        return syncResult;
     }
 }

@@ -8,16 +8,15 @@ import android.view.MenuItem;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.readrops.app.R;
-import com.readrops.app.database.entities.account.Account;
-import com.readrops.app.database.entities.account.AccountType;
 import com.readrops.app.databinding.ActivityAddAccountBinding;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.AccountViewModel;
+import com.readrops.db.entities.account.Account;
+import com.readrops.db.entities.account.AccountType;
 
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
@@ -44,8 +43,10 @@ public class AddAccountActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_add_account);
-        viewModel = ViewModelProviders.of(this).get(AccountViewModel.class);
+        binding = ActivityAddAccountBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        viewModel = new ViewModelProvider(this).get(AccountViewModel.class);
 
         accountType = getIntent().getParcelableExtra(ACCOUNT_TYPE);
 
@@ -68,6 +69,9 @@ public class AddAccountActivity extends AppCompatActivity {
                 binding.providerImage.setImageResource(accountType.getIconRes());
                 binding.providerName.setText(accountType.getName());
                 binding.addAccountName.setText(accountType.getName());
+                if (accountType == AccountType.FRESHRSS) {
+                    binding.addAccountPasswordLayout.setHelperText(getString(R.string.password_helper));
+                }
             }
         } catch (Exception e) {
             // TODO : see how to handle this exception
@@ -83,8 +87,8 @@ public class AddAccountActivity extends AppCompatActivity {
             String login = binding.addAccountLogin.getText().toString().trim();
             String password = binding.addAccountPassword.getText().toString().trim();
 
-            if (!(url.toLowerCase().contains("http://") || url.toLowerCase().contains("https://"))) {
-                url = "https://" + url;
+            if (!(url.toLowerCase().contains(Utils.HTTP_PREFIX) || url.toLowerCase().contains(Utils.HTTPS_PREFIX))) {
+                url = Utils.HTTPS_PREFIX + url;
             }
 
             if (editAccount) {

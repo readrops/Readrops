@@ -33,7 +33,28 @@
             margin-top: 0px;
         }
 
-        body, blockquote, img, iframe, video, div, table, tbody, tr, td, pre, code, blockquote, p, em, b, span {
+        pre, code {
+            color: #FFFFFF;
+            background-color: #757575;
+        }
+
+        pre {
+            padding: 6px;
+            overflow: auto;
+            border-radius: 4px;
+        }
+
+        code {
+            padding: 2px;
+            border-radius: 2px;
+        }
+
+        pre > code {
+            padding: 0px;
+            border-radius: 0px;
+        }
+
+        body, blockquote, img, iframe, video, div, table, tbody, tr, td, blockquote, p, em, b, span {
             max-width: 100%% !important;
         }
 

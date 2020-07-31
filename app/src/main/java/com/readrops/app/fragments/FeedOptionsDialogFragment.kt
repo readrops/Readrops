@@ -6,19 +6,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.readrops.app.R
-import com.readrops.app.database.entities.account.Account
-import com.readrops.app.database.pojo.FeedWithFolder
 import com.readrops.app.databinding.FeedOptionsLayoutBinding
 import com.readrops.app.utils.ReadropsKeys.ACCOUNT
+import com.readrops.db.entities.account.Account
+import com.readrops.db.pojo.FeedWithFolder
 
 class FeedOptionsDialogFragment : BottomSheetDialogFragment() {
 
     private lateinit var feedWithFolder: FeedWithFolder
     private lateinit var account: Account
-    private lateinit var binding: FeedOptionsLayoutBinding
+
+    private var _binding: FeedOptionsLayoutBinding? = null
+    private val binding get() = _binding!!
 
     companion object {
         const val FEED_KEY = "FEED_KEY"
@@ -43,7 +43,7 @@ class FeedOptionsDialogFragment : BottomSheetDialogFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.feed_options_layout, container, false)
+        _binding = FeedOptionsLayoutBinding.inflate(inflater, container, false)
 
         return binding.root
     }
@@ -56,6 +56,11 @@ class FeedOptionsDialogFragment : BottomSheetDialogFragment() {
         binding.feedOptionsEditLayout.setOnClickListener { openEditFeedDialog() }
         binding.feedOptionsOpenRootLayout.setOnClickListener { openFeedRootUrl() }
         binding.feedOptionsDeleteLayout.setOnClickListener { deleteFeed() }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun openEditFeedDialog() {

@@ -1,30 +1,31 @@
 package com.readrops.app.repositories;
 
 import android.accounts.NetworkErrorException;
-import android.app.Application;
+import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.readrops.app.database.entities.Feed;
-import com.readrops.app.database.entities.Item;
-import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.utils.FeedInsertionResult;
-import com.readrops.app.utils.matchers.FeedMatcher;
 import com.readrops.app.utils.HtmlParser;
-import com.readrops.app.utils.matchers.ItemMatcher;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
-import com.readrops.readropslibrary.localfeed.AFeed;
-import com.readrops.readropslibrary.localfeed.RSSQuery;
-import com.readrops.readropslibrary.localfeed.RSSQueryResult;
-import com.readrops.readropslibrary.localfeed.atom.ATOMFeed;
-import com.readrops.readropslibrary.localfeed.json.JSONFeed;
-import com.readrops.readropslibrary.localfeed.rss.RSSFeed;
-import com.readrops.readropslibrary.utils.LibUtils;
-import com.readrops.readropslibrary.utils.ParseException;
-import com.readrops.readropslibrary.utils.UnknownFormatException;
+import com.readrops.app.utils.matchers.FeedMatcher;
+import com.readrops.app.utils.matchers.ItemMatcher;
+import com.readrops.db.entities.Feed;
+import com.readrops.db.entities.Item;
+import com.readrops.db.entities.account.Account;
+import com.readrops.api.localfeed.AFeed;
+import com.readrops.api.localfeed.RSSQuery;
+import com.readrops.api.localfeed.RSSQueryResult;
+import com.readrops.api.localfeed.atom.ATOMFeed;
+import com.readrops.api.localfeed.json.JSONFeed;
+import com.readrops.api.localfeed.rss.RSSFeed;
+import com.readrops.api.services.SyncResult;
+import com.readrops.api.utils.LibUtils;
+import com.readrops.api.utils.ParseException;
+import com.readrops.api.utils.UnknownFormatException;
 
 import org.jsoup.Jsoup;
 
@@ -42,8 +43,10 @@ public class LocalFeedRepository extends ARepository<Void> {
 
     private static final String TAG = LocalFeedRepository.class.getSimpleName();
 
-    public LocalFeedRepository(@NonNull Application application, @Nullable Account account) {
-        super(application, account);
+    public LocalFeedRepository(@NonNull Context context, @Nullable Account account) {
+        super(context, account);
+
+        syncResult = new SyncResult();
     }
 
     @Override
@@ -173,7 +176,7 @@ public class LocalFeedRepository extends ARepository<Void> {
         database.feedDao().updateHeaders(dbFeed.getEtag(), dbFeed.getLastModified(), dbFeed.getId());
         Collections.sort(items, Item::compareTo);
 
-        int maxItems = Integer.parseInt(SharedPreferencesManager.readString(application, SharedPreferencesManager.SharedPrefKey.ITEMS_TO_PARSE_MAX_NB));
+        int maxItems = Integer.parseInt(SharedPreferencesManager.readString(context, SharedPreferencesManager.SharedPrefKey.ITEMS_TO_PARSE_MAX_NB));
         if (maxItems > 0 && items.size() > maxItems)
             items = items.subList(items.size() - maxItems, items.size());
 
@@ -247,6 +250,7 @@ public class LocalFeedRepository extends ARepository<Void> {
             }
         }
 
+        syncResult.getItems().addAll(itemsToInsert);
         database.itemDao().insert(itemsToInsert);
     }
 

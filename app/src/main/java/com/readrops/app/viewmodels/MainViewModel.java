@@ -9,14 +9,15 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
-import com.readrops.app.activities.MainActivity;
-import com.readrops.app.database.Database;
-import com.readrops.app.database.ItemsListQueryBuilder;
-import com.readrops.app.database.RoomFactoryWrapper;
-import com.readrops.app.database.entities.Feed;
-import com.readrops.app.database.entities.Folder;
-import com.readrops.app.database.entities.account.Account;
-import com.readrops.app.database.pojo.ItemWithFeed;
+import com.readrops.db.Database;
+import com.readrops.db.ItemsListQueryBuilder;
+import com.readrops.db.RoomFactoryWrapper;
+import com.readrops.db.entities.Feed;
+import com.readrops.db.entities.Folder;
+import com.readrops.db.entities.account.Account;
+import com.readrops.db.filters.FilterType;
+import com.readrops.db.filters.ListSortType;
+import com.readrops.db.pojo.ItemWithFeed;
 import com.readrops.app.repositories.ARepository;
 
 import java.util.ArrayList;
@@ -48,7 +49,7 @@ public class MainViewModel extends AndroidViewModel {
         queryBuilder = new ItemsListQueryBuilder();
 
         queryBuilder.setFilterType(FilterType.NO_FILTER);
-        queryBuilder.setSortType(MainActivity.ListSortType.NEWEST_TO_OLDEST);
+        queryBuilder.setSortType(ListSortType.NEWEST_TO_OLDEST);
 
         db = Database.getInstance(application);
         itemsWithFeed = new MediatorLiveData<>();
@@ -99,11 +100,11 @@ public class MainViewModel extends AndroidViewModel {
         return queryBuilder.getFilterType();
     }
 
-    public void setSortType(MainActivity.ListSortType sortType) {
+    public void setSortType(ListSortType sortType) {
         queryBuilder.setSortType(sortType);
     }
 
-    public MainActivity.ListSortType getSortType() {
+    public ListSortType getSortType() {
         return queryBuilder.getSortType();
     }
 
@@ -132,7 +133,7 @@ public class MainViewModel extends AndroidViewModel {
     //region Account
 
     public LiveData<List<Account>> getAllAccounts() {
-        return db.accountDao().selectAll();
+        return db.accountDao().selectAllAsync();
     }
 
     private Completable deselectOldCurrentAccount(int accountId) {
@@ -218,6 +219,10 @@ public class MainViewModel extends AndroidViewModel {
         return repository.setItemReadState(itemWithFeed.getItem(), read);
     }
 
+    public Completable setItemReadState(int itemId, boolean read, boolean readChanged) {
+        return repository.setItemReadState(itemId, read, readChanged);
+    }
+
     public Completable setItemsReadState(List<ItemWithFeed> items, boolean read) {
         List<Completable> completableList = new ArrayList<>();
 
@@ -236,16 +241,7 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     public Completable setItemReadItLater(int itemId) {
-        return Completable.create(emitter -> {
-            db.itemDao().setReadItLater(itemId);
-            emitter.onComplete();
-        });
-    }
-
-    public enum FilterType {
-        FEED_FILTER,
-        READ_IT_LATER_FILTER,
-        NO_FILTER
+        return db.itemDao().setReadItLater(itemId);
     }
 
     //endregion

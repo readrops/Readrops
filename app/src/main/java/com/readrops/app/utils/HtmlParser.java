@@ -5,9 +5,9 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.readrops.readropslibrary.utils.LibUtils;
+import com.readrops.api.utils.HttpManager;
+import com.readrops.api.utils.LibUtils;
 
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -17,6 +17,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import okhttp3.Request;
+import okhttp3.Response;
 
 public final class HtmlParser {
 
@@ -81,7 +84,7 @@ public final class HtmlParser {
     }
 
     @Nullable
-    public static String getFaviconLink(@NonNull String url) throws IOException {
+    public static String getFaviconLink(@NonNull String url) {
         String favUrl = null;
 
         String head = getHTMLHeadFromUrl(url);
@@ -102,20 +105,28 @@ public final class HtmlParser {
     }
 
     @Nullable
-    private static String getHTMLHeadFromUrl(@NonNull String url) throws IOException {
+    private static String getHTMLHeadFromUrl(@NonNull String url) {
         long start = System.currentTimeMillis();
-        Connection.Response response = Jsoup.connect(url).execute();
 
-        if (response.contentType().contains(LibUtils.HTML_CONTENT_TYPE)) {
-            String body = response.body();
-            String head = body.substring(body.indexOf("<head"), body.indexOf("</head>"));
+        try {
+            Response response = HttpManager.getInstance().getOkHttpClient()
+                    .newCall(new Request.Builder().url(url).build()).execute();
 
-            long end = System.currentTimeMillis();
-            Log.d(TAG, "parsing time : " + (end - start));
+            if (response.header("Content-Type").contains(LibUtils.HTML_CONTENT_TYPE)) {
+                String body = response.body().string();
+                String head = body.substring(body.indexOf("<head"), body.indexOf("</head>"));
 
-            return head;
-        } else
+                long end = System.currentTimeMillis();
+                Log.d(TAG, "parsing time : " + (end - start));
+
+                return head;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
             return null;
+        }
+
     }
 
     public static String getDescImageLink(String description, String url) {

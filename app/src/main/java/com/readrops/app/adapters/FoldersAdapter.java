@@ -6,21 +6,21 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.readrops.app.R;
-import com.readrops.app.database.entities.Folder;
-import com.readrops.app.database.pojo.FolderWithFeedCount;
 import com.readrops.app.databinding.FolderLayoutBinding;
+import com.readrops.db.entities.Folder;
+import com.readrops.db.pojo.FolderWithFeedCount;
 
 import java.util.List;
 
 public class FoldersAdapter extends ListAdapter<FolderWithFeedCount, FoldersAdapter.FolderViewHolder> {
 
     private ManageFoldersListener listener;
+    private int totalFeedCount;
 
     public FoldersAdapter(ManageFoldersListener listener) {
         super(DIFF_CALLBACK);
@@ -28,6 +28,9 @@ public class FoldersAdapter extends ListAdapter<FolderWithFeedCount, FoldersAdap
         this.listener = listener;
     }
 
+    public void setTotalFeedCount(int totalFeedCount) {
+        this.totalFeedCount = totalFeedCount;
+    }
 
     private static final DiffUtil.ItemCallback<FolderWithFeedCount> DIFF_CALLBACK = new DiffUtil.ItemCallback<FolderWithFeedCount>() {
         @Override
@@ -51,21 +54,18 @@ public class FoldersAdapter extends ListAdapter<FolderWithFeedCount, FoldersAdap
     @NonNull
     @Override
     public FolderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        FolderLayoutBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
-                R.layout.folder_layout, parent, false);
+        FolderLayoutBinding binding = FolderLayoutBinding.inflate(LayoutInflater.from(parent.getContext()),
+                parent, false);
 
         return new FolderViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull FolderViewHolder holder, int position, @NonNull List<Object> payloads) {
-        if (payloads.size() > 0) {
-            FolderWithFeedCount folder = (FolderWithFeedCount) payloads.get(0);
+        if (!payloads.isEmpty()) {
+            FolderWithFeedCount folderWithFeedCount = (FolderWithFeedCount) payloads.get(0);
 
-            holder.binding.folderName.setText(folder.getFolder().getName());
-
-            int stringRes = folder.getFeedCount() > 1 ? R.string.feeds_number : R.string.feed_number;
-            holder.binding.folderFeedsCount.setText(holder.itemView.getContext().getString(stringRes, String.valueOf(folder.getFeedCount())));
+            holder.bind(folderWithFeedCount);
         } else
             onBindViewHolder(holder, position);
 
@@ -73,18 +73,10 @@ public class FoldersAdapter extends ListAdapter<FolderWithFeedCount, FoldersAdap
 
     @Override
     public void onBindViewHolder(@NonNull FolderViewHolder holder, int position) {
-        FolderWithFeedCount folder = getItem(position);
+        FolderWithFeedCount folderWithFeedCount = getItem(position);
 
-        holder.binding.folderName.setText(folder.getFolder().getName());
-
-        int stringRes = folder.getFeedCount() > 1 ? R.string.feeds_number : R.string.feed_number;
-        holder.binding.folderFeedsCount.setText(holder.itemView.getContext().getString(stringRes, String.valueOf(folder.getFeedCount())));
-
-        holder.itemView.setOnClickListener(v -> listener.onClick(folder.getFolder()));
-    }
-
-    public Folder getFolder(int position) {
-        return getItem(position).getFolder();
+        holder.bind(folderWithFeedCount);
+        holder.itemView.setOnClickListener(v -> listener.onClick(folderWithFeedCount.getFolder()));
     }
 
     public interface ManageFoldersListener {
@@ -99,6 +91,16 @@ public class FoldersAdapter extends ListAdapter<FolderWithFeedCount, FoldersAdap
             super(binding.getRoot());
 
             this.binding = binding;
+        }
+
+        private void bind(FolderWithFeedCount folderWithFeedCount) {
+            binding.folderName.setText(folderWithFeedCount.getFolder().getName());
+
+            int stringRes = folderWithFeedCount.getFeedCount() > 1 ? R.string.feeds_number : R.string.feed_number;
+            binding.folderFeedsCount.setText(itemView.getContext().getString(stringRes, String.valueOf(folderWithFeedCount.getFeedCount())));
+
+            binding.folderProgressBar.setMax(totalFeedCount);
+            binding.folderProgressBar.setProgress(folderWithFeedCount.getFeedCount());
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.readrops.app;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -8,15 +9,16 @@ import android.os.Build;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.PreferenceManager;
 
-import com.facebook.stetho.Stetho;
 import com.readrops.app.utils.SharedPreferencesManager;
 
 import io.reactivex.plugins.RxJavaPlugins;
 
+@SuppressLint("Registered")
 public class ReadropsApp extends Application {
 
     public static final String FEEDS_COLORS_CHANNEL_ID = "feedsColorsChannel";
     public static final String OPML_EXPORT_CHANNEL_ID = "opmlExportChannel";
+    public static final String SYNC_CHANNEL_ID = "syncChannel";
 
     @Override
     public void onCreate() {
@@ -25,11 +27,8 @@ public class ReadropsApp extends Application {
         RxJavaPlugins.setErrorHandler(e -> {
         });
 
-        if (BuildConfig.DEBUG) {
-            Stetho.initializeWithDefaults(this);
-        }
-
         createNotificationChannels();
+
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         if (Boolean.valueOf(SharedPreferencesManager.readString(this, SharedPreferencesManager.SharedPrefKey.DARK_THEME)))
@@ -48,10 +47,15 @@ public class ReadropsApp extends Application {
                     getString(R.string.opml_export), NotificationManager.IMPORTANCE_DEFAULT);
             opmlExportChannel.setDescription(getString(R.string.opml_export_description));
 
+            NotificationChannel syncChannel = new NotificationChannel(SYNC_CHANNEL_ID,
+                    getString(R.string.auto_synchro), NotificationManager.IMPORTANCE_LOW);
+            syncChannel.setDescription(getString(R.string.account_synchro));
+
             NotificationManager manager = getSystemService(NotificationManager.class);
 
             manager.createNotificationChannel(feedsColorsChannel);
             manager.createNotificationChannel(opmlExportChannel);
+            manager.createNotificationChannel(syncChannel);
         }
     }
 }

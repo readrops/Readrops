@@ -26,9 +26,9 @@
 
 -keep class org.simpleframework.xml.** { *; }
 
--keep class com.readrops.readropslibrary.services.freshrss.json.** { *; }
--keep class com.readrops.readropslibrary.services.nextcloudnews.json.** { *; }
+-keep class com.readrops.api.services.freshrss.json.** { *; }
+-keep class com.readrops.api.services.nextcloudnews.json.** { *; }
 
--keep class com.readrops.readropslibrary.localfeed.** { *; }
+-keep class com.readrops.api.localfeed.** { *; }
 
--keep class com.readrops.readropslibrary.opml.model.** { *; }
+-keep class com.readrops.api.opml.model.** { *; }

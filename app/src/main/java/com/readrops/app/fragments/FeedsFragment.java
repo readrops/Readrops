@@ -10,19 +10,19 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.readrops.app.R;
 import com.readrops.app.adapters.FeedsAdapter;
-import com.readrops.app.database.entities.Feed;
-import com.readrops.app.database.entities.account.Account;
-import com.readrops.app.database.pojo.FeedWithFolder;
 import com.readrops.app.databinding.FragmentFeedsBinding;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.ManageFeedsFoldersViewModel;
+import com.readrops.db.entities.Feed;
+import com.readrops.db.entities.account.Account;
+import com.readrops.db.pojo.FeedWithFolder;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableCompletableObserver;
@@ -64,7 +64,7 @@ public class FeedsFragment extends Fragment {
         if (account.getPassword() == null)
             account.setPassword(SharedPreferencesManager.readString(getContext(), account.getPasswordKey()));
 
-        viewModel = ViewModelProviders.of(this).get(ManageFeedsFoldersViewModel.class);
+        viewModel = new ViewModelProvider(this).get(ManageFeedsFoldersViewModel.class);
         viewModel.setAccount(account);
 
         viewModel.getFeedsWithFolder().observe(this, feedWithFolders -> {
@@ -81,7 +81,7 @@ public class FeedsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = FragmentFeedsBinding.inflate(inflater);
+        binding = FragmentFeedsBinding.inflate(inflater, container, false);
 
         return binding.getRoot();
     }
@@ -105,6 +105,12 @@ public class FeedsFragment extends Fragment {
         });
 
         binding.feedsRecyclerview.setAdapter(adapter);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
     public void deleteFeed(Feed feed) {

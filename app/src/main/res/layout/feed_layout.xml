@@ -27,7 +27,7 @@
                 android:layout_height="24dp"
                 android:layout_alignParentStart="true"
                 android:layout_marginEnd="6dp"
-                android:src="@drawable/ic_rss_feed" />
+                android:src="@drawable/ic_rss_feed_grey" />
 
             <TextView
                 android:id="@+id/feed_layout_name"

@@ -17,7 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -26,14 +26,16 @@ import com.readrops.app.R;
 import com.readrops.app.ReadropsApp;
 import com.readrops.app.activities.AddAccountActivity;
 import com.readrops.app.activities.ManageFeedsFoldersActivity;
-import com.readrops.app.database.entities.account.Account;
-import com.readrops.app.database.entities.account.AccountType;
+import com.readrops.app.activities.NotificationPermissionActivity;
 import com.readrops.app.utils.PermissionManager;
+import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.utils.matchers.OPMLMatcher;
 import com.readrops.app.viewmodels.AccountViewModel;
-import com.readrops.readropslibrary.opml.OPMLParser;
-import com.readrops.readropslibrary.opml.model.OPML;
+import com.readrops.db.entities.account.Account;
+import com.readrops.db.entities.account.AccountType;
+import com.readrops.api.opml.OPMLParser;
+import com.readrops.api.opml.model.OPML;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -46,6 +48,7 @@ import io.reactivex.schedulers.Schedulers;
 
 import static android.app.Activity.RESULT_OK;
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
+import static com.readrops.app.utils.ReadropsKeys.ACCOUNT_ID;
 import static com.readrops.app.utils.ReadropsKeys.EDIT_ACCOUNT;
 
 /**
@@ -85,6 +88,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
         Preference credentialsPref = findPreference("credentials_key");
         Preference deleteAccountPref = findPreference("delete_account_key");
         Preference opmlPref = findPreference("opml_import_export");
+        Preference notificationPref = findPreference("notifications");
 
         if (account.is(AccountType.LOCAL))
             credentialsPref.setVisible(false);
@@ -131,13 +135,21 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
                     .show();
             return true;
         });
+
+        notificationPref.setOnPreferenceClickListener(preference -> {
+            Intent intent = new Intent(getContext(), NotificationPermissionActivity.class);
+            intent.putExtra(ACCOUNT_ID, account.getId());
+
+            startActivity(intent);
+            return true;
+        });
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        viewModel = ViewModelProviders.of(this).get(AccountViewModel.class);
+        viewModel = new ViewModelProvider(this).get(AccountViewModel.class);
         viewModel.setAccount(account);
     }
 
@@ -146,20 +158,25 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
                 .title(R.string.delete_account_question)
                 .positiveText(R.string.validate)
                 .negativeText(R.string.cancel)
-                .onPositive(((dialog, which) -> viewModel.delete(account)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new DisposableCompletableObserver() {
-                            @Override
-                            public void onComplete() {
-                                getActivity().finish();
-                            }
+                .onPositive(((dialog, which) -> {
+                    SharedPreferencesManager.remove(getContext(), account.getLoginKey());
+                    SharedPreferencesManager.remove(getContext(), account.getPasswordKey());
 
-                            @Override
-                            public void onError(Throwable e) {
-                                Utils.showSnackbar(getView(), e.getMessage());
-                            }
-                        })))
+                    viewModel.delete(account)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new DisposableCompletableObserver() {
+                                @Override
+                                public void onComplete() {
+                                    getActivity().finish();
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    Utils.showSnackbar(getView(), e.getMessage());
+                                }
+                            });
+                }))
                 .show();
     }
 

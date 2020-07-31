@@ -26,9 +26,9 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.readrops.app.R;
-import com.readrops.app.database.entities.Feed;
-import com.readrops.app.database.entities.Folder;
-import com.readrops.app.database.entities.account.Account;
+import com.readrops.db.entities.Feed;
+import com.readrops.db.entities.Folder;
+import com.readrops.db.entities.account.Account;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,8 +64,8 @@ public class DrawerManager {
         this.headerListener = headerListener;
     }
 
-    public Drawer buildDrawer(List<Account> accounts) {
-        createAccountHeader(accounts);
+    public Drawer buildDrawer(List<Account> accounts, int currentAccountId) {
+        createAccountHeader(accounts, currentAccountId);
 
         drawer = new DrawerBuilder()
                 .withActivity(activity)
@@ -129,14 +129,14 @@ public class DrawerManager {
         }
     }
 
-    private void createAccountHeader(List<Account> accounts) {
+    private void createAccountHeader(List<Account> accounts, int currentAccountId) {
         ProfileDrawerItem[] profileItems = new ProfileDrawerItem[accounts.size()];
-        int currentAccountId = 1;
 
         for (int i = 0; i < accounts.size(); i++) {
             Account account = accounts.get(i);
 
-            if (account.isCurrentAccount())
+            // if currentAccount > 0, it means that the current account is no longer
+            if (account.isCurrentAccount() && currentAccountId == 0)
                 currentAccountId = account.getId();
 
             ProfileDrawerItem profileItem = createProfileItem(account);
@@ -156,6 +156,7 @@ public class DrawerManager {
                 .build();
 
         addProfileSettingItems();
+
         header.setActiveProfile(currentAccountId);
     }
 
@@ -248,6 +249,10 @@ public class DrawerManager {
 
         if (currentProfile)
             header.setActiveProfile(profileItem.getIdentifier());
+    }
+
+    public void setAccount(int accountId) {
+        header.setActiveProfile(accountId);
     }
 
     public void updateHeader(List<Account> accounts) {

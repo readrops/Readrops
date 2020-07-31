@@ -1,7 +1,7 @@
 package com.readrops.app.activities;
 
 import android.content.Intent;
-import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,12 +14,15 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -31,6 +34,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
 import com.bumptech.glide.util.ViewPreloadSizeProvider;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -39,21 +43,22 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.readrops.app.R;
 import com.readrops.app.adapters.MainItemListAdapter;
-import com.readrops.app.database.entities.Feed;
-import com.readrops.app.database.entities.Folder;
-import com.readrops.app.database.entities.account.Account;
-import com.readrops.app.database.pojo.ItemWithFeed;
 import com.readrops.app.utils.DrawerManager;
 import com.readrops.app.utils.GlideApp;
 import com.readrops.app.utils.ReadropsItemTouchCallback;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.MainViewModel;
+import com.readrops.db.entities.Feed;
+import com.readrops.db.entities.Folder;
+import com.readrops.db.entities.account.Account;
+import com.readrops.db.filters.FilterType;
+import com.readrops.db.filters.ListSortType;
+import com.readrops.db.pojo.ItemWithFeed;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +70,7 @@ import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
+import static com.readrops.app.utils.ReadropsKeys.ACCOUNT_ID;
 import static com.readrops.app.utils.ReadropsKeys.FEEDS;
 import static com.readrops.app.utils.ReadropsKeys.FROM_MAIN_ACTIVITY;
 import static com.readrops.app.utils.ReadropsKeys.IMAGE_URL;
@@ -99,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private RelativeLayout syncProgressLayout;
     private TextView syncProgress;
     private ProgressBar syncProgressBar;
+    private FloatingActionButton actionButton;
 
     private int feedCount;
     private int feedNb;
@@ -127,12 +134,12 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         syncProgressLayout = findViewById(R.id.sync_progress_layout);
         syncProgress = findViewById(R.id.sync_progress_text_view);
         syncProgressBar = findViewById(R.id.sync_progress_bar);
-        syncProgressBar = findViewById(R.id.sync_progress_bar);
+        actionButton = findViewById(R.id.add_feed_fab);
 
         feedCount = 0;
         initRecyclerView();
 
-        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        viewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
         viewModel.setShowReadItems(SharedPreferencesManager.readBoolean(this,
                 SharedPreferencesManager.SharedPrefKey.SHOW_READ_ARTICLES));
@@ -140,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         viewModel.getItemsWithFeed().observe(this, itemWithFeeds -> {
             allItems = itemWithFeeds;
 
-            if (itemWithFeeds.size() > 0)
+            if (!itemWithFeeds.isEmpty())
                 emptyListLayout.setVisibility(View.GONE);
             else
                 emptyListLayout.setVisibility(View.VISIBLE);
@@ -197,14 +204,23 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             getAccountCredentials(accounts);
             viewModel.setAccounts(accounts);
 
+            // the activity was just opened
             if (drawer == null) {
-                drawer = drawerManager.buildDrawer(accounts);
+                int currentAccountId = 0;
+                if (getIntent().hasExtra(ACCOUNT_ID)) { // coming from a notification
+                    currentAccountId = getIntent().getIntExtra(ACCOUNT_ID, 1);
+                    viewModel.setCurrentAccount(currentAccountId);
+                }
+
+                drawer = drawerManager.buildDrawer(accounts, currentAccountId);
                 drawer.setSelection(DrawerManager.ARTICLES_ITEM_ID);
                 updateDrawerFeeds();
-            } else if (accounts.size() < drawerManager.getNumberOfProfiles() && accounts.size() > 0) {
+
+                openItemActivity(getIntent());
+            } else if (accounts.size() < drawerManager.getNumberOfProfiles() && !accounts.isEmpty()) {
                 drawerManager.updateHeader(accounts);
                 updateDrawerFeeds();
-            } else if (accounts.size() == 0) {
+            } else if (accounts.isEmpty()) {
                 Intent intent = new Intent(this, AccountTypeListActivity.class);
                 startActivity(intent);
                 finish();
@@ -219,9 +235,32 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 onRefresh();
                 savedInstanceState.clear();
             }
+
+
         });
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        openItemActivity(intent);
+    }
+
+    private void openItemActivity(Intent intent) {
+        if (intent.hasExtra(ITEM_ID) && intent.hasExtra(IMAGE_URL)) {
+            Intent itemIntent = new Intent(this, ItemActivity.class);
+            itemIntent.putExtras(intent);
+
+            startActivity(itemIntent);
+
+            viewModel.setItemReadState(intent.getIntExtra(ITEM_ID, 0), true, true)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnError(throwable -> Utils.showSnackbar(rootLayout, throwable.getMessage()))
+                    .subscribe();
+        }
+    }
 
     private void handleDrawerClick(IDrawerItem drawerItem) {
         if (drawerItem instanceof PrimaryDrawerItem) {
@@ -230,12 +269,12 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
             switch (id) {
                 case DrawerManager.ARTICLES_ITEM_ID:
-                    viewModel.setFilterType(MainViewModel.FilterType.NO_FILTER);
+                    viewModel.setFilterType(FilterType.NO_FILTER);
                     scrollToTop = true;
                     viewModel.invalidate();
                     break;
                 case DrawerManager.READ_LATER_ID:
-                    viewModel.setFilterType(MainViewModel.FilterType.READ_IT_LATER_FILTER);
+                    viewModel.setFilterType(FilterType.READ_IT_LATER_FILTER);
                     viewModel.invalidate();
                     break;
                 case DrawerManager.ABOUT_ID:
@@ -252,7 +291,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             drawer.closeDrawer();
 
             viewModel.setFilterFeedId((int) drawerItem.getIdentifier());
-            viewModel.setFilterType(MainViewModel.FilterType.FEED_FILTER);
+            viewModel.setFilterType(FilterType.FEED_FILTER);
             viewModel.invalidate();
         }
     }
@@ -308,8 +347,11 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     updateDrawerFeeds();
                 } else {
                     adapter.toggleSelection(position);
+                    int selectionSize = adapter.getSelection().size();
 
-                    if (adapter.getSelection().isEmpty())
+                    if (selectionSize > 0)
+                        actionMode.setTitle(String.valueOf(selectionSize));
+                    else
                         actionMode.finish();
                 }
             }
@@ -321,7 +363,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
                 selectedItemWithFeed = itemWithFeed;
                 adapter.toggleSelection(position);
+
                 actionMode = startActionMode(MainActivity.this);
+                actionMode.setTitle(String.valueOf(adapter.getSelection().size()));
             }
         });
 
@@ -341,12 +385,16 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         recyclerView.setAdapter(adapter);
 
+
+        Drawable readLater = ContextCompat.getDrawable(this, R.drawable.ic_read_later).mutate();
+        DrawableCompat.setTint(readLater, ContextCompat.getColor(this, android.R.color.white));
+
         new ItemTouchHelper(new ReadropsItemTouchCallback(this,
                 new ReadropsItemTouchCallback.Config.Builder()
                         .swipeDirs(ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT)
                         .swipeCallback(this)
-                        .leftDraw(Color.DKGRAY, R.drawable.ic_read_later)
-                        .rightDraw(Color.DKGRAY, R.drawable.ic_read)
+                        .leftDraw(ContextCompat.getColor(this, R.color.colorAccent), R.drawable.ic_read_later, readLater)
+                        .rightDraw(ContextCompat.getColor(this, R.color.colorAccent), R.drawable.ic_read, null)
                         .build()))
                 .attachToRecyclerView(recyclerView);
 
@@ -361,11 +409,22 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
             @Override
             public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
-                if (scrollToTop) {
+                ;if (scrollToTop) {
                     recyclerView.scrollToPosition(0);
                     scrollToTop = false;
                 } else
                     super.onItemRangeMoved(fromPosition, toPosition, itemCount);
+            }
+        });
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0) {
+                    actionButton.hide();
+                } else {
+                    actionButton.show();
+                }
             }
         });
     }
@@ -391,7 +450,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     .doOnError(throwable -> Utils.showSnackbar(rootLayout, throwable.getMessage()))
                     .subscribe();
 
-            if (viewModel.getFilterType() == MainViewModel.FilterType.READ_IT_LATER_FILTER)
+            if (viewModel.getFilterType() == FilterType.READ_IT_LATER_FILTER)
                 adapter.notifyItemChanged(viewHolder.getAdapterPosition());
         }
     }
@@ -400,7 +459,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
         drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         refreshLayout.setEnabled(false);
+
         actionMode.getMenuInflater().inflate(R.menu.item_list_contextual_menu, menu);
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.primary_dark));
 
         return true;
     }
@@ -492,49 +553,51 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                             Utils.showSnackbar(rootLayout, e.getMessage());
                         }
                     });
-        } else
+        } else {
             sync(null);
+        }
     }
 
     public void openAddFeedActivity(View view) {
         Intent intent = new Intent(this, AddFeedActivity.class);
+        intent.putExtra(ACCOUNT_ID, viewModel.getCurrentAccount().getId());
         startActivityForResult(intent, ADD_FEED_REQUEST);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == ADD_FEED_REQUEST && resultCode == RESULT_OK) {
-            if (data != null) {
-                ArrayList<Feed> feeds = data.getParcelableArrayListExtra(FEEDS);
+        if (requestCode == ADD_FEED_REQUEST && resultCode == RESULT_OK && data != null) {
+            List<Feed> feeds = data.getParcelableArrayListExtra(FEEDS);
 
-                if (feeds != null && feeds.size() > 0 && viewModel.isAccountLocal()) {
-                    refreshLayout.setRefreshing(true);
-                    feedNb = feeds.size();
-                    sync(feeds);
-                }
+            if (feeds != null && !feeds.isEmpty() && viewModel.isAccountLocal()) {
+                refreshLayout.setRefreshing(true);
+                feedNb = feeds.size();
+                sync(feeds);
             }
 
         } else if (requestCode == MANAGE_ACCOUNT_REQUEST) {
             updateDrawerFeeds();
 
-        } else if (requestCode == ADD_ACCOUNT_REQUEST && resultCode == RESULT_OK) {
-            if (data != null) {
-                Account newAccount = data.getParcelableExtra(ACCOUNT);
+        } else if (requestCode == ADD_ACCOUNT_REQUEST && resultCode == RESULT_OK && data != null) {
+            Account newAccount = data.getParcelableExtra(ACCOUNT);
 
-                if (newAccount != null) {
-                    viewModel.addAccount(newAccount);
-
-                    adapter.clearData();
-
-                    if (!viewModel.isAccountLocal()) {
-                        getAccountCredentials(Collections.singletonList(newAccount));
-                        refreshLayout.setRefreshing(true);
-                        onRefresh();
-                    }
-
-                    drawerManager.resetItems();
-                    drawerManager.addAccount(newAccount, true);
+            if (newAccount != null) {
+                // get credentials before creating the repository
+                if (!newAccount.isLocal()) {
+                    getAccountCredentials(Collections.singletonList(newAccount));
                 }
+
+                viewModel.addAccount(newAccount);
+                adapter.clearData();
+
+                // start syncing only if the account is not local
+                if (!viewModel.isAccountLocal()) {
+                    refreshLayout.setRefreshing(true);
+                    onRefresh();
+                }
+
+                drawerManager.resetItems();
+                drawerManager.addAccount(newAccount, true);
             }
 
         }
@@ -635,6 +698,12 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             case R.id.item_sort:
                 displayFilterDialog();
                 return true;
+            case R.id.start_sync:
+                if (!viewModel.isAccountLocal()) {
+                    refreshLayout.setRefreshing(true);
+                }
+                onRefresh();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -707,8 +776,4 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         super.onSaveInstanceState(outState);
     }
 
-    public enum ListSortType {
-        NEWEST_TO_OLDEST,
-        OLDEST_TO_NEWEST
-    }
 }

@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.readrops.app.R;
-import com.readrops.app.database.pojo.FeedWithFolder;
+import com.readrops.db.pojo.FeedWithFolder;
 import com.readrops.app.utils.GlideApp;
 
 import java.util.List;
@@ -72,10 +72,10 @@ public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.ViewH
             GlideApp.with(viewHolder.itemView.getContext())
                     .load(feedWithFolder.getFeed().getIconUrl())
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .placeholder(R.drawable.ic_rss_feed)
+                    .placeholder(R.drawable.ic_rss_feed_grey)
                     .into(viewHolder.feedIcon);
         } else
-            viewHolder.feedIcon.setImageResource(R.drawable.ic_rss_feed);
+            viewHolder.feedIcon.setImageResource(R.drawable.ic_rss_feed_grey);
 
         viewHolder.feedName.setText(feedWithFolder.getFeed().getName());
         if (feedWithFolder.getFeed().getDescription() != null) {

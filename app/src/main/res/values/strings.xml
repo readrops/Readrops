@@ -51,14 +51,11 @@
     <string name="account_name">Account name</string>
     <string name="login">Login</string>
     <string name="password">Password</string>
-    <string name="nextcloud_news" translatable="false">Nextcloud News</string>
+    <string name="password_helper">This is your FreshRSS API password (Configuration > Profile)</string>
     <string name="account_settings">Account settings</string>
     <string name="add_account">Add account</string>
     <string name="no_feed">No feed</string>
     <string name="choose_account">Choose an account</string>
-    <string name="local_account">Local account</string>
-    <string name="freshrss" translatable="false">Freshrss</string>
-    <string name="feedly" translatable="false">Feedly</string>
     <string name="feeds_and_folders">Feeds and folders</string>
     <string name="account">Account</string>
     <string name="manage_feeds_folders">Manage feeds and folders</string>
@@ -119,5 +116,26 @@
     <string name="light">Light</string>
     <string name="dark">Dark</string>
     <string name="opml_export_description">Export feeds and folders</string>
+    <string name="new_feed">New feed</string>
     <string name="download_image_permission">To download the image, storage permission is needed</string>
+    <string name="auto_synchro">Automatic synchronisation</string>
+    <string name="manual">Manual</string>
+    <string name="min_30">30 mins</string>
+    <string name="hour_1">1 hour</string>
+    <string name="hour_2">2 hours</string>
+    <string name="hour_3">3 hours</string>
+    <string name="hour_6">6 hours</string>
+    <string name="hour_12">12 hours</string>
+    <string name="every_day">Every day</string>
+    <string name="account_synchro">Accounts synchronisation</string>
+    <string name="new_items">%1$s new articles</string>
+    <string name="enable_notifications">Enable notifications</string>
+    <string name="notifications">Notifications</string>
+    <string name="enable_all_feeds">Enable all feeds notifications</string>
+    <string name="auto_synchro_disabled">Automatic synchronization is disabled</string>
+    <string name="enable_auto_synchro_text">To be displayed, notifications need auto synchronization to be activated.\nDo you want to open settings ?</string>
+    <string name="open">Open</string>
+    <string name="back">Back</string>
+    <string name="show_caption">Show caption</string>
+    <string name="synchronize">Synchronize</string>
 </resources>

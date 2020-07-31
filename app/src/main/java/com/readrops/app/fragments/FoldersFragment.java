@@ -9,24 +9,24 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.readrops.app.R;
 import com.readrops.app.adapters.FoldersAdapter;
-import com.readrops.app.database.entities.Folder;
-import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.databinding.FragmentFoldersBinding;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.ManageFeedsFoldersViewModel;
-import com.readrops.readropslibrary.utils.ConflictException;
-import com.readrops.readropslibrary.utils.UnknownFormatException;
+import com.readrops.db.entities.Folder;
+import com.readrops.db.entities.account.Account;
+import com.readrops.api.utils.ConflictException;
+import com.readrops.api.utils.UnknownFormatException;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
@@ -65,13 +65,31 @@ public class FoldersFragment extends Fragment {
             account.setPassword(SharedPreferencesManager.readString(getContext(), account.getPasswordKey()));
 
         adapter = new FoldersAdapter(this::openFolderOptionsDialog);
-        viewModel = ViewModelProviders.of(this).get(ManageFeedsFoldersViewModel.class);
+        viewModel = new ViewModelProvider(this).get(ManageFeedsFoldersViewModel.class);
 
         viewModel.setAccount(account);
+        viewModel.getFeedCountByAccount()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableSingleObserver<Integer>() {
+                    @Override
+                    public void onSuccess(Integer feedCount) {
+                        adapter.setTotalFeedCount(feedCount);
+                        getFoldersWithFeedCount();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Utils.showSnackbar(binding.foldersRoot, e.getMessage());
+                    }
+                });
+    }
+
+    private void getFoldersWithFeedCount() {
         viewModel.getFoldersWithFeedCount().observe(this, folders -> {
             adapter.submitList(folders);
 
-            if (folders.size() > 0) {
+            if (!folders.isEmpty()) {
                 binding.foldersEmptyList.setVisibility(View.GONE);
             } else {
                 binding.foldersEmptyList.setVisibility(View.VISIBLE);
@@ -82,7 +100,7 @@ public class FoldersFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_folders, container, false);
+        binding = FragmentFoldersBinding.inflate(inflater, container, false);
 
         return binding.getRoot();
     }

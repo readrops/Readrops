@@ -12,8 +12,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,8 +24,6 @@ import com.mikepenz.fastadapter.commons.utils.DiffCallback;
 import com.mikepenz.fastadapter.commons.utils.FastAdapterDiffUtil;
 import com.readrops.app.R;
 import com.readrops.app.adapters.AccountArrayAdapter;
-import com.readrops.app.database.entities.Feed;
-import com.readrops.app.database.entities.account.Account;
 import com.readrops.app.databinding.ActivityAddFeedBinding;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.ParsingResult;
@@ -34,14 +31,18 @@ import com.readrops.app.utils.ReadropsItemTouchCallback;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.AddFeedsViewModel;
+import com.readrops.db.entities.Feed;
+import com.readrops.db.entities.account.Account;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
+import static com.readrops.app.utils.ReadropsKeys.ACCOUNT_ID;
 import static com.readrops.app.utils.ReadropsKeys.FEEDS;
 
 public class AddFeedActivity extends AppCompatActivity implements View.OnClickListener {
@@ -61,7 +62,9 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_add_feed);
+
+        binding = ActivityAddFeedBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         binding.addFeedLoad.setOnClickListener(this);
         binding.addFeedOk.setOnClickListener(this);
@@ -80,7 +83,7 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
             return false;
         });
 
-        viewModel = ViewModelProviders.of(this).get(AddFeedsViewModel.class);
+        viewModel = new ViewModelProvider(this).get(AddFeedsViewModel.class);
 
         parseItemsAdapter = new ItemAdapter<>();
         fastAdapter = FastAdapter.with(parseItemsAdapter);
@@ -106,8 +109,8 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         new ItemTouchHelper(new ReadropsItemTouchCallback(this,
                 new ReadropsItemTouchCallback.Config.Builder()
                         .swipeDirs(ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT)
-                        .leftDraw(Color.RED, R.drawable.ic_delete)
-                        .rightDraw(Color.RED, R.drawable.ic_delete)
+                        .leftDraw(Color.RED, R.drawable.ic_delete, null)
+                        .rightDraw(Color.RED, R.drawable.ic_delete, null)
                         .swipeCallback((viewHolder, direction) -> {
                             parseItemsAdapter.remove(viewHolder.getAdapterPosition());
 
@@ -125,6 +128,18 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         binding.addFeedInsertedResultsRecyclerview.setLayoutManager(layoutManager1);
 
         viewModel.getAccounts().observe(this, accounts -> {
+            // set the current account at the top of the list
+            int currentAccountId = getIntent().getIntExtra(ACCOUNT_ID, 1);
+            Collections.sort(accounts, (o1, o2) -> {
+                if (o1.getId() == currentAccountId) {
+                    return -1;
+                } else if (o2.getId() == currentAccountId) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            });
+
             arrayAdapter = new AccountArrayAdapter(this, accounts);
             arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
@@ -132,6 +147,13 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         });
 
         feedsToUpdate = new ArrayList<>();
+
+        // new feed intent
+        if (getIntent().getAction() != null && getIntent().getAction().equals(Intent.ACTION_SEND)) {
+            String text = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+            binding.addFeedTextInput.setText(text);
+            onClick(binding.addFeedLoad);
+        }
     }
 
     @Override

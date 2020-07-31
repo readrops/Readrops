@@ -3,15 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/item_filter_read_items"
-        android:title="@string/show_read_articles"
-        app:showAsAction="never"
-        android:checkable="true"/>
+        android:id="@+id/item_sort"
+        android:icon="@drawable/ic_filter"
+        android:title="@string/filter"
+        app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/item_sort"
-        android:title="@string/filter"
-        android:icon="@drawable/ic_filter"
+        android:id="@+id/start_sync"
+        android:icon="@drawable/ic_sync"
+        android:title="@string/synchronize"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/item_filter_read_items"
+        android:checkable="true"
+        android:title="@string/show_read_articles"
+        app:showAsAction="never" />
 
 </menu>

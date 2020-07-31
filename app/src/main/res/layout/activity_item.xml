@@ -137,7 +137,7 @@
                         android:layout_height="16dp"
                         android:layout_alignParentStart="true"
                         android:layout_centerVertical="true"
-                        android:src="@drawable/ic_read_time_grey" />
+                        android:src="@drawable/ic_reading_time" />
 
                     <TextView
                         android:id="@+id/activity_item_readtime"

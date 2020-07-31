@@ -1,41 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".activities.ManageFeedsFoldersActivity">
+    tools:context=".activities.ManageFeedsFoldersActivity"
+    android:id="@+id/manage_feeds_folders_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/manage_feeds_folders_root"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        <com.google.android.material.appbar.AppBarLayout
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/manage_feeds_folders_toolbar"
+            style="@style/ToolbarTheme"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+            android:layout_height="?attr/actionBarSize"
+            app:layout_scrollFlags="scroll|enterAlways" />
 
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/manage_feeds_folders_toolbar"
-                style="@style/ToolbarTheme"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:layout_scrollFlags="scroll|enterAlways" />
-
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/manage_feeds_folders_tablayout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:tabIndicator="@drawable/tab_indicator"
-                app:tabIndicatorColor="@android:color/white"
-                app:tabIndicatorHeight="4dp" />
-
-        </com.google.android.material.appbar.AppBarLayout>
-
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/manage_feeds_folders_viewpager"
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/manage_feeds_folders_tablayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+            app:tabIndicator="@drawable/tab_indicator"
+            app:tabIndicatorColor="@android:color/white"
+            app:tabIndicatorHeight="4dp" />
 
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
-</layout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/manage_feeds_folders_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,9 +1,9 @@
 package com.readrops.app.utils.feedscolors
 
 import androidx.palette.graphics.Palette
-import com.readrops.app.database.entities.Feed
 import com.readrops.app.utils.HtmlParser
 import com.readrops.app.utils.Utils
+import com.readrops.db.entities.Feed
 
 fun setFeedColors(feed: Feed) {
     getFaviconLink(feed)
@@ -13,12 +13,17 @@ fun setFeedColors(feed: Feed) {
         val palette = Palette.from(bitmap).generate()
 
         val dominantSwatch = palette.dominantSwatch
-        if (dominantSwatch != null)
-            feed.textColor = dominantSwatch.rgb
+        feed.textColor = if (dominantSwatch != null && !Utils.isColorTooBright(dominantSwatch.rgb)
+                && !Utils.isColorTooDark(dominantSwatch.rgb)) {
+            dominantSwatch.rgb
+        } else 0
+
 
         val mutedSwatch = palette.mutedSwatch
-        if (mutedSwatch != null)
-            feed.backgroundColor = mutedSwatch.rgb
+        feed.backgroundColor = if (mutedSwatch != null && !Utils.isColorTooBright(mutedSwatch.rgb)
+                && !Utils.isColorTooDark(mutedSwatch.rgb)) {
+            mutedSwatch.rgb
+        } else 0
     }
 }
 

@@ -1,151 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:padding="6dp">
 
     <RelativeLayout
+        android:id="@+id/layout_start"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/item_image"
+            android:layout_width="150dp"
+            android:layout_height="92dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="6dp"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/item_description"
+            style="@style/TextAppearance.AppCompat.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/item_title"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@id/item_image"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:minLines="1"
+            tools:text="This is an item description" />
+
+        <TextView
+            android:id="@+id/item_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@id/item_image"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:minLines="1"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:text="This is an item title with sufficient length" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_end"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="6dp">
+        android:layout_below="@id/layout_start"
+        android:layout_marginTop="6dp">
+
+        <ImageView
+            android:id="@+id/item_folder_icon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_below="@id/item_feed_title_layout"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="6dp"
+            android:src="@drawable/ic_folder_grey" />
 
         <RelativeLayout
-            android:id="@+id/layout_start"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/item_image"
-                android:layout_width="150dp"
-                android:layout_height="92dp"
-                android:layout_alignParentEnd="true"
-                android:layout_marginStart="6dp"
-                android:visibility="gone"
-                tools:visibility="visible" />
-
-            <TextView
-                android:id="@+id/item_description"
-                style="@style/TextAppearance.AppCompat.Small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/item_title"
-                android:layout_alignParentStart="true"
-                android:layout_toStartOf="@id/item_image"
-                android:ellipsize="end"
-                android:maxLines="3"
-                android:minLines="1"
-                tools:text="This is an item description" />
-
-            <TextView
-                android:id="@+id/item_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_toStartOf="@id/item_image"
-                android:ellipsize="end"
-                android:maxLines="2"
-                android:minLines="1"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                tools:text="This is an item title with sufficient length" />
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/layout_end"
-            android:layout_width="match_parent"
+            android:id="@+id/item_feed_title_layout"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/layout_start"
-            android:layout_marginTop="6dp">
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@id/item_date">
 
             <ImageView
-                android:id="@+id/item_folder_icon"
+                android:id="@+id/item_feed_icon"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:layout_below="@id/item_feed_title_layout"
                 android:layout_alignParentStart="true"
-                android:layout_marginTop="6dp"
-                android:src="@drawable/ic_folder_grey" />
-
-            <RelativeLayout
-                android:id="@+id/item_feed_title_layout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_toStartOf="@id/item_date">
-
-                <ImageView
-                    android:id="@+id/item_feed_icon"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_alignParentStart="true"
-                    android:src="@drawable/ic_rss_feed_grey" />
-
-                <TextView
-                    android:id="@+id/item_feed_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginStart="4dp"
-                    android:layout_toEndOf="@id/item_feed_icon"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    tools:text="Feed Name" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/item_readtime_layout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/item_date"
-                android:layout_alignParentEnd="true"
-                android:layout_marginTop="6dp">
-
-                <ImageView
-                    android:id="@+id/item_readtime_icon"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/ic_read_time_grey" />
-
-                <TextView
-                    android:id="@+id/item_readtime"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:layout_toEndOf="@id/item_readtime_icon"
-                    tools:text="3 mins" />
-
-            </RelativeLayout>
+                android:src="@drawable/ic_rss_feed_grey" />
 
             <TextView
-                android:id="@+id/item_date"
+                android:id="@+id/item_feed_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_marginStart="4dp"
-                android:background="@drawable/item_date_background"
-                android:paddingStart="8dp"
-                android:paddingTop="1dp"
-                android:paddingEnd="8dp"
-                android:paddingBottom="1dp"
-                android:textColor="@color/colorBackground"
-                tools:text="8 feb 2019" />
-
-            <TextView
-                android:id="@+id/item_folder_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/item_feed_title_layout"
-                android:layout_marginStart="6dp"
-                android:layout_marginTop="6dp"
-                android:layout_toEndOf="@id/item_folder_icon"
-                tools:text="Folder 1" />
+                android:layout_toEndOf="@id/item_feed_icon"
+                android:ellipsize="end"
+                android:maxLines="1"
+                tools:text="Feed Name" />
 
         </RelativeLayout>
 
+        <RelativeLayout
+            android:id="@+id/item_readtime_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/item_date"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="6dp">
+
+            <ImageView
+                android:id="@+id/item_readtime_icon"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_reading_time" />
+
+            <TextView
+                android:id="@+id/item_readtime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="4dp"
+                android:layout_toEndOf="@id/item_readtime_icon"
+                tools:text="3 mins" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/item_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="4dp"
+            android:background="@drawable/item_date_background"
+            android:paddingStart="8dp"
+            android:paddingTop="1dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="1dp"
+            android:textColor="@color/colorBackground"
+            tools:text="8 feb 2019" />
+
+        <TextView
+            android:id="@+id/item_folder_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/item_feed_title_layout"
+            android:layout_marginStart="6dp"
+            android:layout_marginTop="6dp"
+            android:layout_toEndOf="@id/item_folder_icon"
+            tools:text="Folder 1" />
+
     </RelativeLayout>
 
-</layout>
+</RelativeLayout>
+
