@@ -1,3 +1,15 @@
+#v1.2.0
+
+- Adaptive icon
+- Background synchronisation
+- Notifications
+- FreshRSS and Nextcloud News synchronisation speed improvements
+- Add feed direct share action
+- Improve some html tags look
+- Diplay image title or alt as caption (#63)
+- Local RSS fixes (#70, #71)
+- Other bug fixes and UI improvements
+
 # v1.1.4
 
 - Fix app crash when using an account url without http scheme #55

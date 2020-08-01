@@ -1,0 +1,12 @@
+ <ul>
+	<li>Adaptive icon</li>
+	<li>Background synchronisation</li>
+	<li>Notifications</li>
+	<li>FreshRSS and Nextcloud News synchronisation speed improvements</li>
+	<li>Add feed direct share action</li>
+	<li>Improve some html tags look</li>
+	<li>Diplay image title or alt as caption (#63)</li>
+	<li>Local RSS fixes (#70, #71)</li>
+	<li>Other bug fixes and UI improvements</li>
+</ul> 
+ 
