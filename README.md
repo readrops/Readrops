@@ -14,6 +14,8 @@ Readrops is a multi-services RSS client for Android. Its name is composed of "Re
 - Feeds and folders management (create, update and delete feeds/folders if your service API supports it)
 - Nextcloud news support
 - FreshRSS support
+- Background synchronisation
+- Notifications
 
 Other features will come in the near future.
 
