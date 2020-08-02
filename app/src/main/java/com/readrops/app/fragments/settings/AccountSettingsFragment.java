@@ -22,6 +22,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.readrops.api.opml.OPMLParser;
 import com.readrops.app.R;
 import com.readrops.app.ReadropsApp;
 import com.readrops.app.activities.AddAccountActivity;
@@ -30,12 +31,9 @@ import com.readrops.app.activities.NotificationPermissionActivity;
 import com.readrops.app.utils.PermissionManager;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
-import com.readrops.app.utils.matchers.OPMLMatcher;
 import com.readrops.app.viewmodels.AccountViewModel;
 import com.readrops.db.entities.account.Account;
 import com.readrops.db.entities.account.AccountType;
-import com.readrops.api.opml.OPMLParser;
-import com.readrops.api.opml.model.OPML;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -247,11 +245,8 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
             final OutputStream outputStream = new FileOutputStream(file);
 
             viewModel.getFoldersWithFeeds()
-                    .flatMapCompletable(folderListMap -> {
-                        OPML opml = OPMLMatcher.INSTANCE.foldersAndFeedsToOPML(folderListMap, getContext());
-
-                        return OPMLParser.write(opml, outputStream);
-                    }).subscribeOn(Schedulers.io())
+                    .flatMapCompletable(folderListMap -> OPMLParser.write(folderListMap, outputStream))
+                    .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doAfterTerminate(() -> {
                         try {
