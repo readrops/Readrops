@@ -131,3 +131,5 @@ fastlane/Appfile
 fastlane/Fastfile
 
 Gemfile
+
+mapping/
