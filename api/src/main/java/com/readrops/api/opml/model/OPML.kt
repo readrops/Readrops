@@ -8,7 +8,7 @@ import org.simpleframework.xml.Root
 @Order(elements = ["head", "body"])
 @Root(name = "opml", strict = false)
 data class OPML(@field:Attribute(required = true) var version: String?,
-                @field:Element(required = true) var head: Head?,
+                @field:Element(required = false) var head: Head?,
                 @field:Element(required = true) var body: Body?) {
 
     /**
