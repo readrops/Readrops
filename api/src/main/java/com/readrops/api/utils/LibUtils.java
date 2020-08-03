@@ -35,7 +35,7 @@ public final class LibUtils {
     }
 
     public static String fileToString(Uri uri, Context context) throws FileNotFoundException {
-        InputStream  inputStream = context.getContentResolver().openInputStream(uri);
+        InputStream inputStream = context.getContentResolver().openInputStream(uri);
 
         return inputStreamToString(inputStream);
     }
