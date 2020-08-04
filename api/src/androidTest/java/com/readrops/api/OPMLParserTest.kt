@@ -36,6 +36,8 @@ class OPMLParserTest {
         assertEquals(foldersAndFeeds?.get(Folder("Sub subfolder 1"))?.size, 2)
         assertEquals(foldersAndFeeds?.get(Folder("Sub subfolder 2"))?.size, 0)
         assertEquals(foldersAndFeeds?.get(null)?.size, 2)
+
+        stream.close()
     }
 
     @Test
@@ -45,6 +47,8 @@ class OPMLParserTest {
         OPMLParser.read(stream)
                 .test()
                 .assertError(ParseException::class.java)
+
+        stream.close()
     }
 
     @Test
