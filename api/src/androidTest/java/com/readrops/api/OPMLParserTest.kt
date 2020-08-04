@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.readrops.api.opml.OPMLParser
+import com.readrops.api.utils.ParseException
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import io.reactivex.schedulers.Schedulers
@@ -35,6 +36,15 @@ class OPMLParserTest {
         assertEquals(foldersAndFeeds?.get(Folder("Sub subfolder 1"))?.size, 2)
         assertEquals(foldersAndFeeds?.get(Folder("Sub subfolder 2"))?.size, 0)
         assertEquals(foldersAndFeeds?.get(null)?.size, 2)
+    }
+
+    @Test
+    fun opmlVersionTest() {
+        val stream = context.resources.assets.open("wrong_version.opml")
+
+        OPMLParser.read(stream)
+                .test()
+                .assertError(ParseException::class.java)
     }
 
     @Test

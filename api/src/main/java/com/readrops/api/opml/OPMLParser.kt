@@ -2,11 +2,13 @@ package com.readrops.api.opml
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import com.readrops.api.opml.model.Body
 import com.readrops.api.opml.model.Head
 import com.readrops.api.opml.model.OPML
 import com.readrops.api.opml.model.Outline
 import com.readrops.api.utils.LibUtils
+import com.readrops.api.utils.ParseException
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import io.reactivex.Completable
@@ -19,6 +21,8 @@ import java.io.OutputStream
 
 object OPMLParser {
 
+    val TAG = OPMLParser.javaClass.simpleName
+
     @JvmStatic
     fun read(uri: Uri, context: Context): Single<Map<Folder?, List<Feed>>> {
         return Single.create(SingleOnSubscribe<InputStream> {
@@ -30,12 +34,17 @@ object OPMLParser {
     @JvmStatic
     fun read(stream: InputStream): Single<Map<Folder?, List<Feed>>> {
         return Single.create { emitter ->
-            val fileString = LibUtils.inputStreamToString(stream)
-            val serializer: Serializer = Persister()
+            try {
+                val fileString = LibUtils.inputStreamToString(stream)
+                val serializer: Serializer = Persister()
 
-            val opml: OPML = serializer.read(OPML::class.java, fileString)
+                val opml: OPML = serializer.read(OPML::class.java, fileString)
 
-            emitter.onSuccess(opmltoFoldersAndFeeds(opml))
+                emitter.onSuccess(opmltoFoldersAndFeeds(opml))
+            } catch (e: Exception) {
+                Log.d(TAG, e.message, e)
+                emitter.onError(e)
+            }
         }
     }
 
@@ -50,6 +59,9 @@ object OPMLParser {
     }
 
     private fun opmltoFoldersAndFeeds(opml: OPML): Map<Folder?, List<Feed>> {
+        if (opml.version != "2.0")
+            throw ParseException("Only 2.0 OPML specification is supported")
+
         val foldersAndFeeds: MutableMap<Folder?, List<Feed>> = HashMap()
         val body = opml.body!!
 

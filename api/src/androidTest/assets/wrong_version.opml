@@ -1,0 +1,6 @@
+<opml version="1.0">
+	<body>
+		<outline title="The Verge" xmlUrl='http://www.theverge.com/rss/index.xml' htmlUrl="http://www.theverge.com" />
+        <outline title="TechCrunch" xmlUrl='https://techcrunch.com/feed/' htmlUrl="https://techcrunch.com/" />
+	</body>
+</opml>
