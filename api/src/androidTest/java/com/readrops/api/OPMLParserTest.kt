@@ -1,21 +1,35 @@
 package com.readrops.api
 
+import android.Manifest
 import android.content.Context
+import android.os.Environment
+import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.GrantPermissionRule
 import com.readrops.api.opml.OPMLParser
 import com.readrops.api.utils.ParseException
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
+import io.reactivex.CompletableObserver
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertTrue
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStream
 
 @RunWith(AndroidJUnit4::class)
 class OPMLParserTest {
 
     private val context: Context = InstrumentationRegistry.getInstrumentation().context
+
+    @get:Rule
+    val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
     @Test
     fun readOpmlTest() {
@@ -53,6 +67,34 @@ class OPMLParserTest {
 
     @Test
     fun writeOpmlTest() {
+        val filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath
+        val file = File(filePath, "subscriptions.opml")
 
+        val outputStream: OutputStream = FileOutputStream(file)
+        val foldersAndFeeds: Map<Folder?, List<Feed>> = HashMap<Folder?, List<Feed>>().apply {
+            put(null, listOf(Feed("Feed1", "", "https://feed1.com"),
+                    Feed("Feed2", "", "https://feed2.com")))
+            put(Folder("Folder1"), listOf())
+            put(Folder("Folder2"), listOf(Feed("Feed3", "", "https://feed3.com"),
+                    Feed("Feed4", "", "https://feed4.com")))
+        }
+
+        OPMLParser.write(foldersAndFeeds, outputStream)
+                .subscribeOn(Schedulers.trampoline())
+                .subscribe()
+
+        outputStream.flush()
+        outputStream.close()
+
+        val inputStream = file.inputStream()
+        var foldersAndFeeds2: Map<Folder?, List<Feed>>? = null
+        OPMLParser.read(inputStream).subscribe { result -> foldersAndFeeds2 = result }
+
+        assertEquals(foldersAndFeeds.size, foldersAndFeeds2?.size)
+        assertEquals(foldersAndFeeds[Folder("Folder1")]?.size, foldersAndFeeds2?.get(Folder("Folder1"))?.size)
+        assertEquals(foldersAndFeeds[Folder("Folder2")]?.size, foldersAndFeeds2?.get(Folder("Folder2"))?.size)
+        assertEquals(foldersAndFeeds[null]?.size, foldersAndFeeds2?.get(null)?.size)
+
+        inputStream.close()
     }
 }

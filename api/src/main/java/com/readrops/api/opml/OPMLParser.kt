@@ -40,7 +40,7 @@ object OPMLParser {
 
                 val opml: OPML = serializer.read(OPML::class.java, fileString)
 
-                emitter.onSuccess(opmltoFoldersAndFeeds(opml))
+                emitter.onSuccess(opmlToFoldersAndFeeds(opml))
             } catch (e: Exception) {
                 Log.d(TAG, e.message, e)
                 emitter.onError(e)
@@ -49,7 +49,7 @@ object OPMLParser {
     }
 
     @JvmStatic
-    fun write(foldersAndFeeds: Map<Folder, List<Feed>>, outputStream: OutputStream): Completable {
+    fun write(foldersAndFeeds: Map<Folder?, List<Feed>>, outputStream: OutputStream): Completable {
         return Completable.create { emitter ->
             val serializer: Serializer = Persister()
             serializer.write(foldersAndFeedsToOPML(foldersAndFeeds), outputStream)
@@ -58,7 +58,7 @@ object OPMLParser {
         }
     }
 
-    private fun opmltoFoldersAndFeeds(opml: OPML): Map<Folder?, List<Feed>> {
+    private fun opmlToFoldersAndFeeds(opml: OPML): Map<Folder?, List<Feed>> {
         if (opml.version != "2.0")
             throw ParseException("Only 2.0 OPML specification is supported")
 
@@ -84,7 +84,9 @@ object OPMLParser {
 
         // The outline is a folder/category
         if ((outline.outlines != null && !outline.outlines?.isEmpty()!!) || outline.xmlUrl.isNullOrEmpty()) {
-            val folder = Folder(outline.text)
+            // if the outline doesn't have text or title value but contains sub outlines,
+            // those sub outlines will be considered as not belonging to any folder and join the others at the top level of the hierarchy
+            val folder = if (outline.name != null) Folder(outline.name) else null
 
             outline.outlines?.forEach {
                 val recursiveFeedsFolders = parseOutline(it)
@@ -100,7 +102,7 @@ object OPMLParser {
         } else { // the outline is a feed
             if (!outline.xmlUrl.isNullOrEmpty()) {
                 val feed = Feed().apply {
-                    name = outline.title
+                    name = outline.name
                     url = outline.xmlUrl
                     siteUrl = outline.htmlUrl
                 }
@@ -112,20 +114,27 @@ object OPMLParser {
         return foldersAndFeeds
     }
 
-    private fun foldersAndFeedsToOPML(foldersAndFeeds: Map<Folder, List<Feed>>): OPML {
+    private fun foldersAndFeedsToOPML(foldersAndFeeds: Map<Folder?, List<Feed>>): OPML {
         val outlines = arrayListOf<Outline>()
+
         for (folderAndFeeds in foldersAndFeeds) {
-            val outline = Outline(folderAndFeeds.key.name)
+            if (folderAndFeeds.key != null) {
+                val outline = Outline(folderAndFeeds.key?.name)
 
-            val feedOutlines = arrayListOf<Outline>()
-            folderAndFeeds.value.forEach { feed ->
-                val feedOutline = Outline(feed.name, feed.url, feed.siteUrl)
+                val feedOutlines = arrayListOf<Outline>()
+                for (feed in folderAndFeeds.value) {
+                    val feedOutline = Outline(feed.name, feed.url, feed.siteUrl)
 
-                feedOutlines += feedOutline
+                    feedOutlines += feedOutline
+                }
+
+                outline.outlines = feedOutlines
+                outlines += outline
+            } else {
+                for (feed in folderAndFeeds.value) {
+                    outlines += Outline(feed.name, feed.url, feed.siteUrl)
+                }
             }
-
-            outline.outlines = feedOutlines
-            outlines += outline
         }
 
         val head = Head("Subscriptions")
