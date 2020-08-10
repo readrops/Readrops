@@ -3,7 +3,6 @@ package com.readrops.api
 import android.Manifest
 import android.content.Context
 import android.os.Environment
-import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
@@ -11,11 +10,8 @@ import com.readrops.api.opml.OPMLParser
 import com.readrops.api.utils.ParseException
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
-import io.reactivex.CompletableObserver
-import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import junit.framework.TestCase.assertEquals
-import junit.framework.TestCase.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -50,6 +46,22 @@ class OPMLParserTest {
         assertEquals(foldersAndFeeds?.get(Folder("Sub subfolder 1"))?.size, 2)
         assertEquals(foldersAndFeeds?.get(Folder("Sub subfolder 2"))?.size, 0)
         assertEquals(foldersAndFeeds?.get(null)?.size, 2)
+
+        stream.close()
+    }
+
+    @Test
+    fun readLiteSubscriptionsTest() {
+        val stream = context.resources.assets.open("lite_subscriptions.opml")
+
+        var foldersAndFeeds: Map<Folder?, List<Feed>>? = null
+
+        OPMLParser.read(stream)
+                .subscribe { result -> foldersAndFeeds = result }
+
+        assertEquals(foldersAndFeeds?.values?.first()?.size, 2)
+        assertEquals(foldersAndFeeds?.values?.first()?.first()?.url, "http://www.theverge.com/rss/index.xml")
+        assertEquals(foldersAndFeeds?.values?.first()?.get(1)?.url, "https://techcrunch.com/feed/")
 
         stream.close()
     }
