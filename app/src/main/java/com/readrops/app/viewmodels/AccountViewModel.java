@@ -66,6 +66,7 @@ public class AccountViewModel extends AndroidViewModel {
         return database.accountDao().getAccountCount();
     }
 
+    @SuppressWarnings("unchecked")
     public Single<Map<Folder, List<Feed>>> getFoldersWithFeeds() {
         return repository.getFoldersWithFeeds();
     }

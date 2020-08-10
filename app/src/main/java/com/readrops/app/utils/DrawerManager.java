@@ -90,7 +90,7 @@ public class DrawerManager {
 
         for (Map.Entry<Folder, List<Feed>> entry : folderListMap.entrySet()) {
             Folder folder = entry.getKey();
-            if (folder.getId() != 0) {
+            if (folder != null) {
                 // no identifier for badge items, but if needed, be aware of not getting conflicts
                 // with secondary item identifiers (folder and feed ids can be the same)
                 ExpandableBadgeDrawerItem badgeDrawerItem = new ExpandableBadgeDrawerItem()

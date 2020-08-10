@@ -124,6 +124,7 @@ public class MainViewModel extends AndroidViewModel {
         return repository.getFeedCount(currentAccount.getId());
     }
 
+    @SuppressWarnings("unchecked")
     public Single<Map<Folder, List<Feed>>> getFoldersWithFeeds() {
         return repository.getFoldersWithFeeds();
     }

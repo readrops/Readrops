@@ -19,6 +19,7 @@ import com.readrops.db.entities.account.AccountType;
 import com.readrops.api.services.SyncResult;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -132,7 +133,7 @@ public abstract class ARepository<T> {
     public Single<Map<Folder, List<Feed>>> getFoldersWithFeeds() {
         return Single.create(emitter -> {
             List<Folder> folders = database.folderDao().getFolders(account.getId());
-            Map<Folder, List<Feed>> foldersWithFeeds = new TreeMap<>(Folder::compareTo);
+            Map<Folder, List<Feed>> foldersWithFeeds = new TreeMap<>(Comparator.nullsLast(Folder::compareTo));
 
             for (Folder folder : folders) {
                 List<Feed> feeds = database.feedDao().getFeedsByFolder(folder.getId());
@@ -145,14 +146,13 @@ public abstract class ARepository<T> {
                 foldersWithFeeds.put(folder, feeds);
             }
 
-            Folder noFolder = new Folder("no folder");
-
+            // feeds without folder
             List<Feed> feedsWithoutFolder = database.feedDao().getFeedsWithoutFolder(account.getId());
             for (Feed feed : feedsWithoutFolder) {
                 feed.setUnreadCount(database.itemDao().getUnreadCount(feed.getId()));
             }
 
-            foldersWithFeeds.put(noFolder, feedsWithoutFolder);
+            foldersWithFeeds.put(null, feedsWithoutFolder);
 
             emitter.onSuccess(foldersWithFeeds);
         });
