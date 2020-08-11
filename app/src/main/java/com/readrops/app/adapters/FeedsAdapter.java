@@ -3,8 +3,6 @@ package com.readrops.app.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,12 +12,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.readrops.app.R;
-import com.readrops.db.pojo.FeedWithFolder;
+import com.readrops.app.databinding.FeedLayoutBinding;
 import com.readrops.app.utils.GlideApp;
+import com.readrops.db.pojo.FeedWithFolder;
 
 import java.util.List;
 
-public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.ViewHolder> {
+public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.FeedViewHolder> {
 
     private ManageFeedsListener listener;
 
@@ -52,20 +51,16 @@ public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.ViewH
         this.listener = listener;
     }
 
-    public FeedWithFolder getItemAt(int position) {
-        return getItem(position);
-    }
-
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.feed_layout, viewGroup, false);
+    public FeedViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+        FeedLayoutBinding binding = FeedLayoutBinding.inflate(LayoutInflater.from(viewGroup.getContext()), viewGroup, false);
 
-        return new ViewHolder(view);
+        return new FeedViewHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull FeedViewHolder viewHolder, int i) {
         FeedWithFolder feedWithFolder = getItem(i);
 
         if (feedWithFolder.getFeed().getIconUrl() != null) {
@@ -73,21 +68,21 @@ public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.ViewH
                     .load(feedWithFolder.getFeed().getIconUrl())
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .placeholder(R.drawable.ic_rss_feed_grey)
-                    .into(viewHolder.feedIcon);
+                    .into(viewHolder.binding.feedLayoutIcon);
         } else
-            viewHolder.feedIcon.setImageResource(R.drawable.ic_rss_feed_grey);
+            viewHolder.binding.feedLayoutIcon.setImageResource(R.drawable.ic_rss_feed_grey);
 
-        viewHolder.feedName.setText(feedWithFolder.getFeed().getName());
+        viewHolder.binding.feedLayoutName.setText(feedWithFolder.getFeed().getName());
         if (feedWithFolder.getFeed().getDescription() != null) {
-            viewHolder.feedDescription.setVisibility(View.VISIBLE);
-            viewHolder.feedDescription.setText(feedWithFolder.getFeed().getDescription());
+            viewHolder.binding.feedLayoutDescription.setVisibility(View.VISIBLE);
+            viewHolder.binding.feedLayoutDescription.setText(feedWithFolder.getFeed().getDescription());
         } else
-            viewHolder.feedDescription.setVisibility(View.GONE);
+            viewHolder.binding.feedLayoutDescription.setVisibility(View.GONE);
 
         if (feedWithFolder.getFolder() != null)
-            viewHolder.folderName.setText(feedWithFolder.getFolder().getName());
+            viewHolder.binding.feedLayoutFolder.setText(feedWithFolder.getFolder().getName());
         else
-            viewHolder.folderName.setText(R.string.no_folder);
+            viewHolder.binding.feedLayoutFolder.setText(R.string.no_folder);
 
         viewHolder.itemView.setOnClickListener(v -> listener.onEdit(feedWithFolder));
         viewHolder.itemView.setOnLongClickListener(v -> {
@@ -98,16 +93,16 @@ public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.ViewH
 
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull List<Object> payloads) {
+    public void onBindViewHolder(@NonNull FeedViewHolder holder, int position, @NonNull List<Object> payloads) {
         if (!payloads.isEmpty()) {
             FeedWithFolder feedWithFolder = (FeedWithFolder) payloads.get(0);
 
-            holder.feedName.setText(feedWithFolder.getFeed().getName());
+            holder.binding.feedLayoutName.setText(feedWithFolder.getFeed().getName());
 
             if (feedWithFolder.getFolder() != null)
-                holder.folderName.setText(feedWithFolder.getFolder().getName());
+                holder.binding.feedLayoutName.setText(feedWithFolder.getFolder().getName());
             else
-                holder.folderName.setText(R.string.no_folder);
+                holder.binding.feedLayoutName.setText(R.string.no_folder);
 
         } else
             onBindViewHolder(holder, position);
@@ -115,24 +110,19 @@ public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.ViewH
 
     public interface ManageFeedsListener {
         void onOpenLink(FeedWithFolder feedWithFolder);
+
         void onEdit(FeedWithFolder feedWithFolder);
     }
 
 
-    protected class ViewHolder extends RecyclerView.ViewHolder {
+    protected class FeedViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView feedIcon;
-        private TextView feedName;
-        private TextView feedDescription;
-        private TextView folderName;
+        private FeedLayoutBinding binding;
 
-        public ViewHolder(View itemView) {
-            super(itemView);
+        public FeedViewHolder(FeedLayoutBinding binding) {
+            super(binding.getRoot());
 
-            feedIcon = itemView.findViewById(R.id.feed_layout_icon);
-            feedName = itemView.findViewById(R.id.feed_layout_name);
-            feedDescription = itemView.findViewById(R.id.feed_layout_description);
-            folderName = itemView.findViewById(R.id.feed_layout_folder);
+            this.binding = binding;
         }
     }
 }
