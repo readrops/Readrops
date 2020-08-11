@@ -9,16 +9,10 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -34,7 +28,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
 import com.bumptech.glide.util.ViewPreloadSizeProvider;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -43,6 +36,7 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.readrops.app.R;
 import com.readrops.app.adapters.MainItemListAdapter;
+import com.readrops.app.databinding.ActivityMainBinding;
 import com.readrops.app.utils.DrawerManager;
 import com.readrops.app.utils.GlideApp;
 import com.readrops.app.utils.ReadropsItemTouchCallback;
@@ -88,24 +82,15 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     public static final int ITEM_REQUEST = 3;
     public static final int ADD_ACCOUNT_REQUEST = 4;
 
-    private RecyclerView recyclerView;
+    private ActivityMainBinding binding;
     private MainItemListAdapter adapter;
-    private SwipeRefreshLayout refreshLayout;
-    private ConstraintLayout rootLayout;
 
-    private Toolbar toolbar;
     private Drawer drawer;
 
     private PagedList<ItemWithFeed> allItems;
 
     private MainViewModel viewModel;
     private DrawerManager drawerManager;
-
-    private LinearLayout emptyListLayout;
-    private RelativeLayout syncProgressLayout;
-    private TextView syncProgress;
-    private ProgressBar syncProgressBar;
-    private FloatingActionButton actionButton;
 
     private int feedCount;
     private int feedNb;
@@ -121,20 +106,12 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
 
-        toolbar = findViewById(R.id.toolbar_main);
-        setSupportActionBar(toolbar);
+        setContentView(binding.getRoot());
+        setSupportActionBar(binding.toolbarMain);
 
-        emptyListLayout = findViewById(R.id.empty_list_layout);
-        refreshLayout = findViewById(R.id.swipe_refresh_layout);
-        refreshLayout.setOnRefreshListener(this);
-        rootLayout = findViewById(R.id.main_root);
-
-        syncProgressLayout = findViewById(R.id.sync_progress_layout);
-        syncProgress = findViewById(R.id.sync_progress_text_view);
-        syncProgressBar = findViewById(R.id.sync_progress_bar);
-        actionButton = findViewById(R.id.add_feed_fab);
+        binding.swipeRefreshLayout.setOnRefreshListener(this);
 
         feedCount = 0;
         initRecyclerView();
@@ -148,15 +125,15 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             allItems = itemWithFeeds;
 
             if (!itemWithFeeds.isEmpty())
-                emptyListLayout.setVisibility(View.GONE);
+                binding.emptyListLayout.setVisibility(View.GONE);
             else
-                emptyListLayout.setVisibility(View.VISIBLE);
+                binding.emptyListLayout.setVisibility(View.VISIBLE);
 
-            if (!refreshLayout.isRefreshing())
+            if (!binding.swipeRefreshLayout.isRefreshing())
                 adapter.submitList(itemWithFeeds);
         });
 
-        drawerManager = new DrawerManager(this, toolbar, (view, position, drawerItem) -> {
+        drawerManager = new DrawerManager(this, binding.toolbarMain, (view, position, drawerItem) -> {
             handleDrawerClick(drawerItem);
 
             return true;
@@ -227,11 +204,11 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             }
 
             if (accountWeakReference.get() != null && !accountWeakReference.get().isLocal()) {
-                refreshLayout.setRefreshing(true);
+                binding.swipeRefreshLayout.setRefreshing(true);
                 onRefresh();
                 accountWeakReference.clear();
             } else if (currentAccount == null && savedInstanceState != null && savedInstanceState.getBoolean(SYNCING)) {
-                refreshLayout.setRefreshing(true);
+                binding.swipeRefreshLayout.setRefreshing(true);
                 onRefresh();
                 savedInstanceState.clear();
             }
@@ -257,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             viewModel.setItemReadState(intent.getIntExtra(ITEM_ID, 0), true, true)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnError(throwable -> Utils.showSnackbar(rootLayout, throwable.getMessage()))
+                    .doOnError(throwable -> Utils.showSnackbar(binding.mainRoot, throwable.getMessage()))
                     .subscribe();
         }
     }
@@ -308,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
                     @Override
                     public void onError(Throwable e) {
-                        Utils.showSnackbar(rootLayout, e.getMessage());
+                        Utils.showSnackbar(binding.mainRoot, e.getMessage());
                     }
                 });
     }
@@ -322,8 +299,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
     private void initRecyclerView() {
-        recyclerView = findViewById(R.id.items_recycler_view);
-
         ViewPreloadSizeProvider preloadSizeProvider = new ViewPreloadSizeProvider();
         adapter = new MainItemListAdapter(GlideApp.with(this), preloadSizeProvider);
         adapter.setOnItemClickListener(new MainItemListAdapter.OnItemClickListener() {
@@ -339,7 +314,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     viewModel.setItemReadState(itemWithFeed, true)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .doOnError(throwable -> Utils.showSnackbar(rootLayout, throwable.getMessage()))
+                            .doOnError(throwable -> Utils.showSnackbar(binding.mainRoot, throwable.getMessage()))
                             .subscribe();
 
                     itemWithFeed.getItem().setRead(true);
@@ -358,7 +333,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
             @Override
             public void onItemLongClick(ItemWithFeed itemWithFeed, int position) {
-                if (actionMode != null || refreshLayout.isRefreshing())
+                if (actionMode != null || binding.swipeRefreshLayout.isRefreshing())
                     return;
 
                 selectedItemWithFeed = itemWithFeed;
@@ -370,20 +345,20 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         });
 
         RecyclerViewPreloader<String> preloader = new RecyclerViewPreloader<String>(Glide.with(this), adapter, preloadSizeProvider, 10);
-        recyclerView.addOnScrollListener(preloader);
+        binding.itemsRecyclerView.addOnScrollListener(preloader);
 
-        recyclerView.setRecyclerListener(viewHolder -> {
+        binding.itemsRecyclerView.setRecyclerListener(viewHolder -> {
             MainItemListAdapter.ItemViewHolder vh = (MainItemListAdapter.ItemViewHolder) viewHolder;
             GlideApp.with(this).clear(vh.getItemImage());
         });
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
+        binding.itemsRecyclerView.setLayoutManager(layoutManager);
 
         DividerItemDecoration decoration = new DividerItemDecoration(this, layoutManager.getOrientation());
-        recyclerView.addItemDecoration(decoration);
+        binding.itemsRecyclerView.addItemDecoration(decoration);
 
-        recyclerView.setAdapter(adapter);
+        binding.itemsRecyclerView.setAdapter(adapter);
 
 
         Drawable readLater = ContextCompat.getDrawable(this, R.drawable.ic_read_later).mutate();
@@ -396,34 +371,34 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                         .leftDraw(ContextCompat.getColor(this, R.color.colorAccent), R.drawable.ic_read_later, readLater)
                         .rightDraw(ContextCompat.getColor(this, R.color.colorAccent), R.drawable.ic_read, null)
                         .build()))
-                .attachToRecyclerView(recyclerView);
+                .attachToRecyclerView(binding.itemsRecyclerView);
 
         adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
                 if (scrollToTop) {
-                    recyclerView.scrollToPosition(0);
+                    binding.itemsRecyclerView.scrollToPosition(0);
                     scrollToTop = false;
                 }
             }
 
             @Override
             public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
-                ;if (scrollToTop) {
-                    recyclerView.scrollToPosition(0);
+                if (scrollToTop) {
+                    binding.itemsRecyclerView.scrollToPosition(0);
                     scrollToTop = false;
                 } else
                     super.onItemRangeMoved(fromPosition, toPosition, itemCount);
             }
         });
 
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        binding.itemsRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 if (dy > 0) {
-                    actionButton.hide();
+                    binding.addFeedFab.hide();
                 } else {
-                    actionButton.show();
+                    binding.addFeedFab.show();
                 }
             }
         });
@@ -437,7 +412,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             viewModel.setItemReadState(itemWithFeed, !itemWithFeed.getItem().isRead())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnError(throwable -> Utils.showSnackbar(rootLayout, throwable.getMessage()))
+                    .doOnError(throwable -> Utils.showSnackbar(binding.mainRoot, throwable.getMessage()))
                     .subscribe();
 
             itemWithFeed.getItem().setRead(!itemWithFeed.getItem().isRead());
@@ -447,7 +422,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             viewModel.setItemReadItLater((int) adapter.getItemId(viewHolder.getAdapterPosition()))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnError(throwable -> Utils.showSnackbar(rootLayout, throwable.getMessage()))
+                    .doOnError(throwable -> Utils.showSnackbar(binding.mainRoot, throwable.getMessage()))
                     .subscribe();
 
             if (viewModel.getFilterType() == FilterType.READ_IT_LATER_FILTER)
@@ -458,7 +433,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     @Override
     public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
         drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-        refreshLayout.setEnabled(false);
+        binding.swipeRefreshLayout.setEnabled(false);
 
         actionMode.getMenuInflater().inflate(R.menu.item_list_contextual_menu, menu);
         getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.primary_dark));
@@ -504,7 +479,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         actionMode = null;
 
         drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-        refreshLayout.setEnabled(true);
+        binding.swipeRefreshLayout.setEnabled(true);
 
         adapter.clearSelection();
     }
@@ -514,7 +489,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             viewModel.setAllItemsReadState(read)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnError(throwable -> Utils.showSnackbar(rootLayout, throwable.getMessage()))
+                    .doOnError(throwable -> Utils.showSnackbar(binding.mainRoot, throwable.getMessage()))
                     .subscribe();
 
             allItemsSelected = false;
@@ -522,7 +497,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             viewModel.setItemsReadState(adapter.getSelectedItems(), read)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnError(throwable -> Utils.showSnackbar(rootLayout, throwable.getMessage()))
+                    .doOnError(throwable -> Utils.showSnackbar(binding.mainRoot, throwable.getMessage()))
                     .subscribe();
         }
 
@@ -550,7 +525,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
                         @Override
                         public void onError(Throwable e) {
-                            Utils.showSnackbar(rootLayout, e.getMessage());
+                            Utils.showSnackbar(binding.mainRoot, e.getMessage());
                         }
                     });
         } else {
@@ -570,7 +545,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             List<Feed> feeds = data.getParcelableArrayListExtra(FEEDS);
 
             if (feeds != null && !feeds.isEmpty() && viewModel.isAccountLocal()) {
-                refreshLayout.setRefreshing(true);
+                binding.swipeRefreshLayout.setRefreshing(true);
                 feedNb = feeds.size();
                 sync(feeds);
             }
@@ -592,7 +567,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
                 // start syncing only if the account is not local
                 if (!viewModel.isAccountLocal()) {
-                    refreshLayout.setRefreshing(true);
+                    binding.swipeRefreshLayout.setRefreshing(true);
                     onRefresh();
                 }
 
@@ -615,19 +590,19 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                         syncDisposable = d;
 
                         if (viewModel.isAccountLocal() && feedNb > 0) {
-                            syncProgressLayout.setVisibility(View.VISIBLE);
-                            syncProgressBar.setProgress(0);
+                            binding.syncProgressLayout.setVisibility(View.VISIBLE);
+                            binding.syncProgressBar.setProgress(0);
                         }
                     }
 
                     @Override
                     public void onNext(Feed feed) {
                         if (viewModel.isAccountLocal() && feedNb > 0) {
-                            syncProgress.setText(getString(R.string.updating_feed, feed.getName()));
+                            binding.syncProgressTextView.setText(getString(R.string.updating_feed, feed.getName()));
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                syncProgressBar.setProgress((feedCount * 100) / feedNb, true);
+                                binding.syncProgressBar.setProgress((feedCount * 100) / feedNb, true);
                             } else
-                                syncProgressBar.setProgress((feedCount * 100) / feedNb);
+                                binding.syncProgressBar.setProgress((feedCount * 100) / feedNb);
                         }
 
                         feedCount++;
@@ -636,10 +611,10 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        refreshLayout.setRefreshing(false);
-                        syncProgressLayout.setVisibility(View.GONE);
+                        binding.swipeRefreshLayout.setRefreshing(false);
+                        binding.syncProgressLayout.setVisibility(View.GONE);
 
-                        Utils.showSnackbar(rootLayout, e.getMessage());
+                        Utils.showSnackbar(binding.mainRoot, e.getMessage());
                         drawerManager.enableAccountSelection();
                     }
 
@@ -647,14 +622,14 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     public void onComplete() {
                         if (viewModel.isAccountLocal() && feedNb > 0) {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                                syncProgressBar.setProgress(100, true);
+                                binding.syncProgressBar.setProgress(100, true);
                             else
-                                syncProgressBar.setProgress(100);
+                                binding.syncProgressBar.setProgress(100);
 
-                            syncProgressLayout.setVisibility(View.GONE);
+                            binding.syncProgressLayout.setVisibility(View.GONE);
                         }
 
-                        refreshLayout.setRefreshing(false);
+                        binding.swipeRefreshLayout.setRefreshing(false);
 
                         scrollToTop = true;
                         adapter.submitList(allItems);
@@ -700,7 +675,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 return true;
             case R.id.start_sync:
                 if (!viewModel.isAccountLocal()) {
-                    refreshLayout.setRefreshing(true);
+                    binding.swipeRefreshLayout.setRefreshing(true);
                 }
                 onRefresh();
                 break;
@@ -770,10 +745,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        if (refreshLayout.isRefreshing())
+        if (binding.swipeRefreshLayout.isRefreshing())
             outState.putBoolean(SYNCING, true);
 
         super.onSaveInstanceState(outState);
     }
-
 }
