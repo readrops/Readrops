@@ -18,15 +18,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ShareCompat;
 import androidx.lifecycle.ViewModelProvider;
@@ -35,14 +30,11 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.readrops.app.R;
+import com.readrops.app.databinding.ActivityItemBinding;
 import com.readrops.app.utils.DateUtils;
 import com.readrops.app.utils.GlideApp;
 import com.readrops.app.utils.PermissionManager;
-import com.readrops.app.utils.ReadropsWebView;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.ItemViewModel;
@@ -62,72 +54,47 @@ public class ItemActivity extends AppCompatActivity {
     private static final String TAG = ItemActivity.class.getSimpleName();
     private static final int WRITE_EXTERNAL_STORAGE_REQUEST = 1;
 
+    private ActivityItemBinding binding;
     private ItemViewModel viewModel;
-    private TextView date;
-    private TextView title;
-    private TextView author;
-    private TextView readTime;
-
-    private RelativeLayout readTimeLayout;
-    RelativeLayout dateLayout;
-
-    private CollapsingToolbarLayout toolbarLayout;
-    private Toolbar toolbar;
-    private FloatingActionButton actionButton;
-    private ReadropsWebView webView;
 
     private ItemWithFeed itemWithFeed;
 
     private boolean appBarCollapsed;
 
-    private CoordinatorLayout rootLayout;
     private String urlToDownload;
     private String imageTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_item);
+
+        binding = ActivityItemBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         Intent intent = getIntent();
         int itemId = intent.getIntExtra(ITEM_ID, 0);
         String imageUrl = intent.getStringExtra(IMAGE_URL);
 
-        toolbar = findViewById(R.id.collapsing_layout_toolbar);
-        setSupportActionBar(toolbar);
+        setSupportActionBar(binding.collapsingLayoutToolbar);
 
-        if (getSupportActionBar() != null)
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
-        toolbarLayout = findViewById(R.id.collapsing_layout);
-        AppBarLayout appBarLayout = findViewById(R.id.app_bar_layout);
-
-        ImageView imageView = findViewById(R.id.collapsing_layout_image);
-        View scrim = findViewById(R.id.collapsing_layout_scrim);
-        actionButton = findViewById(R.id.activity_item_fab);
-        webView = findViewById(R.id.item_webview);
-        date = findViewById(R.id.activity_item_date);
-        title = findViewById(R.id.activity_item_title);
-        author = findViewById(R.id.activity_item_author);
-        readTime = findViewById(R.id.activity_item_readtime);
-        readTimeLayout = findViewById(R.id.activity_item_readtime_layout);
-        dateLayout = findViewById(R.id.activity_item_date_layout);
-        rootLayout = findViewById(R.id.item_root);
-
-        registerForContextMenu(webView);
+        registerForContextMenu(binding.itemWebview);
 
         if (imageUrl == null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
-            toolbarLayout.setTitleEnabled(false);
-            scrim.setVisibility(View.GONE);
+            binding.collapsingLayout.setTitleEnabled(false);
+            binding.collapsingLayoutScrim.setVisibility(View.GONE);
         } else {
-            appBarLayout.setExpanded(true);
-            toolbarLayout.setTitleEnabled(true);
+            binding.appBarLayout.setExpanded(true);
+            binding.collapsingLayout.setTitleEnabled(true);
 
             GlideApp.with(this)
                     .load(imageUrl)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(imageView);
+                    .into(binding.collapsingLayoutImage);
         }
 
         final TypedArray styledAttributes = getTheme().obtainStyledAttributes(
@@ -135,83 +102,77 @@ public class ItemActivity extends AppCompatActivity {
         int actionBarSize = (int) styledAttributes.getDimension(0, 0);
         styledAttributes.recycle();
 
-        appBarLayout.addOnOffsetChangedListener(((appBarLayout1, i) -> {
+        binding.appBarLayout.addOnOffsetChangedListener(((appBarLayout1, i) -> {
+            appBarCollapsed = Math.abs(i) >= (binding.appBarLayout.getTotalScrollRange() -
+                    actionBarSize - ((8 * binding.appBarLayout.getTotalScrollRange()) / 100));
 
-            if (Math.abs(i) >= (appBarLayout.getTotalScrollRange() - actionBarSize - ((8 * appBarLayout.getTotalScrollRange()) / 100))) {
-                appBarCollapsed = true;
-                invalidateOptionsMenu();
-            } else {
-                appBarCollapsed = false;
-                invalidateOptionsMenu();
-            }
+            invalidateOptionsMenu();
         }));
 
         viewModel = new ViewModelProvider(this).get(ItemViewModel.class);
         viewModel.getItemById(itemId).observe(this, this::bindUI);
-        actionButton.setOnClickListener(v -> openInNavigator());
+        binding.activityItemFab.setOnClickListener(v -> openInNavigator());
     }
 
     private void bindUI(ItemWithFeed itemWithFeed) {
         this.itemWithFeed = itemWithFeed;
         Item item = itemWithFeed.getItem();
 
-        date.setText(DateUtils.formattedDateTimeByLocal(item.getPubDate()));
+        binding.activityItemDate.setText(DateUtils.formattedDateTimeByLocal(item.getPubDate()));
 
         if (item.getImageLink() == null)
-            toolbar.setTitle(itemWithFeed.getFeedName());
+            binding.collapsingLayoutToolbar.setTitle(itemWithFeed.getFeedName());
         else
-            toolbarLayout.setTitle(itemWithFeed.getFeedName());
+            binding.collapsingLayout.setTitle(itemWithFeed.getFeedName());
 
         if (itemWithFeed.getFolder() != null) {
-            toolbar.setSubtitle(itemWithFeed.getFolder().getName());
+            binding.collapsingLayoutToolbar.setSubtitle(itemWithFeed.getFolder().getName());
         }
 
-        title.setText(item.getTitle());
+        binding.activityItemTitle.setText(item.getTitle());
 
         if (itemWithFeed.getBgColor() != 0) {
-            title.setTextColor(itemWithFeed.getBgColor());
-            Utils.setDrawableColor(dateLayout.getBackground(), itemWithFeed.getBgColor());
+            binding.activityItemTitle.setTextColor(itemWithFeed.getBgColor());
+            Utils.setDrawableColor(binding.activityItemDateLayout.getBackground(), itemWithFeed.getBgColor());
         } else if (itemWithFeed.getColor() != 0) {
-            title.setTextColor(itemWithFeed.getColor());
-            Utils.setDrawableColor(dateLayout.getBackground(), itemWithFeed.getColor());
+            binding.activityItemTitle.setTextColor(itemWithFeed.getColor());
+            Utils.setDrawableColor(binding.activityItemDateLayout.getBackground(), itemWithFeed.getColor());
         }
 
         if (item.getAuthor() != null && !item.getAuthor().isEmpty()) {
-            author.setText(getString(R.string.by_author, item.getAuthor()));
-            author.setVisibility(View.VISIBLE);
+            binding.activityItemAuthor.setText(getString(R.string.by_author, item.getAuthor()));
+            binding.activityItemAuthor.setVisibility(View.VISIBLE);
         }
 
         if (item.getReadTime() > 0) {
             int minutes = (int) Math.round(item.getReadTime());
             if (minutes < 1)
-                readTime.setText(getResources().getString(R.string.read_time_lower_than_1));
+                binding.activityItemReadtime.setText(getResources().getString(R.string.read_time_lower_than_1));
             else if (minutes > 1)
-                readTime.setText(getResources().getString(R.string.read_time, String.valueOf(minutes)));
+                binding.activityItemReadtime.setText(getResources().getString(R.string.read_time, String.valueOf(minutes)));
             else
-                readTime.setText(getResources().getString(R.string.read_time_one_minute));
+                binding.activityItemReadtime.setText(getResources().getString(R.string.read_time_one_minute));
 
-            readTimeLayout.setVisibility(View.VISIBLE);
+            binding.activityItemReadtimeLayout.setVisibility(View.VISIBLE);
         }
 
         if (itemWithFeed.getBgColor() != 0) {
-            toolbarLayout.setBackgroundColor(itemWithFeed.getBgColor());
-            toolbarLayout.setContentScrimColor(itemWithFeed.getBgColor());
-            toolbarLayout.setStatusBarScrimColor(itemWithFeed.getBgColor());
+            binding.collapsingLayout.setBackgroundColor(itemWithFeed.getBgColor());
+            binding.collapsingLayout.setContentScrimColor(itemWithFeed.getBgColor());
+            binding.collapsingLayout.setStatusBarScrimColor(itemWithFeed.getBgColor());
 
             getWindow().setStatusBarColor(itemWithFeed.getBgColor());
-
-            actionButton.setBackgroundTintList(ColorStateList.valueOf(itemWithFeed.getBgColor()));
+            binding.activityItemFab.setBackgroundTintList(ColorStateList.valueOf(itemWithFeed.getBgColor()));
         } else if (itemWithFeed.getColor() != 0) {
-            toolbarLayout.setBackgroundColor(itemWithFeed.getColor());
-            toolbarLayout.setContentScrimColor(itemWithFeed.getColor());
-            toolbarLayout.setStatusBarScrimColor(itemWithFeed.getColor());
+            binding.collapsingLayout.setBackgroundColor(itemWithFeed.getColor());
+            binding.collapsingLayout.setContentScrimColor(itemWithFeed.getColor());
+            binding.collapsingLayout.setStatusBarScrimColor(itemWithFeed.getColor());
 
             getWindow().setStatusBarColor(itemWithFeed.getColor());
-
-            actionButton.setBackgroundTintList(ColorStateList.valueOf(itemWithFeed.getColor()));
+            binding.activityItemFab.setBackgroundTintList(ColorStateList.valueOf(itemWithFeed.getColor()));
         }
 
-        webView.setItem(itemWithFeed);
+        binding.itemWebview.setItem(itemWithFeed);
     }
 
     @Override
@@ -238,7 +199,7 @@ public class ItemActivity extends AppCompatActivity {
                 shareArticle();
                 return true;
             case R.id.item_open:
-                int value = Integer.valueOf(SharedPreferencesManager.readString(this,
+                int value = Integer.parseInt(SharedPreferencesManager.readString(this,
                         SharedPreferencesManager.SharedPrefKey.OPEN_ITEMS_IN));
                 if (value == 0)
                     openInNavigator();
@@ -278,7 +239,7 @@ public class ItemActivity extends AppCompatActivity {
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        WebView.HitTestResult hitTestResult = webView.getHitTestResult();
+        WebView.HitTestResult hitTestResult = binding.itemWebview.getHitTestResult();
 
         if (hitTestResult.getType() == WebView.HitTestResult.IMAGE_TYPE ||
                 hitTestResult.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {
@@ -300,7 +261,7 @@ public class ItemActivity extends AppCompatActivity {
                                 break;
                             case 2:
                                 urlToDownload = hitTestResult.getExtra();
-                                String content = webView.getItemContent();
+                                String content = binding.itemWebview.getItemContent();
 
                                 Pattern p = Pattern.compile("(<img.*src=\"" + urlToDownload + "\".*>)");
                                 Matcher m = p.matcher(content);
@@ -334,12 +295,12 @@ public class ItemActivity extends AppCompatActivity {
                 downloadImage(urlToDownload);
             } else {
                 if (ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0])) {
-                    Utils.showSnackBarWithAction(rootLayout, getString(R.string.download_image_permission),
+                    Utils.showSnackBarWithAction(binding.itemRoot, getString(R.string.download_image_permission),
                             getString(R.string.try_again),
                             v -> PermissionManager.requestPermissions(this, WRITE_EXTERNAL_STORAGE_REQUEST,
                                     Manifest.permission.WRITE_EXTERNAL_STORAGE));
                 } else {
-                    Utils.showSnackBarWithAction(rootLayout, getString(R.string.download_image_permission),
+                    Utils.showSnackBarWithAction(binding.itemRoot, getString(R.string.download_image_permission),
                             getString(R.string.permissions), v -> {
                                 Intent intent = new Intent();
                                 intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
