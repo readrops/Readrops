@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.readrops.api.opml.OPMLHelper;
 import com.readrops.app.R;
 import com.readrops.app.adapters.AccountTypeListAdapter;
 import com.readrops.app.databinding.ActivityAccountTypeListBinding;
@@ -32,7 +33,7 @@ import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.readrops.app.fragments.settings.AccountSettingsFragment.OPEN_OPML_FILE_REQUEST;
+import static com.readrops.api.opml.OPMLHelper.OPEN_OPML_FILE_REQUEST;
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT_TYPE;
 import static com.readrops.app.utils.ReadropsKeys.FROM_MAIN_ACTIVITY;
@@ -127,11 +128,7 @@ public class AccountTypeListActivity extends AppCompatActivity {
     }
 
     public void openOPMLFile(View view) {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("application/*");
-
-        startActivityForResult(intent, OPEN_OPML_FILE_REQUEST);
+        OPMLHelper.openFileIntent(this);
     }
 
     @Override

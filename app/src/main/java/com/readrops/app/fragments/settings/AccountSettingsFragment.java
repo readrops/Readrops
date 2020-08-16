@@ -22,6 +22,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.readrops.api.opml.OPMLHelper;
 import com.readrops.api.opml.OPMLParser;
 import com.readrops.app.R;
 import com.readrops.app.ReadropsApp;
@@ -45,6 +46,7 @@ import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.schedulers.Schedulers;
 
 import static android.app.Activity.RESULT_OK;
+import static com.readrops.api.opml.OPMLHelper.OPEN_OPML_FILE_REQUEST;
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT_ID;
 import static com.readrops.app.utils.ReadropsKeys.EDIT_ACCOUNT;
@@ -56,7 +58,6 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
 
     private static final String TAG = AccountSettingsFragment.class.getSimpleName();
 
-    public static final int OPEN_OPML_FILE_REQUEST = 1;
     private static final int WRITE_EXTERNAL_STORAGE_REQUEST = 1;
 
     private Account account;
@@ -122,7 +123,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
                     .items(R.array.opml_import_export)
                     .itemsCallback(((dialog, itemView, position, text) -> {
                         if (position == 0) {
-                            openOPMLFile();
+                            OPMLHelper.openFileIntent(this);
                         } else {
                             if (PermissionManager.isPermissionGranted(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE))
                                 exportAsOPMLFile();
@@ -179,15 +180,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
     }
 
     // region opml import
-
-    private void openOPMLFile() {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("application/*");
-
-        startActivityForResult(intent, OPEN_OPML_FILE_REQUEST);
-    }
-
+    
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == OPEN_OPML_FILE_REQUEST && resultCode == RESULT_OK && data != null) {
