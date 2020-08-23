@@ -7,9 +7,9 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -73,6 +73,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
         return fragment;
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.acount_preferences);
@@ -117,16 +118,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
         opmlPref.setOnPreferenceClickListener(preference -> {
             new MaterialDialog.Builder(getActivity())
                     .items(R.array.opml_import_export)
-                    .itemsCallback(((dialog, itemView, position, text) -> {
-                        if (position == 0) {
-                            OPMLHelper.openFileIntent(this);
-                        } else {
-                            if (PermissionManager.isPermissionGranted(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE))
-                                exportAsOPMLFile();
-                            else
-                                requestExternalStoragePermission();
-                        }
-                    }))
+                    .itemsCallback(((dialog, itemView, position, text) -> openOPMLMode(position)))
                     .show();
             return true;
         });
@@ -173,6 +165,22 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
                             });
                 }))
                 .show();
+    }
+
+    private void openOPMLMode(int position) {
+        if (position == 0) {
+            OPMLHelper.openFileIntent(this);
+        } else {
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+                if (PermissionManager.isPermissionGranted(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    exportAsOPMLFile();
+                } else {
+                    requestExternalStoragePermission();
+                }
+            } else {
+                exportAsOPMLFile();
+            }
+        }
     }
 
     // region opml import
@@ -243,8 +251,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
 
             displayNotification(fileName, path);
         } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-            Utils.showSnackbar(getView(), e.getMessage());
+            displayErrorMessage();
         }
 
     }
