@@ -29,7 +29,7 @@ public class ReadropsDebugApp extends ReadropsApp implements Configuration.Provi
         SoLoader.init(this, false);
 
         initFlipper();
-        initNiddler();
+        //initNiddler();
     }
 
     private void initFlipper() {
