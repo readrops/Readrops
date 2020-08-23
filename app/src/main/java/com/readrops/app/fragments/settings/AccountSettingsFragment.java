@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.Settings;
 import android.util.Log;
 
@@ -29,6 +28,7 @@ import com.readrops.app.ReadropsApp;
 import com.readrops.app.activities.AddAccountActivity;
 import com.readrops.app.activities.ManageFeedsFoldersActivity;
 import com.readrops.app.activities.NotificationPermissionActivity;
+import com.readrops.app.utils.FileUtils;
 import com.readrops.app.utils.PermissionManager;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
@@ -36,14 +36,10 @@ import com.readrops.app.viewmodels.AccountViewModel;
 import com.readrops.db.entities.account.Account;
 import com.readrops.db.entities.account.AccountType;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.schedulers.Schedulers;
+import kotlin.Unit;
 
 import static android.app.Activity.RESULT_OK;
 import static com.readrops.api.opml.OPMLHelper.OPEN_OPML_FILE_REQUEST;
@@ -180,7 +176,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
     }
 
     // region opml import
-    
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == OPEN_OPML_FILE_REQUEST && resultCode == RESULT_OK && data != null) {
@@ -231,37 +227,21 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
     //region opml export
 
     private void exportAsOPMLFile() {
+        String fileName = "subscriptions.opml";
+
         try {
-            String filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
-            File file = new File(filePath, "subscriptions.opml");
+            String path = FileUtils.writeDownloadFile(getContext(), fileName, "text/xml", outputStream -> {
+                viewModel.getFoldersWithFeeds()
+                        .flatMapCompletable(folderListMap -> OPMLParser.write(folderListMap, outputStream))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnError(e -> Utils.showSnackbar(getView(), e.getMessage()))
+                        .subscribe();
 
-            final OutputStream outputStream = new FileOutputStream(file);
+                return Unit.INSTANCE;
+            });
 
-            viewModel.getFoldersWithFeeds()
-                    .flatMapCompletable(folderListMap -> OPMLParser.write(folderListMap, outputStream))
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doAfterTerminate(() -> {
-                        try {
-                            outputStream.flush();
-                            outputStream.close();
-
-                        } catch (IOException e) {
-                            Log.e(TAG, e.getMessage());
-                            Utils.showSnackbar(getView(), e.getMessage());
-                        }
-                    })
-                    .subscribe(new DisposableCompletableObserver() {
-                        @Override
-                        public void onComplete() {
-                            displayNotification(file);
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            Utils.showSnackbar(getView(), e.getMessage());
-                        }
-                    });
+            displayNotification(fileName, path);
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
             Utils.showSnackbar(getView(), e.getMessage());
@@ -269,13 +249,13 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
 
     }
 
-    private void displayNotification(File file) {
+    private void displayNotification(String name, String absolutePath) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.parse(file.getAbsolutePath()), "text/plain");
+        intent.setDataAndType(Uri.parse(absolutePath), "text/plain");
 
         Notification notification = new NotificationCompat.Builder(getContext(), ReadropsApp.OPML_EXPORT_CHANNEL_ID)
                 .setContentTitle(getString(R.string.opml_export))
-                .setContentText(file.getName())
+                .setContentText(name)
                 .setSmallIcon(R.drawable.ic_notif)
                 .setContentIntent(PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
                 .setAutoCancel(true)
