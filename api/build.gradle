@@ -56,8 +56,13 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test:rules:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'com.squareup.okhttp3:mockwebserver:4.8.1'
 
-    implementation 'com.squareup.retrofit2:retrofit:2.7.1'
+    implementation 'com.squareup.okhttp3:okhttp:4.8.1'
+
+    implementation('com.squareup.retrofit2:retrofit:2.7.1') {
+        exclude group: 'okhttp3', module: 'okhttp3'
+    }
     implementation('com.squareup.retrofit2:converter-moshi:2.7.1') {
         exclude group: 'moshi', module: 'moshi' // moshi converter uses moshi 1.8.0 which breaks codegen 1.9.2
     }

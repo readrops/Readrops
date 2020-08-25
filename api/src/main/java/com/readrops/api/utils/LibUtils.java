@@ -4,10 +4,13 @@ import android.content.Context;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class LibUtils {
 
@@ -28,6 +31,8 @@ public final class LibUtils {
     public static final int HTTP_NOT_FOUND = 404;
     public static final int HTTP_CONFLICT = 409;
 
+    private static final String RSS_CONTENT_TYPE_REGEX = "([^;]+)";
+
 
     public static String inputStreamToString(InputStream input) {
         Scanner scanner = new Scanner(input).useDelimiter("\\A");
@@ -43,5 +48,17 @@ public final class LibUtils {
     public static boolean isMimeImage(@NonNull String type) {
         return type.equals("image") || type.equals("image/jpeg") || type.equals("image/jpg")
                 || type.equals("image/png");
+    }
+
+    @Nullable
+    public static String parseContentType(String header) {
+        Matcher matcher = Pattern.compile(RSS_CONTENT_TYPE_REGEX)
+                .matcher(header);
+
+        if (matcher.find()) {
+            return matcher.group(0);
+        } else {
+            return null;
+        }
     }
 }

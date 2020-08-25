@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+   <channel>
+      <title>Hacker News</title>
+      <link>https://news.ycombinator.com/</link>
+      <description>Links for the intellectually curious, ranked by readers.</description>
+      <item>
+         <title>Africa declared free of wild polio</title>
+         <link>https://www.bbc.com/news/world-africa-53887947</link>
+         <pubDate>Tue, 25 Aug 2020 17:15:49 +0000</pubDate>
+         <comments>https://news.ycombinator.com/item?id=24273602</comments>
+         <description><![CDATA[<a href="https://news.ycombinator.com/item?id=24273602">Comments</a>]]></description>
+      </item>
+      <item>
+         <title>Palantir S-1</title>
+         <link>https://www.sec.gov/Archives/edgar/data/1321655/000119312520230013/d904406ds1.htm</link>
+         <pubDate>Tue, 25 Aug 2020 21:03:42 +0000</pubDate>
+         <comments>https://news.ycombinator.com/item?id=24276086</comments>
+         <description><![CDATA[<a href="https://news.ycombinator.com/item?id=24276086">Comments</a>]]></description>
+      </item>
+      <item>
+         <title>Openwifi: Linux mac80211 compatible full-stack 802.11/Wi-Fi design based on SDR</title>
+         <link>https://github.com/open-sdr/openwifi</link>
+         <pubDate>Tue, 25 Aug 2020 17:45:19 +0000</pubDate>
+         <comments>https://news.ycombinator.com/item?id=24273919</comments>
+         <description><![CDATA[<a href="https://news.ycombinator.com/item?id=24273919">Comments</a>]]></description>
+      </item>
+      <item>
+         <title>Syllabus for Eric's PhD Students</title>
+         <link>https://docs.google.com/document/d/11D3kHElzS2HQxTwPqcaTnU5HCJ8WGE5brTXI4KLf4dM/edit</link>
+         <pubDate>Tue, 25 Aug 2020 18:55:12 +0000</pubDate>
+         <comments>https://news.ycombinator.com/item?id=24274699</comments>
+         <description><![CDATA[<a href="https://news.ycombinator.com/item?id=24274699">Comments</a>]]></description>
+      </item>
+      <item>
+         <title>WebBundles harmful to content blocking, security tools, and the open web</title>
+         <link>https://brave.com/webbundles-harmful-to-content-blocking-security-tools-and-the-open-web/</link>
+         <pubDate>Tue, 25 Aug 2020 19:18:50 +0000</pubDate>
+         <comments>https://news.ycombinator.com/item?id=24274968</comments>
+         <description><![CDATA[<a href="https://news.ycombinator.com/item?id=24274968">Comments</a>]]></description>
+      </item>
+      <item>
+         <title>Zappos CEO Tony Hsieh is stepping down after 21 years</title>
+         <link>https://footwearnews.com/2020/business/executive-moves/zappos-ceo-tony-hsieh-steps-down-1203045974/</link>
+         <pubDate>Tue, 25 Aug 2020 06:11:42 +0000</pubDate>
+         <comments>https://news.ycombinator.com/item?id=24268522</comments>
+         <description><![CDATA[<a href="https://news.ycombinator.com/item?id=24268522">Comments</a>]]></description>
+      </item>
+      <item>
+         <title>Evgeny Kuznetsov practices with Bauer stick that has hole in the blade</title>
+         <link>https://russianmachineneverbreaks.com/2020/07/17/evgeny-kuznetsov-practices-with-bauer-stick-that-has-hole-in-the-blade/</link>
+         <pubDate>Tue, 25 Aug 2020 19:38:09 +0000</pubDate>
+         <comments>https://news.ycombinator.com/item?id=24275159</comments>
+         <description><![CDATA[<a href="https://news.ycombinator.com/item?id=24275159">Comments</a>]]></description>
+      </item>
+   </channel>
+</rss>
