@@ -1,6 +1,5 @@
-package com.readrops.api
+package com.readrops.api.localfeed
 
-import com.readrops.api.localfeed.LocalRSSHelper
 import com.readrops.api.utils.ParseException
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
@@ -55,6 +54,16 @@ class LocalRSSHelperTest {
                     
                 </feed>""".toByteArray()
         )), LocalRSSHelper.RSSType.ATOM)
+    }
+
+    @Test
+    fun unknownContentTest() {
+        assertEquals(LocalRSSHelper.getRSSContentType(ByteArrayInputStream(
+                """<html>
+                        <body>
+                        </body>
+               </html>""".trimMargin().toByteArray()
+        )), LocalRSSHelper.RSSType.UNKNOWN)
 
     }
 }
