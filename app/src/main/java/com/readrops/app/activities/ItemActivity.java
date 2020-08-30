@@ -32,7 +32,7 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.readrops.app.R;
 import com.readrops.app.databinding.ActivityItemBinding;
-import com.readrops.app.utils.DateUtils;
+import com.readrops.api.utils.DateUtils;
 import com.readrops.app.utils.GlideApp;
 import com.readrops.app.utils.PermissionManager;
 import com.readrops.app.utils.SharedPreferencesManager;

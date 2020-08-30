@@ -1,6 +1,6 @@
 package com.readrops.app.utils.matchers;
 
-import com.readrops.app.utils.DateUtils;
+import com.readrops.api.utils.DateUtils;
 import com.readrops.app.utils.Utils;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Item;

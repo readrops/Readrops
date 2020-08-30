@@ -1,6 +1,4 @@
-package com.readrops.app;
-
-import com.readrops.app.utils.DateUtils;
+package com.readrops.api.utils;
 
 import org.joda.time.LocalDateTime;
 import org.junit.Test;

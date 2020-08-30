@@ -1,4 +1,4 @@
-package com.readrops.app.utils;
+package com.readrops.api.utils;
 
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
