@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -70,33 +69,15 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         binding.addFeedOk.setOnClickListener(this);
         binding.addFeedOk.setEnabled(false);
 
-        binding.addFeedTextInput.setOnTouchListener((v, event) -> {
-            final int DRAWABLE_RIGHT = 2;
-
-            int drawablePos = (binding.addFeedTextInput.getRight() -
-                    binding.addFeedTextInput.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width());
-            if (event.getAction() == MotionEvent.ACTION_UP && event.getRawX() >= drawablePos) {
-                binding.addFeedTextInput.setText("");
-                return true;
-            }
-
-            return false;
-        });
-
         viewModel = new ViewModelProvider(this).get(AddFeedsViewModel.class);
 
         parseItemsAdapter = new ItemAdapter<>();
         fastAdapter = FastAdapter.with(parseItemsAdapter);
         fastAdapter.withSelectable(true);
         fastAdapter.withOnClickListener((v, adapter, item, position) -> {
-            if (item.isChecked()) {
-                item.setChecked(false);
-                fastAdapter.notifyAdapterItemChanged(position);
-            } else {
-                item.setChecked(true);
-                fastAdapter.notifyAdapterItemChanged(position);
-            }
-
+            item.setChecked(!item.isChecked());
+            
+            fastAdapter.notifyAdapterItemChanged(position);
             binding.addFeedOk.setEnabled(recyclerViewHasCheckedItems());
 
             return true;
