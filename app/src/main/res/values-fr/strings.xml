@@ -132,5 +132,6 @@
     <string name="show_caption">Afficher la légende</string>
     <string name="password_helper">Votre mot de passe d\'API (Configuration > Profil)</string>
     <string name="synchronize">Synchroniser</string>
+    <string name="navigator_view">Vue navigateur</string>
 
 </resources>
