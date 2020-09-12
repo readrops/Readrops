@@ -1,6 +1,6 @@
 package com.readrops.api.localfeed
 
-import com.readrops.api.utils.ParseException
+import com.readrops.api.utils.UnknownFormatException
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
 import java.io.ByteArrayInputStream
@@ -27,7 +27,7 @@ class LocalRSSHelperTest {
                 LocalRSSHelper.RSSType.UNKNOWN)
     }
 
-    @Test(expected = ParseException::class)
+    @Test(expected = UnknownFormatException::class)
     fun nonSupportedContentTypeTest() {
         LocalRSSHelper.getRSSType("image/jpeg")
     }

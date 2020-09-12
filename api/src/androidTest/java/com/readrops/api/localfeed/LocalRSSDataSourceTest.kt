@@ -6,6 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.readrops.api.utils.HttpManager
 import com.readrops.api.utils.ParseException
+import com.readrops.api.utils.UnknownFormatException
 import junit.framework.TestCase.*
 import okhttp3.HttpUrl
 import okhttp3.mockwebserver.MockResponse
@@ -81,7 +82,7 @@ class LocalRSSDataSourceTest {
         localRSSDataSource.queryRSSResource(url.toString(), null, false)
     }
 
-    @Test(expected = ParseException::class)
+    @Test(expected = UnknownFormatException::class)
     fun badContentTest() {
         mockServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_OK)
                 .addHeader("Content-Type", "application/xml")

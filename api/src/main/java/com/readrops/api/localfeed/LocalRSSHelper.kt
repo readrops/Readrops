@@ -1,6 +1,6 @@
 package com.readrops.api.localfeed
 
-import com.readrops.api.utils.ParseException
+import com.readrops.api.utils.UnknownFormatException
 import java.io.InputStream
 import java.util.regex.Pattern
 
@@ -12,7 +12,7 @@ object LocalRSSHelper {
     private const val ATOM_CONTENT_TYPE = "application/atom+xml"
     private const val JSON_CONTENT_TYPE = "application/json"
     private const val HTML_CONTENT_TYPE = "text/html"
-    
+
     private const val RSS_2_REGEX = "rss.*version=\"2.0\""
 
     private const val ATOM_REGEX = "<feed.* xmlns=\"http://www.w3.org/2005/Atom\""
@@ -26,7 +26,7 @@ object LocalRSSHelper {
             ATOM_CONTENT_TYPE -> RSSType.ATOM
             JSON_CONTENT_TYPE -> RSSType.JSONFEED
             RSS_TEXT_CONTENT_TYPE, RSS_APPLICATION_CONTENT_TYPE, HTML_CONTENT_TYPE -> RSSType.UNKNOWN
-            else -> throw ParseException("Unknown content type")
+            else -> throw UnknownFormatException("Unknown content type : $contentType")
         }
     }
 

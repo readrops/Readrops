@@ -42,7 +42,7 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) {
                 if (type == LocalRSSHelper.RSSType.UNKNOWN)
                     type = LocalRSSHelper.getRSSContentType(response.body?.byteStream()!!)
                 // if we can't guess type even with the content, we are unable to go further
-                if (type == LocalRSSHelper.RSSType.UNKNOWN) throw ParseException("Unable to guess $url RSS type")
+                if (type == LocalRSSHelper.RSSType.UNKNOWN) throw UnknownFormatException("Unable to guess $url RSS type")
 
                 val feed = parseFeed(response, type)
                 val items = if (withItems) parseItems(response.body?.byteStream()!!, type) else listOf()
