@@ -97,6 +97,13 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) {
     }
 
     private fun parseItems(inputStream: InputStream, type: LocalRSSHelper.RSSType): List<Item> {
-        return listOf()
+        return if (type != LocalRSSHelper.RSSType.JSONFEED) {
+            val adapter = XmlAdapter.xmlItemsAdapterFactory(type)
+
+            //adapter.fromXml(inputStream)
+            listOf()
+        } else {
+            listOf()
+        }
     }
 }
