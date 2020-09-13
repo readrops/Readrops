@@ -23,7 +23,7 @@ class RSSItemsAdapter : XmlAdapter<List<Item>> {
                         val item = Item().apply {
                             allChildrenAutoIgnore(names) {
                                 when (tagName) {
-                                    "title" -> title = nonNullText()
+                                    "title" -> title = LibUtils.cleanText(nonNullText())
                                     "link" -> link = nonNullText()
                                     "author" -> author = nullableText()
                                     "dc:creator" -> creators += nullableText()

@@ -1,15 +1,16 @@
 package com.readrops.app.utils.matchers;
 
-import com.readrops.api.utils.DateUtils;
-import com.readrops.app.utils.Utils;
-import com.readrops.db.entities.Feed;
-import com.readrops.db.entities.Item;
 import com.readrops.api.localfeed.atom.ATOMEntry;
 import com.readrops.api.localfeed.json.JSONItem;
 import com.readrops.api.localfeed.rss.RSSEnclosure;
 import com.readrops.api.localfeed.rss.RSSItem;
 import com.readrops.api.localfeed.rss.RSSMediaContent;
+import com.readrops.api.utils.DateUtils;
+import com.readrops.api.utils.LibUtils;
 import com.readrops.api.utils.ParseException;
+import com.readrops.app.utils.Utils;
+import com.readrops.db.entities.Feed;
+import com.readrops.db.entities.Item;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ public final class ItemMatcher {
             newItem.setContent(item.getContent()); // Jsoup.clean(item.getContent(), Whitelist.relaxed())
             newItem.setDescription(item.getDescription());
             newItem.setGuid(item.getGuid() != null ? item.getGuid() : item.getLink());
-            newItem.setTitle(Utils.cleanText(item.getTitle()));
+            newItem.setTitle(LibUtils.cleanText(item.getTitle()));
 
             try {
                 newItem.setPubDate(DateUtils.stringToLocalDateTime(item.getDate()));
@@ -72,7 +73,7 @@ public final class ItemMatcher {
             dbItem.setContent(item.getContent()); // Jsoup.clean(item.getContent(), Whitelist.relaxed())
             dbItem.setDescription(item.getSummary());
             dbItem.setGuid(item.getId());
-            dbItem.setTitle(Utils.cleanText(item.getTitle()));
+            dbItem.setTitle(LibUtils.cleanText(item.getTitle()));
 
             try {
                 dbItem.setPubDate(DateUtils.stringToLocalDateTime(item.getUpdated()));
@@ -102,7 +103,7 @@ public final class ItemMatcher {
             dbItem.setContent(item.getContent()); // Jsoup.clean(item.getContent(), Whitelist.relaxed())
             dbItem.setDescription(item.getSummary());
             dbItem.setGuid(item.getId());
-            dbItem.setTitle(Utils.cleanText(item.getTitle()));
+            dbItem.setTitle(LibUtils.cleanText(item.getTitle()));
 
             try {
                 dbItem.setPubDate(DateUtils.stringToLocalDateTime(item.getPubDate()));

@@ -6,6 +6,8 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.jsoup.Jsoup;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Scanner;
@@ -60,5 +62,15 @@ public final class LibUtils {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Remove html tags and trim the text
+     *
+     * @param text string to clean
+     * @return cleaned text
+     */
+    public static String cleanText(String text) {
+        return Jsoup.parse(text).text().trim();
     }
 }

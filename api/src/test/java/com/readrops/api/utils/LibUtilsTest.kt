@@ -16,4 +16,10 @@ class LibUtilsTest {
         assertEquals(LibUtils.parseContentType("text/xml"),
                 "text/xml")
     }
+
+    @Test
+    fun cleanTextTest() {
+        val text = "    <p>This is a text<br/>to</p> clean    "
+        assertEquals("This is a text to clean", LibUtils.cleanText(text))
+    }
 }
