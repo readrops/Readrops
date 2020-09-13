@@ -5,12 +5,15 @@ import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.readrops.api.utils.HttpManager
+import com.readrops.api.utils.LibUtils
 import com.readrops.api.utils.ParseException
 import com.readrops.api.utils.UnknownFormatException
 import junit.framework.TestCase.*
+import okhttp3.Headers
 import okhttp3.HttpUrl
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okio.Buffer
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -40,15 +43,42 @@ class LocalRSSDataSourceTest {
 
     @Test
     fun successfulQueryTest() {
+        val stream = context.resources.assets.open("localfeed/rss_feed.xml")
+
+        mockServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_OK)
+                .addHeader(LibUtils.CONTENT_TYPE_HEADER, "application/xml; charset=UTF-8")
+                .addHeader(LibUtils.ETAG_HEADER, "ETag-value")
+                .addHeader(LibUtils.LAST_MODIFIED_HEADER, "Last-Modified")
+                .setBody(Buffer().readFrom(stream)))
+
+        val pair = localRSSDataSource.queryRSSResource(url.toString(), null, true)
+        val feed = pair?.first!!
+
+        assertEquals(feed.name, "Hacker News")
+        assertEquals(feed.siteUrl, "https://news.ycombinator.com/")
+        assertEquals(feed.description, "Links for the intellectually curious, ranked by readers.")
+
+        assertEquals(feed.etag, "ETag-value")
+        assertEquals(feed.lastModified, "Last-Modified")
+
+        assertEquals(pair.second.size, 7)
+    }
+
+    @Test
+    fun headersTest() {
+        val stream = context.resources.assets.open("localfeed/rss_feed.xml")
+
         mockServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_OK)
                 .addHeader("Content-Type", "application/rss+xml; charset=UTF-8")
-                .setBody(context.resources.assets.open("localfeed/rss_feed.xml").toString()))
+                .setBody(Buffer().readFrom(stream)))
 
+        val headers = Headers.headersOf(LibUtils.ETAG_HEADER, "ETag", LibUtils.LAST_MODIFIED_HEADER, "Last-Modified")
+        localRSSDataSource.queryRSSResource(url.toString(), headers, false)
 
-        val pair = localRSSDataSource.queryRSSResource(url.toString(), null, false)
+        val request = mockServer.takeRequest()
 
-        assertNotNull(pair?.first)
-        assertNotNull(pair?.second)
+        assertEquals(request.headers[LibUtils.ETAG_HEADER], "ETag")
+        assertEquals(request.headers[LibUtils.LAST_MODIFIED_HEADER], "Last-Modified")
     }
 
     @Test

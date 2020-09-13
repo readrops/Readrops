@@ -11,6 +11,7 @@ import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStream
 import java.net.HttpURLConnection
@@ -38,14 +39,16 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) {
 
                 var type = LocalRSSHelper.getRSSType(contentType)
 
+                val bodyArray = response.peekBody(Long.MAX_VALUE).bytes()
+
                 // if we can't guess type based on content-type header, we use the content
                 if (type == LocalRSSHelper.RSSType.UNKNOWN)
-                    type = LocalRSSHelper.getRSSContentType(response.body?.byteStream()!!)
+                    type = LocalRSSHelper.getRSSContentType(ByteArrayInputStream(bodyArray))
                 // if we can't guess type even with the content, we are unable to go further
                 if (type == LocalRSSHelper.RSSType.UNKNOWN) throw UnknownFormatException("Unable to guess $url RSS type")
 
-                val feed = parseFeed(response, type)
-                val items = if (withItems) parseItems(response.body?.byteStream()!!, type) else listOf()
+                val feed = parseFeed(ByteArrayInputStream(bodyArray), type, response)
+                val items = if (withItems) parseItems(ByteArrayInputStream(bodyArray), type) else listOf()
 
                 response.body?.close()
                 Pair(feed, items)
@@ -80,18 +83,17 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) {
         return httpClient.newCall(requestBuilder.build()).execute()
     }
 
-    private fun parseFeed(response: Response, type: LocalRSSHelper.RSSType): Feed {
+    private fun parseFeed(stream: InputStream, type: LocalRSSHelper.RSSType, response: Response): Feed {
         val feed = if (type != LocalRSSHelper.RSSType.JSONFEED) {
             val adapter = XmlAdapter.xmlFeedAdapterFactory(type)
 
-            //adapter.fromXml(response.body?.byteStream()!!)
-            Feed()
+            adapter.fromXml(stream)
         } else {
             Feed()
         }
 
         feed.etag = response.header(LibUtils.ETAG_HEADER)
-        feed.lastModified = response.header(LibUtils.IF_MODIFIED_HEADER)
+        feed.lastModified = response.header(LibUtils.LAST_MODIFIED_HEADER)
 
         return feed
     }
@@ -100,8 +102,7 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) {
         return if (type != LocalRSSHelper.RSSType.JSONFEED) {
             val adapter = XmlAdapter.xmlItemsAdapterFactory(type)
 
-            //adapter.fromXml(inputStream)
-            listOf()
+            adapter.fromXml(inputStream)
         } else {
             listOf()
         }
