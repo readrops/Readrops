@@ -29,7 +29,7 @@ class OPMLParserTest {
 
     @Test
     fun readOpmlTest() {
-        val stream = context.resources.assets.open("subscriptions.opml")
+        val stream = context.resources.assets.open("opml/subscriptions.opml")
 
         var foldersAndFeeds: Map<Folder?, List<Feed>>? = null
 
@@ -52,7 +52,7 @@ class OPMLParserTest {
 
     @Test
     fun readLiteSubscriptionsTest() {
-        val stream = context.resources.assets.open("lite_subscriptions.opml")
+        val stream = context.resources.assets.open("opml/lite_subscriptions.opml")
 
         var foldersAndFeeds: Map<Folder?, List<Feed>>? = null
 
@@ -68,7 +68,7 @@ class OPMLParserTest {
 
     @Test
     fun opmlVersionTest() {
-        val stream = context.resources.assets.open("wrong_version.opml")
+        val stream = context.resources.assets.open("opml/wrong_version.opml")
 
         OPMLParser.read(stream)
                 .test()
