@@ -18,6 +18,7 @@ class RSSItemsAdapter : XmlAdapter<List<Item>> {
                     allChildrenAutoIgnore("item") {
                         val enclosures = arrayListOf<String>()
                         val mediaContents = arrayListOf<String>()
+                        val creators = arrayListOf<String?>()
 
                         val item = Item().apply {
                             allChildrenAutoIgnore(names) {
@@ -25,7 +26,7 @@ class RSSItemsAdapter : XmlAdapter<List<Item>> {
                                     "title" -> title = nonNullText()
                                     "link" -> link = nonNullText()
                                     "author" -> author = nullableText()
-                                    "dc:creator" -> author = nullableText()
+                                    "dc:creator" -> creators += nullableText()
                                     "pubDate" -> pubDate = DateUtils.stringToLocalDateTime(nonNullText())
                                     "dc:date" -> pubDate = DateUtils.stringToLocalDateTime(nonNullText())
                                     "guid" -> guid = nullableText()
@@ -39,6 +40,8 @@ class RSSItemsAdapter : XmlAdapter<List<Item>> {
 
                         validateItem(item)
                         if (item.guid == null) item.guid = item.link
+                        if (item.author == null && creators.filterNotNull().isNotEmpty())
+                            item.author = creators.filterNotNull().first()
 
                         if (enclosures.isNotEmpty()) item.imageLink = enclosures.first()
                         else if (mediaContents.isNotEmpty()) item.imageLink = mediaContents.first()

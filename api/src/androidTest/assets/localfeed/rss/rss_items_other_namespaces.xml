@@ -6,7 +6,12 @@
             <title>title</title>
             <link>link</link>
             <guid>guid</guid>
-            <dc:creator><![CDATA[creator]]></dc:creator>
+
+            <dc:creator><![CDATA[creator 1]]></dc:creator>
+            <dc:creator><![CDATA[creator 2]]></dc:creator>
+            <dc:creator><![CDATA[creator 3]]></dc:creator>
+            <dc:creator><![CDATA[creator 4]]></dc:creator>
+
             <dc:date>2020-08-05T14:03:48Z</dc:date>
             <category><![CDATA[Category 1]]></category>
             <category><![CDATA[Category 2]]></category>

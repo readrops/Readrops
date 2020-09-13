@@ -41,7 +41,7 @@ class RSSItemsAdapterTest {
         val item = adapter.fromXml(stream)[0]
 
         assertEquals(item.guid, "guid")
-        assertEquals(item.author, "creator")
+        assertEquals(item.author, "creator 1")
         assertEquals(item.pubDate, DateUtils.stringToLocalDateTime("2020-08-05T14:03:48Z"))
         assertEquals(item.content, "content:encoded")
     }
