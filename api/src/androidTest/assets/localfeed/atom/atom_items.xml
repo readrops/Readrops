@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xml:lang="en-US">
+    <id>tag:github.com,2008:/readrops/Readrops/commits/develop</id>
+    <link type="text/html" rel="alternate" href="https://github.com/readrops/Readrops/commits/develop"/>
+    <link type="application/atom+xml" rel="self" href="https://github.com/readrops/Readrops/commits/develop.atom"/>
+    <title>Recent Commits to Readrops:develop</title>
+    <updated>2020-09-06T21:09:59Z</updated>
+    <entry>
+        <id>tag:github.com,2008:Grit::Commit/c15f093a1bc4211e85f8d1817c9073e307afe5ac</id>
+        <link type="text/html" rel="alternate" href="https://github.com/readrops/Readrops/commit/c15f093a1bc4211e85f8d1817c9073e307afe5ac"/>
+        <title>Add an option to open item url in custom tab</title>
+        <updated>2020-09-06T21:09:59Z</updated>
+        <media:thumbnail height="30" width="30" url="https://avatars2.githubusercontent.com/u/18555673?s=30&amp;u=c56b216e8d128d0ec217062feeace9faca4dc893&amp;v=4"/>
+        <author>
+            <name>Shinokuni</name>
+            <uri>https://github.com/Shinokuni</uri>
+        </author>
+        <summary>Summary</summary>
+        <content type="html">
+            &lt;pre style=&#39;white-space:pre-wrap;width:81ex&#39;&gt;Add an option to open item url in custom tab&lt;/pre&gt;
+        </content>
+    </entry>
+    <entry>
+        <id>tag:github.com,2008:Grit::Commit/e0945823eecf269e5beea646ac5d7e630e08afbf</id>
+        <link type="text/html" rel="alternate" href="https://github.com/readrops/Readrops/commit/e0945823eecf269e5beea646ac5d7e630e08afbf"/>
+        <title>
+            Use gradle parallel builds
+        </title>
+        <updated>2020-09-05T13:28:23Z</updated>
+        <media:thumbnail height="30" width="30" url="https://avatars2.githubusercontent.com/u/18555673?s=30&amp;u=c56b216e8d128d0ec217062feeace9faca4dc893&amp;v=4"/>
+        <author>
+            <name>Shinokuni</name>
+            <uri>https://github.com/Shinokuni</uri>
+        </author>
+        <content type="html">
+            &lt;pre style=&#39;white-space:pre-wrap;width:81ex&#39;&gt;Use gradle parallel builds&lt;/pre&gt;
+        </content>
+    </entry>
+    <entry>
+        <id>tag:github.com,2008:Grit::Commit/85fcf03e64d8b482e4d2af8c2bcd1509d946944f</id>
+        <link type="text/html" rel="alternate" href="https://github.com/readrops/Readrops/commit/85fcf03e64d8b482e4d2af8c2bcd1509d946944f"/>
+        <title>
+            Use clear text mode for the feed url text input in AddFeedActivity
+        </title>
+        <updated>2020-09-05T12:23:48Z</updated>
+        <media:thumbnail height="30" width="30" url="https://avatars2.githubusercontent.com/u/18555673?s=30&amp;u=c56b216e8d128d0ec217062feeace9faca4dc893&amp;v=4"/>
+        <author>
+            <name>Shinokuni</name>
+            <uri>https://github.com/Shinokuni</uri>
+        </author>
+        <content type="html">
+            &lt;pre style=&#39;white-space:pre-wrap;width:81ex&#39;&gt;Use clear text mode for the feed url text input in AddFeedActivity&lt;/pre&gt;
+        </content>
+    </entry>
+    <entry>
+        <id>tag:github.com,2008:Grit::Commit/d59e38ee9d11da186131b602425231eff0896956</id>
+        <link type="text/html" rel="alternate" href="https://github.com/readrops/Readrops/commit/d59e38ee9d11da186131b602425231eff0896956"/>
+        <title>
+            Use project level okhttp client with glide
+        </title>
+        <updated>2020-09-05T12:05:16Z</updated>
+        <media:thumbnail height="30" width="30" url="https://avatars2.githubusercontent.com/u/18555673?s=30&amp;u=c56b216e8d128d0ec217062feeace9faca4dc893&amp;v=4"/>
+        <author>
+            <name>Shinokuni</name>
+            <uri>https://github.com/Shinokuni</uri>
+        </author>
+        <content type="html">
+            &lt;pre style=&#39;white-space:pre-wrap;width:81ex&#39;&gt;Use project level okhttp client with glide&lt;/pre&gt;
+        </content>
+    </entry>
+</feed>
