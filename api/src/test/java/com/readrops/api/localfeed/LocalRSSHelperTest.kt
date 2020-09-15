@@ -15,6 +15,8 @@ class LocalRSSHelperTest {
                 LocalRSSHelper.RSSType.ATOM)
         assertEquals(LocalRSSHelper.getRSSType("application/json"),
                 LocalRSSHelper.RSSType.JSONFEED)
+        assertEquals(LocalRSSHelper.getRSSType("application/feed+json"),
+                LocalRSSHelper.RSSType.JSONFEED)
     }
 
     @Test

@@ -10,6 +10,7 @@ object LocalRSSHelper {
     private const val RSS_TEXT_CONTENT_TYPE = "text/xml"
     private const val RSS_APPLICATION_CONTENT_TYPE = "application/xml"
     private const val ATOM_CONTENT_TYPE = "application/atom+xml"
+    private const val JSONFEED_CONTENT_TYPE = "application/feed+json"
     private const val JSON_CONTENT_TYPE = "application/json"
     private const val HTML_CONTENT_TYPE = "text/html"
 
@@ -24,7 +25,7 @@ object LocalRSSHelper {
         return when (contentType) {
             RSS_DEFAULT_CONTENT_TYPE -> RSSType.RSS_2
             ATOM_CONTENT_TYPE -> RSSType.ATOM
-            JSON_CONTENT_TYPE -> RSSType.JSONFEED
+            JSON_CONTENT_TYPE, JSONFEED_CONTENT_TYPE -> RSSType.JSONFEED
             RSS_TEXT_CONTENT_TYPE, RSS_APPLICATION_CONTENT_TYPE, HTML_CONTENT_TYPE -> RSSType.UNKNOWN
             else -> throw UnknownFormatException("Unknown content type : $contentType")
         }
