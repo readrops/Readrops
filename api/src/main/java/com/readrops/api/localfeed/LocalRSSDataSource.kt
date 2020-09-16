@@ -2,15 +2,20 @@ package com.readrops.api.localfeed
 
 import android.accounts.NetworkErrorException
 import androidx.annotation.WorkerThread
+import com.readrops.api.localfeed.json.JSONFeedAdapter
+import com.readrops.api.localfeed.json.JSONItemsAdapter
 import com.readrops.api.utils.LibUtils
 import com.readrops.api.utils.ParseException
 import com.readrops.api.utils.UnknownFormatException
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Item
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
 import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import okio.Buffer
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStream
@@ -89,7 +94,12 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) {
 
             adapter.fromXml(stream)
         } else {
-            Feed()
+            val adapter = Moshi.Builder()
+                    .add(JSONFeedAdapter())
+                    .build()
+                    .adapter<Feed>(Feed::class.java)
+
+            adapter.fromJson(Buffer().readFrom(stream))!!
         }
 
         feed.etag = response.header(LibUtils.ETAG_HEADER)
@@ -98,13 +108,18 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) {
         return feed
     }
 
-    private fun parseItems(inputStream: InputStream, type: LocalRSSHelper.RSSType): List<Item> {
+    private fun parseItems(stream: InputStream, type: LocalRSSHelper.RSSType): List<Item> {
         return if (type != LocalRSSHelper.RSSType.JSONFEED) {
             val adapter = XmlAdapter.xmlItemsAdapterFactory(type)
 
-            adapter.fromXml(inputStream)
+            adapter.fromXml(stream)
         } else {
-            listOf()
+            val adapter = Moshi.Builder()
+                    .add(Types.newParameterizedType(MutableList::class.java, Item::class.java), JSONItemsAdapter())
+                    .build()
+                    .adapter<List<Item>>(Types.newParameterizedType(MutableList::class.java, Item::class.java))
+
+            adapter.fromJson(Buffer().readFrom(stream))!!
         }
     }
 }

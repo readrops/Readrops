@@ -82,6 +82,20 @@ class LocalRSSDataSourceTest {
     }
 
     @Test
+    fun jsonFeedTest() {
+        val stream = context.resources.assets.open("localfeed/json/json_feed.json")
+
+        mockServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_OK)
+                .addHeader(LibUtils.CONTENT_TYPE_HEADER, "application/feed+json")
+                .setBody(Buffer().readFrom(stream)))
+
+        val pair = localRSSDataSource.queryRSSResource(url.toString(), null, true)!!
+
+        assertEquals(pair.first.name, "News from Flying Meat")
+        assertEquals(pair.second.size, 10)
+    }
+
+    @Test
     fun response304Test() {
         mockServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_NOT_MODIFIED))
 
