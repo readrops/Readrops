@@ -30,6 +30,7 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) {
      * @param withItems parse items with their feed
      * @return a Feed object with its items if specified by [withItems]
      */
+    @Throws(ParseException::class, UnknownFormatException::class, NetworkErrorException::class, IOException::class)
     @WorkerThread
     fun queryRSSResource(url: String, headers: Headers?, withItems: Boolean): Pair<Feed, List<Item>>? {
         val response = queryUrl(url, headers)
