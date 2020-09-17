@@ -102,6 +102,8 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) {
             adapter.fromJson(Buffer().readFrom(stream))!!
         }
 
+        handleSpecialCases(feed, type, response)
+
         feed.etag = response.header(LibUtils.ETAG_HEADER)
         feed.lastModified = response.header(LibUtils.LAST_MODIFIED_HEADER)
 
@@ -120,6 +122,17 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) {
                     .adapter<List<Item>>(Types.newParameterizedType(MutableList::class.java, Item::class.java))
 
             adapter.fromJson(Buffer().readFrom(stream))!!
+        }
+    }
+
+    private fun handleSpecialCases(feed: Feed, type: LocalRSSHelper.RSSType, response: Response) {
+        with(feed) {
+            if (type == LocalRSSHelper.RSSType.RSS_2) {
+                if (url == null) url = response.request.url.toString()
+            } else if (type == LocalRSSHelper.RSSType.ATOM) {
+                if (url == null) url = response.request.url.toString()
+                if (siteUrl == null) siteUrl = response.request.url.scheme + "://" + response.request.url.host
+            }
         }
     }
 }
