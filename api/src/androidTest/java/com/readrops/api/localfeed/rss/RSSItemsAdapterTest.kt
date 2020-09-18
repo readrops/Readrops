@@ -31,7 +31,7 @@ class RSSItemsAdapterTest {
         assertEquals(item.link, "https://www.bbc.com/news/world-africa-53887947")
         assertEquals(item.pubDate, DateUtils.stringToLocalDateTime("Tue, 25 Aug 2020 17:15:49 +0000"))
         assertEquals(item.author, "Author 1")
-        assertNotNull(item.description)
+        assertEquals(item.description, "<a href=\"https://news.ycombinator.com/item?id=24273602\">Comments</a>")
         assertEquals(item.guid, "https://www.bbc.com/news/world-africa-53887947")
     }
 

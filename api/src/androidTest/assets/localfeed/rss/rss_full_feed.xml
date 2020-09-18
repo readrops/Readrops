@@ -2,7 +2,8 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
         <title>Hacker News</title>
-        <atom:link href="https://news.ycombinator.com/feed/" />
+        <atom:link href="https://news.ycombinator.com/feed/" rel="self" />
+        <atom:link href="https://news.ycombinator.com/hub" rel="hub" />
         <link>https://news.ycombinator.com/</link>
         <description>Links for the intellectually curious, ranked by readers.</description>
     </channel>

@@ -24,9 +24,13 @@ class RSSFeedAdapter : XmlAdapter<Feed> {
                         with(feed) {
                             when (tagName) {
                                 "title" -> name = Jsoup.parse(nonNullText()).text()
-                                "description" -> description = nullableText(failOnElement = false)
+                                "description" -> description = nullableText()
                                 "link" -> siteUrl = nullableText()
-                                "atom:link" -> url = attributes.getValueOpt("href")
+                                "atom:link" -> {
+                                    if (attributes.getValueOpt("rel") == "self")
+                                        url = attributes.getValueOpt("href")
+                                }
+                                else -> skipContents()
                             }
                         }
                     }

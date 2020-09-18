@@ -34,6 +34,7 @@ class RSSItemsAdapter : XmlAdapter<List<Item>> {
                                     "content:encoded" -> content = nullableText()
                                     "enclosure" -> parseEnclosure(this, enclosures)
                                     "media:content" -> parseMediaContent(this, mediaContents)
+                                    else -> skipContents() // for example media:description
                                 }
                             }
                         }
