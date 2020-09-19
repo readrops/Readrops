@@ -38,7 +38,7 @@ class ATOMFeedAdapter : XmlAdapter<Feed> {
     }
 
     private fun parseLink(konsume: Konsumer, feed: Feed) {
-        val rel = konsume.attributes["rel"]
+        val rel = konsume.attributes.getValueOpt("rel")
 
         if (rel == "self")
             feed.url = konsume.attributes["href"]

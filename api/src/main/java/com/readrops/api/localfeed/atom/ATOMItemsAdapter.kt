@@ -26,7 +26,11 @@ class ATOMItemsAdapter : XmlAdapter<List<Item>> {
                                 "title" -> title = nonNullText()
                                 "id" -> guid = nullableText()
                                 "updated" -> pubDate = DateUtils.stringToLocalDateTime(nonNullText())
-                                "link" -> if (attributes["rel"] == "alternate") link = attributes["href"]
+                                "link" -> {
+                                    if (attributes.getValueOpt("rel") == null ||
+                                            attributes["rel"] == "alternate")
+                                        link = attributes["href"]
+                                }
                                 "author" -> allChildrenAutoIgnore("name") { author = text() }
                                 "summary" -> description = nullableText()
                                 "content" -> content = nullableText()
