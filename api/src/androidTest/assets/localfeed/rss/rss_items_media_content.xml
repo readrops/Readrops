@@ -18,7 +18,7 @@
 
             <description><![CDATA[description]]></description>
             <content:encoded><![CDATA[content:encoded]]></content:encoded>
-            <media:content medium="image" url="https://image2.jpg" />
+            <media:content medium="image" url="https://image2.jpg"><media:title>image2 title</media:title></media:content>
         </item>
     </channel>
 </rss>

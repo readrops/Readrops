@@ -30,10 +30,15 @@ class RSSItemsAdapter : XmlAdapter<List<Item>> {
                                     "pubDate" -> pubDate = DateUtils.stringToLocalDateTime(nonNullText())
                                     "dc:date" -> pubDate = DateUtils.stringToLocalDateTime(nonNullText())
                                     "guid" -> guid = nullableText()
-                                    "description" -> description = nullableText()
-                                    "content:encoded" -> content = nullableText()
+                                    "description" -> description = text(failOnElement = false)
+                                    "content:encoded" -> content = nullableText(failOnElement = false)
                                     "enclosure" -> parseEnclosure(this, enclosures)
                                     "media:content" -> parseMediaContent(this, mediaContents)
+                                    "media:group" -> allChildrenAutoIgnore("content") {
+                                        when (tagName) {
+                                            "media:content" -> parseMediaContent(this, mediaContents)
+                                        }
+                                    }
                                     else -> skipContents() // for example media:description
                                 }
                             }
@@ -69,6 +74,8 @@ class RSSItemsAdapter : XmlAdapter<List<Item>> {
         if (konsume.attributes.getValueOpt("medium") != null
                 && LibUtils.isMimeImage(konsume.attributes["medium"]))
             mediaContents += konsume.attributes["url"]
+
+        konsume.skipContents() // ignore media content sub elements
     }
 
     private fun validateItem(item: Item) {
@@ -81,6 +88,6 @@ class RSSItemsAdapter : XmlAdapter<List<Item>> {
 
     companion object {
         val names = Names.of("title", "link", "author", "creator", "pubDate", "date",
-                "guid", "description", "encoded", "enclosure", "content")
+                "guid", "description", "encoded", "enclosure", "content", "group")
     }
 }
