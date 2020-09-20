@@ -7,6 +7,7 @@ import com.readrops.api.localfeed.rss.RSSItemsAdapter
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Item
 import java.io.InputStream
+import java.lang.IllegalArgumentException
 
 interface XmlAdapter<T> {
 
@@ -17,7 +18,7 @@ interface XmlAdapter<T> {
             return when (type) {
                 LocalRSSHelper.RSSType.RSS_2 -> RSSFeedAdapter()
                 LocalRSSHelper.RSSType.ATOM -> ATOMFeedAdapter()
-                else -> throw Exception("Unknown RSS type : $type")
+                else -> throw IllegalArgumentException("Unknown RSS type : $type")
             }
         }
 
@@ -25,7 +26,7 @@ interface XmlAdapter<T> {
             return when (type) {
                 LocalRSSHelper.RSSType.RSS_2 -> RSSItemsAdapter()
                 LocalRSSHelper.RSSType.ATOM -> ATOMItemsAdapter()
-                else -> throw Exception("Unknown RSS type : $type")
+                else -> throw IllegalArgumentException("Unknown RSS type : $type")
             }
         }
     }
