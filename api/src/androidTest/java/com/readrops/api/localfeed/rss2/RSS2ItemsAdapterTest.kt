@@ -1,4 +1,4 @@
-package com.readrops.api.localfeed.rss
+package com.readrops.api.localfeed.rss2
 
 import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -6,17 +6,16 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.readrops.api.utils.DateUtils
 import com.readrops.api.utils.ParseException
 import junit.framework.TestCase.assertEquals
-import junit.framework.TestCase.assertNotNull
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class RSSItemsAdapterTest {
+class RSS2ItemsAdapterTest {
 
     private val context: Context = InstrumentationRegistry.getInstrumentation().context
 
-    private val adapter = RSSItemsAdapter()
+    private val adapter = RSS2ItemsAdapter()
 
     @Test
     fun normalCasesTest() {

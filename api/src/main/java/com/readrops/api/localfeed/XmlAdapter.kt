@@ -2,8 +2,8 @@ package com.readrops.api.localfeed
 
 import com.readrops.api.localfeed.atom.ATOMFeedAdapter
 import com.readrops.api.localfeed.atom.ATOMItemsAdapter
-import com.readrops.api.localfeed.rss.RSSFeedAdapter
-import com.readrops.api.localfeed.rss.RSSItemsAdapter
+import com.readrops.api.localfeed.rss2.RSS2FeedAdapter
+import com.readrops.api.localfeed.rss2.RSS2ItemsAdapter
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Item
 import java.io.InputStream
@@ -16,7 +16,7 @@ interface XmlAdapter<T> {
     companion object {
         fun xmlFeedAdapterFactory(type: LocalRSSHelper.RSSType): XmlAdapter<Feed> {
             return when (type) {
-                LocalRSSHelper.RSSType.RSS_2 -> RSSFeedAdapter()
+                LocalRSSHelper.RSSType.RSS_2 -> RSS2FeedAdapter()
                 LocalRSSHelper.RSSType.ATOM -> ATOMFeedAdapter()
                 else -> throw IllegalArgumentException("Unknown RSS type : $type")
             }
@@ -24,7 +24,7 @@ interface XmlAdapter<T> {
 
         fun xmlItemsAdapterFactory(type: LocalRSSHelper.RSSType): XmlAdapter<List<Item>> {
             return when (type) {
-                LocalRSSHelper.RSSType.RSS_2 -> RSSItemsAdapter()
+                LocalRSSHelper.RSSType.RSS_2 -> RSS2ItemsAdapter()
                 LocalRSSHelper.RSSType.ATOM -> ATOMItemsAdapter()
                 else -> throw IllegalArgumentException("Unknown RSS type : $type")
             }

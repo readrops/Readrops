@@ -1,4 +1,4 @@
-package com.readrops.api.localfeed.rss
+package com.readrops.api.localfeed.rss2
 
 import com.gitlab.mvysny.konsumexml.Names
 import com.gitlab.mvysny.konsumexml.allChildrenAutoIgnore
@@ -11,7 +11,7 @@ import com.readrops.db.entities.Feed
 import org.jsoup.Jsoup
 import java.io.InputStream
 
-class RSSFeedAdapter : XmlAdapter<Feed> {
+class RSS2FeedAdapter : XmlAdapter<Feed> {
 
     override fun fromXml(inputStream: InputStream): Feed {
         val konsume = inputStream.konsumeXml()

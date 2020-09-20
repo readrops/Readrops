@@ -1,4 +1,4 @@
-package com.readrops.api.localfeed.rss
+package com.readrops.api.localfeed.rss2
 
 import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -9,11 +9,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class RSSFeedAdapterTest {
+class RSS2FeedAdapterTest {
 
     private val context: Context = InstrumentationRegistry.getInstrumentation().context
 
-    private val adapter = RSSFeedAdapter()
+    private val adapter = RSS2FeedAdapter()
 
     @Test
     fun normalCasesTest() {
