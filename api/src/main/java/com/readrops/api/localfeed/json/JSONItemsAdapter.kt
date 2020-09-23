@@ -57,6 +57,7 @@ class JSONItemsAdapter : JsonAdapter<List<Item>>() {
                         7 -> pubDate = DateUtils.stringToLocalDateTime(reader.nextString())
                         8 -> author = parseAuthor(reader) // jsonfeed 1.0
                         9 -> author = parseAuthors(reader) // jsonfeed 1.1
+                        else -> reader.skipValue()
                     }
                 }
             }
@@ -86,9 +87,6 @@ class JSONItemsAdapter : JsonAdapter<List<Item>>() {
         return author
     }
 
-    /**
-     * Returns the first author of the array
-     */
     private fun parseAuthors(reader: JsonReader): String? {
         val authors = arrayListOf<String?>()
         reader.beginArray()
@@ -98,7 +96,10 @@ class JSONItemsAdapter : JsonAdapter<List<Item>>() {
         }
 
         reader.endArray()
-        return if (authors.filterNotNull().isNotEmpty()) authors.filterNotNull().first() else null
+
+        // here, nextNullableString doesn't check if authors values are empty
+        return if (authors.filterNot { author -> author.isNullOrEmpty() }.isNotEmpty())
+            authors.filterNot { author -> author.isNullOrEmpty() }.joinToString(limit = 4) else null
     }
 
     private fun validateItem(item: Item) {
@@ -110,7 +111,7 @@ class JSONItemsAdapter : JsonAdapter<List<Item>>() {
     }
 
     companion object {
-        val names: JsonReader.Options = JsonReader.Options.of("id", "url", "title", "content_html", "content_text",
-                "summary", "image", "date_published", "author", "authors")
+        val names: JsonReader.Options = JsonReader.Options.of("id", "url", "title",
+                "content_html", "content_text", "summary", "image", "date_published", "author", "authors")
     }
 }

@@ -51,7 +51,7 @@ class JSONItemsAdapterTest {
         assertEquals(item.description, "This is a summary")
         assertEquals(item.content, "content_html")
         assertEquals(item.imageLink, "https://image.com")
-        assertEquals(item.author, "Author 1")
+        assertEquals(item.author, "Author 1, Author 3, Author 4, Author 5, ...")
     }
 
     @Test
