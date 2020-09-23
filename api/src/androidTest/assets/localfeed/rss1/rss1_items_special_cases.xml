@@ -1,0 +1,120 @@
+<rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:slash="http://purl.org/rss/1.0/modules/slash/" xmlns:syn="http://purl.org/rss/1.0/modules/syndication/"
+    xmlns="http://purl.org/rss/1.0/">
+
+    <channel rdf:about="https://slashdot.org/">
+        <title>Slashdot</title>
+        <link>https://slashdot.org/</link>
+        <description>News for nerds, stuff that matters</description>
+        <dc:language>en-us</dc:language>
+        <dc:rights>Copyright 1997-2016, SlashdotMedia. All Rights Reserved.</dc:rights>
+        <dc:date>2020-09-23T16:20:20+00:00</dc:date>
+        <dc:publisher>Dice</dc:publisher>
+        <dc:creator>help@slashdot.org</dc:creator>
+        <dc:subject>Technology</dc:subject>
+        <syn:updateBase>1970-01-01T00:00+00:00</syn:updateBase>
+        <syn:updateFrequency>1</syn:updateFrequency>
+        <syn:updatePeriod>hourly</syn:updatePeriod>
+        <items>
+            <rdf:Seq>
+                <rdf:li
+                    rdf:resource="https://developers.slashdot.org/story/20/09/23/1616231/google-expands-its-flutter-development-kit-to-windows-apps?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://news.slashdot.org/story/20/09/23/1528219/firefox-usage-is-down-85-despite-mozillas-top-exec-pay-going-up-400?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://news.slashdot.org/story/20/09/23/1451213/climate-disruption-is-now-locked-in-the-next-moves-will-be-crucial?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://news.slashdot.org/story/20/09/23/1420240/a-new-york-clock-that-told-time-now-tells-the-time-remaining?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://news.slashdot.org/story/20/09/23/0057256/jeff-bezos-is-opening-his-first-tuition-free-bezos-academy-preschool-where-each-child-will-be-the-customer?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://news.slashdot.org/story/20/09/23/0050249/google-is-pulling-the-plug-on-paid-chrome-extensions-over-the-next-year?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://entertainment.slashdot.org/story/20/09/22/2147243/old-tv-caused-village-broadband-outages-for-18-months?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://mobile.slashdot.org/story/20/09/22/2316256/t-mobile-amassed-unprecedented-concentration-of-spectrum-att-complains?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://yro.slashdot.org/story/20/09/22/2030223/dark-web-drugs-raid-leads-to-179-arrests?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://hardware.slashdot.org/story/20/09/22/2055203/the-fairphone-3-is-a-repairable-dream-that-takes-beautiful-photos?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://tech.slashdot.org/story/20/09/23/0039222/tesla-unveils-model-s-plaid-520-miles-200-mph-and-0-60-mph-in-less-than-2s?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://apple.slashdot.org/story/20/09/22/211222/apple-ceo-impressed-by-remote-work-sees-permanent-changes?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://hardware.slashdot.org/story/20/09/22/236228/tesla-announces-tabless-battery-cells-that-will-improve-range-of-its-electric-cars?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://linux.slashdot.org/story/20/09/22/2243209/linux-journal-is-back?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://hardware.slashdot.org/story/20/09/22/2026238/shell-reportedly-to-slash-oil-and-gas-production-costs-to-focus-more-on-renewables?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+            </rdf:Seq>
+        </items>
+        <image rdf:resource="https://a.fsdn.com/sd/topics/topicslashdot.gif" />
+        <textinput rdf:resource="https://slashdot.org/search.pl" />
+        <atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" href="http://rss.slashdot.org/slashdot/slashdotMain"
+            rel="self" type="application/rdf+xml" />
+        <feedburner:info xmlns:feedburner="http://rssnamespace.org/feedburner/ext/1.0"
+            uri="slashdot/slashdotmain" />
+        <atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" href="http://pubsubhubbub.appspot.com/"
+            rel="hub" />
+    </channel>
+    <image rdf:about="https://a.fsdn.com/sd/topics/topicslashdot.gif">
+        <title>Slashdot</title>
+        <url>https://a.fsdn.com/sd/topics/topicslashdot.gif</url>
+        <link>https://slashdot.org/</link>
+    </image>
+    <item
+        rdf:about="https://news.slashdot.org/story/20/09/23/1420240/a-new-york-clock-that-told-time-now-tells-the-time-remaining?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed">
+        <title>A New York Clock That Told Time Now Tells the Time Remaining</title>
+        <description>For more than 20 years, Metronome, which includes a 62-foot-wide 15-digit
+            electronic clock that faces Union Square in Manhattan, has been one of the city's most
+            prominent and baffling public art projects. Its digital display once told the time in
+            its own unique way, counting the hours, minutes and seconds (and fractions thereof) to
+            and from midnight. But for years observers who did not understand how it worked
+            suggested that it was measuring the acres of rainforest destroyed each year, tracking
+            the world population or even that it had something to do with pi. On Saturday Metronome
+            adopted a new ecologically sensitive mission. From a report: Now, instead of measuring
+            24-hour cycles, it is measuring what two artists, Gan Golan and Andrew Boyd, present as
+            a critical window for action to prevent the effects of global warming from becoming
+            irreversible. On Saturday at 3:20 p.m., messages including "The Earth has a deadline"
+            began to appear on the display. Then numbers -- 7:103:15:40:07 -- showed up,
+            representing the years, days, hours, minutes and seconds until that deadline. As a
+            handful of supporters watched, the number -- which the artists said was based on
+            calculations by the Mercator Research Institute on Global Commons and Climate Change in
+            Berlin -- began ticking down, second by second.
+
+            "This is our way to shout that number from the rooftops." Mr. Golan said just before the
+            countdown began. "The world is literally counting on us." The Climate Clock, as the two
+            artists call their project, will be displayed on the 14th Street building, One Union
+            Square South, through Sept. 27, the end of Climate Week. The creators say their aim is
+            to arrange for the clock to be permanently displayed, there or elsewhere. Mr. Golan said
+            he came up with the idea to publicly illustrate the urgency of combating climate change
+            about two years ago, shortly after his daughter was born. He asked Mr. Boyd, an activist
+            from the Lower East Side, to work with him on the project.&lt;p&gt;&lt;div
+            class="share_submission" style="position:relative;"&gt; &lt;a class="slashpop"
+            href="http://twitter.com/home?status=A+New+York+Clock+That+Told+Time+Now+Tells+the+Time+Remaining%3A+https%3A%2F%2Fbit.ly%2F2HrAt2b"&gt;&lt;img
+            src="https://a.fsdn.com/sd/twitter_icon_large.png"&gt;&lt;/a&gt; &lt;a class="slashpop"
+            href="http://www.facebook.com/sharer.php?u=https%3A%2F%2Fnews.slashdot.org%2Fstory%2F20%2F09%2F23%2F1420240%2Fa-new-york-clock-that-told-time-now-tells-the-time-remaining%3Futm_source%3Dslashdot%26utm_medium%3Dfacebook"&gt;&lt;img
+            src="https://a.fsdn.com/sd/facebook_icon_large.png"&gt;&lt;/a&gt;
+
+
+            &lt;/div&gt;&lt;/p&gt;&lt;p&gt;&lt;a
+            href="https://news.slashdot.org/story/20/09/23/1420240/a-new-york-clock-that-told-time-now-tells-the-time-remaining?utm_source=rss1.0moreanon&amp;amp;utm_medium=feed"&gt;Read
+            more of this story&lt;/a&gt; at Slashdot.&lt;/p&gt;&lt;iframe
+            src="https://slashdot.org/slashdot-it.pl?op=discuss&amp;amp;id=17251272&amp;amp;smallembed=1"
+            style="height: 300px; width: 100%; border: none;"&gt;&lt;/iframe&gt;
+        </description>
+        <dc:creator>msmash</dc:creator>
+        <dc:creator></dc:creator>
+        <dc:creator>creator 2</dc:creator>
+        <dc:creator>creator 3</dc:creator>
+        <dc:creator>creator 4</dc:creator>
+        <dc:creator>creator 5</dc:creator>
+        <dc:date>2020-09-23T14:10:00+00:00</dc:date>
+        <dc:subject>news</dc:subject>
+        <slash:department>how-about-that</slash:department>
+        <slash:section>news</slash:section>
+        <slash:comments>43</slash:comments>
+        <slash:hit_parade>43,38,33,27,6,1,0</slash:hit_parade>
+    </item>
+</rdf:RDF>
