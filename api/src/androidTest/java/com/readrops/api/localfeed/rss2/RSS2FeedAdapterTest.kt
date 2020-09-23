@@ -17,7 +17,7 @@ class RSS2FeedAdapterTest {
 
     @Test
     fun normalCasesTest() {
-        val stream = context.resources.assets.open("localfeed/rss/rss_full_feed.xml")
+        val stream = context.resources.assets.open("localfeed/rss2/rss_full_feed.xml")
 
         val feed = adapter.fromXml(stream)
 
@@ -30,7 +30,7 @@ class RSS2FeedAdapterTest {
 
     @Test(expected = ParseException::class)
     fun nullTitleTest() {
-        val stream = context.resources.assets.open("localfeed/rss/rss_feed_special_cases.xml")
+        val stream = context.resources.assets.open("localfeed/rss2/rss_feed_special_cases.xml")
         adapter.fromXml(stream)
     }
 }
