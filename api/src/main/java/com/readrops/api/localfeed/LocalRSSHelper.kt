@@ -5,7 +5,8 @@ import java.util.regex.Pattern
 
 object LocalRSSHelper {
 
-    private const val RSS_DEFAULT_CONTENT_TYPE = "application/rss+xml"
+    private const val RSS_1_CONTENT_TYPE = "application/rdf+xml"
+    private const val RSS_2_CONTENT_TYPE = "application/rss+xml"
     private const val ATOM_CONTENT_TYPE = "application/atom+xml"
     private const val JSONFEED_CONTENT_TYPE = "application/feed+json"
     private const val JSON_CONTENT_TYPE = "application/json"
@@ -19,7 +20,8 @@ object LocalRSSHelper {
      */
     fun getRSSType(contentType: String): RSSType {
         return when (contentType) {
-            RSS_DEFAULT_CONTENT_TYPE -> RSSType.RSS_2
+            RSS_1_CONTENT_TYPE -> RSSType.RSS_1
+            RSS_2_CONTENT_TYPE -> RSSType.RSS_2
             ATOM_CONTENT_TYPE -> RSSType.ATOM
             JSON_CONTENT_TYPE, JSONFEED_CONTENT_TYPE -> RSSType.JSONFEED
             else -> RSSType.UNKNOWN
@@ -50,6 +52,7 @@ object LocalRSSHelper {
     }
 
     enum class RSSType {
+        RSS_1,
         RSS_2,
         ATOM,
         JSONFEED,

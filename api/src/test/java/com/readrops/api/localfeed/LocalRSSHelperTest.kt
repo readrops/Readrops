@@ -8,6 +8,8 @@ class LocalRSSHelperTest {
 
     @Test
     fun standardContentTypesTest() {
+        assertEquals(LocalRSSHelper.getRSSType("application/rdf+xml"),
+                LocalRSSHelper.RSSType.RSS_1)
         assertEquals(LocalRSSHelper.getRSSType("application/rss+xml"),
                 LocalRSSHelper.RSSType.RSS_2)
         assertEquals(LocalRSSHelper.getRSSType("application/atom+xml"),

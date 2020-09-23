@@ -1,0 +1,268 @@
+<rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:slash="http://purl.org/rss/1.0/modules/slash/" xmlns:syn="http://purl.org/rss/1.0/modules/syndication/"
+    xmlns="http://purl.org/rss/1.0/">
+
+    <channel rdf:about="https://slashdot.org/">
+        <title>Slashdot</title>
+        <link>https://slashdot.org/</link>
+        <description>News for nerds, stuff that matters</description>
+        <dc:language>en-us</dc:language>
+        <dc:rights>Copyright 1997-2016, SlashdotMedia. All Rights Reserved.</dc:rights>
+        <dc:date>2020-09-23T16:20:20+00:00</dc:date>
+        <dc:publisher>Dice</dc:publisher>
+        <dc:creator>help@slashdot.org</dc:creator>
+        <dc:subject>Technology</dc:subject>
+        <syn:updateBase>1970-01-01T00:00+00:00</syn:updateBase>
+        <syn:updateFrequency>1</syn:updateFrequency>
+        <syn:updatePeriod>hourly</syn:updatePeriod>
+        <items>
+            <rdf:Seq>
+                <rdf:li
+                    rdf:resource="https://developers.slashdot.org/story/20/09/23/1616231/google-expands-its-flutter-development-kit-to-windows-apps?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://news.slashdot.org/story/20/09/23/1528219/firefox-usage-is-down-85-despite-mozillas-top-exec-pay-going-up-400?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://news.slashdot.org/story/20/09/23/1451213/climate-disruption-is-now-locked-in-the-next-moves-will-be-crucial?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://news.slashdot.org/story/20/09/23/1420240/a-new-york-clock-that-told-time-now-tells-the-time-remaining?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://news.slashdot.org/story/20/09/23/0057256/jeff-bezos-is-opening-his-first-tuition-free-bezos-academy-preschool-where-each-child-will-be-the-customer?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://news.slashdot.org/story/20/09/23/0050249/google-is-pulling-the-plug-on-paid-chrome-extensions-over-the-next-year?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://entertainment.slashdot.org/story/20/09/22/2147243/old-tv-caused-village-broadband-outages-for-18-months?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://mobile.slashdot.org/story/20/09/22/2316256/t-mobile-amassed-unprecedented-concentration-of-spectrum-att-complains?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://yro.slashdot.org/story/20/09/22/2030223/dark-web-drugs-raid-leads-to-179-arrests?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://hardware.slashdot.org/story/20/09/22/2055203/the-fairphone-3-is-a-repairable-dream-that-takes-beautiful-photos?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://tech.slashdot.org/story/20/09/23/0039222/tesla-unveils-model-s-plaid-520-miles-200-mph-and-0-60-mph-in-less-than-2s?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://apple.slashdot.org/story/20/09/22/211222/apple-ceo-impressed-by-remote-work-sees-permanent-changes?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://hardware.slashdot.org/story/20/09/22/236228/tesla-announces-tabless-battery-cells-that-will-improve-range-of-its-electric-cars?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://linux.slashdot.org/story/20/09/22/2243209/linux-journal-is-back?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+                <rdf:li
+                    rdf:resource="https://hardware.slashdot.org/story/20/09/22/2026238/shell-reportedly-to-slash-oil-and-gas-production-costs-to-focus-more-on-renewables?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+            </rdf:Seq>
+        </items>
+        <image rdf:resource="https://a.fsdn.com/sd/topics/topicslashdot.gif" />
+        <textinput rdf:resource="https://slashdot.org/search.pl" />
+        <atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" href="http://rss.slashdot.org/slashdot/slashdotMain"
+            rel="self" type="application/rdf+xml" />
+        <feedburner:info xmlns:feedburner="http://rssnamespace.org/feedburner/ext/1.0"
+            uri="slashdot/slashdotmain" />
+        <atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" href="http://pubsubhubbub.appspot.com/"
+            rel="hub" />
+    </channel>
+    <image rdf:about="https://a.fsdn.com/sd/topics/topicslashdot.gif">
+        <title>Slashdot</title>
+        <url>https://a.fsdn.com/sd/topics/topicslashdot.gif</url>
+        <link>https://slashdot.org/</link>
+    </image>
+    <item
+        rdf:about="https://developers.slashdot.org/story/20/09/23/1616231/google-expands-its-flutter-development-kit-to-windows-apps?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed">
+        <title>Google Expands its Flutter Development Kit To Windows Apps</title>
+        <link>
+            https://developers.slashdot.org/story/20/09/23/1616231/google-expands-its-flutter-development-kit-to-windows-apps?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed
+        </link>
+        <description>Google has announced that Flutter, its open source UI development kit for
+            building cross-platform software from the same codebase, is finally available for
+            Windows apps in alpha. From a report:For the world's leading desktop operating system
+            with some 1 billion installations of Windows 10 alone, this has been a long time coming.
+            Flutter's alpha incarnation was initially launched at Google's I/O developer conference
+            back in 2017, before arriving in beta less than a year later. In its original guise,
+            Flutter was designed for Android and iOS app development, but it has since expanded to
+            cover the web, MacOS, and Linux, which are currently available in various alpha or beta
+            iterations. Developers have had to consider unique platform-specific factors when
+            designing for the desktop or mobile phones, such as different screen sizes and how
+            people interact with their devices. On smartphones, people typically use touch and
+            swipe-based gestures, while keyboards and mice are commonly used on PCs and laptops.
+            This means Flutter has had to expand its support to cover the additional inputs.&lt;p&gt;&lt;div
+            class="share_submission" style="position:relative;"&gt; &lt;a class="slashpop"
+            href="http://twitter.com/home?status=Google+Expands+its+Flutter+Development+Kit+To+Windows+Apps%3A+https%3A%2F%2Fbit.ly%2F32X36MW"&gt;&lt;img
+            src="https://a.fsdn.com/sd/twitter_icon_large.png"&gt;&lt;/a&gt; &lt;a class="slashpop"
+            href="http://www.facebook.com/sharer.php?u=https%3A%2F%2Fdevelopers.slashdot.org%2Fstory%2F20%2F09%2F23%2F1616231%2Fgoogle-expands-its-flutter-development-kit-to-windows-apps%3Futm_source%3Dslashdot%26utm_medium%3Dfacebook"&gt;&lt;img
+            src="https://a.fsdn.com/sd/facebook_icon_large.png"&gt;&lt;/a&gt;
+
+
+            &lt;/div&gt;&lt;/p&gt;&lt;p&gt;&lt;a
+            href="https://developers.slashdot.org/story/20/09/23/1616231/google-expands-its-flutter-development-kit-to-windows-apps?utm_source=rss1.0moreanon&amp;amp;utm_medium=feed"&gt;Read
+            more of this story&lt;/a&gt; at Slashdot.&lt;/p&gt;&lt;iframe
+            src="https://slashdot.org/slashdot-it.pl?op=discuss&amp;amp;id=17251868&amp;amp;smallembed=1"
+            style="height: 300px; width: 100%; border: none;"&gt;&lt;/iframe&gt;
+        </description>
+        <dc:creator>msmash</dc:creator>
+        <dc:date>2020-09-23T16:15:00+00:00</dc:date>
+        <dc:subject>programming</dc:subject>
+        <slash:department>how-about-that</slash:department>
+        <slash:section>developers</slash:section>
+        <slash:comments>1</slash:comments>
+        <slash:hit_parade>1,1,1,1,0,0,0</slash:hit_parade>
+    </item>
+    <item
+        rdf:about="https://news.slashdot.org/story/20/09/23/1528219/firefox-usage-is-down-85-despite-mozillas-top-exec-pay-going-up-400?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed">
+        <title>Firefox Usage is Down 85% Despite Mozilla's Top Exec Pay Going Up 400%</title>
+        <link>
+            https://news.slashdot.org/story/20/09/23/1528219/firefox-usage-is-down-85-despite-mozillas-top-exec-pay-going-up-400?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed
+        </link>
+        <description>Software engineer Cal Paterson writes: Mozilla recently announced that they
+            would be dismissing 250 people. That's a quarter of their workforce so there are some
+            deep cuts to their work too. The victims include: the MDN docs (those are the web
+            standards docs everyone likes better than w3schools), the Rust compiler and even some
+            cuts to Firefox development. Like most people I want to see Mozilla do well but those
+            three projects comprise pretty much what I think of as the whole point of Mozilla, so
+            this news is a a big let down. The stated reason for the cuts is falling income. Mozilla
+            largely relies on "royalties" for funding. In return for payment, Mozilla allows big
+            technology companies to choose the default search engine in Firefox - the technology
+            companies are ultimately paying to increase the number of searches Firefox users make
+            with them. Mozilla haven't been particularly transparent about why these royalties are
+            being reduced, except to blame the coronavirus. I'm sure the coronavirus is not a great
+            help but I suspect the bigger problem is that Firefox's market share is now a tiny
+            fraction of its previous size and so the royalties will be smaller too - fewer users, so
+            fewer searches and therefore less money for Mozilla.
+
+            The real problem is not the royalty cuts, though. Mozilla has already received more than
+            enough money to set themselves up for financial independence. Mozilla received up to
+            half a billion dollars a year (each year!) for many years. The real problem is that
+            Mozilla didn't use that money to achieve financial independence and instead just spent
+            it each year, doing the organisational equivalent of living hand-to-mouth. Despite their
+            slightly contrived legal structure as a non-profit that owns a for-profit, Mozilla are
+            an NGO just like any other. In this article I want to apply the traditional measures
+            that are applied to other NGOs to Mozilla in order to show what's wrong. These three
+            measures are: overheads, ethics and results.&lt;p&gt;&lt;div class="share_submission"
+            style="position:relative;"&gt; &lt;a class="slashpop"
+            href="http://twitter.com/home?status=Firefox+Usage+is+Down+85%25+Despite+Mozilla's+Top+Exec+Pay+Going+Up+400%25%3A+https%3A%2F%2Fbit.ly%2F33M9FB2"&gt;&lt;img
+            src="https://a.fsdn.com/sd/twitter_icon_large.png"&gt;&lt;/a&gt; &lt;a class="slashpop"
+            href="http://www.facebook.com/sharer.php?u=https%3A%2F%2Fnews.slashdot.org%2Fstory%2F20%2F09%2F23%2F1528219%2Ffirefox-usage-is-down-85-despite-mozillas-top-exec-pay-going-up-400%3Futm_source%3Dslashdot%26utm_medium%3Dfacebook"&gt;&lt;img
+            src="https://a.fsdn.com/sd/facebook_icon_large.png"&gt;&lt;/a&gt;
+
+
+            &lt;/div&gt;&lt;/p&gt;&lt;p&gt;&lt;a
+            href="https://news.slashdot.org/story/20/09/23/1528219/firefox-usage-is-down-85-despite-mozillas-top-exec-pay-going-up-400?utm_source=rss1.0moreanon&amp;amp;utm_medium=feed"&gt;Read
+            more of this story&lt;/a&gt; at Slashdot.&lt;/p&gt;&lt;iframe
+            src="https://slashdot.org/slashdot-it.pl?op=discuss&amp;amp;id=17251650&amp;amp;smallembed=1"
+            style="height: 300px; width: 100%; border: none;"&gt;&lt;/iframe&gt;
+        </description>
+        <dc:creator>msmash</dc:creator>
+        <dc:date>2020-09-23T15:27:00+00:00</dc:date>
+        <dc:subject>firefox</dc:subject>
+        <slash:department>closer-look</slash:department>
+        <slash:section>news</slash:section>
+        <slash:comments>31</slash:comments>
+        <slash:hit_parade>31,29,24,21,3,1,0</slash:hit_parade>
+    </item>
+    <item
+        rdf:about="https://news.slashdot.org/story/20/09/23/1451213/climate-disruption-is-now-locked-in-the-next-moves-will-be-crucial?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed">
+        <title>Climate Disruption Is Now Locked In. The Next Moves Will Be Crucial.</title>
+        <link>
+            https://news.slashdot.org/story/20/09/23/1451213/climate-disruption-is-now-locked-in-the-next-moves-will-be-crucial?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed
+        </link>
+        <description>America is now under siege by climate change in ways that scientists have
+            warned about for years. But there is a second part to their admonition: Decades of
+            growing crisis are already locked into the global ecosystem and cannot be reversed. From
+            a report: This means the kinds of cascading disasters occurring today -- drought in the
+            West fueling historic wildfires that send smoke all the way to the East Coast, or
+            parades of tropical storms lining up across the Atlantic to march destructively toward
+            North America -- are no longer features of some dystopian future. They are the here and
+            now, worsening for the next generation and perhaps longer, depending on humanity's
+            willingness to take action. "I've been labeled an alarmist," said Peter Kalmus, a
+            climate scientist in Los Angeles, where he and millions of others have inhaled
+            dangerously high levels of smoke for weeks. "And I think it's a lot harder for people to
+            say that I'm being alarmist now." Last month, before the skies over San Francisco turned
+            a surreal orange, Death Valley reached 130 degrees Fahrenheit, the highest temperature
+            ever measured on the planet. Dozens of people have perished from the heat in Phoenix,
+            which in July suffered its hottest month on record, only to surpass that milestone in
+            August.
+
+            Conversations about climate change have broken into everyday life, to the top of the
+            headlines and to center stage in the presidential campaign. The questions are profound
+            and urgent. Can this be reversed? What can be done to minimize the looming dangers for
+            the decades ahead? Will the destruction of recent weeks become a moment of reckoning, or
+            just a blip in the news cycle? The Times spoke with two dozen climate experts, including
+            scientists, economists, sociologists and policymakers, and their answers were by turns
+            alarming, cynical and hopeful. "It's as if we've been smoking a pack of cigarettes a day
+            for decades" and the world is now feeling the effects, said Katharine Hayhoe, a climate
+            scientist at Texas Tech University. But, she said, "we're not dead yet." Their most
+            sobering message was that the world still hasn't seen the worst of it. Gone is the
+            climate of yesteryear, and there's no going back. The effects of climate change evident
+            today are the results of choices that countries made decades ago to keep pumping
+            heat-trapping greenhouse gases into the atmosphere at ever-increasing rates despite
+            warnings from scientists about the price to be paid.&lt;p&gt;&lt;div
+            class="share_submission" style="position:relative;"&gt; &lt;a class="slashpop"
+            href="http://twitter.com/home?status=Climate+Disruption+Is+Now+Locked+In.+The+Next+Moves+Will+Be+Crucial.%3A+https%3A%2F%2Fbit.ly%2F32TsNxO"&gt;&lt;img
+            src="https://a.fsdn.com/sd/twitter_icon_large.png"&gt;&lt;/a&gt; &lt;a class="slashpop"
+            href="http://www.facebook.com/sharer.php?u=https%3A%2F%2Fnews.slashdot.org%2Fstory%2F20%2F09%2F23%2F1451213%2Fclimate-disruption-is-now-locked-in-the-next-moves-will-be-crucial%3Futm_source%3Dslashdot%26utm_medium%3Dfacebook"&gt;&lt;img
+            src="https://a.fsdn.com/sd/facebook_icon_large.png"&gt;&lt;/a&gt;
+
+
+            &lt;/div&gt;&lt;/p&gt;&lt;p&gt;&lt;a
+            href="https://news.slashdot.org/story/20/09/23/1451213/climate-disruption-is-now-locked-in-the-next-moves-will-be-crucial?utm_source=rss1.0moreanon&amp;amp;utm_medium=feed"&gt;Read
+            more of this story&lt;/a&gt; at Slashdot.&lt;/p&gt;&lt;iframe
+            src="https://slashdot.org/slashdot-it.pl?op=discuss&amp;amp;id=17251462&amp;amp;smallembed=1"
+            style="height: 300px; width: 100%; border: none;"&gt;&lt;/iframe&gt;
+        </description>
+        <dc:creator>msmash</dc:creator>
+        <dc:date>2020-09-23T14:51:00+00:00</dc:date>
+        <dc:subject>earth</dc:subject>
+        <slash:department>closer-look</slash:department>
+        <slash:section>news</slash:section>
+        <slash:comments>67</slash:comments>
+        <slash:hit_parade>67,61,50,33,12,2,1</slash:hit_parade>
+    </item>
+    <item
+        rdf:about="https://news.slashdot.org/story/20/09/23/1420240/a-new-york-clock-that-told-time-now-tells-the-time-remaining?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed">
+        <title>A New York Clock That Told Time Now Tells the Time Remaining</title>
+        <link>
+            https://news.slashdot.org/story/20/09/23/1420240/a-new-york-clock-that-told-time-now-tells-the-time-remaining?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed
+        </link>
+        <description>For more than 20 years, Metronome, which includes a 62-foot-wide 15-digit
+            electronic clock that faces Union Square in Manhattan, has been one of the city's most
+            prominent and baffling public art projects. Its digital display once told the time in
+            its own unique way, counting the hours, minutes and seconds (and fractions thereof) to
+            and from midnight. But for years observers who did not understand how it worked
+            suggested that it was measuring the acres of rainforest destroyed each year, tracking
+            the world population or even that it had something to do with pi. On Saturday Metronome
+            adopted a new ecologically sensitive mission. From a report: Now, instead of measuring
+            24-hour cycles, it is measuring what two artists, Gan Golan and Andrew Boyd, present as
+            a critical window for action to prevent the effects of global warming from becoming
+            irreversible. On Saturday at 3:20 p.m., messages including "The Earth has a deadline"
+            began to appear on the display. Then numbers -- 7:103:15:40:07 -- showed up,
+            representing the years, days, hours, minutes and seconds until that deadline. As a
+            handful of supporters watched, the number -- which the artists said was based on
+            calculations by the Mercator Research Institute on Global Commons and Climate Change in
+            Berlin -- began ticking down, second by second.
+
+            "This is our way to shout that number from the rooftops." Mr. Golan said just before the
+            countdown began. "The world is literally counting on us." The Climate Clock, as the two
+            artists call their project, will be displayed on the 14th Street building, One Union
+            Square South, through Sept. 27, the end of Climate Week. The creators say their aim is
+            to arrange for the clock to be permanently displayed, there or elsewhere. Mr. Golan said
+            he came up with the idea to publicly illustrate the urgency of combating climate change
+            about two years ago, shortly after his daughter was born. He asked Mr. Boyd, an activist
+            from the Lower East Side, to work with him on the project.&lt;p&gt;&lt;div
+            class="share_submission" style="position:relative;"&gt; &lt;a class="slashpop"
+            href="http://twitter.com/home?status=A+New+York+Clock+That+Told+Time+Now+Tells+the+Time+Remaining%3A+https%3A%2F%2Fbit.ly%2F2HrAt2b"&gt;&lt;img
+            src="https://a.fsdn.com/sd/twitter_icon_large.png"&gt;&lt;/a&gt; &lt;a class="slashpop"
+            href="http://www.facebook.com/sharer.php?u=https%3A%2F%2Fnews.slashdot.org%2Fstory%2F20%2F09%2F23%2F1420240%2Fa-new-york-clock-that-told-time-now-tells-the-time-remaining%3Futm_source%3Dslashdot%26utm_medium%3Dfacebook"&gt;&lt;img
+            src="https://a.fsdn.com/sd/facebook_icon_large.png"&gt;&lt;/a&gt;
+
+
+            &lt;/div&gt;&lt;/p&gt;&lt;p&gt;&lt;a
+            href="https://news.slashdot.org/story/20/09/23/1420240/a-new-york-clock-that-told-time-now-tells-the-time-remaining?utm_source=rss1.0moreanon&amp;amp;utm_medium=feed"&gt;Read
+            more of this story&lt;/a&gt; at Slashdot.&lt;/p&gt;&lt;iframe
+            src="https://slashdot.org/slashdot-it.pl?op=discuss&amp;amp;id=17251272&amp;amp;smallembed=1"
+            style="height: 300px; width: 100%; border: none;"&gt;&lt;/iframe&gt;
+        </description>
+        <dc:creator>msmash</dc:creator>
+        <dc:date>2020-09-23T14:10:00+00:00</dc:date>
+        <dc:subject>news</dc:subject>
+        <slash:department>how-about-that</slash:department>
+        <slash:section>news</slash:section>
+        <slash:comments>43</slash:comments>
+        <slash:hit_parade>43,38,33,27,6,1,0</slash:hit_parade>
+    </item>
+</rdf:RDF>
