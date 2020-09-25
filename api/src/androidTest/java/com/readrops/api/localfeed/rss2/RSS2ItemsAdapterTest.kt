@@ -48,19 +48,19 @@ class RSS2ItemsAdapterTest {
     @Test
     fun noTitleTest() {
         val stream = context.resources.assets.open("localfeed/rss2/rss_items_no_title.xml")
-        Assert.assertThrows("Item title can't be null", ParseException::class.java) { adapter.fromXml(stream) }
+        Assert.assertThrows("Item title is required", ParseException::class.java) { adapter.fromXml(stream) }
     }
 
     @Test
     fun noLinkTest() {
         val stream = context.resources.assets.open("localfeed/rss2/rss_items_no_link.xml")
-        Assert.assertThrows("Item link can't be null", ParseException::class.java) { adapter.fromXml(stream) }
+        Assert.assertThrows("Item link is required", ParseException::class.java) { adapter.fromXml(stream) }
     }
 
     @Test
     fun noDateTest() {
         val stream = context.resources.assets.open("localfeed/rss2/rss_items_no_date.xml")
-        Assert.assertThrows("Item date can't be null", ParseException::class.java) { adapter.fromXml(stream) }
+        Assert.assertThrows("Item date is required", ParseException::class.java) { adapter.fromXml(stream) }
     }
 
     @Test

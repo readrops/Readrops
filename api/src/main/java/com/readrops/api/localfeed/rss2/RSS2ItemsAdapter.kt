@@ -30,8 +30,8 @@ class RSS2ItemsAdapter : XmlAdapter<List<Item>> {
                                     "pubDate" -> pubDate = DateUtils.stringToLocalDateTime(nonNullText())
                                     "dc:date" -> pubDate = DateUtils.stringToLocalDateTime(nonNullText())
                                     "guid" -> guid = nullableText()
-                                    "description" -> description = text(failOnElement = false)
-                                    "content:encoded" -> content = nullableText(failOnElement = false)
+                                    "description" -> description = nullableTextRecursively()
+                                    "content:encoded" -> content = nullableTextRecursively()
                                     "enclosure" -> parseEnclosure(this, enclosures)
                                     "media:content" -> parseMediaContent(this, mediaContents)
                                     "media:group" -> allChildrenAutoIgnore("content") {
@@ -80,9 +80,9 @@ class RSS2ItemsAdapter : XmlAdapter<List<Item>> {
 
     private fun validateItem(item: Item) {
         when {
-            item.title == null -> throw ParseException("Item title can't be null")
-            item.link == null -> throw ParseException("Item link can't be null")
-            item.pubDate == null -> throw ParseException("Item date can't be null")
+            item.title == null -> throw ParseException("Item title is required")
+            item.link == null -> throw ParseException("Item link is required")
+            item.pubDate == null -> throw ParseException("Item date is required")
         }
     }
 
