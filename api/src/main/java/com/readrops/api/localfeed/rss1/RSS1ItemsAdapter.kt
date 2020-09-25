@@ -29,6 +29,7 @@ class RSS1ItemsAdapter : XmlAdapter<List<Item>> {
                                 "dc:date" -> pubDate = DateUtils.stringToLocalDateTime(nonNullText())
                                 "dc:creator" -> authors += nullableText()
                                 "description" -> description = nullableTextRecursively()
+                                "content:encoded" -> content = nullableTextRecursively()
                                 else -> skipContents()
                             }
                         }
@@ -60,6 +61,6 @@ class RSS1ItemsAdapter : XmlAdapter<List<Item>> {
     }
 
     companion object {
-        val names = Names.of("title", "description", "date", "link", "creator")
+        val names = Names.of("title", "description", "date", "link", "creator", "encoded")
     }
 }

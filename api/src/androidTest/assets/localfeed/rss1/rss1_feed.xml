@@ -1,6 +1,6 @@
 <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     xmlns:slash="http://purl.org/rss/1.0/modules/slash/" xmlns:syn="http://purl.org/rss/1.0/modules/syndication/"
-    xmlns="http://purl.org/rss/1.0/">
+    xmlns="http://purl.org/rss/1.0/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
 
     <channel rdf:about="https://slashdot.org/">
         <title>Slashdot</title>
@@ -95,6 +95,7 @@
             src="https://slashdot.org/slashdot-it.pl?op=discuss&amp;amp;id=17251868&amp;amp;smallembed=1"
             style="height: 300px; width: 100%; border: none;"&gt;&lt;/iframe&gt;
         </description>
+        <content:encoded>content:encoded</content:encoded>
         <dc:creator>msmash</dc:creator>
         <dc:date>2020-09-23T16:15:00+00:00</dc:date>
         <dc:subject>programming</dc:subject>

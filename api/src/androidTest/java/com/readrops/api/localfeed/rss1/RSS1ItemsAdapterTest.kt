@@ -34,6 +34,7 @@ class RSS1ItemsAdapterTest {
         assertEquals(item.pubDate, DateUtils.stringToLocalDateTime("2020-09-23T16:15:00+00:00"))
         assertEquals(item.author, "msmash")
         assertNotNull(item.description)
+        assertEquals(item.content, "content:encoded")
     }
 
     @Test
