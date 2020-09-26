@@ -30,9 +30,20 @@ class LocalRSSHelperTest {
                 LocalRSSHelper.RSSType.UNKNOWN)
     }
 
+    @Test
+    fun rss1ContentTest() {
+        assertEquals(LocalRSSHelper.getRSSContentType(ByteArrayInputStream(
+                """<?xml-stylesheet type="text/xsl" media="screen" href="/~d/styles/rss1full.xsl"?>
+<?xml-stylesheet type="text/css" media="screen" href="http://rss.slashdot.org/~d/styles/itemcontent.css"?>
+<rdf:RDF xmlns:admin="http://webns.net/mvcb/" xmlns:content="http://purl.org/rss/1.0/modules/content/" 
+xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://purl.org/rss/1.0/"
+                """.trimIndent().toByteArray()
+        )), LocalRSSHelper.RSSType.RSS_1)
+    }
+
 
     @Test
-    fun rssContentTest() {
+    fun rss2ContentTest() {
         assertEquals(LocalRSSHelper.getRSSContentType(ByteArrayInputStream(
                 """<rss 
                     xmlns:content="http://purl.org/rss/1.0/modules/content/"

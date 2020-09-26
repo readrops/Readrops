@@ -1,7 +1,6 @@
 package com.readrops.api.localfeed
 
 import java.io.InputStream
-import java.util.regex.Pattern
 
 object LocalRSSHelper {
 
@@ -11,8 +10,8 @@ object LocalRSSHelper {
     private const val JSONFEED_CONTENT_TYPE = "application/feed+json"
     private const val JSON_CONTENT_TYPE = "application/json"
 
+    private const val RSS_1_REGEX = "<rdf:RDF.*xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\""
     private const val RSS_2_REGEX = "rss.*version=\"2.0\""
-
     private const val ATOM_REGEX = "<feed.* xmlns=\"http://www.w3.org/2005/Atom\""
 
     /**
@@ -34,16 +33,17 @@ object LocalRSSHelper {
     fun getRSSContentType(content: InputStream): RSSType {
         val stringBuffer = StringBuffer()
         val reader = content.bufferedReader()
-        var type = RSSType.UNKNOWN
 
         // we get the first 10 lines which should be sufficient to get the type,
         // otherwise iterating over the whole file could be too slow
         for (i in 0..9) stringBuffer.append(reader.readLine())
 
-        if (Pattern.compile(RSS_2_REGEX).matcher(stringBuffer.toString()).find()) {
-            type = RSSType.RSS_2
-        } else if (Pattern.compile(ATOM_REGEX).matcher(stringBuffer.toString()).find()) {
-            type = RSSType.ATOM
+        val string = stringBuffer.toString()
+        val type = when {
+            RSS_1_REGEX.toRegex().containsMatchIn(string) -> RSSType.RSS_1
+            RSS_2_REGEX.toRegex().containsMatchIn(string) -> RSSType.RSS_2
+            ATOM_REGEX.toRegex().containsMatchIn(string) -> RSSType.ATOM
+            else -> RSSType.UNKNOWN
         }
 
         reader.close()
