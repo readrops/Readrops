@@ -1,5 +1,6 @@
 package com.readrops.api.localfeed.json
 
+import com.readrops.api.localfeed.XmlAdapter.Companion.AUTHORS_MAX
 import com.readrops.api.utils.DateUtils
 import com.readrops.api.utils.ParseException
 import com.readrops.api.utils.nextNullableString
@@ -99,7 +100,7 @@ class JSONItemsAdapter : JsonAdapter<List<Item>>() {
 
         // here, nextNullableString doesn't check if authors values are empty
         return if (authors.filterNot { author -> author.isNullOrEmpty() }.isNotEmpty())
-            authors.filterNot { author -> author.isNullOrEmpty() }.joinToString(limit = 4) else null
+            authors.filterNot { author -> author.isNullOrEmpty() }.joinToString(limit = AUTHORS_MAX) else null
     }
 
     private fun validateItem(item: Item) {

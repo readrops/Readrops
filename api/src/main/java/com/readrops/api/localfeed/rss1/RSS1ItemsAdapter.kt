@@ -4,6 +4,7 @@ import com.gitlab.mvysny.konsumexml.Names
 import com.gitlab.mvysny.konsumexml.allChildrenAutoIgnore
 import com.gitlab.mvysny.konsumexml.konsumeXml
 import com.readrops.api.localfeed.XmlAdapter
+import com.readrops.api.localfeed.XmlAdapter.Companion.AUTHORS_MAX
 import com.readrops.api.utils.*
 import com.readrops.db.entities.Item
 import java.io.InputStream
@@ -36,7 +37,7 @@ class RSS1ItemsAdapter : XmlAdapter<List<Item>> {
                     }
 
                     item.guid = item.link
-                    if (authors.filterNotNull().isNotEmpty()) item.author = authors.filterNotNull().joinToString(limit = 4)
+                    if (authors.filterNotNull().isNotEmpty()) item.author = authors.filterNotNull().joinToString(limit = AUTHORS_MAX)
                     if (item.link == null) item.link = about
 
                     validateItem(item)

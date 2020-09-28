@@ -2,6 +2,7 @@ package com.readrops.api.localfeed.rss2
 
 import com.gitlab.mvysny.konsumexml.*
 import com.readrops.api.localfeed.XmlAdapter
+import com.readrops.api.localfeed.XmlAdapter.Companion.AUTHORS_MAX
 import com.readrops.api.utils.*
 import com.readrops.db.entities.Item
 import java.io.InputStream
@@ -47,7 +48,7 @@ class RSS2ItemsAdapter : XmlAdapter<List<Item>> {
                         validateItem(item)
                         if (item.guid == null) item.guid = item.link
                         if (item.author == null && creators.filterNotNull().isNotEmpty())
-                            item.author = creators.filterNotNull().first()
+                            item.author = creators.filterNotNull().joinToString(limit = AUTHORS_MAX)
 
                         if (enclosures.isNotEmpty()) item.imageLink = enclosures.first()
                         else if (mediaContents.isNotEmpty()) item.imageLink = mediaContents.first()

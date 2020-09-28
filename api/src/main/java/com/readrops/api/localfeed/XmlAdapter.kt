@@ -11,7 +11,7 @@ import com.readrops.db.entities.Item
 import java.io.InputStream
 
 interface XmlAdapter<T> {
-
+    
     fun fromXml(inputStream: InputStream): T
 
     companion object {
@@ -32,6 +32,8 @@ interface XmlAdapter<T> {
                 else -> throw IllegalArgumentException("Unknown RSS type : $type")
             }
         }
+
+        const val AUTHORS_MAX = 4
     }
 }
 
