@@ -78,4 +78,12 @@ class RSS2ItemsAdapterTest {
 
         assertEquals(item.imageLink, "https://image2.jpg")
     }
+
+    @Test
+    fun mediaGroupTest() {
+        val stream = context.resources.assets.open("localfeed/rss2/rss_items_media_group.xml")
+        val item = adapter.fromXml(stream).first()
+
+        assertEquals(item.imageLink, "https://image1.jpg")
+    }
 }

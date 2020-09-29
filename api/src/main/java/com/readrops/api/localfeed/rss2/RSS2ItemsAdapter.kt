@@ -35,11 +35,7 @@ class RSS2ItemsAdapter : XmlAdapter<List<Item>> {
                                     "content:encoded" -> content = nullableTextRecursively()
                                     "enclosure" -> parseEnclosure(this, enclosures)
                                     "media:content" -> parseMediaContent(this, mediaContents)
-                                    "media:group" -> allChildrenAutoIgnore("content") {
-                                        when (tagName) {
-                                            "media:content" -> parseMediaContent(this, mediaContents)
-                                        }
-                                    }
+                                    "media:group" -> parseMediaGroup(this, mediaContents)
                                     else -> skipContents() // for example media:description
                                 }
                             }
@@ -77,6 +73,15 @@ class RSS2ItemsAdapter : XmlAdapter<List<Item>> {
             mediaContents += konsume.attributes["url"]
 
         konsume.skipContents() // ignore media content sub elements
+    }
+
+    private fun parseMediaGroup(konsume: Konsumer, mediaContents: MutableList<String>) {
+        konsume.allChildrenAutoIgnore("content") {
+            when (tagName) {
+                "media:content" -> parseMediaContent(this, mediaContents)
+                else -> skipContents()
+            }
+        }
     }
 
     private fun validateItem(item: Item) {
