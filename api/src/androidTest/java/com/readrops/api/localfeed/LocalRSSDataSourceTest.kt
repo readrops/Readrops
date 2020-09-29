@@ -32,7 +32,7 @@ class LocalRSSDataSourceTest {
 
     @Before
     fun before() {
-        mockServer.start()
+        mockServer.start(8080)
         url = mockServer.url("/rss")
     }
 
@@ -55,6 +55,7 @@ class LocalRSSDataSourceTest {
         val feed = pair?.first!!
 
         assertEquals(feed.name, "Hacker News")
+        assertEquals(feed.url, "http://localhost:8080/rss")
         assertEquals(feed.siteUrl, "https://news.ycombinator.com/")
         assertEquals(feed.description, "Links for the intellectually curious, ranked by readers.")
 

@@ -98,7 +98,7 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) {
             val adapter = Moshi.Builder()
                     .add(JSONFeedAdapter())
                     .build()
-                    .adapter<Feed>(Feed::class.java)
+                    .adapter(Feed::class.java)
 
             adapter.fromJson(Buffer().readFrom(stream))!!
         }
@@ -129,7 +129,9 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) {
     private fun handleSpecialCases(feed: Feed, type: LocalRSSHelper.RSSType, response: Response) {
         with(feed) {
             if (type == LocalRSSHelper.RSSType.RSS_2) {
-                if (url == null) url = response.request.url.toString()
+                // if an atom:link element was parsed, we still replace its value as it is unreliable,
+                // otherwise we just add the rss url
+                url = response.request.url.toString()
             } else if (type == LocalRSSHelper.RSSType.ATOM) {
                 if (url == null) url = response.request.url.toString()
                 if (siteUrl == null) siteUrl = response.request.url.scheme + "://" + response.request.url.host
