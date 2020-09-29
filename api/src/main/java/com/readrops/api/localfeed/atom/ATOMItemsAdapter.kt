@@ -1,5 +1,6 @@
 package com.readrops.api.localfeed.atom
 
+import com.gitlab.mvysny.konsumexml.Konsumer
 import com.gitlab.mvysny.konsumexml.Names
 import com.gitlab.mvysny.konsumexml.allChildrenAutoIgnore
 import com.gitlab.mvysny.konsumexml.konsumeXml
@@ -23,12 +24,8 @@ class ATOMItemsAdapter : XmlAdapter<List<Item>> {
                                 "title" -> title = nonNullText()
                                 "id" -> guid = nullableText()
                                 "updated" -> pubDate = DateUtils.stringToLocalDateTime(nonNullText())
-                                "link" -> {
-                                    if (attributes.getValueOpt("rel") == null ||
-                                            attributes["rel"] == "alternate")
-                                        link = attributes["href"]
-                                }
-                                "author" -> allChildrenAutoIgnore("name") { author = text() }
+                                "link" -> parseLink(this, this@apply)
+                                "author" -> allChildrenAutoIgnore("name") { author = nullableText() }
                                 "summary" -> description = nullableTextRecursively()
                                 "content" -> content = nullableTextRecursively()
                             }
@@ -47,6 +44,15 @@ class ATOMItemsAdapter : XmlAdapter<List<Item>> {
         } catch (e: Exception) {
             throw ParseException(e.message)
         }
+    }
+
+    private fun parseLink(konsume: Konsumer, item: Item) {
+        konsume.apply {
+            if (attributes.getValueOpt("rel") == null ||
+                    attributes["rel"] == "alternate")
+                item.link = attributes["href"]
+        }
+
     }
 
     private fun validateItem(item: Item) {
