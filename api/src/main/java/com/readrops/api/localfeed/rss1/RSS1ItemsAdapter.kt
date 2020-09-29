@@ -36,9 +36,12 @@ class RSS1ItemsAdapter : XmlAdapter<List<Item>> {
                         }
                     }
 
-                    item.guid = item.link
-                    if (authors.filterNotNull().isNotEmpty()) item.author = authors.filterNotNull().joinToString(limit = AUTHORS_MAX)
                     if (item.link == null) item.link = about
+                            ?: throw ParseException("RSS1 link or about element is required")
+                    item.guid = item.link
+
+                    if (authors.filterNotNull().isNotEmpty()) item.author = authors.filterNotNull()
+                            .joinToString(limit = AUTHORS_MAX)
 
                     validateItem(item)
 
@@ -56,7 +59,6 @@ class RSS1ItemsAdapter : XmlAdapter<List<Item>> {
     private fun validateItem(item: Item) {
         when {
             item.title == null -> throw ParseException("Item title is required")
-            item.link == null -> throw ParseException("Item link is required")
             item.pubDate == null -> throw ParseException("Item date is required")
         }
     }
