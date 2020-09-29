@@ -3,6 +3,7 @@ package com.readrops.api.localfeed.json
 import com.readrops.api.localfeed.XmlAdapter.Companion.AUTHORS_MAX
 import com.readrops.api.utils.DateUtils
 import com.readrops.api.utils.ParseException
+import com.readrops.api.utils.nextNonEmptyString
 import com.readrops.api.utils.nextNullableString
 import com.readrops.db.entities.Item
 import com.squareup.moshi.FromJson
@@ -16,9 +17,8 @@ class JSONItemsAdapter : JsonAdapter<List<Item>>() {
         // not useful
     }
 
-    @FromJson
     override fun fromJson(reader: JsonReader): List<Item> {
-        try {
+        return try {
             val items = arrayListOf<Item>()
             reader.beginObject()
 
@@ -29,7 +29,7 @@ class JSONItemsAdapter : JsonAdapter<List<Item>>() {
                 }
             }
 
-            return items
+            items
         } catch (e: Exception) {
             throw ParseException(e.message)
         }
@@ -48,14 +48,14 @@ class JSONItemsAdapter : JsonAdapter<List<Item>>() {
             while (reader.hasNext()) {
                 with(item) {
                     when (reader.selectName(names)) {
-                        0 -> guid = reader.nextString()
-                        1 -> link = reader.nextString()
-                        2 -> title = reader.nextString()
+                        0 -> guid = reader.nextNonEmptyString()
+                        1 -> link = reader.nextNonEmptyString()
+                        2 -> title = reader.nextNonEmptyString()
                         3 -> contentHtml = reader.nextNullableString()
                         4 -> contentText = reader.nextNullableString()
                         5 -> description = reader.nextNullableString()
                         6 -> imageLink = reader.nextNullableString()
-                        7 -> pubDate = DateUtils.stringToLocalDateTime(reader.nextString())
+                        7 -> pubDate = DateUtils.stringToLocalDateTime(reader.nextNonEmptyString())
                         8 -> author = parseAuthor(reader) // jsonfeed 1.0
                         9 -> author = parseAuthors(reader) // jsonfeed 1.1
                         else -> reader.skipValue()
@@ -98,9 +98,8 @@ class JSONItemsAdapter : JsonAdapter<List<Item>>() {
 
         reader.endArray()
 
-        // here, nextNullableString doesn't check if authors values are empty
-        return if (authors.filterNot { author -> author.isNullOrEmpty() }.isNotEmpty())
-            authors.filterNot { author -> author.isNullOrEmpty() }.joinToString(limit = AUTHORS_MAX) else null
+        return if (authors.filterNotNull().isNotEmpty())
+            authors.filterNotNull().joinToString(limit = AUTHORS_MAX) else null
     }
 
     private fun validateItem(item: Item) {

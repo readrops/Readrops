@@ -1,6 +1,7 @@
 package com.readrops.api.localfeed.json
 
 import com.readrops.api.utils.ParseException
+import com.readrops.api.utils.nextNonEmptyString
 import com.readrops.api.utils.nextNullableString
 import com.readrops.db.entities.Feed
 import com.squareup.moshi.FromJson
@@ -21,7 +22,7 @@ class JSONFeedAdapter {
             while (reader.hasNext()) {
                 with(feed) {
                     when (reader.selectName(names)) {
-                        0 -> name = reader.nextString()
+                        0 -> name = reader.nextNonEmptyString()
                         1 -> siteUrl = reader.nextNullableString()
                         2 -> url = reader.nextNullableString()
                         3 -> description = reader.nextNullableString()
