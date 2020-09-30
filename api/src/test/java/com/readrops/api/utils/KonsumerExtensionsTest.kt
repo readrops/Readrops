@@ -58,4 +58,30 @@ description
             assertEquals(description, "description")
         }
     }
+
+    @Test
+    fun nullableTextRecursivelyNullCaseTest() {
+        val xml = """
+            <description></description>
+        """.trimIndent()
+
+        xml.konsumeXml().apply {
+            val description = child("description") { nullableTextRecursively() }
+            assertNull(description)
+        }
+    }
+
+    @Test
+    fun nullableTextRecursivelyNonNullCaseTest() {
+        val xml = """
+            <description>
+descrip<a>tion</a>
+</description>
+        """.trimIndent()
+
+        xml.konsumeXml().apply {
+            val description = child("description") { nullableTextRecursively() }
+            assertEquals(description, "description")
+        }
+    }
 }
