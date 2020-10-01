@@ -15,6 +15,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -33,25 +34,30 @@ public final class HtmlParser {
      * @param url url to request
      * @return a list of rss urls with their title
      */
-    public static List<ParsingResult> getFeedLink(String url) throws Exception {
+    public static List<ParsingResult> getFeedLink(String url) {
         List<ParsingResult> results = new ArrayList<>();
 
-        Document document = Jsoup.parse(getHTMLHeadFromUrl(url), url);
+        String head = getHTMLHeadFromUrl(url);
+        if (head != null) {
+            Document document = Jsoup.parse(head, url);
 
-        Elements elements = document.select("link");
+            Elements elements = document.select("link");
 
-        for (Element element : elements) {
-            String type = element.attributes().get("type");
+            for (Element element : elements) {
+                String type = element.attributes().get("type");
 
-            if (isTypeRssFeed(type)) {
-                String feedUrl = element.absUrl("href");
-                String label = element.attributes().get("title");
+                if (isTypeRssFeed(type)) {
+                    String feedUrl = element.absUrl("href");
+                    String label = element.attributes().get("title");
 
-                results.add(new ParsingResult(feedUrl, label));
+                    results.add(new ParsingResult(feedUrl, label));
+                }
             }
-        }
 
-        return results;
+            return results;
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     private static boolean isTypeRssFeed(String type) {
