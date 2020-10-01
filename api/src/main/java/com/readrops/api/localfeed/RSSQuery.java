@@ -71,7 +71,7 @@ public class RSSQuery {
             if (type == RSSType.RSS_UNKNOWN) {
                 RSSType contentType = getContentRSSType(response.body().string());
                 return contentType != RSSType.RSS_UNKNOWN;
-            } else return type != null;
+            } else return true;
         } else
             return false;
     }
@@ -103,17 +103,16 @@ public class RSSQuery {
         switch (header) {
             case LibUtils.RSS_DEFAULT_CONTENT_TYPE:
                 return RSSType.RSS_2;
-            case LibUtils.RSS_TEXT_CONTENT_TYPE:
-            case LibUtils.HTML_CONTENT_TYPE:
-            case LibUtils.RSS_APPLICATION_CONTENT_TYPE:
-                return RSSType.RSS_UNKNOWN;
             case LibUtils.ATOM_CONTENT_TYPE:
                 return RSSType.RSS_ATOM;
             case LibUtils.JSON_CONTENT_TYPE:
                 return RSSType.RSS_JSON;
+            case LibUtils.RSS_TEXT_CONTENT_TYPE:
+            case LibUtils.HTML_CONTENT_TYPE:
+            case LibUtils.RSS_APPLICATION_CONTENT_TYPE:
             default:
                 Log.d(TAG, "bad content type : " + contentType);
-                return null;
+                return RSSType.RSS_UNKNOWN;
         }
     }
 

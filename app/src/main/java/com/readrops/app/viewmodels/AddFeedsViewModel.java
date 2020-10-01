@@ -54,8 +54,9 @@ public class AddFeedsViewModel extends AndroidViewModel {
                 ParsingResult parsingResult = new ParsingResult(url, null);
                 results.add(parsingResult);
 
-            } else
+            } else {
                 results.addAll(HtmlParser.getFeedLink(url));
+            }
 
             emitter.onSuccess(results);
         });
