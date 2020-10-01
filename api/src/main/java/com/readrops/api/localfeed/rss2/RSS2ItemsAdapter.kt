@@ -5,20 +5,19 @@ import com.readrops.api.localfeed.XmlAdapter
 import com.readrops.api.localfeed.XmlAdapter.Companion.AUTHORS_MAX
 import com.readrops.api.utils.*
 import com.readrops.db.entities.Item
+import org.joda.time.LocalDateTime
 import java.io.InputStream
 
 class RSS2ItemsAdapter : XmlAdapter<List<Item>> {
 
     override fun fromXml(inputStream: InputStream): List<Item> {
-        val konsume = inputStream.konsumeXml()
+        val konsumer = inputStream.konsumeXml()
         val items = mutableListOf<Item>()
 
         return try {
-            konsume.child("rss") {
+            konsumer.child("rss") {
                 child("channel") {
                     allChildrenAutoIgnore("item") {
-                        val enclosures = arrayListOf<String>()
-                        val mediaContents = arrayListOf<String>()
                         val creators = arrayListOf<String?>()
 
                         val item = Item().apply {
@@ -28,59 +27,64 @@ class RSS2ItemsAdapter : XmlAdapter<List<Item>> {
                                     "link" -> link = nonNullText()
                                     "author" -> author = nullableText()
                                     "dc:creator" -> creators += nullableText()
-                                    "pubDate" -> pubDate = DateUtils.parse(nonNullText())
-                                    "dc:date" -> pubDate = DateUtils.parse(nonNullText())
+                                    "pubDate" -> pubDate = DateUtils.parse(nullableText())
+                                    "dc:date" -> pubDate = DateUtils.parse(nullableText())
                                     "guid" -> guid = nullableText()
                                     "description" -> description = nullableTextRecursively()
                                     "content:encoded" -> content = nullableTextRecursively()
-                                    "enclosure" -> parseEnclosure(this, enclosures)
-                                    "media:content" -> parseMediaContent(this, mediaContents)
-                                    "media:group" -> parseMediaGroup(this, mediaContents)
+                                    "enclosure" -> parseEnclosure(this, item = this@apply)
+                                    "media:content" -> parseMediaContent(this, item = this@apply)
+                                    "media:group" -> parseMediaGroup(this, item = this@apply)
                                     else -> skipContents() // for example media:description
                                 }
                             }
                         }
 
-                        validateItem(item)
-                        if (item.guid == null) item.guid = item.link
-                        if (item.author == null && creators.filterNotNull().isNotEmpty())
-                            item.author = creators.filterNotNull().joinToString(limit = AUTHORS_MAX)
-
-                        if (enclosures.isNotEmpty()) item.imageLink = enclosures.first()
-                        else if (mediaContents.isNotEmpty()) item.imageLink = mediaContents.first()
+                        finalizeItem(item, creators)
 
                         items += item
                     }
                 }
             }
 
-            konsume.close()
+            konsumer.close()
             items
         } catch (e: KonsumerException) {
             throw ParseException(e.message)
         }
     }
 
-    private fun parseEnclosure(konsume: Konsumer, enclosures: MutableList<String>) {
-        if (konsume.attributes.getValueOpt("type") != null
-                && LibUtils.isMimeImage(konsume.attributes["type"]))
-            enclosures += konsume.attributes["url"]
+    private fun parseEnclosure(konsumer: Konsumer, item: Item) {
+        if (konsumer.attributes.getValueOpt("type") != null
+                && LibUtils.isMimeImage(konsumer.attributes["type"]) && item.imageLink == null)
+            item.imageLink = konsumer.attributes.getValueOpt("url")
     }
 
-    private fun parseMediaContent(konsume: Konsumer, mediaContents: MutableList<String>) {
-        if (konsume.attributes.getValueOpt("medium") != null
-                && LibUtils.isMimeImage(konsume.attributes["medium"]))
-            mediaContents += konsume.attributes["url"]
+    private fun parseMediaContent(konsumer: Konsumer, item: Item) {
+        if (konsumer.attributes.getValueOpt("medium") != null
+                && LibUtils.isMimeImage(konsumer.attributes["medium"]) && item.imageLink == null)
+            item.imageLink = konsumer.attributes.getValueOpt("url")
 
-        konsume.skipContents() // ignore media content sub elements
+        konsumer.skipContents() // ignore media content sub elements
     }
 
-    private fun parseMediaGroup(konsume: Konsumer, mediaContents: MutableList<String>) {
-        konsume.allChildrenAutoIgnore("content") {
+    private fun parseMediaGroup(konsumer: Konsumer, item: Item) {
+        konsumer.allChildrenAutoIgnore("content") {
             when (tagName) {
-                "media:content" -> parseMediaContent(this, mediaContents)
+                "media:content" -> parseMediaContent(this, item)
                 else -> skipContents()
             }
+        }
+    }
+
+    private fun finalizeItem(item: Item, creators: List<String?>) {
+        item.apply {
+            validateItem(this)
+
+            if (pubDate == null) pubDate = LocalDateTime.now()
+            if (guid == null) guid = link
+            if (author == null && creators.filterNotNull().isNotEmpty())
+                author = creators.filterNotNull().joinToString(limit = AUTHORS_MAX)
         }
     }
 
@@ -88,7 +92,6 @@ class RSS2ItemsAdapter : XmlAdapter<List<Item>> {
         when {
             item.title == null -> throw ParseException("Item title is required")
             item.link == null -> throw ParseException("Item link is required")
-            item.pubDate == null -> throw ParseException("Item date is required")
         }
     }
 

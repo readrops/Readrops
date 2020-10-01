@@ -1,5 +1,9 @@
 package com.readrops.api.utils;
 
+import android.util.Log;
+
+import androidx.annotation.Nullable;
+
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -8,6 +12,8 @@ import org.joda.time.format.DateTimeFormatterBuilder;
 import java.util.Locale;
 
 public final class DateUtils {
+
+    private static final String TAG = DateUtils.class.getSimpleName();
 
     /**
      * Base of common RSS 2 date formats.
@@ -30,20 +36,30 @@ public final class DateUtils {
      */
     private static final String ATOM_JSON_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
+    @Nullable
     public static LocalDateTime parse(String value) {
-        DateTimeFormatter formatter = new DateTimeFormatterBuilder()
-                .appendOptional(DateTimeFormat.forPattern(RSS_2_BASE_PATTERN + " ").getParser()) // with timezone
-                .appendOptional(DateTimeFormat.forPattern(RSS_2_BASE_PATTERN).getParser()) // no timezone, important order here
-                .appendOptional(DateTimeFormat.forPattern(ATOM_JSON_DATE_FORMAT).getParser())
-                .appendOptional(DateTimeFormat.forPattern(GMT_PATTERN).getParser())
-                .appendOptional(DateTimeFormat.forPattern(OFFSET_PATTERN).getParser())
-                .appendOptional(DateTimeFormat.forPattern(ISO_PATTERN).getParser())
-                .appendOptional(DateTimeFormat.forPattern(EDT_PATTERN).getParser())
-                .toFormatter()
-                .withLocale(Locale.ENGLISH)
-                .withOffsetParsed();
+        if (value == null) {
+            return null;
+        }
 
-        return formatter.parseLocalDateTime(value);
+        try {
+            DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                    .appendOptional(DateTimeFormat.forPattern(RSS_2_BASE_PATTERN + " ").getParser()) // with timezone
+                    .appendOptional(DateTimeFormat.forPattern(RSS_2_BASE_PATTERN).getParser()) // no timezone, important order here
+                    .appendOptional(DateTimeFormat.forPattern(ATOM_JSON_DATE_FORMAT).getParser())
+                    .appendOptional(DateTimeFormat.forPattern(GMT_PATTERN).getParser())
+                    .appendOptional(DateTimeFormat.forPattern(OFFSET_PATTERN).getParser())
+                    .appendOptional(DateTimeFormat.forPattern(ISO_PATTERN).getParser())
+                    .appendOptional(DateTimeFormat.forPattern(EDT_PATTERN).getParser())
+                    .toFormatter()
+                    .withLocale(Locale.ENGLISH)
+                    .withOffsetParsed();
+
+            return formatter.parseLocalDateTime(value);
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
+            return null;
+        }
     }
 
     public static String formattedDateByLocal(LocalDateTime dateTime) {
