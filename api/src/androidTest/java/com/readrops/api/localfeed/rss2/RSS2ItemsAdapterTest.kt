@@ -28,7 +28,7 @@ class RSS2ItemsAdapterTest {
 
         assertEquals(item.title, "Africa declared free of wild polio")
         assertEquals(item.link, "https://www.bbc.com/news/world-africa-53887947")
-        assertEquals(item.pubDate, DateUtils.stringToLocalDateTime("Tue, 25 Aug 2020 17:15:49 +0000"))
+        assertEquals(item.pubDate, DateUtils.parse("Tue, 25 Aug 2020 17:15:49 +0000"))
         assertEquals(item.author, "Author 1")
         assertEquals(item.description, "<a href=\"https://news.ycombinator.com/item?id=24273602\">Comments</a>")
         assertEquals(item.guid, "https://www.bbc.com/news/world-africa-53887947")
@@ -41,7 +41,7 @@ class RSS2ItemsAdapterTest {
 
         assertEquals(item.guid, "guid")
         assertEquals(item.author, "creator 1, creator 2, creator 3, creator 4")
-        assertEquals(item.pubDate, DateUtils.stringToLocalDateTime("2020-08-05T14:03:48Z"))
+        assertEquals(item.pubDate, DateUtils.parse("2020-08-05T14:03:48Z"))
         assertEquals(item.content, "content:encoded")
     }
 

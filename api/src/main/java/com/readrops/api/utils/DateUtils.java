@@ -30,7 +30,7 @@ public final class DateUtils {
      */
     private static final String ATOM_JSON_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
-    public static LocalDateTime stringToLocalDateTime(String value) {
+    public static LocalDateTime parse(String value) {
         DateTimeFormatter formatter = new DateTimeFormatterBuilder()
                 .appendOptional(DateTimeFormat.forPattern(RSS_2_BASE_PATTERN + " ").getParser()) // with timezone
                 .appendOptional(DateTimeFormat.forPattern(RSS_2_BASE_PATTERN).getParser()) // no timezone, important order here

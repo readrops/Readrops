@@ -28,7 +28,7 @@ class ATOMItemsAdapterTest {
         assertEquals(items.size, 4)
         assertEquals(item.title, "Add an option to open item url in custom tab")
         assertEquals(item.link, "https://github.com/readrops/Readrops/commit/c15f093a1bc4211e85f8d1817c9073e307afe5ac")
-        assertEquals(item.pubDate, DateUtils.stringToLocalDateTime("2020-09-06T21:09:59Z"))
+        assertEquals(item.pubDate, DateUtils.parse("2020-09-06T21:09:59Z"))
         assertEquals(item.author, "Shinokuni")
         assertEquals(item.description, "Summary")
         assertEquals(item.guid, "tag:github.com,2008:Grit::Commit/c15f093a1bc4211e85f8d1817c9073e307afe5ac")

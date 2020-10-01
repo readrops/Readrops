@@ -6,7 +6,6 @@ import com.readrops.api.utils.ParseException
 import com.readrops.api.utils.nextNonEmptyString
 import com.readrops.api.utils.nextNullableString
 import com.readrops.db.entities.Item
-import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
@@ -55,7 +54,7 @@ class JSONItemsAdapter : JsonAdapter<List<Item>>() {
                         4 -> contentText = reader.nextNullableString()
                         5 -> description = reader.nextNullableString()
                         6 -> imageLink = reader.nextNullableString()
-                        7 -> pubDate = DateUtils.stringToLocalDateTime(reader.nextNonEmptyString())
+                        7 -> pubDate = DateUtils.parse(reader.nextNonEmptyString())
                         8 -> author = parseAuthor(reader) // jsonfeed 1.0
                         9 -> author = parseAuthors(reader) // jsonfeed 1.1
                         else -> reader.skipValue()

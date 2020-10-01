@@ -37,7 +37,7 @@ class JSONItemsAdapterTest {
         assertEquals(item.guid, "http://flyingmeat.com/blog/archives/2017/9/acorn_and_10.13.html")
         assertEquals(item.title, "Acorn and 10.13")
         assertEquals(item.link, "http://flyingmeat.com/blog/archives/2017/9/acorn_and_10.13.html")
-        assertEquals(item.pubDate, DateUtils.stringToLocalDateTime("2017-09-25T14:27:27-07:00"))
+        assertEquals(item.pubDate, DateUtils.parse("2017-09-25T14:27:27-07:00"))
         assertEquals(item.author, "Author 1")
         assertNotNull(item.content)
     }

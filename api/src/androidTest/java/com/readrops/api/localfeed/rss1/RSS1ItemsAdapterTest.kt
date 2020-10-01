@@ -31,7 +31,7 @@ class RSS1ItemsAdapterTest {
                 "its-flutter-development-kit-to-windows-apps?utm_source=rss1.0mainlinkanon&utm_medium=feed")
         assertEquals(item.guid.trim(), "https://developers.slashdot.org/story/20/09/23/1616231/google-expands-" +
                 "its-flutter-development-kit-to-windows-apps?utm_source=rss1.0mainlinkanon&utm_medium=feed")
-        assertEquals(item.pubDate, DateUtils.stringToLocalDateTime("2020-09-23T16:15:00+00:00"))
+        assertEquals(item.pubDate, DateUtils.parse("2020-09-23T16:15:00+00:00"))
         assertEquals(item.author, "msmash")
         assertNotNull(item.description)
         assertEquals(item.content, "content:encoded")

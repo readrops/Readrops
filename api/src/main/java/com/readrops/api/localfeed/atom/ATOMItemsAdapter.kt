@@ -23,7 +23,7 @@ class ATOMItemsAdapter : XmlAdapter<List<Item>> {
                             when (tagName) {
                                 "title" -> title = nonNullText()
                                 "id" -> guid = nullableText()
-                                "updated" -> pubDate = DateUtils.stringToLocalDateTime(nonNullText())
+                                "updated" -> pubDate = DateUtils.parse(nonNullText())
                                 "link" -> parseLink(this, this@apply)
                                 "author" -> allChildrenAutoIgnore("name") { author = nullableText() }
                                 "summary" -> description = nullableTextRecursively()

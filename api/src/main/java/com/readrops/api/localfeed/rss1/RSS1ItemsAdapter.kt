@@ -27,7 +27,7 @@ class RSS1ItemsAdapter : XmlAdapter<List<Item>> {
                             when (tagName) {
                                 "title" -> title = nonNullText()
                                 "link" -> link = nullableText()
-                                "dc:date" -> pubDate = DateUtils.stringToLocalDateTime(nonNullText())
+                                "dc:date" -> pubDate = DateUtils.parse(nonNullText())
                                 "dc:creator" -> authors += nullableText()
                                 "description" -> description = nullableTextRecursively()
                                 "content:encoded" -> content = nullableTextRecursively()
