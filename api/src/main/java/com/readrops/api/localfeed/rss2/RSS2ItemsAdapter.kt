@@ -60,9 +60,16 @@ class RSS2ItemsAdapter : XmlAdapter<List<Item>> {
             item.imageLink = konsumer.attributes.getValueOpt("url")
     }
 
+    private fun isMediumImage(konsumer: Konsumer) = with(konsumer) {
+        attributes.getValueOpt("medium") != null && LibUtils.isMimeImage(attributes["medium"])
+    }
+
+    private fun isTypeImage(konsumer: Konsumer) = with(konsumer) {
+        attributes.getValueOpt("type") != null && LibUtils.isMimeImage(attributes["type"])
+    }
+
     private fun parseMediaContent(konsumer: Konsumer, item: Item) {
-        if (konsumer.attributes.getValueOpt("medium") != null
-                && LibUtils.isMimeImage(konsumer.attributes["medium"]) && item.imageLink == null)
+        if ((isMediumImage(konsumer) || isTypeImage(konsumer)) && item.imageLink == null)
             item.imageLink = konsumer.attributes.getValueOpt("url")
 
         konsumer.skipContents() // ignore media content sub elements
