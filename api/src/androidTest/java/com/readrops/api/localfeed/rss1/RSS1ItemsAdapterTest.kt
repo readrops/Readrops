@@ -5,8 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.readrops.api.utils.DateUtils
 import com.readrops.api.utils.ParseException
-import junit.framework.TestCase.assertEquals
-import junit.framework.TestCase.assertNotNull
+import junit.framework.TestCase.*
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -49,23 +48,26 @@ class RSS1ItemsAdapterTest {
     }
 
     @Test
+    fun nullDateTest() {
+        val stream = context.resources.assets.open("localfeed/rss1/rss1_items_no_date.xml")
+
+        val item = adapter.fromXml(stream).first()
+        assertNotNull(item.pubDate)
+    }
+
+    @Test
     fun nullTitleTest() {
         val stream = context.resources.assets.open("localfeed/rss1/rss1_items_no_title.xml")
 
-        Assert.assertThrows(ParseException::class.java) { adapter.fromXml(stream) }
+        val exception = Assert.assertThrows(ParseException::class.java) { adapter.fromXml(stream) }
+        assertTrue(exception.message!!.contains("Item title is required"))
     }
 
     @Test
     fun nullLinkTest() {
         val stream = context.resources.assets.open("localfeed/rss1/rss1_items_no_link.xml")
 
-        Assert.assertThrows(ParseException::class.java) { adapter.fromXml(stream) }
-    }
-
-    @Test
-    fun nullDateTest() {
-        val stream = context.resources.assets.open("localfeed/rss1/rss1_items_no_date.xml")
-
-        Assert.assertThrows(ParseException::class.java) { adapter.fromXml(stream) }
+        val exception = Assert.assertThrows(ParseException::class.java) { adapter.fromXml(stream) }
+        assertTrue(exception.message!!.contains("RSS1 link or about element is required"))
     }
 }

@@ -5,8 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.readrops.api.utils.DateUtils
 import com.readrops.api.utils.ParseException
-import junit.framework.TestCase.assertEquals
-import junit.framework.TestCase.assertNotNull
+import junit.framework.TestCase.*
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -36,23 +35,27 @@ class ATOMItemsAdapterTest {
     }
 
     @Test
+    fun noDateTest() {
+        val stream = context.resources.assets.open("localfeed/atom/atom_items_no_date.xml")
+
+        val item = adapter.fromXml(stream).first()
+        assertNotNull(item.pubDate)
+    }
+
+    @Test
     fun noTitleTest() {
         val stream = context.resources.assets.open("localfeed/atom/atom_items_no_title.xml")
 
-        Assert.assertThrows("Item title is required", ParseException::class.java) { adapter.fromXml(stream) }
+        val exception = Assert.assertThrows(ParseException::class.java) { adapter.fromXml(stream) }
+        assertTrue(exception.message!!.contains("Item title is required"))
     }
 
     @Test
     fun noLinkTest() {
         val stream = context.resources.assets.open("localfeed/atom/atom_items_no_link.xml")
 
-        Assert.assertThrows("Item link is required", ParseException::class.java) { adapter.fromXml(stream) }
+        val exception = Assert.assertThrows(ParseException::class.java) { adapter.fromXml(stream) }
+        assertTrue(exception.message!!.contains("Item link is required"))
     }
 
-    @Test
-    fun noDateTest() {
-        val stream = context.resources.assets.open("localfeed/atom/atom_items_no_date.xml")
-
-        Assert.assertThrows("Item date is required", ParseException::class.java) { adapter.fromXml(stream) }
-    }
 }

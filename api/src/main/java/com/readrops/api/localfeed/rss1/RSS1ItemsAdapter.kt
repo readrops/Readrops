@@ -7,16 +7,17 @@ import com.readrops.api.localfeed.XmlAdapter
 import com.readrops.api.localfeed.XmlAdapter.Companion.AUTHORS_MAX
 import com.readrops.api.utils.*
 import com.readrops.db.entities.Item
+import org.joda.time.LocalDateTime
 import java.io.InputStream
 
 class RSS1ItemsAdapter : XmlAdapter<List<Item>> {
 
     override fun fromXml(inputStream: InputStream): List<Item> {
-        val konsume = inputStream.konsumeXml()
+        val konsumer = inputStream.konsumeXml()
         val items = arrayListOf<Item>()
 
         return try {
-            konsume.child("RDF") {
+            konsumer.child("RDF") {
                 allChildrenAutoIgnore("item") {
                     val authors = arrayListOf<String?>()
                     val about = attributes.getValueOpt("about",
@@ -27,7 +28,7 @@ class RSS1ItemsAdapter : XmlAdapter<List<Item>> {
                             when (tagName) {
                                 "title" -> title = nonNullText()
                                 "link" -> link = nullableText()
-                                "dc:date" -> pubDate = DateUtils.parse(nonNullText())
+                                "dc:date" -> pubDate = DateUtils.parse(nullableText())
                                 "dc:creator" -> authors += nullableText()
                                 "description" -> description = nullableTextRecursively()
                                 "content:encoded" -> content = nullableTextRecursively()
@@ -36,6 +37,7 @@ class RSS1ItemsAdapter : XmlAdapter<List<Item>> {
                         }
                     }
 
+                    if (item.pubDate == null) item.pubDate = LocalDateTime.now()
                     if (item.link == null) item.link = about
                             ?: throw ParseException("RSS1 link or about element is required")
                     item.guid = item.link
@@ -49,7 +51,7 @@ class RSS1ItemsAdapter : XmlAdapter<List<Item>> {
                 }
             }
 
-            konsume.close()
+            konsumer.close()
             items
         } catch (e: Exception) {
             throw ParseException(e.message)
@@ -57,10 +59,7 @@ class RSS1ItemsAdapter : XmlAdapter<List<Item>> {
     }
 
     private fun validateItem(item: Item) {
-        when {
-            item.title == null -> throw ParseException("Item title is required")
-            item.pubDate == null -> throw ParseException("Item date is required")
-        }
+        if (item.title == null) throw ParseException("Item title is required")
     }
 
     companion object {
