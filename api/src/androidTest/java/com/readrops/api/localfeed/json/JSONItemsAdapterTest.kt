@@ -8,8 +8,7 @@ import com.readrops.api.utils.ParseException
 import com.readrops.db.entities.Item
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
-import junit.framework.TestCase.assertEquals
-import junit.framework.TestCase.assertNotNull
+import junit.framework.TestCase.*
 import okio.Buffer
 import org.junit.Assert
 import org.junit.Test
@@ -31,7 +30,7 @@ class JSONItemsAdapterTest {
         val stream = context.resources.assets.open("localfeed/json/json_feed.json")
 
         val items = adapter.fromJson(Buffer().readFrom(stream))!!
-        val item = items[0]
+        val item = items.first()
 
         assertEquals(items.size, 10)
         assertEquals(item.guid, "http://flyingmeat.com/blog/archives/2017/9/acorn_and_10.13.html")
@@ -46,7 +45,7 @@ class JSONItemsAdapterTest {
     fun otherCasesTest() {
         val stream = context.resources.assets.open("localfeed/json/json_items_other_cases.json")
 
-        val item = adapter.fromJson(Buffer().readFrom(stream))!![0]
+        val item = adapter.fromJson(Buffer().readFrom(stream))!!.first()
 
         assertEquals(item.description, "This is a summary")
         assertEquals(item.content, "content_html")
@@ -55,23 +54,27 @@ class JSONItemsAdapterTest {
     }
 
     @Test
-    fun nullTitleTest() {
-        val stream = context.resources.assets.open("localfeed/json/json_items_required_elements.json")
+    fun nullDateTest() {
+        val stream = context.resources.assets.open("localfeed/json/json_items_no_date.json")
 
-        Assert.assertThrows("Item title is required", ParseException::class.java) { adapter.fromJson(Buffer().readFrom(stream))!![0] }
+        val item = adapter.fromJson(Buffer().readFrom(stream))!!.first()
+        assertNotNull(item.pubDate)
+    }
+
+    @Test
+    fun nullTitleTest() {
+        val stream = context.resources.assets.open("localfeed/json/json_items_no_title.json")
+
+        val exception = Assert.assertThrows(ParseException::class.java) { adapter.fromJson(Buffer().readFrom(stream)) }
+        assertTrue(exception.message!!.contains("Item title is required"))
     }
 
     @Test
     fun nullLinkTest() {
-        val stream = context.resources.assets.open("localfeed/json/json_items_required_elements.json")
+        val stream = context.resources.assets.open("localfeed/json/json_items_no_link.json")
 
-        Assert.assertThrows("Item link is required", ParseException::class.java) { adapter.fromJson(Buffer().readFrom(stream))!![1] }
+        val exception = Assert.assertThrows(ParseException::class.java) { adapter.fromJson(Buffer().readFrom(stream)) }
+        assertTrue(exception.message!!.contains("Item link is required"))
     }
 
-    @Test
-    fun nullDateTest() {
-        val stream = context.resources.assets.open("localfeed/json/json_items_required_elements.json")
-
-        Assert.assertThrows("Item date is required", ParseException::class.java) { adapter.fromJson(Buffer().readFrom(stream))!![2] }
-    }
 }

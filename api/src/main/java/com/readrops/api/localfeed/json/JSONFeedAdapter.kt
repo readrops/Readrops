@@ -15,7 +15,7 @@ class JSONFeedAdapter {
 
     @FromJson
     fun fromJson(reader: JsonReader): Feed {
-        try {
+        return try {
             val feed = Feed()
             reader.beginObject()
 
@@ -32,7 +32,7 @@ class JSONFeedAdapter {
             }
 
             reader.endObject()
-            return feed
+            feed
         } catch (e: Exception) {
             throw ParseException(e.message)
         }

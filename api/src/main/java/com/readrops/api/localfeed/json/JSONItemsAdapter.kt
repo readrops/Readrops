@@ -9,6 +9,7 @@ import com.readrops.db.entities.Item
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
+import org.joda.time.LocalDateTime
 
 class JSONItemsAdapter : JsonAdapter<List<Item>>() {
 
@@ -54,7 +55,7 @@ class JSONItemsAdapter : JsonAdapter<List<Item>>() {
                         4 -> contentText = reader.nextNullableString()
                         5 -> description = reader.nextNullableString()
                         6 -> imageLink = reader.nextNullableString()
-                        7 -> pubDate = DateUtils.parse(reader.nextNonEmptyString())
+                        7 -> pubDate = DateUtils.parse(reader.nextNullableString())
                         8 -> author = parseAuthor(reader) // jsonfeed 1.0
                         9 -> author = parseAuthors(reader) // jsonfeed 1.1
                         else -> reader.skipValue()
@@ -64,6 +65,7 @@ class JSONItemsAdapter : JsonAdapter<List<Item>>() {
 
             validateItem(item)
             item.content = if (contentHtml != null) contentHtml else contentText
+            if (item.pubDate == null) item.pubDate = LocalDateTime.now()
 
             reader.endObject()
             items += item
@@ -105,7 +107,6 @@ class JSONItemsAdapter : JsonAdapter<List<Item>>() {
         when {
             item.title == null -> throw ParseException("Item title is required")
             item.link == null -> throw ParseException("Item link is required")
-            item.pubDate == null -> throw ParseException("Item date id required")
         }
     }
 
