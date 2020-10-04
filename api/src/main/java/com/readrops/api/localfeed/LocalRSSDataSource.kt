@@ -63,6 +63,11 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) {
         }
     }
 
+    /**
+     * Checks if the provided url is a RSS resource
+     * @param url url to check
+     * @return true if [url] is a RSS resource, false otherwise
+     */
     @WorkerThread
     fun isUrlRSSResource(url: String): Boolean {
         val response = queryUrl(url, null)
@@ -131,7 +136,7 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) {
                 // if an atom:link element was parsed, we still replace its value as it is unreliable,
                 // otherwise we just add the rss url
                 url = response.request.url.toString()
-            } else if (type == LocalRSSHelper.RSSType.ATOM) {
+            } else if (type == LocalRSSHelper.RSSType.ATOM || type == LocalRSSHelper.RSSType.RSS_1) {
                 if (url == null) url = response.request.url.toString()
                 if (siteUrl == null) siteUrl = response.request.url.scheme + "://" + response.request.url.host
             }

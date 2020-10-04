@@ -19,7 +19,7 @@ class RSS1FeedAdapter : XmlAdapter<Feed> {
         return try {
             konsume.child("RDF") {
                 allChildrenAutoIgnore("channel") {
-                    feed.url = attributes.getValue("about",
+                    feed.url = attributes.getValueOpt("about",
                             namespace = "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
 
                     allChildrenAutoIgnore(names) {

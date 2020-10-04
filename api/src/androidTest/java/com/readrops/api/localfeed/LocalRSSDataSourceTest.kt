@@ -97,6 +97,34 @@ class LocalRSSDataSourceTest {
     }
 
     @Test
+    fun specialCasesAtomTest() {
+        val stream = context.resources.assets.open("localfeed/atom/atom_feed_no_url_siteurl.xml")
+
+        mockServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_OK)
+                .addHeader(LibUtils.CONTENT_TYPE_HEADER, "application/atom+xml")
+                .setBody(Buffer().readFrom(stream)))
+
+        val pair = localRSSDataSource.queryRSSResource(url.toString(), null)!!
+
+        assertEquals(pair.first.url, "http://localhost:8080/rss")
+        assertEquals(pair.first.siteUrl, "http://localhost")
+    }
+
+    @Test
+    fun specialCasesRSS1Test() {
+        val stream = context.resources.assets.open("localfeed/rss1/rss1_feed_no_url_siteurl.xml")
+
+        mockServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_OK)
+                .addHeader(LibUtils.CONTENT_TYPE_HEADER, "application/rdf+xml")
+                .setBody(Buffer().readFrom(stream)))
+
+        val pair = localRSSDataSource.queryRSSResource(url.toString(), null)!!
+
+        assertEquals(pair.first.url, "http://localhost:8080/rss")
+        assertEquals(pair.first.siteUrl, "http://localhost")
+    }
+
+    @Test
     fun response304Test() {
         mockServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_NOT_MODIFIED))
 

@@ -1,0 +1,31 @@
+<rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:slash="http://purl.org/rss/1.0/modules/slash/" xmlns:syn="http://purl.org/rss/1.0/modules/syndication/"
+    xmlns="http://purl.org/rss/1.0/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+
+    <channel>
+        <title>Slashdot</title>
+        <description>News for nerds, stuff that matters</description>
+        <dc:language>en-us</dc:language>
+        <dc:rights>Copyright 1997-2016, SlashdotMedia. All Rights Reserved.</dc:rights>
+        <dc:date>2020-09-23T16:20:20+00:00</dc:date>
+        <dc:publisher>Dice</dc:publisher>
+        <dc:creator>help@slashdot.org</dc:creator>
+        <dc:subject>Technology</dc:subject>
+        <syn:updateBase>1970-01-01T00:00+00:00</syn:updateBase>
+        <syn:updateFrequency>1</syn:updateFrequency>
+        <syn:updatePeriod>hourly</syn:updatePeriod>
+        <image rdf:resource="https://a.fsdn.com/sd/topics/topicslashdot.gif" />
+        <textinput rdf:resource="https://slashdot.org/search.pl" />
+        <atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" href="http://rss.slashdot.org/slashdot/slashdotMain"
+            rel="self" type="application/rdf+xml" />
+        <feedburner:info xmlns:feedburner="http://rssnamespace.org/feedburner/ext/1.0"
+            uri="slashdot/slashdotmain" />
+        <atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" href="http://pubsubhubbub.appspot.com/"
+            rel="hub" />
+    </channel>
+    <image rdf:about="https://a.fsdn.com/sd/topics/topicslashdot.gif">
+        <title>Slashdot</title>
+        <url>https://a.fsdn.com/sd/topics/topicslashdot.gif</url>
+        <link>https://slashdot.org/</link>
+    </image>
+</rdf:RDF>
