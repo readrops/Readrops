@@ -27,12 +27,11 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) {
      * Query RSS url
      * @param url url to query
      * @param headers request headers
-     * @param withItems parse items with their feed
-     * @return a Feed object with its items if specified by [withItems]
+     * @return a Feed object with its items
      */
     @Throws(ParseException::class, UnknownFormatException::class, NetworkErrorException::class, IOException::class)
     @WorkerThread
-    fun queryRSSResource(url: String, headers: Headers?, withItems: Boolean): Pair<Feed, List<Item>>? {
+    fun queryRSSResource(url: String, headers: Headers?): Pair<Feed, List<Item>>? {
         val response = queryUrl(url, headers)
 
         return when {
@@ -54,7 +53,7 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) {
                 if (type == LocalRSSHelper.RSSType.UNKNOWN) throw UnknownFormatException("Unable to guess $url RSS type")
 
                 val feed = parseFeed(ByteArrayInputStream(bodyArray), type, response)
-                val items = if (withItems) parseItems(ByteArrayInputStream(bodyArray), type) else listOf()
+                val items = parseItems(ByteArrayInputStream(bodyArray), type)
 
                 response.body?.close()
                 Pair(feed, items)

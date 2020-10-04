@@ -81,7 +81,7 @@ public class LocalFeedRepository extends ARepository<Void> {
                         headers.add(LibUtils.IF_MODIFIED_HEADER, feed.getLastModified());
                     }
 
-                    Pair<Feed, List<Item>> pair = dataSource.queryRSSResource(feed.getUrl(), headers.build(), true);
+                    Pair<Feed, List<Item>> pair = dataSource.queryRSSResource(feed.getUrl(), headers.build());
 
                     if (pair != null) {
                         insertNewItems(feed, pair.getSecond());
@@ -105,7 +105,7 @@ public class LocalFeedRepository extends ARepository<Void> {
 
                 try {
                     Pair<Feed, List<Item>> pair = dataSource.queryRSSResource(parsingResult.getUrl(),
-                            null, false);
+                            null);
                     Feed feed = insertFeed(pair.getFirst(), parsingResult);
 
                     if (feed != null) {

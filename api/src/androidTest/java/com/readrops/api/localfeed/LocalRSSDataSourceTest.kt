@@ -51,7 +51,7 @@ class LocalRSSDataSourceTest {
                 .addHeader(LibUtils.LAST_MODIFIED_HEADER, "Last-Modified")
                 .setBody(Buffer().readFrom(stream)))
 
-        val pair = localRSSDataSource.queryRSSResource(url.toString(), null, true)
+        val pair = localRSSDataSource.queryRSSResource(url.toString(), null)
         val feed = pair?.first!!
 
         assertEquals(feed.name, "Hacker News")
@@ -74,7 +74,7 @@ class LocalRSSDataSourceTest {
                 .setBody(Buffer().readFrom(stream)))
 
         val headers = Headers.headersOf(LibUtils.ETAG_HEADER, "ETag", LibUtils.LAST_MODIFIED_HEADER, "Last-Modified")
-        localRSSDataSource.queryRSSResource(url.toString(), headers, false)
+        localRSSDataSource.queryRSSResource(url.toString(), headers)
 
         val request = mockServer.takeRequest()
 
@@ -90,7 +90,7 @@ class LocalRSSDataSourceTest {
                 .addHeader(LibUtils.CONTENT_TYPE_HEADER, "application/feed+json")
                 .setBody(Buffer().readFrom(stream)))
 
-        val pair = localRSSDataSource.queryRSSResource(url.toString(), null, true)!!
+        val pair = localRSSDataSource.queryRSSResource(url.toString(), null)!!
 
         assertEquals(pair.first.name, "News from Flying Meat")
         assertEquals(pair.second.size, 10)
@@ -100,7 +100,7 @@ class LocalRSSDataSourceTest {
     fun response304Test() {
         mockServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_NOT_MODIFIED))
 
-        val pair = localRSSDataSource.queryRSSResource(url.toString(), null, false)
+        val pair = localRSSDataSource.queryRSSResource(url.toString(), null)
 
         assertNull(pair)
     }
@@ -109,14 +109,14 @@ class LocalRSSDataSourceTest {
     fun response404Test() {
         mockServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_NOT_FOUND))
 
-        localRSSDataSource.queryRSSResource(url.toString(), null, false)
+        localRSSDataSource.queryRSSResource(url.toString(), null)
     }
 
     @Test(expected = ParseException::class)
     fun noContentTypeTest() {
         mockServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_OK))
 
-        localRSSDataSource.queryRSSResource(url.toString(), null, false)
+        localRSSDataSource.queryRSSResource(url.toString(), null)
     }
 
     @Test(expected = ParseException::class)
@@ -124,7 +124,7 @@ class LocalRSSDataSourceTest {
         mockServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_OK)
                 .addHeader("Content-Type", ""))
 
-        localRSSDataSource.queryRSSResource(url.toString(), null, false)
+        localRSSDataSource.queryRSSResource(url.toString(), null)
     }
 
     @Test(expected = UnknownFormatException::class)
@@ -133,7 +133,7 @@ class LocalRSSDataSourceTest {
                 .addHeader("Content-Type", "application/xml")
                 .setBody("<html>  </html>"))
 
-        localRSSDataSource.queryRSSResource(url.toString(), null, false)
+        localRSSDataSource.queryRSSResource(url.toString(), null)
     }
 
     @Test
