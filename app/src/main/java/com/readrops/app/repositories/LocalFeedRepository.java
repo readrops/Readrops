@@ -112,12 +112,16 @@ public class LocalFeedRepository extends ARepository<Void> {
                         insertionResult.setFeed(feed);
                     }
                 } catch (ParseException e) {
+                    Log.d(TAG, "addFeeds: " + e.getMessage());
                     insertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.PARSE_ERROR);
                 } catch (UnknownFormatException e) {
+                    Log.d(TAG, "addFeeds: " + e.getMessage());
                     insertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.FORMAT_ERROR);
                 } catch (NetworkErrorException | IOException e) {
+                    Log.d(TAG, "addFeeds: " + e.getMessage());
                     insertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.NETWORK_ERROR);
                 } catch (Exception e) {
+                    Log.d(TAG, "addFeeds: " + e.getMessage());
                     insertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.UNKNOWN_ERROR);
                 } finally {
                     insertionResult.setParsingResult(parsingResult);
