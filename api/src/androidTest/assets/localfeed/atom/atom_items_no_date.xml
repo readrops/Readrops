@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xml:lang="en-US">
+    <id>tag:github.com,2008:/readrops/Readrops/commits/develop</id>
+    <link type="text/html" rel="alternate" href="https://github.com/readrops/Readrops/commits/develop"/>
+    <link type="application/atom+xml" rel="self" href="https://github.com/readrops/Readrops/commits/develop.atom"/>
+    <title>Recent Commits to Readrops:develop</title>
+    <updated>2020-09-06T21:09:59Z</updated>
+    <entry>
+        <id>tag:github.com,2008:Grit::Commit/c15f093a1bc4211e85f8d1817c9073e307afe5ac</id>
+        <title>Add an option to open item url in custom tab</title>
+        <link type="text/html" rel="alternate" href="https://github.com/readrops/Readrops/commit/c15f093a1bc4211e85f8d1817c9073e307afe5ac"/>
+        <media:thumbnail height="30" width="30" url="https://avatars2.githubusercontent.com/u/18555673?s=30&amp;u=c56b216e8d128d0ec217062feeace9faca4dc893&amp;v=4"/>
+        <author>
+            <name>Shinokuni</name>
+            <uri>https://github.com/Shinokuni</uri>
+        </author>
+        <summary>Summary</summary>
+        <content type="html">
+            &lt;pre style=&#39;white-space:pre-wrap;width:81ex&#39;&gt;Add an option to open item url in custom tab&lt;/pre&gt;
+        </content>
+    </entry>
+</feed>

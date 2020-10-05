@@ -1,0 +1,10 @@
+{
+  "items": [
+    {
+      "id": "http://flyingmeat.com/blog/archives/2017/9/acorn_and_10.13.html",
+      "title": "Acorn and 10.13",
+      "content_html": "<p>Happy Mac OS High Sierra release day everyone.</p>\n<p>I&#39;m happy to say that there are no known issues with <a href=\"https://flyingmeat.com/acorn/\">Acorn</a> 6.0.3 or Acorn 5.6.6 when running on Mac OS 10.13 High Sierra. In fact, you might even notice that some things are actually faster and it can now open HEIF images. How awesome is that?</p>\n<p>I&#39;m also working on some 10.13 goodies for Acorn 6 folks later this year. I can&#39;t wait to share that with you, but you&#39;ll have to wait just a little bit.</p>\n",
+      "date_published": "2017-09-25T14:27:27-07:00"
+    }
+  ]
+}

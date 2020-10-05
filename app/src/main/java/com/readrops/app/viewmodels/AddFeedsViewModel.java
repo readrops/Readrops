@@ -7,13 +7,14 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.readrops.db.Database;
-import com.readrops.db.entities.account.Account;
+import com.readrops.api.localfeed.LocalRSSDataSource;
+import com.readrops.api.utils.HttpManager;
 import com.readrops.app.repositories.ARepository;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.HtmlParser;
 import com.readrops.app.utils.ParsingResult;
-import com.readrops.api.localfeed.RSSQuery;
+import com.readrops.db.Database;
+import com.readrops.db.entities.account.Account;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,13 +48,12 @@ public class AddFeedsViewModel extends AndroidViewModel {
 
     public Single<List<ParsingResult>> parseUrl(String url) {
         return Single.create(emitter -> {
-            RSSQuery rssApi = new RSSQuery();
+            LocalRSSDataSource dataSource = new LocalRSSDataSource(HttpManager.getInstance().getOkHttpClient());
             List<ParsingResult> results = new ArrayList<>();
 
-            if (rssApi.isUrlFeedLink(url)) {
+            if (dataSource.isUrlRSSResource(url)) {
                 ParsingResult parsingResult = new ParsingResult(url, null);
                 results.add(parsingResult);
-
             } else {
                 results.addAll(HtmlParser.getFeedLink(url));
             }

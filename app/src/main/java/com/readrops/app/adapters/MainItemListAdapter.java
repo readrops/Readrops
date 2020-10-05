@@ -29,7 +29,7 @@ import com.readrops.app.R;
 import com.readrops.db.entities.Item;
 import com.readrops.db.pojo.ItemWithFeed;
 import com.readrops.app.databinding.ListItemBinding;
-import com.readrops.app.utils.DateUtils;
+import com.readrops.api.utils.DateUtils;
 import com.readrops.app.utils.GlideRequests;
 import com.readrops.app.utils.Utils;
 

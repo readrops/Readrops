@@ -1,0 +1,40 @@
+<rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:slash="http://purl.org/rss/1.0/modules/slash/" xmlns:syn="http://purl.org/rss/1.0/modules/syndication/"
+    xmlns="http://purl.org/rss/1.0/">
+    <item>
+        <title>Google Expands its Flutter Development Kit To Windows Apps</title>
+        <description>Google has announced that Flutter, its open source UI development kit for
+            building cross-platform software from the same codebase, is finally available for
+            Windows apps in alpha. From a report:For the world's leading desktop operating system
+            with some 1 billion installations of Windows 10 alone, this has been a long time coming.
+            Flutter's alpha incarnation was initially launched at Google's I/O developer conference
+            back in 2017, before arriving in beta less than a year later. In its original guise,
+            Flutter was designed for Android and iOS app development, but it has since expanded to
+            cover the web, MacOS, and Linux, which are currently available in various alpha or beta
+            iterations. Developers have had to consider unique platform-specific factors when
+            designing for the desktop or mobile phones, such as different screen sizes and how
+            people interact with their devices. On smartphones, people typically use touch and
+            swipe-based gestures, while keyboards and mice are commonly used on PCs and laptops.
+            This means Flutter has had to expand its support to cover the additional inputs.&lt;p&gt;&lt;div
+            class="share_submission" style="position:relative;"&gt; &lt;a class="slashpop"
+            href="http://twitter.com/home?status=Google+Expands+its+Flutter+Development+Kit+To+Windows+Apps%3A+https%3A%2F%2Fbit.ly%2F32X36MW"&gt;&lt;img
+            src="https://a.fsdn.com/sd/twitter_icon_large.png"&gt;&lt;/a&gt; &lt;a class="slashpop"
+            href="http://www.facebook.com/sharer.php?u=https%3A%2F%2Fdevelopers.slashdot.org%2Fstory%2F20%2F09%2F23%2F1616231%2Fgoogle-expands-its-flutter-development-kit-to-windows-apps%3Futm_source%3Dslashdot%26utm_medium%3Dfacebook"&gt;&lt;img
+            src="https://a.fsdn.com/sd/facebook_icon_large.png"&gt;&lt;/a&gt;
+
+
+            &lt;/div&gt;&lt;/p&gt;&lt;p&gt;&lt;a
+            href="https://developers.slashdot.org/story/20/09/23/1616231/google-expands-its-flutter-development-kit-to-windows-apps?utm_source=rss1.0moreanon&amp;amp;utm_medium=feed"&gt;Read
+            more of this story&lt;/a&gt; at Slashdot.&lt;/p&gt;&lt;iframe
+            src="https://slashdot.org/slashdot-it.pl?op=discuss&amp;amp;id=17251868&amp;amp;smallembed=1"
+            style="height: 300px; width: 100%; border: none;"&gt;&lt;/iframe&gt;
+        </description>
+        <dc:creator>msmash</dc:creator>
+        <dc:date>2020-09-23T16:15:00+00:00</dc:date>
+        <dc:subject>programming</dc:subject>
+        <slash:department>how-about-that</slash:department>
+        <slash:section>developers</slash:section>
+        <slash:comments>1</slash:comments>
+        <slash:hit_parade>1,1,1,1,0,0,0</slash:hit_parade>
+    </item>
+</rdf:RDF>
