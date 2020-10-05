@@ -36,6 +36,7 @@
                 android:id="@+id/add_feed_input_layout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                app:endIconMode="clear_text"
                 app:layout_constraintEnd_toStartOf="@id/add_feed_load"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -44,7 +45,6 @@
                     android:id="@+id/add_feed_text_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawableEnd="@drawable/ic_cancel_grey"
                     android:hint="@string/feed_url"
                     android:inputType="text" />
 

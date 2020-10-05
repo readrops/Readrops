@@ -22,6 +22,7 @@ import android.webkit.WebView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ShareCompat;
 import androidx.lifecycle.ViewModelProvider;
@@ -199,12 +200,7 @@ public class ItemActivity extends AppCompatActivity {
                 shareArticle();
                 return true;
             case R.id.item_open:
-                int value = Integer.parseInt(SharedPreferencesManager.readString(this,
-                        SharedPreferencesManager.SharedPrefKey.OPEN_ITEMS_IN));
-                if (value == 0)
-                    openInNavigator();
-                else
-                    openInWebView();
+                openUrl();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -217,6 +213,22 @@ public class ItemActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
+    private void openUrl() {
+        int value = Integer.parseInt(SharedPreferencesManager.readString(this,
+                SharedPreferencesManager.SharedPrefKey.OPEN_ITEMS_IN));
+        switch (value) {
+            case 0:
+                openInNavigator();
+                break;
+            case 1:
+                openInWebView();
+                break;
+            default:
+                openInCustomTab();
+                break;
+        }
+    }
+
     private void openInNavigator() {
         Intent urlIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(itemWithFeed.getItem().getLink()));
         startActivity(urlIntent);
@@ -225,9 +237,25 @@ public class ItemActivity extends AppCompatActivity {
     private void openInWebView() {
         Intent intent = new Intent(this, WebViewActivity.class);
         intent.putExtra(WEB_URL, itemWithFeed.getItem().getLink());
-        intent.putExtra(ACTION_BAR_COLOR, itemWithFeed.getColor() != 0 ? itemWithFeed.getColor() : itemWithFeed.getBgColor());
+        intent.putExtra(ACTION_BAR_COLOR, itemWithFeed.getBgColor() != 0 ? itemWithFeed.getBgColor() : itemWithFeed.getColor());
 
         startActivity(intent);
+    }
+
+    private void openInCustomTab() {
+        boolean darkTheme = Boolean.parseBoolean(SharedPreferencesManager.readString(this, SharedPreferencesManager.SharedPrefKey.DARK_THEME));
+        int color = itemWithFeed.getBgColor() != 0 ? itemWithFeed.getBgColor() : itemWithFeed.getColor();
+
+        CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
+                .addDefaultShareMenuItem()
+                .setToolbarColor(color)
+                .setSecondaryToolbarColor(color)
+                .setColorScheme(darkTheme ? CustomTabsIntent.COLOR_SCHEME_DARK : CustomTabsIntent.COLOR_SCHEME_LIGHT)
+                .enableUrlBarHiding()
+                .setShowTitle(true)
+                .build();
+
+        customTabsIntent.launchUrl(this, Uri.parse(itemWithFeed.getItem().getLink()));
     }
 
     private void shareArticle() {
