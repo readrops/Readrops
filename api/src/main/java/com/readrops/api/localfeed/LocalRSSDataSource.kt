@@ -37,7 +37,7 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) {
         return when {
             response.isSuccessful -> {
                 val header = response.header(LibUtils.CONTENT_TYPE_HEADER)
-                        ?: throw ParseException("Unable to get $url content-type")
+                        ?: throw UnknownFormatException("Unable to get $url content-type")
 
                 val contentType = LibUtils.parseContentType(header)
                         ?: throw ParseException("Unable to parse $url content-type")

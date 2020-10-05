@@ -140,7 +140,7 @@ class LocalRSSDataSourceTest {
         localRSSDataSource.queryRSSResource(url.toString(), null)
     }
 
-    @Test(expected = ParseException::class)
+    @Test(expected = UnknownFormatException::class)
     fun noContentTypeTest() {
         mockServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_OK))
 
