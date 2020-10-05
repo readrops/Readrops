@@ -167,7 +167,7 @@ class LocalRSSDataSourceTest {
     @Test
     fun isUrlResourceSuccessfulTest() {
         mockServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_OK)
-                .addHeader("Content-Type", "application/atom+xml"))
+                .addHeader("Content-Type", "application/atom+xml; charset=UTF-8"))
 
         assertTrue(localRSSDataSource.isUrlRSSResource(url.toString()))
     }
@@ -182,7 +182,7 @@ class LocalRSSDataSourceTest {
     @Test
     fun isUrlRSSResourceBadContentTypeTest() {
         mockServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_OK)
-                .addHeader("Content-Type", "application/xml")
+                .addHeader("Content-Type", "application/xml; charset=UTF-8")
                 .setBody("<html> </html>"))
 
         assertFalse(localRSSDataSource.isUrlRSSResource(url.toString()))

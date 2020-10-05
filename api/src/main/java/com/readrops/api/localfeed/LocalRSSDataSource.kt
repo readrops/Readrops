@@ -73,7 +73,10 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) {
         val response = queryUrl(url, null)
 
         return if (response.isSuccessful) {
-            val contentType = response.header(LibUtils.CONTENT_TYPE_HEADER)
+            val header = response.header(LibUtils.CONTENT_TYPE_HEADER)
+                    ?: return false
+
+            val contentType = LibUtils.parseContentType(header)
                     ?: return false
 
             var type = LocalRSSHelper.getRSSType(contentType)
