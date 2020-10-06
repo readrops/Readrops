@@ -35,10 +35,9 @@ object OPMLParser {
     fun read(stream: InputStream): Single<Map<Folder?, List<Feed>>> {
         return Single.create { emitter ->
             try {
-                val fileString = LibUtils.inputStreamToString(stream)
                 val serializer: Serializer = Persister()
 
-                val opml: OPML = serializer.read(OPML::class.java, fileString)
+                val opml: OPML = serializer.read(OPML::class.java, stream)
 
                 emitter.onSuccess(opmlToFoldersAndFeeds(opml))
             } catch (e: Exception) {
