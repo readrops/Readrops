@@ -13,11 +13,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import okhttp3.Request;
 import okhttp3.Response;
@@ -25,8 +23,6 @@ import okhttp3.Response;
 public final class HtmlParser {
 
     private static final String TAG = HtmlParser.class.getSimpleName();
-
-    public static final String COVER_IMAGE_REGEX = "^(<p>|(<div.*>))?<img.*>";
 
     /**
      * Parse the html page to get all rss urls
@@ -66,27 +62,6 @@ public final class HtmlParser {
                 type.equals(LibUtils.JSON_CONTENT_TYPE) ||
                 type.equals(LibUtils.RSS_TEXT_CONTENT_TYPE) ||
                 type.equals(LibUtils.RSS_APPLICATION_CONTENT_TYPE);
-    }
-
-    /**
-     * get the feed item image based on open graph metadata.
-     * Warning, This method is slow.
-     *
-     * @param url url to request
-     * @return the item image
-     */
-    public static String getOGImageLink(String url) throws IOException {
-        String imageUrl = null;
-
-        String head = getHTMLHeadFromUrl(url);
-
-        Document document = Jsoup.parse(head);
-        Element element = document.select("meta[property=og:image]").first();
-
-        if (element != null)
-            imageUrl = element.attributes().get("content");
-
-        return imageUrl;
     }
 
     @Nullable
@@ -133,29 +108,5 @@ public final class HtmlParser {
             return null;
         }
 
-    }
-
-    public static String getDescImageLink(String description, String url) {
-        Document document = Jsoup.parse(description, url);
-        Elements elements = document.select("img");
-
-        if (!elements.isEmpty())
-            return elements.first().absUrl("src");
-        else
-            return null;
-    }
-
-    public static String deleteCoverImage(String content) {
-        Document document = Jsoup.parse(content);
-
-        if (Pattern.compile(COVER_IMAGE_REGEX).matcher(document.body().html()).find()) {
-            Elements elements = document.select("img");
-
-            if (!elements.isEmpty())
-                elements.first().remove();
-
-            return document.toString();
-        } else
-            return content;
     }
 }

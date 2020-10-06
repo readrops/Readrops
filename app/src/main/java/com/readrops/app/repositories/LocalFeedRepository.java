@@ -14,7 +14,6 @@ import com.readrops.api.utils.LibUtils;
 import com.readrops.api.utils.ParseException;
 import com.readrops.api.utils.UnknownFormatException;
 import com.readrops.app.utils.FeedInsertionResult;
-import com.readrops.app.utils.HtmlParser;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
@@ -174,29 +173,13 @@ public class LocalFeedRepository extends ARepository<Void> {
             if (!database.itemDao().itemExists(dbItem.getGuid(), feed.getAccountId())) {
                 if (dbItem.getDescription() != null) {
                     dbItem.setCleanDescription(Jsoup.parse(dbItem.getDescription()).text());
-
-                    if (dbItem.getImageLink() == null) {
-                        String imageUrl = HtmlParser.getDescImageLink(dbItem.getDescription(), feed.getSiteUrl());
-
-                        if (imageUrl != null)
-                            dbItem.setImageLink(imageUrl);
-                    }
                 }
 
-                // we check a second time because imageLink could have been set earlier with media:content tag value
-                if (dbItem.getImageLink() != null) {
-                    if (dbItem.getContent() != null) {
-                        // removing cover image in content if found in description
-                        dbItem.setContent(HtmlParser.deleteCoverImage(dbItem.getContent()));
-
-                    } else if (dbItem.getDescription() != null)
-                        dbItem.setDescription(HtmlParser.deleteCoverImage(dbItem.getDescription()));
-                }
-
-                if (dbItem.getContent() != null)
-                    dbItem.setReadTime(Utils.readTimeFromString(Jsoup.parse(dbItem.getContent()).text()));
-                else if (dbItem.getDescription() != null)
+                if (dbItem.getContent() != null) {
+                    dbItem.setReadTime(Utils.readTimeFromString(dbItem.getContent()));
+                } else if (dbItem.getDescription() != null) {
                     dbItem.setReadTime(Utils.readTimeFromString(dbItem.getCleanDescription()));
+                }
 
                 itemsToInsert.add(dbItem);
             }
