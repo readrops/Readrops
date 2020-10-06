@@ -51,6 +51,11 @@ object LocalRSSHelper {
         return type
     }
 
+    @JvmStatic
+    fun isRSSType(type: String?): Boolean {
+        return if (type != null) getRSSType(type) != RSSType.UNKNOWN else false
+    }
+
     enum class RSSType {
         RSS_1,
         RSS_2,

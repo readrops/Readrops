@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.readrops.api.localfeed.LocalRSSHelper;
 import com.readrops.api.utils.HttpManager;
 import com.readrops.api.utils.LibUtils;
 
@@ -42,7 +43,7 @@ public final class HtmlParser {
             for (Element element : elements) {
                 String type = element.attributes().get("type");
 
-                if (isTypeRssFeed(type)) {
+                if (LocalRSSHelper.isRSSType(type)) {
                     String feedUrl = element.absUrl("href");
                     String label = element.attributes().get("title");
 
@@ -54,14 +55,6 @@ public final class HtmlParser {
         } else {
             return Collections.emptyList();
         }
-    }
-
-    private static boolean isTypeRssFeed(String type) {
-        return type.equals(LibUtils.RSS_DEFAULT_CONTENT_TYPE) ||
-                type.equals(LibUtils.ATOM_CONTENT_TYPE) ||
-                type.equals(LibUtils.JSON_CONTENT_TYPE) ||
-                type.equals(LibUtils.RSS_TEXT_CONTENT_TYPE) ||
-                type.equals(LibUtils.RSS_APPLICATION_CONTENT_TYPE);
     }
 
     @Nullable

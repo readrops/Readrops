@@ -1,6 +1,6 @@
 package com.readrops.api.localfeed
 
-import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.*
 import org.junit.Test
 import java.io.ByteArrayInputStream
 
@@ -76,4 +76,16 @@ xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://purl.org/r
         )), LocalRSSHelper.RSSType.UNKNOWN)
 
     }
+
+    @Test
+    fun isRSSTypeTest() {
+        assertTrue(LocalRSSHelper.isRSSType("application/rss+xml"))
+    }
+
+    @Test
+    fun isRSSTypeNullCaseTest() {
+        assertFalse(LocalRSSHelper.isRSSType(null))
+    }
+
+
 }
