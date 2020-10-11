@@ -30,25 +30,19 @@ import io.reactivex.Single;
 
 import static com.readrops.app.utils.ReadropsKeys.FEEDS;
 
-public abstract class ARepository<T> {
+public abstract class ARepository {
 
     protected Context context;
     protected Database database;
     protected Account account;
 
-    protected T api;
-
     protected SyncResult syncResult;
 
-    protected ARepository(@NonNull Context context, @Nullable Account account) {
+    protected ARepository(Database database, @NonNull Context context, @Nullable Account account) {
         this.context = context;
-        this.database = Database.getInstance(context);
+        this.database = database;
         this.account = account;
-
-        api = createAPI();
     }
-
-    protected abstract T createAPI();
 
     // TODO : replace Single by Completable
     public abstract Single<Boolean> login(Account account, boolean insert);
@@ -171,20 +165,20 @@ public abstract class ARepository<T> {
         context.startService(intent);
     }
 
-    public static ARepository repositoryFactory(Account account, AccountType accountType, Context context) throws Exception {
+    public static ARepository repositoryFactory(Account account, AccountType accountType, Context context) {
         switch (accountType) {
             case LOCAL:
-                return new LocalFeedRepository(context, account);
+                return new LocalFeedRepository(null, Database.getInstance(context), context, account);
             case NEXTCLOUD_NEWS:
-                return new NextNewsRepository(context, account);
+                return new NextNewsRepository(null, Database.getInstance(context), context, account);
             case FRESHRSS:
-                return new FreshRSSRepository(context, account);
+                return new FreshRSSRepository(null, Database.getInstance(context), context, account);
             default:
-                throw new Exception("account type not supported");
+                throw new IllegalArgumentException("account type not supported");
         }
     }
 
-    public static ARepository repositoryFactory(Account account, Context context) throws Exception {
+    public static ARepository repositoryFactory(Account account, Context context) {
         return ARepository.repositoryFactory(account, account.getAccountType(), context);
     }
 

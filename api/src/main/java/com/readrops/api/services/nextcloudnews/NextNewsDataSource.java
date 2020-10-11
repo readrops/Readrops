@@ -8,8 +8,6 @@ import androidx.annotation.Nullable;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
-import com.readrops.api.services.API;
-import com.readrops.api.services.Credentials;
 import com.readrops.api.services.SyncResult;
 import com.readrops.api.services.SyncType;
 import com.readrops.api.services.nextcloudnews.adapters.NextNewsFeedsAdapter;
@@ -30,15 +28,18 @@ import java.util.Map;
 
 import retrofit2.Response;
 
-public class NextNewsAPI extends API<NextNewsService> {
+public class NextNewsDataSource {
 
-    private static final String TAG = NextNewsAPI.class.getSimpleName();
+    private static final String TAG = NextNewsDataSource.class.getSimpleName();
 
-    public NextNewsAPI(Credentials credentials) {
-        super(credentials, NextNewsService.class, NextNewsService.END_POINT);
+    protected static final int MAX_ITEMS = 5000;
+
+    private NextNewsService api;
+
+    public NextNewsDataSource(NextNewsService api) {
+        this.api = api;
     }
 
-    @Override
     protected Moshi buildMoshi() {
         return new Moshi.Builder()
                 .add(new NextNewsFeedsAdapter())

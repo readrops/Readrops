@@ -9,7 +9,6 @@ import androidx.annotation.Nullable;
 
 import com.readrops.api.localfeed.LocalRSSDataSource;
 import com.readrops.api.services.SyncResult;
-import com.readrops.api.utils.HttpManager;
 import com.readrops.api.utils.LibUtils;
 import com.readrops.api.utils.ParseException;
 import com.readrops.api.utils.UnknownFormatException;
@@ -17,6 +16,7 @@ import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
+import com.readrops.db.Database;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Item;
 import com.readrops.db.entities.account.Account;
@@ -34,22 +34,17 @@ import io.reactivex.Single;
 import kotlin.Pair;
 import okhttp3.Headers;
 
-public class LocalFeedRepository extends ARepository<Void> {
+public class LocalFeedRepository extends ARepository {
 
     private static final String TAG = LocalFeedRepository.class.getSimpleName();
 
     private LocalRSSDataSource dataSource;
 
-    public LocalFeedRepository(@NonNull Context context, @Nullable Account account) {
-        super(context, account);
+    public LocalFeedRepository(LocalRSSDataSource dataSource, Database database, @NonNull Context context, @Nullable Account account) {
+        super(database, context, account);
 
         syncResult = new SyncResult();
-        dataSource = new LocalRSSDataSource(HttpManager.getInstance().getOkHttpClient());
-    }
-
-    @Override
-    protected Void createAPI() {
-        return null;
+        this.dataSource = dataSource;
     }
 
     @Override
