@@ -9,6 +9,7 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
+import com.readrops.app.repositories.ARepository;
 import com.readrops.db.Database;
 import com.readrops.db.ItemsListQueryBuilder;
 import com.readrops.db.RoomFactoryWrapper;
@@ -18,7 +19,9 @@ import com.readrops.db.entities.account.Account;
 import com.readrops.db.filters.FilterType;
 import com.readrops.db.filters.ListSortType;
 import com.readrops.db.pojo.ItemWithFeed;
-import com.readrops.app.repositories.ARepository;
+
+import org.koin.core.parameter.DefinitionParametersKt;
+import org.koin.java.KoinJavaComponent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,7 +62,8 @@ public class MainViewModel extends AndroidViewModel {
 
     private void setRepository() {
         try {
-            repository = ARepository.repositoryFactory(currentAccount, getApplication());
+            repository = KoinJavaComponent.get(ARepository.class, null,
+                    () -> DefinitionParametersKt.parametersOf(currentAccount));
         } catch (Exception e) {
             e.printStackTrace();
         }
