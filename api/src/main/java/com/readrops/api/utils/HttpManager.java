@@ -4,13 +4,9 @@ import androidx.annotation.Nullable;
 
 import com.readrops.api.services.Credentials;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class HttpManager {
 
@@ -25,7 +21,6 @@ public class HttpManager {
         okHttpClient = new OkHttpClient.Builder()
                 .callTimeout(1, TimeUnit.MINUTES)
                 .readTimeout(1, TimeUnit.HOURS)
-                .addInterceptor(new AuthInterceptor())
                 .build();
     }
 
@@ -53,25 +48,5 @@ public class HttpManager {
 
     public static void setInstance(OkHttpClient client) {
         instance.okHttpClient = client;
-    }
-
-    public class AuthInterceptor implements Interceptor {
-
-        public AuthInterceptor() {
-            // empty constructor
-        }
-
-        @Override
-        public Response intercept(Chain chain) throws IOException {
-            Request request = chain.request();
-
-            if (credentials != null && credentials.getAuthorization() != null) {
-                request = request.newBuilder()
-                        .addHeader("Authorization", credentials.getAuthorization())
-                        .build();
-            }
-
-            return chain.proceed(request);
-        }
     }
 }

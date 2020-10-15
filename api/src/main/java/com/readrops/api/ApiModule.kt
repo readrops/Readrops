@@ -11,7 +11,7 @@ import com.readrops.api.services.nextcloudnews.NextNewsService
 import com.readrops.api.services.nextcloudnews.adapters.NextNewsFeedsAdapter
 import com.readrops.api.services.nextcloudnews.adapters.NextNewsFoldersAdapter
 import com.readrops.api.services.nextcloudnews.adapters.NextNewsItemsAdapter
-import com.readrops.api.utils.HttpManager
+import com.readrops.api.utils.AuthInterceptor
 import com.readrops.db.entities.Item
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
@@ -29,7 +29,7 @@ val apiModule = module {
         OkHttpClient.Builder()
                 .callTimeout(1, TimeUnit.MINUTES)
                 .readTimeout(1, TimeUnit.HOURS)
-                .addInterceptor(HttpManager.getInstance().AuthInterceptor())
+                .addInterceptor(get<AuthInterceptor>())
                 .build()
     }
 
@@ -94,5 +94,9 @@ val apiModule = module {
                 .baseUrl("https://baseurl.com")
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(get<OkHttpClient>())
+    }
+
+    single {
+        AuthInterceptor()
     }
 }

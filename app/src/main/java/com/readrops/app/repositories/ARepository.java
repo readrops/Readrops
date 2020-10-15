@@ -6,6 +6,9 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.readrops.api.services.Credentials;
+import com.readrops.api.services.SyncResult;
+import com.readrops.api.utils.AuthInterceptor;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.utils.feedscolors.FeedColorsKt;
@@ -16,7 +19,8 @@ import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
 import com.readrops.db.entities.account.Account;
 import com.readrops.db.entities.account.AccountType;
-import com.readrops.api.services.SyncResult;
+
+import org.koin.java.KoinJavaComponent;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -42,6 +46,9 @@ public abstract class ARepository {
         this.context = context;
         this.database = database;
         this.account = account;
+
+        KoinJavaComponent.get(AuthInterceptor.class)
+                .setCredentials(account != null && !account.isLocal() ? Credentials.toCredentials(account) : null);
     }
 
     // TODO : replace Single by Completable

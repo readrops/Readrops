@@ -1,16 +1,17 @@
 package com.readrops.api.services;
 
-import androidx.annotation.Nullable;
-
-import com.readrops.db.entities.account.Account;
 import com.readrops.api.services.freshrss.FreshRSSCredentials;
+import com.readrops.api.services.freshrss.FreshRSSService;
 import com.readrops.api.services.nextcloudnews.NextNewsCredentials;
+import com.readrops.api.services.nextcloudnews.NextNewsService;
+import com.readrops.db.entities.account.Account;
+import com.readrops.db.entities.account.AccountType;
 
 public abstract class Credentials {
 
-    private String authorization;
+    private final String authorization;
 
-    private String url;
+    private final String url;
 
     public Credentials(String authorization, String url) {
         this.authorization = authorization;
@@ -25,15 +26,27 @@ public abstract class Credentials {
         return url;
     }
 
-    @Nullable
     public static Credentials toCredentials(Account account) {
+        String endPoint = getEndPoint(account.getAccountType());
+
         switch (account.getAccountType()) {
             case NEXTCLOUD_NEWS:
-                return new NextNewsCredentials(account.getLogin(), account.getPassword(), account.getUrl());
+                return new NextNewsCredentials(account.getLogin(), account.getPassword(), account.getUrl() + endPoint);
             case FRESHRSS:
-                return new FreshRSSCredentials(account.getToken(), account.getUrl());
+                return new FreshRSSCredentials(account.getToken(), account.getUrl() + endPoint);
             default:
-                return null;
+                throw new IllegalArgumentException("Unknown account type");
+        }
+    }
+
+    private static String getEndPoint(AccountType accountType) {
+        switch (accountType) {
+            case FRESHRSS:
+                return FreshRSSService.END_POINT;
+            case NEXTCLOUD_NEWS:
+                return NextNewsService.END_POINT;
+            default:
+                throw new IllegalArgumentException("Unknown account type");
         }
     }
 }
