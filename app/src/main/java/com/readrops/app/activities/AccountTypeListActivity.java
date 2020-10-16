@@ -11,7 +11,6 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -24,6 +23,8 @@ import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.AccountViewModel;
 import com.readrops.db.entities.account.Account;
 import com.readrops.db.entities.account.AccountType;
+
+import org.koin.androidx.viewmodel.compat.ViewModelCompat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +56,7 @@ public class AccountTypeListActivity extends AppCompatActivity {
         binding = ActivityAccountTypeListBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        viewModel = new ViewModelProvider(this).get(AccountViewModel.class);
+        viewModel = ViewModelCompat.getViewModel(this, AccountViewModel.class);
 
         setTitle(R.string.new_account);
 
@@ -158,7 +159,7 @@ public class AccountTypeListActivity extends AppCompatActivity {
                     account.setId(id.intValue());
                     viewModel.setAccount(account);
 
-                    return viewModel.parseOPMLFile(uri);
+                    return viewModel.parseOPMLFile(uri, this);
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

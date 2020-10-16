@@ -11,7 +11,6 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -32,6 +31,8 @@ import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.AddFeedsViewModel;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.account.Account;
+
+import org.koin.androidx.viewmodel.compat.ViewModelCompat;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,7 +70,7 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         binding.addFeedOk.setOnClickListener(this);
         binding.addFeedOk.setEnabled(false);
 
-        viewModel = new ViewModelProvider(this).get(AddFeedsViewModel.class);
+        viewModel = ViewModelCompat.getViewModel(this, AddFeedsViewModel.class);
 
         parseItemsAdapter = new ItemAdapter<>();
         fastAdapter = FastAdapter.with(parseItemsAdapter);

@@ -4,10 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.readrops.app.R;
 import com.readrops.app.viewmodels.AccountViewModel;
+
+import org.koin.androidx.viewmodel.compat.ViewModelCompat;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
@@ -22,7 +23,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        viewModel = new ViewModelProvider(this).get(AccountViewModel.class);
+        viewModel = ViewModelCompat.getViewModel(this, AccountViewModel.class);
 
         viewModel.getAccountCount()
                 .subscribeOn(Schedulers.io())

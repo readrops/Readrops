@@ -1,48 +1,44 @@
 package com.readrops.app.viewmodels;
 
-import android.app.Application;
-
 import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModel;
 
+import com.readrops.app.repositories.ARepository;
 import com.readrops.db.Database;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.account.Account;
 import com.readrops.db.pojo.FeedWithFolder;
 import com.readrops.db.pojo.FolderWithFeedCount;
-import com.readrops.app.repositories.ARepository;
+
+import org.koin.core.parameter.DefinitionParametersKt;
+import org.koin.java.KoinJavaComponent;
 
 import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;
 
-public class ManageFeedsFoldersViewModel extends AndroidViewModel {
+public class ManageFeedsFoldersViewModel extends ViewModel {
 
-    private Database db;
+    private final Database database;
     private LiveData<List<FeedWithFolder>> feedsWithFolder;
     private LiveData<List<Folder>> folders;
     private ARepository repository;
 
     private Account account;
 
-    public ManageFeedsFoldersViewModel(@NonNull Application application) {
-        super(application);
-
-        db = Database.getInstance(application);
+    public ManageFeedsFoldersViewModel(@NonNull Database database) {
+        this.database = database;
     }
 
     private void setup() {
-        try {
-            repository = ARepository.repositoryFactory(account, getApplication());
+        repository = KoinJavaComponent.get(ARepository.class, null,
+                () -> DefinitionParametersKt.parametersOf(account));
 
-            feedsWithFolder = db.feedDao().getAllFeedsWithFolder(account.getId());
-            folders = db.folderDao().getAllFolders(account.getId());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        feedsWithFolder = database.feedDao().getAllFeedsWithFolder(account.getId());
+        folders = database.folderDao().getAllFolders(account.getId());
     }
 
     public LiveData<List<FeedWithFolder>> getFeedsWithFolder() {
@@ -67,7 +63,7 @@ public class ManageFeedsFoldersViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<FolderWithFeedCount>> getFoldersWithFeedCount() {
-        return db.folderDao().getFoldersWithFeedCount(account.getId());
+        return database.folderDao().getFoldersWithFeedCount(account.getId());
     }
 
     public Single<Long> addFolder(Folder folder) {
@@ -87,6 +83,6 @@ public class ManageFeedsFoldersViewModel extends AndroidViewModel {
     }
 
     public Single<Integer> getFeedCountByAccount() {
-        return db.feedDao().getFeedCount(account.getId());
+        return database.feedDao().getFeedCount(account.getId());
     }
 }

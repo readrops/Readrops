@@ -10,10 +10,11 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.readrops.api.utils.ConflictException;
+import com.readrops.api.utils.UnknownFormatException;
 import com.readrops.app.R;
 import com.readrops.app.adapters.FoldersAdapter;
 import com.readrops.app.databinding.FragmentFoldersBinding;
@@ -22,8 +23,8 @@ import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.ManageFeedsFoldersViewModel;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.account.Account;
-import com.readrops.api.utils.ConflictException;
-import com.readrops.api.utils.UnknownFormatException;
+
+import org.koin.androidx.viewmodel.compat.SharedViewModelCompat;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
@@ -65,7 +66,7 @@ public class FoldersFragment extends Fragment {
             account.setPassword(SharedPreferencesManager.readString(getContext(), account.getPasswordKey()));
 
         adapter = new FoldersAdapter(this::openFolderOptionsDialog);
-        viewModel = new ViewModelProvider(this).get(ManageFeedsFoldersViewModel.class);
+        viewModel = SharedViewModelCompat.getSharedViewModel(this, ManageFeedsFoldersViewModel.class);
 
         viewModel.setAccount(account);
         viewModel.getFeedCountByAccount()

@@ -16,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -51,6 +50,7 @@ import com.readrops.db.filters.ListSortType;
 import com.readrops.db.pojo.ItemWithFeed;
 
 import org.jetbrains.annotations.NotNull;
+import org.koin.androidx.viewmodel.compat.ViewModelCompat;
 
 import java.lang.ref.WeakReference;
 import java.util.Collections;
@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         feedCount = 0;
         initRecyclerView();
 
-        viewModel = new ViewModelProvider(this).get(MainViewModel.class);
+        viewModel = ViewModelCompat.getViewModel(this, MainViewModel.class);
 
         viewModel.setShowReadItems(SharedPreferencesManager.readBoolean(this,
                 SharedPreferencesManager.SharedPrefKey.SHOW_READ_ARTICLES));

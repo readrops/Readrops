@@ -23,23 +23,27 @@ val appModule = module {
     }
 
     viewModel {
-        MainViewModel(androidApplication())
+        MainViewModel(get())
     }
 
     viewModel {
-        AddFeedsViewModel(androidApplication())
+        AddFeedsViewModel(get(), get())
     }
 
     viewModel {
-        ItemViewModel(androidApplication())
+        ItemViewModel(get())
     }
 
     viewModel {
-        ManageFeedsFoldersViewModel(androidApplication())
+        ManageFeedsFoldersViewModel(get())
     }
 
     viewModel {
-        NotificationPermissionViewModel(androidApplication())
+        NotificationPermissionViewModel(get())
+    }
+
+    viewModel {
+        AccountViewModel(get())
     }
 
 }

@@ -20,11 +20,12 @@ import com.readrops.db.entities.Feed
 import com.readrops.db.entities.account.Account
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class NotificationPermissionActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityNotificationPermissionBinding
-    private val viewModel by viewModels<NotificationPermissionViewModel>()
+    private val viewModel = getViewModel<NotificationPermissionViewModel>()
     private var adapter: NotificationPermissionListAdapter? = null
 
     private var isFirstCheck = true

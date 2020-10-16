@@ -16,7 +16,6 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -35,6 +34,8 @@ import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.AccountViewModel;
 import com.readrops.db.entities.account.Account;
 import com.readrops.db.entities.account.AccountType;
+
+import org.koin.androidx.viewmodel.compat.ViewModelCompat;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableCompletableObserver;
@@ -136,7 +137,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        viewModel = new ViewModelProvider(this).get(AccountViewModel.class);
+        viewModel = ViewModelCompat.getViewModel(this, AccountViewModel.class);
         viewModel.setAccount(account);
     }
 
@@ -204,7 +205,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
     }
 
     private void parseOPMLFile(Uri uri, MaterialDialog dialog) {
-        viewModel.parseOPMLFile(uri)
+        viewModel.parseOPMLFile(uri, getContext())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new DisposableCompletableObserver() {

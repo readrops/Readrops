@@ -8,7 +8,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.readrops.app.R;
 import com.readrops.app.databinding.ActivityAddAccountBinding;
@@ -17,6 +16,8 @@ import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.AccountViewModel;
 import com.readrops.db.entities.account.Account;
 import com.readrops.db.entities.account.AccountType;
+
+import org.koin.androidx.viewmodel.compat.ViewModelCompat;
 
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
@@ -46,7 +47,7 @@ public class AddAccountActivity extends AppCompatActivity {
         binding = ActivityAddAccountBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        viewModel = new ViewModelProvider(this).get(AccountViewModel.class);
+        viewModel = ViewModelCompat.getViewModel(this, AccountViewModel.class);
 
         accountType = getIntent().getParcelableExtra(ACCOUNT_TYPE);
 
