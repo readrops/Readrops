@@ -33,7 +33,7 @@ public class FreshRSSRepository extends ARepository {
 
     private static final String TAG = FreshRSSRepository.class.getSimpleName();
 
-    private FreshRSSDataSource dataSource;
+    private final FreshRSSDataSource dataSource;
 
     public FreshRSSRepository(FreshRSSDataSource dataSource, Database database, @NonNull Context context, @Nullable Account account) {
         super(database, context, account);
@@ -43,9 +43,12 @@ public class FreshRSSRepository extends ARepository {
 
     @Override
     public Single<Boolean> login(Account account, boolean insert) {
+        setCredentials(account);
+
         return dataSource.login(account.getLogin(), account.getPassword())
                 .flatMap(token -> {
                     account.setToken(token);
+                    setCredentials(account);
 
                     return dataSource.getWriteToken();
                 })

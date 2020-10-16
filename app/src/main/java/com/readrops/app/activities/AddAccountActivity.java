@@ -59,26 +59,20 @@ public class AddAccountActivity extends AppCompatActivity {
         if (forwardResult || accountToEdit != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        try {
-            if (accountToEdit != null) {
-                viewModel.setAccountType(accountToEdit.getAccountType());
-                editAccount = true;
-                fillFields();
-            } else {
-                viewModel.setAccountType(accountType);
+        if (accountToEdit != null) {
+            viewModel.setAccountType(accountToEdit.getAccountType());
+            editAccount = true;
+            fillFields();
+        } else {
+            viewModel.setAccountType(accountType);
 
-                binding.providerImage.setImageResource(accountType.getIconRes());
-                binding.providerName.setText(accountType.getName());
-                binding.addAccountName.setText(accountType.getName());
-                if (accountType == AccountType.FRESHRSS) {
-                    binding.addAccountPasswordLayout.setHelperText(getString(R.string.password_helper));
-                }
+            binding.providerImage.setImageResource(accountType.getIconRes());
+            binding.providerName.setText(accountType.getName());
+            binding.addAccountName.setText(accountType.getName());
+            if (accountType == AccountType.FRESHRSS) {
+                binding.addAccountPasswordLayout.setHelperText(getString(R.string.password_helper));
             }
-        } catch (Exception e) {
-            // TODO : see how to handle this exception
-            e.printStackTrace();
         }
-
     }
 
     public void createAccount(View view) {

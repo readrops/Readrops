@@ -37,7 +37,7 @@ public class NextNewsRepository extends ARepository {
 
     private static final String TAG = NextNewsRepository.class.getSimpleName();
 
-    private NextNewsDataSource dataSource;
+    private final NextNewsDataSource dataSource;
 
     public NextNewsRepository(NextNewsDataSource dataSource, Database database, @NonNull Context context, @Nullable Account account) {
         super(database, context, account);
@@ -47,6 +47,7 @@ public class NextNewsRepository extends ARepository {
 
     @Override
     public Single<Boolean> login(Account account, boolean insert) {
+        setCredentials(account);
         return Single.<NextNewsUser>create(emitter -> {
             NextNewsUser user = dataSource.login();
 
