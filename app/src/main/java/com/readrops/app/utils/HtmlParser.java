@@ -6,18 +6,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.readrops.api.localfeed.LocalRSSHelper;
-import com.readrops.api.utils.HttpManager;
 import com.readrops.api.utils.LibUtils;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.koin.java.KoinJavaComponent;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
@@ -83,7 +84,7 @@ public final class HtmlParser {
         long start = System.currentTimeMillis();
 
         try {
-            Response response = HttpManager.getInstance().getOkHttpClient()
+            Response response = KoinJavaComponent.get(OkHttpClient.class)
                     .newCall(new Request.Builder().url(url).build()).execute();
 
             if (response.header("Content-Type").contains(LibUtils.HTML_CONTENT_TYPE)) {
@@ -98,6 +99,7 @@ public final class HtmlParser {
                 return null;
             }
         } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
             return null;
         }
 

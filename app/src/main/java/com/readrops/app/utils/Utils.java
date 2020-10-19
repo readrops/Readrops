@@ -15,7 +15,8 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.readrops.api.utils.HttpManager;
+
+import org.koin.java.KoinJavaComponent;
 
 import java.io.InputStream;
 import java.util.Locale;
@@ -34,10 +35,9 @@ public final class Utils {
 
     public static Bitmap getImageFromUrl(String url) {
         try {
-            OkHttpClient okHttpClient = HttpManager.getInstance().getOkHttpClient();
             Request request = new Request.Builder().url(url).build();
 
-            Response response = okHttpClient.newCall(request).execute();
+            Response response = KoinJavaComponent.get(OkHttpClient.class).newCall(request).execute();
 
             if (response.isSuccessful()) {
                 InputStream inputStream = response.body().byteStream();

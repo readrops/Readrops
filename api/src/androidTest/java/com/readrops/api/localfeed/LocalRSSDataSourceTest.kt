@@ -4,13 +4,13 @@ import android.accounts.NetworkErrorException
 import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.readrops.api.utils.HttpManager
 import com.readrops.api.utils.LibUtils
 import com.readrops.api.utils.ParseException
 import com.readrops.api.utils.UnknownFormatException
 import junit.framework.TestCase.*
 import okhttp3.Headers
 import okhttp3.HttpUrl
+import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
@@ -28,7 +28,7 @@ class LocalRSSDataSourceTest {
     private lateinit var url: HttpUrl
 
     private val mockServer: MockWebServer = MockWebServer()
-    private val localRSSDataSource = LocalRSSDataSource(HttpManager.getInstance().okHttpClient)
+    private val localRSSDataSource = LocalRSSDataSource(OkHttpClient())
 
     @Before
     fun before() {
