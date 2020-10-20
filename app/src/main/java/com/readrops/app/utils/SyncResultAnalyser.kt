@@ -9,11 +9,13 @@ import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
 import com.readrops.api.services.SyncResult
+import org.koin.core.KoinComponent
+import org.koin.core.get
 
 /**
  * Simple class to get synchro notification content (title, content and largeIcon) according to some rules
  */
-class SyncResultAnalyser(val context: Context, private val syncResults: Map<Account, SyncResult>, val database: Database) {
+class SyncResultAnalyser(val context: Context, private val syncResults: Map<Account, SyncResult>, val database: Database) : KoinComponent {
 
     private val notifContent = SyncResultNotifContent()
 
@@ -66,7 +68,7 @@ class SyncResultAnalyser(val context: Context, private val syncResults: Map<Acco
             notifContent.title = feed?.name
 
             feed?.iconUrl?.let {
-                val target = GlideApp.with(context)
+                val target = get<GlideRequests>()
                         .asBitmap()
                         .load(it)
                         .diskCacheStrategy(DiskCacheStrategy.ALL)

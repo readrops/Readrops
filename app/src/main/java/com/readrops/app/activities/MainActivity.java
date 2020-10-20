@@ -37,7 +37,7 @@ import com.readrops.app.R;
 import com.readrops.app.adapters.MainItemListAdapter;
 import com.readrops.app.databinding.ActivityMainBinding;
 import com.readrops.app.utils.DrawerManager;
-import com.readrops.app.utils.GlideApp;
+import com.readrops.app.utils.GlideRequests;
 import com.readrops.app.utils.ReadropsItemTouchCallback;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
@@ -51,6 +51,7 @@ import com.readrops.db.pojo.ItemWithFeed;
 
 import org.jetbrains.annotations.NotNull;
 import org.koin.androidx.viewmodel.compat.ViewModelCompat;
+import org.koin.java.KoinJavaComponent;
 
 import java.lang.ref.WeakReference;
 import java.util.Collections;
@@ -300,7 +301,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     private void initRecyclerView() {
         ViewPreloadSizeProvider preloadSizeProvider = new ViewPreloadSizeProvider();
-        adapter = new MainItemListAdapter(GlideApp.with(this), preloadSizeProvider);
+        adapter = new MainItemListAdapter(KoinJavaComponent.get(GlideRequests.class), preloadSizeProvider);
         adapter.setOnItemClickListener(new MainItemListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(ItemWithFeed itemWithFeed, int position) {
@@ -349,7 +350,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         binding.itemsRecyclerView.setRecyclerListener(viewHolder -> {
             MainItemListAdapter.ItemViewHolder vh = (MainItemListAdapter.ItemViewHolder) viewHolder;
-            GlideApp.with(this).clear(vh.getItemImage());
+            KoinJavaComponent.get(GlideRequests.class).clear(vh.getItemImage());
         });
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);

@@ -33,7 +33,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.readrops.api.utils.DateUtils;
 import com.readrops.app.R;
 import com.readrops.app.databinding.ActivityItemBinding;
-import com.readrops.app.utils.GlideApp;
+import com.readrops.app.utils.GlideRequests;
 import com.readrops.app.utils.PermissionManager;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
@@ -42,6 +42,7 @@ import com.readrops.db.entities.Item;
 import com.readrops.db.pojo.ItemWithFeed;
 
 import org.koin.androidx.viewmodel.compat.ViewModelCompat;
+import org.koin.java.KoinJavaComponent;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -93,7 +94,7 @@ public class ItemActivity extends AppCompatActivity {
             binding.appBarLayout.setExpanded(true);
             binding.collapsingLayout.setTitleEnabled(true);
 
-            GlideApp.with(this)
+            KoinJavaComponent.get(GlideRequests.class)
                     .load(imageUrl)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(binding.collapsingLayoutImage);
@@ -358,7 +359,7 @@ public class ItemActivity extends AppCompatActivity {
     }
 
     private void shareImage(String url) {
-        GlideApp.with(this)
+        KoinJavaComponent.get(GlideRequests.class)
                 .asBitmap()
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .load(url)

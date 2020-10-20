@@ -9,10 +9,13 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.readrops.app.R
 import com.readrops.app.databinding.NotificationPermissionLayoutBinding
 import com.readrops.app.utils.GlideApp
+import com.readrops.app.utils.GlideRequests
 import com.readrops.db.entities.Feed
+import org.koin.core.KoinComponent
+import org.koin.core.get
 
 class NotificationPermissionListAdapter(var enableAll: Boolean, val listener: (feed: Feed) -> Unit) :
-        ListAdapter<Feed, NotificationPermissionListAdapter.NotificationPermissionViewHolder>(DIFF_CALLBACK) {
+        ListAdapter<Feed, NotificationPermissionListAdapter.NotificationPermissionViewHolder>(DIFF_CALLBACK), KoinComponent {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotificationPermissionViewHolder {
         val binding = NotificationPermissionLayoutBinding.inflate(LayoutInflater.from(parent.context))
@@ -30,7 +33,7 @@ class NotificationPermissionListAdapter(var enableAll: Boolean, val listener: (f
 
         holder.itemView.setOnClickListener { if (enableAll) listener(getItem(position)) }
 
-        GlideApp.with(holder.itemView.context)
+        get<GlideRequests>()
                 .load(feed.iconUrl)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .placeholder(R.drawable.ic_rss_feed_grey)

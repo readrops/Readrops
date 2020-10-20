@@ -3,6 +3,7 @@ package com.readrops.app
 import com.readrops.app.repositories.FreshRSSRepository
 import com.readrops.app.repositories.LocalFeedRepository
 import com.readrops.app.repositories.NextNewsRepository
+import com.readrops.app.utils.GlideApp
 import com.readrops.app.viewmodels.*
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
@@ -46,4 +47,5 @@ val appModule = module {
         AccountViewModel(get())
     }
 
+    single { GlideApp.with(androidApplication()) }
 }
