@@ -5,20 +5,18 @@ import com.readrops.app.utils.ParsingResult
 import junit.framework.TestCase
 import okhttp3.OkHttpClient
 import org.junit.Assert
-import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.koin.core.context.startKoin
 import org.koin.dsl.module
+import org.koin.test.KoinTestRule
 
 class HtmlParserTest {
 
-    @Before
-    fun setupKoin() {
-        startKoin {
-            modules(module {
-                single { OkHttpClient() }
-            })
-        }
+    @get:Rule
+    val koinTestRule = KoinTestRule.create {
+        modules(module {
+            single { OkHttpClient() }
+        })
     }
 
     @Test

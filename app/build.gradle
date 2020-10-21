@@ -72,6 +72,7 @@ dependencies {
     implementation "androidx.work:work-runtime-ktx:2.4.0"
     implementation "androidx.fragment:fragment-ktx:1.2.3"
     implementation "androidx.browser:browser:1.2.0"
+    testImplementation "org.koin:koin-test:2.1.6"
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
