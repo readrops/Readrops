@@ -5,15 +5,10 @@ import androidx.annotation.Nullable;
 
 import com.readrops.api.services.SyncResult;
 import com.readrops.api.services.SyncType;
-import com.readrops.api.services.freshrss.adapters.FreshRSSFeedsAdapter;
-import com.readrops.api.services.freshrss.adapters.FreshRSSFoldersAdapter;
-import com.readrops.api.services.freshrss.adapters.FreshRSSItemsAdapter;
 import com.readrops.api.services.freshrss.json.FreshRSSUserInfo;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
-import com.squareup.moshi.Moshi;
-import com.squareup.moshi.Types;
 
 import java.io.StringReader;
 import java.util.List;
@@ -36,14 +31,6 @@ public class FreshRSSDataSource {
 
     public FreshRSSDataSource(FreshRSSService api) {
         this.api = api;
-    }
-
-    protected Moshi buildMoshi() {
-        return new Moshi.Builder()
-                .add(Types.newParameterizedType(List.class, Item.class), new FreshRSSItemsAdapter())
-                .add(new FreshRSSFeedsAdapter())
-                .add(new FreshRSSFoldersAdapter())
-                .build();
     }
 
     /**

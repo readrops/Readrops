@@ -18,7 +18,6 @@ import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
 import com.readrops.db.entities.account.Account;
-import com.readrops.db.entities.account.AccountType;
 
 import org.koin.java.KoinJavaComponent;
 
@@ -174,23 +173,6 @@ public abstract class ARepository {
         intent.putParcelableArrayListExtra(FEEDS, new ArrayList<>(feeds));
 
         context.startService(intent);
-    }
-
-    public static ARepository repositoryFactory(Account account, AccountType accountType, Context context) {
-        switch (accountType) {
-            case LOCAL:
-                return new LocalFeedRepository(null, Database.getInstance(context), context, account);
-            case NEXTCLOUD_NEWS:
-                return new NextNewsRepository(null, Database.getInstance(context), context, account);
-            case FRESHRSS:
-                return new FreshRSSRepository(null, Database.getInstance(context), context, account);
-            default:
-                throw new IllegalArgumentException("account type not supported");
-        }
-    }
-
-    public static ARepository repositoryFactory(Account account, Context context) {
-        return ARepository.repositoryFactory(account, account.getAccountType(), context);
     }
 
     public SyncResult getSyncResult() {
