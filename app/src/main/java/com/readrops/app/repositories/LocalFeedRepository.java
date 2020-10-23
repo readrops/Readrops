@@ -133,7 +133,7 @@ public class LocalFeedRepository extends ARepository {
 
         Collections.sort(items, Item::compareTo);
 
-        int maxItems = Integer.parseInt(SharedPreferencesManager.readString(context,
+        int maxItems = Integer.parseInt(SharedPreferencesManager.readString(
                 SharedPreferencesManager.SharedPrefKey.ITEMS_TO_PARSE_MAX_NB));
         if (maxItems > 0 && items.size() > maxItems) {
             items = items.subList(items.size() - maxItems, items.size());

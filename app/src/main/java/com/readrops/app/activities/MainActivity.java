@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         viewModel = ViewModelCompat.getViewModel(this, MainViewModel.class);
 
-        viewModel.setShowReadItems(SharedPreferencesManager.readBoolean(this,
+        viewModel.setShowReadItems(SharedPreferencesManager.readBoolean(
                 SharedPreferencesManager.SharedPrefKey.SHOW_READ_ARTICLES));
 
         viewModel.getItemsWithFeed().observe(this, itemWithFeeds -> {
@@ -660,12 +660,12 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 if (item.isChecked()) {
                     item.setChecked(false);
                     viewModel.setShowReadItems(false);
-                    SharedPreferencesManager.writeValue(this,
+                    SharedPreferencesManager.writeValue(
                             SharedPreferencesManager.SharedPrefKey.SHOW_READ_ARTICLES, false);
                 } else {
                     item.setChecked(true);
                     viewModel.setShowReadItems(true);
-                    SharedPreferencesManager.writeValue(this,
+                    SharedPreferencesManager.writeValue(
                             SharedPreferencesManager.SharedPrefKey.SHOW_READ_ARTICLES, true);
                 }
 
@@ -709,16 +709,16 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private void getAccountCredentials(List<Account> accounts) {
         for (Account account : accounts) {
             if (account.getLogin() == null)
-                account.setLogin(SharedPreferencesManager.readString(this, account.getLoginKey()));
+                account.setLogin(SharedPreferencesManager.readString(account.getLoginKey()));
 
             if (account.getPassword() == null)
-                account.setPassword(SharedPreferencesManager.readString(this, account.getPasswordKey()));
+                account.setPassword(SharedPreferencesManager.readString(account.getPasswordKey()));
         }
     }
 
     private void startAboutActivity() {
         Libs.ActivityStyle activityStyle;
-        if (Boolean.valueOf(SharedPreferencesManager.readString(this, SharedPreferencesManager.SharedPrefKey.DARK_THEME)))
+        if (Boolean.valueOf(SharedPreferencesManager.readString(SharedPreferencesManager.SharedPrefKey.DARK_THEME)))
             activityStyle = Libs.ActivityStyle.DARK;
         else
             activityStyle = Libs.ActivityStyle.LIGHT_DARK_TOOLBAR;

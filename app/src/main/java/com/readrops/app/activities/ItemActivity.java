@@ -216,7 +216,7 @@ public class ItemActivity extends AppCompatActivity {
     }
 
     private void openUrl() {
-        int value = Integer.parseInt(SharedPreferencesManager.readString(this,
+        int value = Integer.parseInt(SharedPreferencesManager.readString(
                 SharedPreferencesManager.SharedPrefKey.OPEN_ITEMS_IN));
         switch (value) {
             case 0:
@@ -245,7 +245,7 @@ public class ItemActivity extends AppCompatActivity {
     }
 
     private void openInCustomTab() {
-        boolean darkTheme = Boolean.parseBoolean(SharedPreferencesManager.readString(this, SharedPreferencesManager.SharedPrefKey.DARK_THEME));
+        boolean darkTheme = Boolean.parseBoolean(SharedPreferencesManager.readString(SharedPreferencesManager.SharedPrefKey.DARK_THEME));
         int color = itemWithFeed.getBgColor() != 0 ? itemWithFeed.getBgColor() : itemWithFeed.getColor();
 
         CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()

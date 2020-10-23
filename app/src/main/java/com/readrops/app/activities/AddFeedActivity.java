@@ -260,8 +260,8 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
 
         Account account = (Account) binding.addFeedAccountSpinner.getSelectedItem();
 
-        account.setLogin(SharedPreferencesManager.readString(this, account.getLoginKey()));
-        account.setPassword(SharedPreferencesManager.readString(this, account.getPasswordKey()));
+        account.setLogin(SharedPreferencesManager.readString(account.getLoginKey()));
+        account.setPassword(SharedPreferencesManager.readString(account.getPasswordKey()));
 
         viewModel.addFeeds(feedsToInsert, account)
                 .subscribeOn(Schedulers.io())

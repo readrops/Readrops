@@ -24,17 +24,17 @@ open class ReadropsApp : Application() {
         createNotificationChannels()
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
 
-        if (SharedPreferencesManager.readString(this, SharedPreferencesManager.SharedPrefKey.DARK_THEME).toBoolean())
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        else
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-
         startKoin {
             androidLogger(Level.ERROR)
             androidContext(this@ReadropsApp)
 
             modules(apiModule, dbModule, appModule)
         }
+
+        if (SharedPreferencesManager.readString(SharedPreferencesManager.SharedPrefKey.DARK_THEME).toBoolean())
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        else
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
     }
 
     private fun createNotificationChannels() {

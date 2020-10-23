@@ -147,8 +147,8 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
                 .positiveText(R.string.validate)
                 .negativeText(R.string.cancel)
                 .onPositive(((dialog, which) -> {
-                    SharedPreferencesManager.remove(getContext(), account.getLoginKey());
-                    SharedPreferencesManager.remove(getContext(), account.getPasswordKey());
+                    SharedPreferencesManager.remove(account.getLoginKey());
+                    SharedPreferencesManager.remove(account.getPasswordKey());
 
                     viewModel.delete(account)
                             .subscribeOn(Schedulers.io())

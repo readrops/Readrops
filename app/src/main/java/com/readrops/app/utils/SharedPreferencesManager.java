@@ -1,19 +1,15 @@
 package com.readrops.app.utils;
 
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 import androidx.annotation.NonNull;
 
+import org.koin.java.KoinJavaComponent;
+
 public final class SharedPreferencesManager {
 
-    private static SharedPreferences getSharedPreferences(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context);
-    }
-
-    public static void writeValue(Context context, String key, Object value) {
-        SharedPreferences sharedPref = getSharedPreferences(context);
+    public static void writeValue(String key, Object value) {
+        SharedPreferences sharedPref = KoinJavaComponent.get(SharedPreferences.class);
         SharedPreferences.Editor editor = sharedPref.edit();
 
         if (value instanceof Boolean)
@@ -24,32 +20,32 @@ public final class SharedPreferencesManager {
         editor.apply();
     }
 
-    public static void writeValue(Context context, SharedPrefKey sharedPrefKey, Object value) {
-        writeValue(context, sharedPrefKey.key, value);
+    public static void writeValue(SharedPrefKey sharedPrefKey, Object value) {
+        writeValue(sharedPrefKey.key, value);
     }
 
-    public static int readInt(Context context, SharedPrefKey sharedPrefKey) {
-        SharedPreferences sharedPreferences = getSharedPreferences(context);
+    public static int readInt(SharedPrefKey sharedPrefKey) {
+        SharedPreferences sharedPreferences = KoinJavaComponent.get(SharedPreferences.class);
         return sharedPreferences.getInt(sharedPrefKey.key, sharedPrefKey.getIntDefaultValue());
     }
 
-    public static boolean readBoolean(Context context, SharedPrefKey sharedPrefKey) {
-        SharedPreferences sharedPreferences = getSharedPreferences(context);
+    public static boolean readBoolean(SharedPrefKey sharedPrefKey) {
+        SharedPreferences sharedPreferences = KoinJavaComponent.get(SharedPreferences.class);
         return sharedPreferences.getBoolean(sharedPrefKey.key, sharedPrefKey.getBooleanDefaultValue());
     }
 
-    public static String readString(Context context, String key) {
-        SharedPreferences sharedPreferences = getSharedPreferences(context);
+    public static String readString(String key) {
+        SharedPreferences sharedPreferences = KoinJavaComponent.get(SharedPreferences.class);
         return sharedPreferences.getString(key, null);
     }
 
-    public static String readString(Context context, SharedPrefKey sharedPrefKey) {
-        SharedPreferences sharedPreferences = getSharedPreferences(context);
+    public static String readString(SharedPrefKey sharedPrefKey) {
+        SharedPreferences sharedPreferences = KoinJavaComponent.get(SharedPreferences.class);
         return sharedPreferences.getString(sharedPrefKey.key, sharedPrefKey.getStringDefaultValue());
     }
 
-    public static void remove(Context context, String key) {
-        SharedPreferences sharedPreferences = getSharedPreferences(context);
+    public static void remove(String key) {
+        SharedPreferences sharedPreferences = KoinJavaComponent.get(SharedPreferences.class);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.remove(key);

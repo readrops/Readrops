@@ -178,8 +178,8 @@ public class AddAccountActivity extends AppCompatActivity {
     }
 
     private void saveLoginPassword(Account account) {
-        SharedPreferencesManager.writeValue(this, account.getLoginKey(), account.getLogin());
-        SharedPreferencesManager.writeValue(this, account.getPasswordKey(), account.getPassword());
+        SharedPreferencesManager.writeValue(account.getLoginKey(), account.getLogin());
+        SharedPreferencesManager.writeValue(account.getPasswordKey(), account.getPassword());
 
         account.setLogin(null);
         account.setPassword(null);
@@ -191,8 +191,8 @@ public class AddAccountActivity extends AppCompatActivity {
 
         binding.addAccountUrl.setText(accountToEdit.getUrl());
         binding.addAccountName.setText(accountToEdit.getAccountName());
-        binding.addAccountLogin.setText(SharedPreferencesManager.readString(this, accountToEdit.getLoginKey()));
-        binding.addAccountPassword.setText(SharedPreferencesManager.readString(this, accountToEdit.getPasswordKey()));
+        binding.addAccountLogin.setText(SharedPreferencesManager.readString(accountToEdit.getLoginKey()));
+        binding.addAccountPassword.setText(SharedPreferencesManager.readString(accountToEdit.getPasswordKey()));
     }
 
     private void updateAccount() {

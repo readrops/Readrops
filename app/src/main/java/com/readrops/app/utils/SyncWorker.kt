@@ -7,7 +7,6 @@ import android.content.Intent
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.work.Data
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.readrops.api.services.SyncResult
@@ -48,8 +47,8 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
                 notificationBuilder.setContentText(it.accountName)
                 notificationManager.notify(SYNC_NOTIFICATION_ID, notificationBuilder.build())
 
-                it.login = SharedPreferencesManager.readString(applicationContext, it.loginKey)
-                it.password = SharedPreferencesManager.readString(applicationContext, it.passwordKey)
+                it.login = SharedPreferencesManager.readString(it.loginKey)
+                it.password = SharedPreferencesManager.readString(it.passwordKey)
 
                 val repository = get<ARepository>(parameters = { parametersOf(it) })
 

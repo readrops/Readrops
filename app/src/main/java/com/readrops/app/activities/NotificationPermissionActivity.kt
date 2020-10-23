@@ -3,7 +3,6 @@ package com.readrops.app.activities
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -121,7 +120,7 @@ class NotificationPermissionActivity : AppCompatActivity() {
     }
 
     private fun displayAutoSynchroPopup() {
-        val autoSynchroValue = SharedPreferencesManager.readString(this, SharedPreferencesManager.SharedPrefKey.AUTO_SYNCHRO)
+        val autoSynchroValue = SharedPreferencesManager.readString(SharedPreferencesManager.SharedPrefKey.AUTO_SYNCHRO)
 
         if (autoSynchroValue.toFloat() <= 0) {
             MaterialDialog.Builder(this)

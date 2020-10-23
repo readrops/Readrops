@@ -1,5 +1,6 @@
 package com.readrops.app
 
+import androidx.preference.PreferenceManager
 import com.readrops.app.repositories.FreshRSSRepository
 import com.readrops.app.repositories.LocalFeedRepository
 import com.readrops.app.repositories.NextNewsRepository
@@ -48,4 +49,6 @@ val appModule = module {
     }
 
     single { GlideApp.with(androidApplication()) }
+
+    single { PreferenceManager.getDefaultSharedPreferences(androidContext()) }
 }

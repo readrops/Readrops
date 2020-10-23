@@ -61,9 +61,9 @@ public class FeedsFragment extends Fragment {
         account = getArguments().getParcelable(ACCOUNT);
 
         if (account.getLogin() == null)
-            account.setLogin(SharedPreferencesManager.readString(getContext(), account.getLoginKey()));
+            account.setLogin(SharedPreferencesManager.readString(account.getLoginKey()));
         if (account.getPassword() == null)
-            account.setPassword(SharedPreferencesManager.readString(getContext(), account.getPasswordKey()));
+            account.setPassword(SharedPreferencesManager.readString(account.getPasswordKey()));
 
         viewModel = SharedViewModelCompat.getSharedViewModel(this, ManageFeedsFoldersViewModel.class);
         viewModel.setAccount(account);
