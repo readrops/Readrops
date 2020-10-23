@@ -19,6 +19,8 @@ import com.readrops.app.utils.SyncWorker;
 import com.readrops.app.utils.feedscolors.FeedsColorsIntentService;
 import com.readrops.db.Database;
 
+import org.koin.java.KoinJavaComponent;
+
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -38,7 +40,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         AtomicBoolean serviceStarted = new AtomicBoolean(false);
         feedsColorsPreference.setOnPreferenceClickListener(preference -> {
-            Database database = Database.getInstance(getContext());
+            Database database = KoinJavaComponent.get(Database.class);
 
             database.feedDao().getAllFeeds().observe(getActivity(), feeds -> {
                 if (!serviceStarted.get()) {

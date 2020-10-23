@@ -1,9 +1,6 @@
 package com.readrops.db;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
-import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import androidx.room.migration.Migration;
@@ -30,18 +27,7 @@ public abstract class Database extends RoomDatabase {
     public abstract FolderDao folderDao();
 
     public abstract AccountDao accountDao();
-
-    private static Database database;
-
-    public static Database getInstance(Context context) {
-        if (database == null)
-            database = Room.databaseBuilder(context, Database.class, "readrops-db")
-                    .addMigrations(MIGRATION_1_2)
-                    .build();
-
-        return database;
-    }
-
+    
     public static final Migration MIGRATION_1_2 = new Migration(1, 2) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
