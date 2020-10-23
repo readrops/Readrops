@@ -8,7 +8,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.readrops.app.R;
 import com.readrops.app.databinding.ActivityAddAccountBinding;
@@ -17,6 +16,8 @@ import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.AccountViewModel;
 import com.readrops.db.entities.account.Account;
 import com.readrops.db.entities.account.AccountType;
+
+import org.koin.androidx.viewmodel.compat.ViewModelCompat;
 
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
@@ -46,7 +47,7 @@ public class AddAccountActivity extends AppCompatActivity {
         binding = ActivityAddAccountBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        viewModel = new ViewModelProvider(this).get(AccountViewModel.class);
+        viewModel = ViewModelCompat.getViewModel(this, AccountViewModel.class);
 
         accountType = getIntent().getParcelableExtra(ACCOUNT_TYPE);
 
@@ -58,26 +59,20 @@ public class AddAccountActivity extends AppCompatActivity {
         if (forwardResult || accountToEdit != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        try {
-            if (accountToEdit != null) {
-                viewModel.setAccountType(accountToEdit.getAccountType());
-                editAccount = true;
-                fillFields();
-            } else {
-                viewModel.setAccountType(accountType);
+        if (accountToEdit != null) {
+            viewModel.setAccountType(accountToEdit.getAccountType());
+            editAccount = true;
+            fillFields();
+        } else {
+            viewModel.setAccountType(accountType);
 
-                binding.providerImage.setImageResource(accountType.getIconRes());
-                binding.providerName.setText(accountType.getName());
-                binding.addAccountName.setText(accountType.getName());
-                if (accountType == AccountType.FRESHRSS) {
-                    binding.addAccountPasswordLayout.setHelperText(getString(R.string.password_helper));
-                }
+            binding.providerImage.setImageResource(accountType.getIconRes());
+            binding.providerName.setText(accountType.getName());
+            binding.addAccountName.setText(accountType.getName());
+            if (accountType == AccountType.FRESHRSS) {
+                binding.addAccountPasswordLayout.setHelperText(getString(R.string.password_helper));
             }
-        } catch (Exception e) {
-            // TODO : see how to handle this exception
-            e.printStackTrace();
         }
-
     }
 
     public void createAccount(View view) {
@@ -183,8 +178,8 @@ public class AddAccountActivity extends AppCompatActivity {
     }
 
     private void saveLoginPassword(Account account) {
-        SharedPreferencesManager.writeValue(this, account.getLoginKey(), account.getLogin());
-        SharedPreferencesManager.writeValue(this, account.getPasswordKey(), account.getPassword());
+        SharedPreferencesManager.writeValue(account.getLoginKey(), account.getLogin());
+        SharedPreferencesManager.writeValue(account.getPasswordKey(), account.getPassword());
 
         account.setLogin(null);
         account.setPassword(null);
@@ -196,8 +191,8 @@ public class AddAccountActivity extends AppCompatActivity {
 
         binding.addAccountUrl.setText(accountToEdit.getUrl());
         binding.addAccountName.setText(accountToEdit.getAccountName());
-        binding.addAccountLogin.setText(SharedPreferencesManager.readString(this, accountToEdit.getLoginKey()));
-        binding.addAccountPassword.setText(SharedPreferencesManager.readString(this, accountToEdit.getPasswordKey()));
+        binding.addAccountLogin.setText(SharedPreferencesManager.readString(accountToEdit.getLoginKey()));
+        binding.addAccountPassword.setText(SharedPreferencesManager.readString(accountToEdit.getPasswordKey()));
     }
 
     private void updateAccount() {

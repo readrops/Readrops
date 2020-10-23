@@ -1,14 +1,13 @@
 package com.readrops.app.viewmodels;
 
-import android.app.Application;
-
 import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.ViewModel;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
+import com.readrops.app.repositories.ARepository;
 import com.readrops.db.Database;
 import com.readrops.db.ItemsListQueryBuilder;
 import com.readrops.db.RoomFactoryWrapper;
@@ -18,7 +17,9 @@ import com.readrops.db.entities.account.Account;
 import com.readrops.db.filters.FilterType;
 import com.readrops.db.filters.ListSortType;
 import com.readrops.db.pojo.ItemWithFeed;
-import com.readrops.app.repositories.ARepository;
+
+import org.koin.core.parameter.DefinitionParametersKt;
+import org.koin.java.KoinJavaComponent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,45 +32,40 @@ import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-public class MainViewModel extends AndroidViewModel {
+public class MainViewModel extends ViewModel {
 
-    private MediatorLiveData<PagedList<ItemWithFeed>> itemsWithFeed;
+    private final MediatorLiveData<PagedList<ItemWithFeed>> itemsWithFeed;
     private LiveData<PagedList<ItemWithFeed>> lastFetch;
     private ARepository repository;
-    private Database db;
+    private final Database database;
 
-    private ItemsListQueryBuilder queryBuilder;
+    private final ItemsListQueryBuilder queryBuilder;
 
     private Account currentAccount;
     private List<Account> accounts;
 
-    public MainViewModel(@NonNull Application application) {
-        super(application);
-
+    public MainViewModel(@NonNull Database database) {
         queryBuilder = new ItemsListQueryBuilder();
 
         queryBuilder.setFilterType(FilterType.NO_FILTER);
         queryBuilder.setSortType(ListSortType.NEWEST_TO_OLDEST);
 
-        db = Database.getInstance(application);
+        this.database = database;
         itemsWithFeed = new MediatorLiveData<>();
     }
 
     //region main query
 
     private void setRepository() {
-        try {
-            repository = ARepository.repositoryFactory(currentAccount, getApplication());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        repository = KoinJavaComponent.get(ARepository.class, null,
+                () -> DefinitionParametersKt.parametersOf(currentAccount));
     }
 
     private void buildPagedList() {
         if (lastFetch != null)
             itemsWithFeed.removeSource(lastFetch);
 
-        lastFetch = new LivePagedListBuilder<>(new RoomFactoryWrapper<>(db.itemDao().selectAll(queryBuilder.getQuery())),
+        lastFetch = new LivePagedListBuilder<>(new RoomFactoryWrapper<>(database.itemDao().selectAll(queryBuilder.getQuery())),
                 new PagedList.Config.Builder()
                         .setPageSize(100)
                         .setPrefetchDistance(150)
@@ -77,7 +73,7 @@ public class MainViewModel extends AndroidViewModel {
                         .build())
                 .build();
 
-        itemsWithFeed.addSource(lastFetch, itemWithFeeds -> itemsWithFeed.setValue(itemWithFeeds));
+        itemsWithFeed.addSource(lastFetch, itemsWithFeed::setValue);
     }
 
     public void invalidate() {
@@ -124,7 +120,6 @@ public class MainViewModel extends AndroidViewModel {
         return repository.getFeedCount(currentAccount.getId());
     }
 
-    @SuppressWarnings("unchecked")
     public Single<Map<Folder, List<Feed>>> getFoldersWithFeeds() {
         return repository.getFoldersWithFeeds();
     }
@@ -134,12 +129,12 @@ public class MainViewModel extends AndroidViewModel {
     //region Account
 
     public LiveData<List<Account>> getAllAccounts() {
-        return db.accountDao().selectAllAsync();
+        return database.accountDao().selectAllAsync();
     }
 
     private Completable deselectOldCurrentAccount(int accountId) {
         return Completable.create(emitter -> {
-            db.accountDao().deselectOldCurrentAccount(accountId);
+            database.accountDao().deselectOldCurrentAccount(accountId);
             emitter.onComplete();
         });
     }
@@ -170,7 +165,7 @@ public class MainViewModel extends AndroidViewModel {
 
         // set the new account as the current one
         Completable setCurrentAccount = Completable.create(emitter -> {
-            db.accountDao().setCurrentAccount(currentAccount.getId());
+            database.accountDao().setCurrentAccount(currentAccount.getId());
             emitter.onComplete();
         });
 
@@ -202,7 +197,7 @@ public class MainViewModel extends AndroidViewModel {
             }
         }
 
-        if (!currentAccountExists && accounts.size() > 0) {
+        if (!currentAccountExists && !accounts.isEmpty()) {
             setCurrentAccount(accounts.get(0));
             accounts.get(0).setCurrentAccount(true);
         }
@@ -242,7 +237,7 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     public Completable setItemReadItLater(int itemId) {
-        return db.itemDao().setReadItLater(itemId);
+        return database.itemDao().setReadItLater(itemId);
     }
 
     //endregion

@@ -6,6 +6,9 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.readrops.api.services.Credentials;
+import com.readrops.api.services.SyncResult;
+import com.readrops.api.utils.AuthInterceptor;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.utils.feedscolors.FeedColorsKt;
@@ -15,8 +18,8 @@ import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
 import com.readrops.db.entities.account.Account;
-import com.readrops.db.entities.account.AccountType;
-import com.readrops.api.services.SyncResult;
+
+import org.koin.java.KoinJavaComponent;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -30,25 +33,26 @@ import io.reactivex.Single;
 
 import static com.readrops.app.utils.ReadropsKeys.FEEDS;
 
-public abstract class ARepository<T> {
+public abstract class ARepository {
 
     protected Context context;
     protected Database database;
     protected Account account;
 
-    protected T api;
-
     protected SyncResult syncResult;
 
-    protected ARepository(@NonNull Context context, @Nullable Account account) {
+    protected ARepository(Database database, @NonNull Context context, @Nullable Account account) {
         this.context = context;
-        this.database = Database.getInstance(context);
+        this.database = database;
         this.account = account;
 
-        api = createAPI();
+        setCredentials(account);
     }
 
-    protected abstract T createAPI();
+    protected void setCredentials(@Nullable Account account) {
+        KoinJavaComponent.get(AuthInterceptor.class)
+                .setCredentials(account != null && !account.isLocal() ? Credentials.toCredentials(account) : null);
+    }
 
     // TODO : replace Single by Completable
     public abstract Single<Boolean> login(Account account, boolean insert);
@@ -169,23 +173,6 @@ public abstract class ARepository<T> {
         intent.putParcelableArrayListExtra(FEEDS, new ArrayList<>(feeds));
 
         context.startService(intent);
-    }
-
-    public static ARepository repositoryFactory(Account account, AccountType accountType, Context context) throws Exception {
-        switch (accountType) {
-            case LOCAL:
-                return new LocalFeedRepository(context, account);
-            case NEXTCLOUD_NEWS:
-                return new NextNewsRepository(context, account);
-            case FRESHRSS:
-                return new FreshRSSRepository(context, account);
-            default:
-                throw new Exception("account type not supported");
-        }
-    }
-
-    public static ARepository repositoryFactory(Account account, Context context) throws Exception {
-        return ARepository.repositoryFactory(account, account.getAccountType(), context);
     }
 
     public SyncResult getSyncResult() {

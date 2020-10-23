@@ -72,4 +72,9 @@ dependencies {
     api 'androidx.paging:paging-common:2.1.2'
 
     api 'joda-time:joda-time:2.10.5'
+
+    def koin_version = "2.1.6"
+    api "org.koin:koin-android:$koin_version"
+    api "org.koin:koin-androidx-scope:$koin_version"
+    api "org.koin:koin-androidx-viewmodel:$koin_version"
 }

@@ -13,8 +13,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.readrops.app.R;
 import com.readrops.app.databinding.FeedLayoutBinding;
-import com.readrops.app.utils.GlideApp;
+import com.readrops.app.utils.GlideRequests;
 import com.readrops.db.pojo.FeedWithFolder;
+
+import org.koin.java.KoinJavaComponent;
 
 import java.util.List;
 
@@ -64,7 +66,7 @@ public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.FeedV
         FeedWithFolder feedWithFolder = getItem(i);
 
         if (feedWithFolder.getFeed().getIconUrl() != null) {
-            GlideApp.with(viewHolder.itemView.getContext())
+            KoinJavaComponent.get(GlideRequests.class)
                     .load(feedWithFolder.getFeed().getIconUrl())
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .placeholder(R.drawable.ic_rss_feed_grey)

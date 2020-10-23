@@ -5,22 +5,15 @@ import android.content.res.Resources;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.readrops.db.entities.Feed;
-import com.readrops.db.entities.Folder;
-import com.readrops.db.entities.Item;
-import com.readrops.api.services.API;
-import com.readrops.api.services.Credentials;
 import com.readrops.api.services.SyncResult;
 import com.readrops.api.services.SyncType;
-import com.readrops.api.services.nextcloudnews.adapters.NextNewsFeedsAdapter;
-import com.readrops.api.services.nextcloudnews.adapters.NextNewsFoldersAdapter;
-import com.readrops.api.services.nextcloudnews.adapters.NextNewsItemsAdapter;
 import com.readrops.api.services.nextcloudnews.json.NextNewsUser;
 import com.readrops.api.utils.ConflictException;
 import com.readrops.api.utils.LibUtils;
 import com.readrops.api.utils.UnknownFormatException;
-import com.squareup.moshi.Moshi;
-import com.squareup.moshi.Types;
+import com.readrops.db.entities.Feed;
+import com.readrops.db.entities.Folder;
+import com.readrops.db.entities.Item;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,21 +23,16 @@ import java.util.Map;
 
 import retrofit2.Response;
 
-public class NextNewsAPI extends API<NextNewsService> {
+public class NextNewsDataSource {
 
-    private static final String TAG = NextNewsAPI.class.getSimpleName();
+    private static final String TAG = NextNewsDataSource.class.getSimpleName();
 
-    public NextNewsAPI(Credentials credentials) {
-        super(credentials, NextNewsService.class, NextNewsService.END_POINT);
-    }
+    protected static final int MAX_ITEMS = 5000;
 
-    @Override
-    protected Moshi buildMoshi() {
-        return new Moshi.Builder()
-                .add(new NextNewsFeedsAdapter())
-                .add(new NextNewsFoldersAdapter())
-                .add(Types.newParameterizedType(List.class, Item.class), new NextNewsItemsAdapter())
-                .build();
+    private NextNewsService api;
+
+    public NextNewsDataSource(NextNewsService api) {
+        this.api = api;
     }
 
     @Nullable

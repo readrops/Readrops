@@ -1,16 +1,15 @@
 package com.readrops.app.viewmodels;
 
-import android.app.Application;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.readrops.db.Database;
-import com.readrops.db.dao.ItemDao;
 import com.readrops.db.pojo.ItemWithFeed;
 
 import java.io.File;
@@ -18,22 +17,21 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class ItemViewModel extends AndroidViewModel {
+public class ItemViewModel extends ViewModel {
 
-    private ItemDao itemDao;
+    private final Database database;
 
-    public ItemViewModel(@NonNull Application application) {
-        super(application);
-        itemDao = Database.getInstance(application).itemDao();
+    public ItemViewModel(@NonNull Database database) {
+        this.database = database;
     }
 
     public LiveData<ItemWithFeed> getItemById(int id) {
-        return itemDao.getItemById(id);
+        return database.itemDao().getItemById(id);
     }
 
 
-    public Uri saveImageInCache(Bitmap bitmap) throws IOException {
-        File imagesFolder = new File(getApplication().getCacheDir().getAbsolutePath(), "images");
+    public Uri saveImageInCache(Bitmap bitmap, Context context) throws IOException {
+        File imagesFolder = new File(context.getCacheDir().getAbsolutePath(), "images");
 
         if (!imagesFolder.exists())
             imagesFolder.mkdirs();
@@ -45,6 +43,6 @@ public class ItemViewModel extends AndroidViewModel {
         stream.flush();
         stream.close();
 
-        return FileProvider.getUriForFile(getApplication(), getApplication().getPackageName(), image);
+        return FileProvider.getUriForFile(context, context.getPackageName(), image);
     }
 }

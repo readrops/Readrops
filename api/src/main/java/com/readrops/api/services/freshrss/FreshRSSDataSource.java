@@ -3,19 +3,12 @@ package com.readrops.api.services.freshrss;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.readrops.api.services.SyncResult;
+import com.readrops.api.services.SyncType;
+import com.readrops.api.services.freshrss.json.FreshRSSUserInfo;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
-import com.readrops.api.services.API;
-import com.readrops.api.services.Credentials;
-import com.readrops.api.services.SyncResult;
-import com.readrops.api.services.SyncType;
-import com.readrops.api.services.freshrss.adapters.FreshRSSFeedsAdapter;
-import com.readrops.api.services.freshrss.adapters.FreshRSSFoldersAdapter;
-import com.readrops.api.services.freshrss.adapters.FreshRSSItemsAdapter;
-import com.readrops.api.services.freshrss.json.FreshRSSUserInfo;
-import com.squareup.moshi.Moshi;
-import com.squareup.moshi.Types;
 
 import java.io.StringReader;
 import java.util.List;
@@ -26,23 +19,18 @@ import io.reactivex.Single;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
-public class FreshRSSAPI extends API<FreshRSSService> {
+public class FreshRSSDataSource {
+
+    private static final int MAX_ITEMS = 5000;
 
     public static final String GOOGLE_READ = "user/-/state/com.google/read";
 
     private static final String FEED_PREFIX = "feed/";
 
-    public FreshRSSAPI(Credentials credentials) {
-        super(credentials, FreshRSSService.class, FreshRSSService.END_POINT);
-    }
+    private FreshRSSService api;
 
-    @Override
-    protected Moshi buildMoshi() {
-        return new Moshi.Builder()
-                .add(Types.newParameterizedType(List.class, Item.class), new FreshRSSItemsAdapter())
-                .add(new FreshRSSFeedsAdapter())
-                .add(new FreshRSSFoldersAdapter())
-                .build();
+    public FreshRSSDataSource(FreshRSSService api) {
+        this.api = api;
     }
 
     /**

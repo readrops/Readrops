@@ -1,20 +1,22 @@
 package com.readrops.app.utils
 
 import android.content.Context
+import com.readrops.api.services.SyncResult
 import com.readrops.db.Database
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
-import com.readrops.api.services.SyncResult
 import org.jetbrains.annotations.TestOnly
+import org.koin.core.KoinComponent
+import org.koin.core.get
 
 class SyncResultDebugData {
 
-    companion object {
+    companion object : KoinComponent {
 
         @TestOnly
-        fun oneAccountOneFeedOneItem(context: Context): Map<Account, SyncResult> {
-            val database = Database.getInstance(context)
+        fun oneAccountOneFeedOneItem(): Map<Account, SyncResult> {
+            val database = get<Database>()
             val account1 = database.accountDao().select(2)
 
 
@@ -27,14 +29,14 @@ class SyncResultDebugData {
         }
 
         @TestOnly
-        fun oneAccountOneFeedMultipleItems(context: Context): Map<Account, SyncResult> {
+        fun oneAccountOneFeedMultipleItems(): Map<Account, SyncResult> {
             val account1 = Account().apply {
                 id = 1
                 accountType = AccountType.FRESHRSS
                 isNotificationsEnabled = true
             }
 
-            val database = Database.getInstance(context)
+            val database = get<Database>()
             val item = database.itemDao().select(5055)
             database.feedDao().updateFeedNotificationState(item.feedId, false).subscribe()
 

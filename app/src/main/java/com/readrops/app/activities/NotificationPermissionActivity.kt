@@ -3,7 +3,6 @@ package com.readrops.app.activities
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,11 +19,12 @@ import com.readrops.db.entities.Feed
 import com.readrops.db.entities.account.Account
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class NotificationPermissionActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityNotificationPermissionBinding
-    private val viewModel by viewModels<NotificationPermissionViewModel>()
+    private val viewModel = getViewModel<NotificationPermissionViewModel>()
     private var adapter: NotificationPermissionListAdapter? = null
 
     private var isFirstCheck = true
@@ -120,7 +120,7 @@ class NotificationPermissionActivity : AppCompatActivity() {
     }
 
     private fun displayAutoSynchroPopup() {
-        val autoSynchroValue = SharedPreferencesManager.readString(this, SharedPreferencesManager.SharedPrefKey.AUTO_SYNCHRO)
+        val autoSynchroValue = SharedPreferencesManager.readString(SharedPreferencesManager.SharedPrefKey.AUTO_SYNCHRO)
 
         if (autoSynchroValue.toFloat() <= 0) {
             MaterialDialog.Builder(this)

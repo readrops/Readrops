@@ -25,22 +25,24 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ShareCompat;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.readrops.api.utils.DateUtils;
 import com.readrops.app.R;
 import com.readrops.app.databinding.ActivityItemBinding;
-import com.readrops.api.utils.DateUtils;
-import com.readrops.app.utils.GlideApp;
+import com.readrops.app.utils.GlideRequests;
 import com.readrops.app.utils.PermissionManager;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.app.viewmodels.ItemViewModel;
 import com.readrops.db.entities.Item;
 import com.readrops.db.pojo.ItemWithFeed;
+
+import org.koin.androidx.viewmodel.compat.ViewModelCompat;
+import org.koin.java.KoinJavaComponent;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -92,7 +94,7 @@ public class ItemActivity extends AppCompatActivity {
             binding.appBarLayout.setExpanded(true);
             binding.collapsingLayout.setTitleEnabled(true);
 
-            GlideApp.with(this)
+            KoinJavaComponent.get(GlideRequests.class)
                     .load(imageUrl)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(binding.collapsingLayoutImage);
@@ -110,7 +112,7 @@ public class ItemActivity extends AppCompatActivity {
             invalidateOptionsMenu();
         }));
 
-        viewModel = new ViewModelProvider(this).get(ItemViewModel.class);
+        viewModel = ViewModelCompat.getViewModel(this, ItemViewModel.class);
         viewModel.getItemById(itemId).observe(this, this::bindUI);
         binding.activityItemFab.setOnClickListener(v -> openInNavigator());
     }
@@ -214,7 +216,7 @@ public class ItemActivity extends AppCompatActivity {
     }
 
     private void openUrl() {
-        int value = Integer.parseInt(SharedPreferencesManager.readString(this,
+        int value = Integer.parseInt(SharedPreferencesManager.readString(
                 SharedPreferencesManager.SharedPrefKey.OPEN_ITEMS_IN));
         switch (value) {
             case 0:
@@ -243,7 +245,7 @@ public class ItemActivity extends AppCompatActivity {
     }
 
     private void openInCustomTab() {
-        boolean darkTheme = Boolean.parseBoolean(SharedPreferencesManager.readString(this, SharedPreferencesManager.SharedPrefKey.DARK_THEME));
+        boolean darkTheme = Boolean.parseBoolean(SharedPreferencesManager.readString(SharedPreferencesManager.SharedPrefKey.DARK_THEME));
         int color = itemWithFeed.getBgColor() != 0 ? itemWithFeed.getBgColor() : itemWithFeed.getColor();
 
         CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
@@ -357,7 +359,7 @@ public class ItemActivity extends AppCompatActivity {
     }
 
     private void shareImage(String url) {
-        GlideApp.with(this)
+        KoinJavaComponent.get(GlideRequests.class)
                 .asBitmap()
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .load(url)
@@ -365,7 +367,7 @@ public class ItemActivity extends AppCompatActivity {
                     @Override
                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                         try {
-                            Uri uri = viewModel.saveImageInCache(resource);
+                            Uri uri = viewModel.saveImageInCache(resource, ItemActivity.this);
                             Intent intent = ShareCompat.IntentBuilder.from(ItemActivity.this)
                                     .setType("image/png")
                                     .setStream(uri)

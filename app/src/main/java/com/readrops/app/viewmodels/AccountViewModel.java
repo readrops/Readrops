@@ -1,11 +1,10 @@
 package com.readrops.app.viewmodels;
 
-import android.app.Application;
+import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.ViewModel;
 
 import com.readrops.api.opml.OPMLParser;
 import com.readrops.app.repositories.ARepository;
@@ -15,35 +14,32 @@ import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.account.Account;
 import com.readrops.db.entities.account.AccountType;
 
+import org.koin.core.parameter.DefinitionParametersKt;
+import org.koin.java.KoinJavaComponent;
+
 import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;
 
-public class AccountViewModel extends AndroidViewModel {
-
-    private static final String TAG = AccountViewModel.class.getSimpleName();
+public class AccountViewModel extends ViewModel {
 
     private ARepository repository;
-    private Database database;
+    private final Database database;
 
-    public AccountViewModel(@NonNull Application application) {
-        super(application);
-
-        database = Database.getInstance(application);
+    public AccountViewModel(@NonNull Database database) {
+        this.database = database;
     }
 
-    public void setAccountType(AccountType accountType) throws Exception {
-        repository = ARepository.repositoryFactory(null, accountType, getApplication());
+    public void setAccountType(AccountType accountType) {
+        repository = KoinJavaComponent.get(ARepository.class, null,
+                () -> DefinitionParametersKt.parametersOf(new Account(null, null, accountType)));
     }
 
     public void setAccount(Account account) {
-        try {
-            repository = ARepository.repositoryFactory(account, getApplication());
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-        }
+        repository = KoinJavaComponent.get(ARepository.class, null,
+                () -> DefinitionParametersKt.parametersOf(account));
     }
 
     public Single<Boolean> login(Account account, boolean insert) {
@@ -71,8 +67,8 @@ public class AccountViewModel extends AndroidViewModel {
         return repository.getFoldersWithFeeds();
     }
 
-    public Completable parseOPMLFile(Uri uri) {
-        return OPMLParser.read(uri, getApplication())
+    public Completable parseOPMLFile(Uri uri, Context context) {
+        return OPMLParser.read(uri, context)
                 .flatMapCompletable(foldersAndFeeds -> repository.insertOPMLFoldersAndFeeds(foldersAndFeeds));
     }
 }

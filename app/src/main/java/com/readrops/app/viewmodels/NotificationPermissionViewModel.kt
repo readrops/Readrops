@@ -1,16 +1,14 @@
 package com.readrops.app.viewmodels
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.account.Account
 import io.reactivex.Completable
 
-class NotificationPermissionViewModel(application: Application) : AndroidViewModel(application) {
+class NotificationPermissionViewModel(val database: Database) : ViewModel() {
 
-    val database: Database = Database.getInstance(application)
     var account: Account? = null
 
     fun getAccount(accountId: Int): LiveData<Account> = database.accountDao().selectAsync(accountId)

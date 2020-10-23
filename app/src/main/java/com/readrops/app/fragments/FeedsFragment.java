@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -23,6 +22,8 @@ import com.readrops.app.viewmodels.ManageFeedsFoldersViewModel;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.account.Account;
 import com.readrops.db.pojo.FeedWithFolder;
+
+import org.koin.androidx.viewmodel.compat.SharedViewModelCompat;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableCompletableObserver;
@@ -60,11 +61,11 @@ public class FeedsFragment extends Fragment {
         account = getArguments().getParcelable(ACCOUNT);
 
         if (account.getLogin() == null)
-            account.setLogin(SharedPreferencesManager.readString(getContext(), account.getLoginKey()));
+            account.setLogin(SharedPreferencesManager.readString(account.getLoginKey()));
         if (account.getPassword() == null)
-            account.setPassword(SharedPreferencesManager.readString(getContext(), account.getPasswordKey()));
+            account.setPassword(SharedPreferencesManager.readString(account.getPasswordKey()));
 
-        viewModel = new ViewModelProvider(this).get(ManageFeedsFoldersViewModel.class);
+        viewModel = SharedViewModelCompat.getSharedViewModel(this, ManageFeedsFoldersViewModel.class);
         viewModel.setAccount(account);
 
         viewModel.getFeedsWithFolder().observe(this, feedWithFolders -> {

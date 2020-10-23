@@ -7,18 +7,17 @@ import android.util.TimingLogger;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.readrops.api.services.SyncType;
+import com.readrops.api.services.freshrss.FreshRSSDataSource;
+import com.readrops.api.services.freshrss.FreshRSSSyncData;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.utils.Utils;
+import com.readrops.db.Database;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
 import com.readrops.db.entities.account.Account;
-import com.readrops.api.services.Credentials;
-import com.readrops.api.services.SyncType;
-import com.readrops.api.services.freshrss.FreshRSSAPI;
-import com.readrops.api.services.freshrss.FreshRSSCredentials;
-import com.readrops.api.services.freshrss.FreshRSSSyncData;
 
 import org.joda.time.DateTime;
 
@@ -30,40 +29,33 @@ import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
-public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
+public class FreshRSSRepository extends ARepository {
 
     private static final String TAG = FreshRSSRepository.class.getSimpleName();
 
-    public FreshRSSRepository(@NonNull Context context, @Nullable Account account) {
-        super(context, account);
-    }
+    private final FreshRSSDataSource dataSource;
 
-    @Override
-    protected FreshRSSAPI createAPI() {
-        if (account != null)
-            return new FreshRSSAPI(Credentials.toCredentials(account));
+    public FreshRSSRepository(FreshRSSDataSource dataSource, Database database, @NonNull Context context, @Nullable Account account) {
+        super(database, context, account);
 
-        return null;
+        this.dataSource = dataSource;
     }
 
     @Override
     public Single<Boolean> login(Account account, boolean insert) {
-        if (api == null)
-            api = new FreshRSSAPI(Credentials.toCredentials(account));
-        else
-            api.setCredentials(Credentials.toCredentials(account));
+        setCredentials(account);
 
-        return api.login(account.getLogin(), account.getPassword())
+        return dataSource.login(account.getLogin(), account.getPassword())
                 .flatMap(token -> {
                     account.setToken(token);
-                    api.setCredentials(new FreshRSSCredentials(token, account.getUrl()));
+                    setCredentials(account);
 
-                    return api.getWriteToken();
+                    return dataSource.getWriteToken();
                 })
                 .flatMap(writeToken -> {
                     account.setWriteToken(writeToken);
 
-                    return api.getUserInfo();
+                    return dataSource.getUserInfo();
                 })
                 .flatMap(userInfo -> {
                     account.setDisplayedName(userInfo.getUserName());
@@ -100,7 +92,7 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
             syncData.setUnreadItemsIds(database.itemDao().getUnreadChanges(account.getId()));
 
             emitter.onSuccess(syncData);
-        }).flatMap(syncData1 -> api.sync(syncType, syncData1, account.getWriteToken()))
+        }).flatMap(syncData1 -> dataSource.sync(syncType, syncData1, account.getWriteToken()))
                 .flatMapObservable(syncResult -> {
                     logger.addSplit("server queries");
 
@@ -131,7 +123,7 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
         List<FeedInsertionResult> insertionResults = new ArrayList<>();
 
         for (ParsingResult result : results) {
-            completableList.add(api.createFeed(account.getWriteToken(), result.getUrl())
+            completableList.add(dataSource.createFeed(account.getWriteToken(), result.getUrl())
                     .doOnComplete(() -> {
                         FeedInsertionResult feedInsertionResult = new FeedInsertionResult();
                         feedInsertionResult.setParsingResult(result);
@@ -159,26 +151,26 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
             Folder folder = feed.getFolderId() == null ? null : database.folderDao().select(feed.getFolderId());
             emitter.onSuccess(folder);
 
-        }).flatMapCompletable(folder -> api.updateFeed(account.getWriteToken(),
+        }).flatMapCompletable(folder -> dataSource.updateFeed(account.getWriteToken(),
                 feed.getUrl(), feed.getName(), folder == null ? null : folder.getRemoteId())
                 .andThen(super.updateFeed(feed)));
     }
 
     @Override
     public Completable deleteFeed(Feed feed) {
-        return api.deleteFeed(account.getWriteToken(), feed.getUrl())
+        return dataSource.deleteFeed(account.getWriteToken(), feed.getUrl())
                 .andThen(super.deleteFeed(feed));
     }
 
     @Override
     public Single<Long> addFolder(Folder folder) {
-        return api.createFolder(account.getWriteToken(), folder.getName())
+        return dataSource.createFolder(account.getWriteToken(), folder.getName())
                 .andThen(super.addFolder(folder));
     }
 
     @Override
     public Completable updateFolder(Folder folder) {
-        return api.updateFolder(account.getWriteToken(), folder.getRemoteId(), folder.getName())
+        return dataSource.updateFolder(account.getWriteToken(), folder.getRemoteId(), folder.getName())
                 .andThen(Completable.create(emitter -> {
                     folder.setRemoteId("user/-/label/" + folder.getName());
                     emitter.onComplete();
@@ -188,7 +180,7 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
 
     @Override
     public Completable deleteFolder(Folder folder) {
-        return api.deleteFolder(account.getWriteToken(), folder.getRemoteId())
+        return dataSource.deleteFolder(account.getWriteToken(), folder.getRemoteId())
                 .andThen(super.deleteFolder(folder));
     }
 

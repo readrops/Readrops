@@ -16,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -38,7 +37,7 @@ import com.readrops.app.R;
 import com.readrops.app.adapters.MainItemListAdapter;
 import com.readrops.app.databinding.ActivityMainBinding;
 import com.readrops.app.utils.DrawerManager;
-import com.readrops.app.utils.GlideApp;
+import com.readrops.app.utils.GlideRequests;
 import com.readrops.app.utils.ReadropsItemTouchCallback;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
@@ -51,6 +50,8 @@ import com.readrops.db.filters.ListSortType;
 import com.readrops.db.pojo.ItemWithFeed;
 
 import org.jetbrains.annotations.NotNull;
+import org.koin.androidx.viewmodel.compat.ViewModelCompat;
+import org.koin.java.KoinJavaComponent;
 
 import java.lang.ref.WeakReference;
 import java.util.Collections;
@@ -116,9 +117,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         feedCount = 0;
         initRecyclerView();
 
-        viewModel = new ViewModelProvider(this).get(MainViewModel.class);
+        viewModel = ViewModelCompat.getViewModel(this, MainViewModel.class);
 
-        viewModel.setShowReadItems(SharedPreferencesManager.readBoolean(this,
+        viewModel.setShowReadItems(SharedPreferencesManager.readBoolean(
                 SharedPreferencesManager.SharedPrefKey.SHOW_READ_ARTICLES));
 
         viewModel.getItemsWithFeed().observe(this, itemWithFeeds -> {
@@ -300,7 +301,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     private void initRecyclerView() {
         ViewPreloadSizeProvider preloadSizeProvider = new ViewPreloadSizeProvider();
-        adapter = new MainItemListAdapter(GlideApp.with(this), preloadSizeProvider);
+        adapter = new MainItemListAdapter(KoinJavaComponent.get(GlideRequests.class), preloadSizeProvider);
         adapter.setOnItemClickListener(new MainItemListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(ItemWithFeed itemWithFeed, int position) {
@@ -349,7 +350,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         binding.itemsRecyclerView.setRecyclerListener(viewHolder -> {
             MainItemListAdapter.ItemViewHolder vh = (MainItemListAdapter.ItemViewHolder) viewHolder;
-            GlideApp.with(this).clear(vh.getItemImage());
+            KoinJavaComponent.get(GlideRequests.class).clear(vh.getItemImage());
         });
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -659,12 +660,12 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 if (item.isChecked()) {
                     item.setChecked(false);
                     viewModel.setShowReadItems(false);
-                    SharedPreferencesManager.writeValue(this,
+                    SharedPreferencesManager.writeValue(
                             SharedPreferencesManager.SharedPrefKey.SHOW_READ_ARTICLES, false);
                 } else {
                     item.setChecked(true);
                     viewModel.setShowReadItems(true);
-                    SharedPreferencesManager.writeValue(this,
+                    SharedPreferencesManager.writeValue(
                             SharedPreferencesManager.SharedPrefKey.SHOW_READ_ARTICLES, true);
                 }
 
@@ -708,16 +709,16 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private void getAccountCredentials(List<Account> accounts) {
         for (Account account : accounts) {
             if (account.getLogin() == null)
-                account.setLogin(SharedPreferencesManager.readString(this, account.getLoginKey()));
+                account.setLogin(SharedPreferencesManager.readString(account.getLoginKey()));
 
             if (account.getPassword() == null)
-                account.setPassword(SharedPreferencesManager.readString(this, account.getPasswordKey()));
+                account.setPassword(SharedPreferencesManager.readString(account.getPasswordKey()));
         }
     }
 
     private void startAboutActivity() {
         Libs.ActivityStyle activityStyle;
-        if (Boolean.valueOf(SharedPreferencesManager.readString(this, SharedPreferencesManager.SharedPrefKey.DARK_THEME)))
+        if (Boolean.valueOf(SharedPreferencesManager.readString(SharedPreferencesManager.SharedPrefKey.DARK_THEME)))
             activityStyle = Libs.ActivityStyle.DARK;
         else
             activityStyle = Libs.ActivityStyle.LIGHT_DARK_TOOLBAR;

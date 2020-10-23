@@ -19,13 +19,16 @@ import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import org.koin.core.KoinComponent
+import org.koin.core.get
+import org.koin.core.parameter.parametersOf
 
-class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(context, parameters) {
+class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(context, parameters), KoinComponent {
 
     private var disposable: Disposable? = null
 
     private val notificationManager = NotificationManagerCompat.from(applicationContext)
-    private val database = Database.getInstance(applicationContext)
+    private val database = get<Database>()
 
     override fun doWork(): Result {
         var result = Result.success()
@@ -39,15 +42,15 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
                     .setProgress(0, 0, true)
                     .setSmallIcon(R.drawable.ic_notif)
                     .setOnlyAlertOnce(true)
-            
+
             accounts.forEach {
                 notificationBuilder.setContentText(it.accountName)
                 notificationManager.notify(SYNC_NOTIFICATION_ID, notificationBuilder.build())
 
-                it.login = SharedPreferencesManager.readString(applicationContext, it.loginKey)
-                it.password = SharedPreferencesManager.readString(applicationContext, it.passwordKey)
+                it.login = SharedPreferencesManager.readString(it.loginKey)
+                it.password = SharedPreferencesManager.readString(it.passwordKey)
 
-                val repository = ARepository.repositoryFactory(it, applicationContext)
+                val repository = get<ARepository>(parameters = { parametersOf(it) })
 
                 disposable = repository.sync(null)
                         .doOnError { throwable ->
@@ -138,12 +141,12 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
                 .build()
     }
 
-    class MarkReadReceiver : BroadcastReceiver() {
+    class MarkReadReceiver : BroadcastReceiver(), KoinComponent {
 
         override fun onReceive(context: Context?, intent: Intent?) {
             val itemId = intent?.getIntExtra(ReadropsKeys.ITEM_ID, 0)!!
 
-            with(Database.getInstance(context)) {
+            with(get<Database>()) {
                 itemDao().setReadState(itemId, true, true)
                         .subscribeOn(Schedulers.io())
                         .subscribe()
@@ -155,12 +158,12 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
         }
     }
 
-    class ReadLaterReceiver : BroadcastReceiver() {
+    class ReadLaterReceiver : BroadcastReceiver(), KoinComponent {
 
         override fun onReceive(context: Context?, intent: Intent?) {
             val itemId = intent?.getIntExtra(ReadropsKeys.ITEM_ID, 0)!!
 
-            with(Database.getInstance(context)) {
+            with(get<Database>()) {
                 itemDao().setReadItLater(itemId)
                         .subscribeOn(Schedulers.io())
                         .subscribe()

@@ -2,7 +2,7 @@ package com.readrops.api.services.freshrss.adapters
 
 import android.util.TimingLogger
 import com.readrops.db.entities.Item
-import com.readrops.api.services.freshrss.FreshRSSAPI.GOOGLE_READ
+import com.readrops.api.services.freshrss.FreshRSSDataSource.GOOGLE_READ
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
