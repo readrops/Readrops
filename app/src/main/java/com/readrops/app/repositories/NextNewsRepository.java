@@ -12,7 +12,7 @@ import com.readrops.api.services.SyncType;
 import com.readrops.api.services.nextcloudnews.NextNewsDataSource;
 import com.readrops.api.services.nextcloudnews.NextNewsSyncData;
 import com.readrops.api.services.nextcloudnews.json.NextNewsUser;
-import com.readrops.api.utils.UnknownFormatException;
+import com.readrops.api.utils.exceptions.UnknownFormatException;
 import com.readrops.app.utils.FeedInsertionResult;
 import com.readrops.app.utils.ParsingResult;
 import com.readrops.app.utils.Utils;

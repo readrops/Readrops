@@ -2,9 +2,9 @@ package com.readrops.api.localfeed.json
 
 import com.readrops.api.localfeed.XmlAdapter.Companion.AUTHORS_MAX
 import com.readrops.api.utils.DateUtils
-import com.readrops.api.utils.ParseException
-import com.readrops.api.utils.nextNonEmptyString
-import com.readrops.api.utils.nextNullableString
+import com.readrops.api.utils.exceptions.ParseException
+import com.readrops.api.utils.extensions.nextNonEmptyString
+import com.readrops.api.utils.extensions.nextNullableString
 import com.readrops.db.entities.Item
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader

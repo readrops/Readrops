@@ -5,8 +5,8 @@ import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.readrops.api.utils.LibUtils
-import com.readrops.api.utils.ParseException
-import com.readrops.api.utils.UnknownFormatException
+import com.readrops.api.utils.exceptions.ParseException
+import com.readrops.api.utils.exceptions.UnknownFormatException
 import junit.framework.TestCase.*
 import okhttp3.Headers
 import okhttp3.HttpUrl

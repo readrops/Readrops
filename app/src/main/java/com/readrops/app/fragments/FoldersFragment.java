@@ -13,8 +13,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.readrops.api.utils.ConflictException;
-import com.readrops.api.utils.UnknownFormatException;
+import com.readrops.api.utils.exceptions.ConflictException;
+import com.readrops.api.utils.exceptions.UnknownFormatException;
 import com.readrops.app.R;
 import com.readrops.app.adapters.FoldersAdapter;
 import com.readrops.app.databinding.FragmentFoldersBinding;

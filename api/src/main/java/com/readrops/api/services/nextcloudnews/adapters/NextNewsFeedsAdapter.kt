@@ -2,7 +2,7 @@ package com.readrops.api.services.nextcloudnews.adapters
 
 import android.annotation.SuppressLint
 import com.readrops.db.entities.Feed
-import com.readrops.api.utils.nextNullableString
+import com.readrops.api.utils.extensions.nextNullableString
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.ToJson

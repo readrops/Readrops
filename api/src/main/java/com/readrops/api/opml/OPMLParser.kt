@@ -7,8 +7,7 @@ import com.readrops.api.opml.model.Body
 import com.readrops.api.opml.model.Head
 import com.readrops.api.opml.model.OPML
 import com.readrops.api.opml.model.Outline
-import com.readrops.api.utils.LibUtils
-import com.readrops.api.utils.ParseException
+import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import io.reactivex.Completable

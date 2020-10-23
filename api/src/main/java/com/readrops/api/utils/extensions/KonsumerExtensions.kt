@@ -1,8 +1,9 @@
-package com.readrops.api.utils
+package com.readrops.api.utils.extensions
 
 import com.gitlab.mvysny.konsumexml.Konsumer
 import com.gitlab.mvysny.konsumexml.Whitespace
 import com.gitlab.mvysny.konsumexml.textRecursively
+import com.readrops.api.utils.exceptions.ParseException
 
 fun Konsumer.nonNullText(): String {
     val text = text(whitespace = Whitespace.preserve)

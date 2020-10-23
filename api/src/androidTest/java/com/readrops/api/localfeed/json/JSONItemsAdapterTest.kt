@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.readrops.api.utils.DateUtils
-import com.readrops.api.utils.ParseException
+import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.db.entities.Item
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types

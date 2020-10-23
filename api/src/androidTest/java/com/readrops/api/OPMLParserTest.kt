@@ -7,7 +7,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import com.readrops.api.opml.OPMLParser
-import com.readrops.api.utils.ParseException
+import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import io.reactivex.schedulers.Schedulers

@@ -1,5 +1,8 @@
 package com.readrops.api.utils
 
+import com.readrops.api.utils.exceptions.ParseException
+import com.readrops.api.utils.extensions.nextNonEmptyString
+import com.readrops.api.utils.extensions.nextNullableString
 import com.squareup.moshi.JsonReader
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull

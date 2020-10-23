@@ -3,7 +3,7 @@ package com.readrops.api.localfeed.rss2
 import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.readrops.api.utils.ParseException
+import com.readrops.api.utils.exceptions.ParseException
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith

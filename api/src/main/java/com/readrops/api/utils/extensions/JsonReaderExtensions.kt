@@ -1,5 +1,6 @@
-package com.readrops.api.utils
+package com.readrops.api.utils.extensions
 
+import com.readrops.api.utils.exceptions.ParseException
 import com.squareup.moshi.JsonReader
 
 fun JsonReader.nextNullableString(): String? =

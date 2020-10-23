@@ -1,8 +1,8 @@
 package com.readrops.api.localfeed.json
 
-import com.readrops.api.utils.ParseException
-import com.readrops.api.utils.nextNonEmptyString
-import com.readrops.api.utils.nextNullableString
+import com.readrops.api.utils.exceptions.ParseException
+import com.readrops.api.utils.extensions.nextNonEmptyString
+import com.readrops.api.utils.extensions.nextNullableString
 import com.readrops.db.entities.Feed
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonReader

@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.readrops.api.utils.DateUtils
-import com.readrops.api.utils.ParseException
+import com.readrops.api.utils.exceptions.ParseException
 import junit.framework.TestCase.*
 import org.junit.Assert
 import org.junit.Test

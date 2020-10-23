@@ -4,9 +4,9 @@ import com.gitlab.mvysny.konsumexml.Names
 import com.gitlab.mvysny.konsumexml.allChildrenAutoIgnore
 import com.gitlab.mvysny.konsumexml.konsumeXml
 import com.readrops.api.localfeed.XmlAdapter
-import com.readrops.api.utils.ParseException
-import com.readrops.api.utils.nonNullText
-import com.readrops.api.utils.nullableText
+import com.readrops.api.utils.exceptions.ParseException
+import com.readrops.api.utils.extensions.nonNullText
+import com.readrops.api.utils.extensions.nullableText
 import com.readrops.db.entities.Feed
 import java.io.InputStream
 

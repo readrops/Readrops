@@ -11,8 +11,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.readrops.api.utils.ConflictException;
-import com.readrops.api.utils.UnknownFormatException;
+import com.readrops.api.utils.exceptions.ConflictException;
+import com.readrops.api.utils.exceptions.UnknownFormatException;
 import com.readrops.app.R;
 import com.readrops.app.databinding.ActivityManageFeedsFoldersBinding;
 import com.readrops.app.fragments.FeedsFragment;

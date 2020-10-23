@@ -2,6 +2,9 @@ package com.readrops.api.utils
 
 import com.gitlab.mvysny.konsumexml.KonsumerException
 import com.gitlab.mvysny.konsumexml.konsumeXml
+import com.readrops.api.utils.extensions.nonNullText
+import com.readrops.api.utils.extensions.nullableText
+import com.readrops.api.utils.extensions.nullableTextRecursively
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
 import org.junit.Test

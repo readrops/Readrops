@@ -1,4 +1,4 @@
-package com.readrops.api.utils;
+package com.readrops.api.utils.exceptions;
 
 public class UnknownFormatException extends Exception {
 

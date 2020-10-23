@@ -5,8 +5,8 @@ import androidx.annotation.WorkerThread
 import com.readrops.api.localfeed.json.JSONFeedAdapter
 import com.readrops.api.localfeed.json.JSONItemsAdapter
 import com.readrops.api.utils.LibUtils
-import com.readrops.api.utils.ParseException
-import com.readrops.api.utils.UnknownFormatException
+import com.readrops.api.utils.exceptions.ParseException
+import com.readrops.api.utils.exceptions.UnknownFormatException
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Item
 import com.squareup.moshi.Moshi
