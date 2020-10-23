@@ -32,21 +32,21 @@
         </provider>
 
         <activity
-            android:name=".activities.NotificationPermissionActivity"
+            android:name=".notifications.NotificationPermissionActivity"
             android:theme="@style/AppTheme" />
 
         <activity
-            android:name=".activities.WebViewActivity"
+            android:name=".item.WebViewActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <service android:name=".utils.feedscolors.FeedsColorsIntentService" />
 
-        <receiver android:name=".utils.SyncWorker$MarkReadReceiver" />
-        <receiver android:name=".utils.SyncWorker$ReadLaterReceiver" />
+        <receiver android:name=".notifications.sync.SyncWorker$MarkReadReceiver" />
+        <receiver android:name=".notifications.sync.SyncWorker$ReadLaterReceiver" />
 
-        <activity android:name=".activities.SettingsActivity" />
+        <activity android:name=".settings.SettingsActivity" />
         <activity
-            android:name=".activities.SplashActivity"
+            android:name=".SplashActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -54,28 +54,28 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.AccountTypeListActivity" />
+        <activity android:name=".account.AccountTypeListActivity" />
         <activity
-            android:name=".activities.AddAccountActivity"
+            android:name=".account.AddAccountActivity"
             android:label="@string/add_account" />
         <activity
-            android:name=".activities.ManageFeedsFoldersActivity"
+            android:name=".feedsfolders.ManageFeedsFoldersActivity"
             android:label="@string/manage_feeds_folders"
-            android:parentActivityName=".activities.MainActivity"
+            android:parentActivityName=".itemslist.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".itemslist.MainActivity"
             android:label="@string/articles"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activities.ItemActivity"
-            android:parentActivityName=".activities.MainActivity"
+            android:name=".item.ItemActivity"
+            android:parentActivityName=".itemslist.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activities.AddFeedActivity"
+            android:name=".addfeed.AddFeedActivity"
             android:label="@string/add_feed_title"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName=".itemslist.MainActivity">
             <intent-filter android:label="@string/new_feed">
                 <action android:name="android.intent.action.SEND" />
 

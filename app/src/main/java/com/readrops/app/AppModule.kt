@@ -1,11 +1,16 @@
 package com.readrops.app
 
 import androidx.preference.PreferenceManager
+import com.readrops.app.account.AccountViewModel
+import com.readrops.app.addfeed.AddFeedsViewModel
+import com.readrops.app.feedsfolders.ManageFeedsFoldersViewModel
+import com.readrops.app.item.ItemViewModel
+import com.readrops.app.itemslist.MainViewModel
+import com.readrops.app.notifications.NotificationPermissionViewModel
 import com.readrops.app.repositories.FreshRSSRepository
 import com.readrops.app.repositories.LocalFeedRepository
 import com.readrops.app.repositories.NextNewsRepository
 import com.readrops.app.utils.GlideApp
-import com.readrops.app.viewmodels.*
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
 import org.koin.android.ext.koin.androidApplication

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".activities.ItemActivity">
+    tools:context=".item.ItemActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
@@ -152,7 +152,7 @@
 
             </RelativeLayout>
 
-            <com.readrops.app.utils.ReadropsWebView
+            <com.readrops.app.utils.customviews.ReadropsWebView
                 android:id="@+id/item_webview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

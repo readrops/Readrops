@@ -1,7 +1,7 @@
 package com.readrops.app
 
 import com.readrops.app.utils.HtmlParser
-import com.readrops.app.utils.ParsingResult
+import com.readrops.app.addfeed.ParsingResult
 import junit.framework.TestCase
 import okhttp3.OkHttpClient
 import org.junit.Assert

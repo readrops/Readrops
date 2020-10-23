@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 
 import com.readrops.api.localfeed.LocalRSSHelper;
 import com.readrops.api.utils.ApiUtils;
+import com.readrops.app.addfeed.ParsingResult;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

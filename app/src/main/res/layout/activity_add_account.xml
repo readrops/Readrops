@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.AddAccountActivity">
+    tools:context=".account.AddAccountActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/add_account_root"

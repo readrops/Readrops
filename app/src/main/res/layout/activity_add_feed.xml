@@ -6,7 +6,7 @@
     android:id="@+id/add_feed_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.AddFeedActivity">
+    tools:context=".addfeed.AddFeedActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
