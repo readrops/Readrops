@@ -27,7 +27,7 @@ class RSS2ItemsAdapter : XmlAdapter<List<Item>> {
                         val item = Item().apply {
                             allChildrenAutoIgnore(names) {
                                 when (tagName) {
-                                    "title" -> title = LibUtils.cleanText(nonNullText())
+                                    "title" -> title = ApiUtils.cleanText(nonNullText())
                                     "link" -> link = nonNullText()
                                     "author" -> author = nullableText()
                                     "dc:creator" -> creators += nullableText()
@@ -60,16 +60,16 @@ class RSS2ItemsAdapter : XmlAdapter<List<Item>> {
 
     private fun parseEnclosure(konsumer: Konsumer, item: Item) {
         if (konsumer.attributes.getValueOpt("type") != null
-                && LibUtils.isMimeImage(konsumer.attributes["type"]) && item.imageLink == null)
+                && ApiUtils.isMimeImage(konsumer.attributes["type"]) && item.imageLink == null)
             item.imageLink = konsumer.attributes.getValueOpt("url")
     }
 
     private fun isMediumImage(konsumer: Konsumer) = with(konsumer) {
-        attributes.getValueOpt("medium") != null && LibUtils.isMimeImage(attributes["medium"])
+        attributes.getValueOpt("medium") != null && ApiUtils.isMimeImage(attributes["medium"])
     }
 
     private fun isTypeImage(konsumer: Konsumer) = with(konsumer) {
-        attributes.getValueOpt("type") != null && LibUtils.isMimeImage(attributes["type"])
+        attributes.getValueOpt("type") != null && ApiUtils.isMimeImage(attributes["type"])
     }
 
     private fun parseMediaContent(konsumer: Konsumer, item: Item) {

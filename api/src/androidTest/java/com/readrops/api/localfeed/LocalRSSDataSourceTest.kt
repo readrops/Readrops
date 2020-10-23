@@ -4,7 +4,7 @@ import android.accounts.NetworkErrorException
 import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.readrops.api.utils.LibUtils
+import com.readrops.api.utils.ApiUtils
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.exceptions.UnknownFormatException
 import junit.framework.TestCase.*
@@ -46,9 +46,9 @@ class LocalRSSDataSourceTest {
         val stream = context.resources.assets.open("localfeed/rss_feed.xml")
 
         mockServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_OK)
-                .addHeader(LibUtils.CONTENT_TYPE_HEADER, "application/xml; charset=UTF-8")
-                .addHeader(LibUtils.ETAG_HEADER, "ETag-value")
-                .addHeader(LibUtils.LAST_MODIFIED_HEADER, "Last-Modified")
+                .addHeader(ApiUtils.CONTENT_TYPE_HEADER, "application/xml; charset=UTF-8")
+                .addHeader(ApiUtils.ETAG_HEADER, "ETag-value")
+                .addHeader(ApiUtils.LAST_MODIFIED_HEADER, "Last-Modified")
                 .setBody(Buffer().readFrom(stream)))
 
         val pair = localRSSDataSource.queryRSSResource(url.toString(), null)
@@ -73,13 +73,13 @@ class LocalRSSDataSourceTest {
                 .addHeader("Content-Type", "application/rss+xml; charset=UTF-8")
                 .setBody(Buffer().readFrom(stream)))
 
-        val headers = Headers.headersOf(LibUtils.ETAG_HEADER, "ETag", LibUtils.LAST_MODIFIED_HEADER, "Last-Modified")
+        val headers = Headers.headersOf(ApiUtils.ETAG_HEADER, "ETag", ApiUtils.LAST_MODIFIED_HEADER, "Last-Modified")
         localRSSDataSource.queryRSSResource(url.toString(), headers)
 
         val request = mockServer.takeRequest()
 
-        assertEquals(request.headers[LibUtils.ETAG_HEADER], "ETag")
-        assertEquals(request.headers[LibUtils.LAST_MODIFIED_HEADER], "Last-Modified")
+        assertEquals(request.headers[ApiUtils.ETAG_HEADER], "ETag")
+        assertEquals(request.headers[ApiUtils.LAST_MODIFIED_HEADER], "Last-Modified")
     }
 
     @Test
@@ -87,7 +87,7 @@ class LocalRSSDataSourceTest {
         val stream = context.resources.assets.open("localfeed/json/json_feed.json")
 
         mockServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_OK)
-                .addHeader(LibUtils.CONTENT_TYPE_HEADER, "application/feed+json")
+                .addHeader(ApiUtils.CONTENT_TYPE_HEADER, "application/feed+json")
                 .setBody(Buffer().readFrom(stream)))
 
         val pair = localRSSDataSource.queryRSSResource(url.toString(), null)!!
@@ -101,7 +101,7 @@ class LocalRSSDataSourceTest {
         val stream = context.resources.assets.open("localfeed/atom/atom_feed_no_url_siteurl.xml")
 
         mockServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_OK)
-                .addHeader(LibUtils.CONTENT_TYPE_HEADER, "application/atom+xml")
+                .addHeader(ApiUtils.CONTENT_TYPE_HEADER, "application/atom+xml")
                 .setBody(Buffer().readFrom(stream)))
 
         val pair = localRSSDataSource.queryRSSResource(url.toString(), null)!!
@@ -115,7 +115,7 @@ class LocalRSSDataSourceTest {
         val stream = context.resources.assets.open("localfeed/rss1/rss1_feed_no_url_siteurl.xml")
 
         mockServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_OK)
-                .addHeader(LibUtils.CONTENT_TYPE_HEADER, "application/rdf+xml")
+                .addHeader(ApiUtils.CONTENT_TYPE_HEADER, "application/rdf+xml")
                 .setBody(Buffer().readFrom(stream)))
 
         val pair = localRSSDataSource.queryRSSResource(url.toString(), null)!!

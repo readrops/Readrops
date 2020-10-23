@@ -9,7 +9,7 @@ import com.readrops.api.services.SyncResult;
 import com.readrops.api.services.SyncType;
 import com.readrops.api.services.nextcloudnews.json.NextNewsUser;
 import com.readrops.api.utils.exceptions.ConflictException;
-import com.readrops.api.utils.LibUtils;
+import com.readrops.api.utils.ApiUtils;
 import com.readrops.api.utils.exceptions.UnknownFormatException;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
@@ -50,7 +50,7 @@ public class NextNewsDataSource {
         Response<List<Feed>> response = api.createFeed(url, folderId).execute();
 
         if (!response.isSuccessful()) {
-            if (response.code() == LibUtils.HTTP_UNPROCESSABLE)
+            if (response.code() == ApiUtils.HTTP_UNPROCESSABLE)
                 throw new UnknownFormatException();
             else
                 return null;
@@ -156,9 +156,9 @@ public class NextNewsDataSource {
 
         if (foldersResponse.isSuccessful())
             return foldersResponse.body();
-        else if (foldersResponse.code() == LibUtils.HTTP_UNPROCESSABLE)
+        else if (foldersResponse.code() == ApiUtils.HTTP_UNPROCESSABLE)
             throw new UnknownFormatException();
-        else if (foldersResponse.code() == LibUtils.HTTP_CONFLICT)
+        else if (foldersResponse.code() == ApiUtils.HTTP_CONFLICT)
             throw new ConflictException();
         else
             return new ArrayList<>();
@@ -169,7 +169,7 @@ public class NextNewsDataSource {
 
         if (response.isSuccessful())
             return true;
-        else if (response.code() == LibUtils.HTTP_NOT_FOUND)
+        else if (response.code() == ApiUtils.HTTP_NOT_FOUND)
             throw new Resources.NotFoundException();
         else
             return false;
@@ -185,11 +185,11 @@ public class NextNewsDataSource {
             return true;
         else {
             switch (response.code()) {
-                case LibUtils.HTTP_NOT_FOUND:
+                case ApiUtils.HTTP_NOT_FOUND:
                     throw new Resources.NotFoundException();
-                case LibUtils.HTTP_UNPROCESSABLE:
+                case ApiUtils.HTTP_UNPROCESSABLE:
                     throw new UnknownFormatException();
-                case LibUtils.HTTP_CONFLICT:
+                case ApiUtils.HTTP_CONFLICT:
                     throw new ConflictException();
                 default:
                     return false;
@@ -202,7 +202,7 @@ public class NextNewsDataSource {
 
         if (response.isSuccessful())
             return true;
-        else if (response.code() == LibUtils.HTTP_NOT_FOUND)
+        else if (response.code() == ApiUtils.HTTP_NOT_FOUND)
             throw new Resources.NotFoundException();
         else
             return false;
@@ -216,7 +216,7 @@ public class NextNewsDataSource {
 
         if (response.isSuccessful())
             return true;
-        else if (response.code() == LibUtils.HTTP_NOT_FOUND)
+        else if (response.code() == ApiUtils.HTTP_NOT_FOUND)
             throw new Resources.NotFoundException();
         else
             return false;
@@ -230,7 +230,7 @@ public class NextNewsDataSource {
 
         if (response.isSuccessful())
             return true;
-        else if (response.code() == LibUtils.HTTP_NOT_FOUND)
+        else if (response.code() == ApiUtils.HTTP_NOT_FOUND)
             throw new Resources.NotFoundException();
         else
             return false;

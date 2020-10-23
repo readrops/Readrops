@@ -2,7 +2,7 @@ package com.readrops.api.services.nextcloudnews.adapters
 
 import android.annotation.SuppressLint
 import com.readrops.db.entities.Item
-import com.readrops.api.utils.LibUtils
+import com.readrops.api.utils.ApiUtils
 import com.readrops.api.utils.extensions.nextNullableString
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
@@ -50,7 +50,7 @@ class NextNewsItemsAdapter : JsonAdapter<List<Item>>() {
                 }
             }
 
-            if (enclosureMime != null && LibUtils.isMimeImage(enclosureMime!!))
+            if (enclosureMime != null && ApiUtils.isMimeImage(enclosureMime!!))
                 item.imageLink = enclosureLink
 
             items += item

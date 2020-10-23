@@ -9,7 +9,7 @@ import androidx.annotation.Nullable;
 
 import com.readrops.api.localfeed.LocalRSSDataSource;
 import com.readrops.api.services.SyncResult;
-import com.readrops.api.utils.LibUtils;
+import com.readrops.api.utils.ApiUtils;
 import com.readrops.api.utils.exceptions.ParseException;
 import com.readrops.api.utils.exceptions.UnknownFormatException;
 import com.readrops.app.utils.FeedInsertionResult;
@@ -69,10 +69,10 @@ public class LocalFeedRepository extends ARepository {
                 try {
                     Headers.Builder headers = new Headers.Builder();
                     if (feed.getEtag() != null) {
-                        headers.add(LibUtils.IF_NONE_MATCH_HEADER, feed.getEtag());
+                        headers.add(ApiUtils.IF_NONE_MATCH_HEADER, feed.getEtag());
                     }
                     if (feed.getLastModified() != null) {
-                        headers.add(LibUtils.IF_MODIFIED_HEADER, feed.getLastModified());
+                        headers.add(ApiUtils.IF_MODIFIED_HEADER, feed.getLastModified());
                     }
 
                     Pair<Feed, List<Item>> pair = dataSource.queryRSSResource(feed.getUrl(), headers.build());

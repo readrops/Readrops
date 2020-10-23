@@ -4,7 +4,7 @@ import android.accounts.NetworkErrorException
 import androidx.annotation.WorkerThread
 import com.readrops.api.localfeed.json.JSONFeedAdapter
 import com.readrops.api.localfeed.json.JSONItemsAdapter
-import com.readrops.api.utils.LibUtils
+import com.readrops.api.utils.ApiUtils
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.exceptions.UnknownFormatException
 import com.readrops.db.entities.Feed
@@ -36,10 +36,10 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) {
 
         return when {
             response.isSuccessful -> {
-                val header = response.header(LibUtils.CONTENT_TYPE_HEADER)
+                val header = response.header(ApiUtils.CONTENT_TYPE_HEADER)
                         ?: throw UnknownFormatException("Unable to get $url content-type")
 
-                val contentType = LibUtils.parseContentType(header)
+                val contentType = ApiUtils.parseContentType(header)
                         ?: throw ParseException("Unable to parse $url content-type")
 
                 var type = LocalRSSHelper.getRSSType(contentType)
@@ -73,10 +73,10 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) {
         val response = queryUrl(url, null)
 
         return if (response.isSuccessful) {
-            val header = response.header(LibUtils.CONTENT_TYPE_HEADER)
+            val header = response.header(ApiUtils.CONTENT_TYPE_HEADER)
                     ?: return false
 
-            val contentType = LibUtils.parseContentType(header)
+            val contentType = ApiUtils.parseContentType(header)
                     ?: return false
 
             var type = LocalRSSHelper.getRSSType(contentType)
@@ -112,8 +112,8 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) {
 
         handleSpecialCases(feed, type, response)
 
-        feed.etag = response.header(LibUtils.ETAG_HEADER)
-        feed.lastModified = response.header(LibUtils.LAST_MODIFIED_HEADER)
+        feed.etag = response.header(ApiUtils.ETAG_HEADER)
+        feed.lastModified = response.header(ApiUtils.LAST_MODIFIED_HEADER)
 
         return feed
     }

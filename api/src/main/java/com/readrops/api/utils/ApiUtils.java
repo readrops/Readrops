@@ -8,7 +8,7 @@ import org.jsoup.Jsoup;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class LibUtils {
+public final class ApiUtils {
 
     public static final String HTML_CONTENT_TYPE = "text/html";
 
