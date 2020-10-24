@@ -46,7 +46,7 @@ public class NextNewsRepository extends ARepository {
     }
 
     @Override
-    public Single<Boolean> login(Account account, boolean insert) {
+    public Completable login(Account account, boolean insert) {
         setCredentials(account);
         return Single.<NextNewsUser>create(emitter -> {
             NextNewsUser user = dataSource.login();
@@ -56,19 +56,19 @@ public class NextNewsRepository extends ARepository {
             } else {
                 emitter.onError(new Exception("Login failed. Please check your credentials and your Nextcloud News setup."));
             }
-        }).flatMap(user -> {
+        }).flatMapCompletable(user -> {
             account.setDisplayedName(user.getDisplayName());
             account.setCurrentAccount(true);
 
             if (insert) {
                 return database.accountDao().insert(account)
-                        .flatMap(id -> {
+                        .flatMapCompletable(id -> {
                             account.setId(id.intValue());
-                            return Single.just(true);
+                            return Completable.complete();
                         });
             }
 
-            return Single.just(true);
+            return Completable.complete();
         });
     }
 

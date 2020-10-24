@@ -54,8 +54,7 @@ public abstract class ARepository {
                 .setCredentials(account != null && !account.isLocal() ? Credentials.toCredentials(account) : null);
     }
 
-    // TODO : replace Single by Completable
-    public abstract Single<Boolean> login(Account account, boolean insert);
+    public abstract Completable login(Account account, boolean insert);
 
     public abstract Observable<Feed> sync(List<Feed> feeds);
 

@@ -42,7 +42,7 @@ public class AccountViewModel extends ViewModel {
                 () -> DefinitionParametersKt.parametersOf(account));
     }
 
-    public Single<Boolean> login(Account account, boolean insert) {
+    public Completable login(Account account, boolean insert) {
         return repository.login(account, insert);
     }
 

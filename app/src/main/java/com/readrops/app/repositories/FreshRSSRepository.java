@@ -42,7 +42,7 @@ public class FreshRSSRepository extends ARepository {
     }
 
     @Override
-    public Single<Boolean> login(Account account, boolean insert) {
+    public Completable login(Account account, boolean insert) {
         setCredentials(account);
 
         return dataSource.login(account.getLogin(), account.getPassword())
@@ -57,19 +57,19 @@ public class FreshRSSRepository extends ARepository {
 
                     return dataSource.getUserInfo();
                 })
-                .flatMap(userInfo -> {
+                .flatMapCompletable(userInfo -> {
                     account.setDisplayedName(userInfo.getUserName());
 
                     if (insert) {
                         return database.accountDao().insert(account)
-                                .flatMap(id -> {
+                                .flatMapCompletable(id -> {
                                     account.setId(id.intValue());
 
-                                    return Single.just(true);
+                                    return Completable.complete();
                                 });
                     }
 
-                    return Single.just(true);
+                    return Completable.complete();
                 });
     }
 

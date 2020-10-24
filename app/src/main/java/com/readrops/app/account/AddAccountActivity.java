@@ -2,6 +2,7 @@ package com.readrops.app.account;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -19,9 +20,7 @@ import com.readrops.db.entities.account.AccountType;
 
 import org.koin.androidx.viewmodel.compat.ViewModelCompat;
 
-import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
-import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -31,6 +30,8 @@ import static com.readrops.app.utils.ReadropsKeys.ACCOUNT_TYPE;
 import static com.readrops.app.utils.ReadropsKeys.EDIT_ACCOUNT;
 
 public class AddAccountActivity extends AppCompatActivity {
+
+    private static final String TAG = AddAccountActivity.class.getSimpleName();
 
     private ActivityAddAccountBinding binding;
     private AccountViewModel viewModel;
@@ -101,7 +102,7 @@ public class AddAccountActivity extends AppCompatActivity {
                 viewModel.login(account, true)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new SingleObserver<Boolean>() {
+                        .subscribe(new CompletableObserver() {
 
                             @Override
                             public void onSubscribe(Disposable d) {
@@ -110,33 +111,25 @@ public class AddAccountActivity extends AppCompatActivity {
                             }
 
                             @Override
-                            public void onSuccess(Boolean success) {
-                                binding.addAccountLoading.setVisibility(View.GONE);
+                            public void onComplete() {
+                                saveLoginPassword(account);
 
-                                if (success) {
-                                    saveLoginPassword(account);
-
-                                    if (forwardResult) {
-                                        Intent intent = new Intent();
-                                        intent.putExtra(ACCOUNT, account);
-                                        setResult(RESULT_OK, intent);
-                                        finish();
-
-                                    } else {
-                                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                        intent.putExtra(ACCOUNT, account);
-                                        startActivity(intent);
-                                    }
-
-                                    finish();
+                                if (forwardResult) {
+                                    Intent intent = new Intent();
+                                    intent.putExtra(ACCOUNT, account);
+                                    setResult(RESULT_OK, intent);
                                 } else {
-                                    binding.addAccountValidate.setEnabled(true);
-                                    Utils.showSnackbar(binding.addAccountRoot, getString(R.string.login_failed));
+                                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                    intent.putExtra(ACCOUNT, account);
+                                    startActivity(intent);
                                 }
+
+                                finish();
                             }
 
                             @Override
                             public void onError(Throwable e) {
+                                Log.d(TAG, e.getMessage());
                                 binding.addAccountLoading.setVisibility(View.GONE);
                                 binding.addAccountValidate.setEnabled(true);
 
@@ -198,20 +191,8 @@ public class AddAccountActivity extends AppCompatActivity {
     private void updateAccount() {
         viewModel.login(accountToEdit, false)
                 .doOnError(throwable -> Utils.showSnackbar(binding.addAccountRoot, throwable.getMessage()))
-                .flatMapCompletable(b -> {
-                    if (b) {
-                        saveLoginPassword(accountToEdit);
-                        return viewModel.update(accountToEdit);
-                    } else {
-                        runOnUiThread(() -> {
-                            binding.addAccountLoading.setVisibility(View.GONE);
-                            binding.addAccountValidate.setEnabled(true);
-                            Utils.showSnackbar(binding.addAccountRoot, getString(R.string.login_failed));
-                        });
-
-                        return Completable.never();
-                    }
-                })
+                .doAfterTerminate(() -> saveLoginPassword(accountToEdit))
+                .andThen(viewModel.update(accountToEdit))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {

@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import kotlin.Pair;
@@ -48,7 +49,7 @@ public class LocalFeedRepository extends ARepository {
     }
 
     @Override
-    public Single<Boolean> login(Account account, boolean insert) {
+    public Completable login(Account account, boolean insert) {
         return null;
     }
 
