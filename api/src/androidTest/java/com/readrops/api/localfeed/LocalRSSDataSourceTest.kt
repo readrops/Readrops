@@ -4,31 +4,42 @@ import android.accounts.NetworkErrorException
 import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.readrops.api.apiModule
 import com.readrops.api.utils.ApiUtils
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.exceptions.UnknownFormatException
 import junit.framework.TestCase.*
 import okhttp3.Headers
 import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.android.ext.koin.androidContext
+import org.koin.test.KoinTest
+import org.koin.test.KoinTestRule
+import org.koin.test.inject
 import java.net.HttpURLConnection
 
 
 @RunWith(AndroidJUnit4::class)
-class LocalRSSDataSourceTest {
+class LocalRSSDataSourceTest : KoinTest {
 
-    private val context: Context = InstrumentationRegistry.getInstrumentation().context
+    private val context: Context by inject()
     private lateinit var url: HttpUrl
 
     private val mockServer: MockWebServer = MockWebServer()
-    private val localRSSDataSource = LocalRSSDataSource(OkHttpClient())
+    private val localRSSDataSource by inject<LocalRSSDataSource>()
+
+    @get:Rule
+    val koinTestRule = KoinTestRule.create {
+        androidContext(InstrumentationRegistry.getInstrumentation().context)
+        modules(apiModule)
+    }
 
     @Before
     fun before() {
