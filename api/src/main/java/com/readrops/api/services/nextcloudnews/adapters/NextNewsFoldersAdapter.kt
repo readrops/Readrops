@@ -1,6 +1,7 @@
 package com.readrops.api.services.nextcloudnews.adapters
 
 import android.annotation.SuppressLint
+import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.db.entities.Folder
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonReader
@@ -16,32 +17,36 @@ class NextNewsFoldersAdapter {
     fun fromJson(reader: JsonReader): List<Folder> {
         val folders = mutableListOf<Folder>()
 
-        reader.beginObject()
-        reader.nextName() // "folders", beginning of folders array
-        reader.beginArray()
-
-        while (reader.hasNext()) {
-            val folder = Folder()
+        return try {
             reader.beginObject()
+            reader.nextName() // "folders", beginning of folders array
+            reader.beginArray()
 
             while (reader.hasNext()) {
-                with(folder) {
-                    when (reader.selectName(NAMES)) {
-                        0 -> remoteId = reader.nextInt().toString()
-                        1 -> name = reader.nextString()
-                        else -> reader.skipValue()
+                val folder = Folder()
+                reader.beginObject()
+
+                while (reader.hasNext()) {
+                    with(folder) {
+                        when (reader.selectName(NAMES)) {
+                            0 -> remoteId = reader.nextInt().toString()
+                            1 -> name = reader.nextString()
+                            else -> reader.skipValue()
+                        }
                     }
                 }
+
+                folders += folder
+                reader.endObject()
             }
 
-            folders += folder
+            reader.endArray()
             reader.endObject()
+
+            folders
+        } catch (e: Exception) {
+            throw ParseException(e.message)
         }
-
-        reader.endArray()
-        reader.endObject()
-
-        return folders
     }
 
     companion object {

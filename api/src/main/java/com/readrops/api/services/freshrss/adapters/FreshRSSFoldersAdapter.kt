@@ -1,6 +1,7 @@
 package com.readrops.api.services.freshrss.adapters
 
 import android.annotation.SuppressLint
+import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.db.entities.Folder
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonReader
@@ -17,42 +18,46 @@ class FreshRSSFoldersAdapter {
     fun fromJson(reader: JsonReader): List<Folder> {
         val folders = mutableListOf<Folder>()
 
-        reader.beginObject()
-        reader.nextName() // "tags", beginning of folder array
-        reader.beginArray()
-
-        while (reader.hasNext()) {
+        return try {
             reader.beginObject()
-
-            val folder = Folder()
-            var type: String? = null
+            reader.nextName() // "tags", beginning of folder array
+            reader.beginArray()
 
             while (reader.hasNext()) {
-                with(folder) {
-                    when (reader.selectName(NAMES)) {
-                        0 -> {
-                            val id = reader.nextString()
-                            name = StringTokenizer(id, "/")
-                                    .toList()
-                                    .last() as String
-                            remoteId = id
+                reader.beginObject()
+
+                val folder = Folder()
+                var type: String? = null
+
+                while (reader.hasNext()) {
+                    with(folder) {
+                        when (reader.selectName(NAMES)) {
+                            0 -> {
+                                val id = reader.nextString()
+                                name = StringTokenizer(id, "/")
+                                        .toList()
+                                        .last() as String
+                                remoteId = id
+                            }
+                            1 -> type = reader.nextString()
+                            else -> reader.skipValue()
                         }
-                        1 -> type = reader.nextString()
-                        else -> reader.skipValue()
                     }
                 }
+
+                if (type == "folder") // add only folders and avoid tags
+                    folders += folder
+
+                reader.endObject()
             }
 
-            if (type == "folder") // add only folders and avoid tags
-                folders += folder
-
+            reader.endArray()
             reader.endObject()
+
+            folders
+        } catch (e: Exception) {
+            throw ParseException(e.message)
         }
-
-        reader.endArray()
-        reader.endObject()
-
-        return folders
     }
 
     companion object {

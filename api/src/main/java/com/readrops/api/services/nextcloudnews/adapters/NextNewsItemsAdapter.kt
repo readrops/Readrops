@@ -3,6 +3,7 @@ package com.readrops.api.services.nextcloudnews.adapters
 import android.annotation.SuppressLint
 import com.readrops.db.entities.Item
 import com.readrops.api.utils.ApiUtils
+import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.extensions.nextNullableString
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
@@ -21,46 +22,50 @@ class NextNewsItemsAdapter : JsonAdapter<List<Item>>() {
     override fun fromJson(reader: JsonReader): List<Item> {
         val items = mutableListOf<Item>()
 
-        reader.beginObject()
-        reader.nextName() // "items", beginning of items array
-        reader.beginArray()
-
-        while (reader.hasNext()) {
-            val item = Item()
+        return try {
             reader.beginObject()
-
-            var enclosureMime: String? = null
-            var enclosureLink: String? = null
+            reader.nextName() // "items", beginning of items array
+            reader.beginArray()
 
             while (reader.hasNext()) {
-                with(item) {
-                    when (reader.selectName(NAMES)) {
-                        0 -> remoteId = reader.nextInt().toString()
-                        1 -> link = reader.nextNullableString()
-                        2 -> title = reader.nextString()
-                        3 -> author = reader.nextString()
-                        4 -> pubDate = LocalDateTime(reader.nextLong() * 1000L, DateTimeZone.getDefault())
-                        5 -> content = reader.nextString()
-                        6 -> enclosureMime = reader.nextNullableString()
-                        7 -> enclosureLink = reader.nextNullableString()
-                        8 -> feedRemoteId = reader.nextInt().toString()
-                        9 -> isRead = !reader.nextBoolean()
-                        else -> reader.skipValue()
+                val item = Item()
+                reader.beginObject()
+
+                var enclosureMime: String? = null
+                var enclosureLink: String? = null
+
+                while (reader.hasNext()) {
+                    with(item) {
+                        when (reader.selectName(NAMES)) {
+                            0 -> remoteId = reader.nextInt().toString()
+                            1 -> link = reader.nextNullableString()
+                            2 -> title = reader.nextString()
+                            3 -> author = reader.nextString()
+                            4 -> pubDate = LocalDateTime(reader.nextLong() * 1000L, DateTimeZone.getDefault())
+                            5 -> content = reader.nextString()
+                            6 -> enclosureMime = reader.nextNullableString()
+                            7 -> enclosureLink = reader.nextNullableString()
+                            8 -> feedRemoteId = reader.nextInt().toString()
+                            9 -> isRead = !reader.nextBoolean()
+                            else -> reader.skipValue()
+                        }
                     }
                 }
+
+                if (enclosureMime != null && ApiUtils.isMimeImage(enclosureMime!!))
+                    item.imageLink = enclosureLink
+
+                items += item
+                reader.endObject()
             }
 
-            if (enclosureMime != null && ApiUtils.isMimeImage(enclosureMime!!))
-                item.imageLink = enclosureLink
-
-            items += item
+            reader.endArray()
             reader.endObject()
+
+            items
+        } catch (e: Exception) {
+            throw ParseException(e.message)
         }
-
-        reader.endArray()
-        reader.endObject()
-
-        return items
     }
 
     companion object {

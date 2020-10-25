@@ -1,6 +1,7 @@
 package com.readrops.api.services.nextcloudnews.adapters
 
 import android.annotation.SuppressLint
+import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.db.entities.Feed
 import com.readrops.api.utils.extensions.nextNullableString
 import com.squareup.moshi.FromJson
@@ -17,15 +18,19 @@ class NextNewsFeedsAdapter {
     fun fromJson(reader: JsonReader): List<Feed> {
         val feeds = mutableListOf<Feed>()
 
-        reader.beginObject()
+        return try {
+            reader.beginObject()
 
-        while (reader.hasNext()) {
-            if (reader.nextName() == "feeds") parseFeeds(reader, feeds) else reader.skipValue()
+            while (reader.hasNext()) {
+                if (reader.nextName() == "feeds") parseFeeds(reader, feeds) else reader.skipValue()
+            }
+
+            reader.endObject()
+
+            feeds
+        } catch (e: Exception) {
+            throw ParseException(e.message)
         }
-
-        reader.endObject()
-
-        return feeds
     }
 
     private fun parseFeeds(reader: JsonReader, feeds: MutableList<Feed>) {

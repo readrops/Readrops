@@ -3,6 +3,7 @@ package com.readrops.api.services.freshrss.adapters
 import android.util.TimingLogger
 import com.readrops.db.entities.Item
 import com.readrops.api.services.freshrss.FreshRSSDataSource.GOOGLE_READ
+import com.readrops.api.utils.exceptions.ParseException
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
@@ -19,17 +20,21 @@ class FreshRSSItemsAdapter : JsonAdapter<List<Item>>() {
         val logger = TimingLogger(TAG, "item parsing")
         val items = mutableListOf<Item>()
 
-        reader.beginObject()
-        while (reader.hasNext()) {
-            if (reader.nextName() == "items") parseItems(reader, items) else reader.skipValue()
+        return try {
+            reader.beginObject()
+            while (reader.hasNext()) {
+                if (reader.nextName() == "items") parseItems(reader, items) else reader.skipValue()
+            }
+
+            reader.endObject()
+
+            logger.addSplit("item parsing done")
+            logger.dumpToLog()
+
+            items
+        } catch (e: Exception) {
+            throw ParseException(e.message)
         }
-
-        reader.endObject()
-
-        logger.addSplit("item parsing done")
-        logger.dumpToLog()
-
-        return items
     }
 
     private fun parseItems(reader: JsonReader, items: MutableList<Item>) {
@@ -127,7 +132,8 @@ class FreshRSSItemsAdapter : JsonAdapter<List<Item>>() {
     }
 
     companion object {
-        val NAMES: JsonReader.Options = JsonReader.Options.of("id", "published", "title", "summary", "alternate", "categories", "origin", "author")
+        val NAMES: JsonReader.Options = JsonReader.Options.of("id", "published", "title",
+                "summary", "alternate", "categories", "origin", "author")
 
         val TAG = FreshRSSItemsAdapter::class.java.simpleName
     }
