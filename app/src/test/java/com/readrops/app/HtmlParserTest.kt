@@ -1,5 +1,6 @@
 package com.readrops.app
 
+import com.readrops.api.utils.AuthInterceptor
 import com.readrops.app.utils.HtmlParser
 import com.readrops.app.addfeed.ParsingResult
 import junit.framework.TestCase
@@ -15,7 +16,8 @@ class HtmlParserTest {
     @get:Rule
     val koinTestRule = KoinTestRule.create {
         modules(module {
-            single { OkHttpClient() }
+            single { OkHttpClient.Builder().addInterceptor(get<AuthInterceptor>()).build() }
+            single { AuthInterceptor() }
         })
     }
 
