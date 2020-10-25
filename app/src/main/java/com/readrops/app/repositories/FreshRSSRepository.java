@@ -91,6 +91,9 @@ public class FreshRSSRepository extends ARepository {
             syncData.setReadItemsIds(database.itemDao().getReadChanges(account.getId()));
             syncData.setUnreadItemsIds(database.itemDao().getUnreadChanges(account.getId()));
 
+            syncData.setStarredItemsIds(database.itemDao().getFreshRSSStarChanges(account.getId()));
+            syncData.setUnstarredItemsIds(database.itemDao().getFreshRSSUnstarChanges(account.getId()));
+
             emitter.onSuccess(syncData);
         }).flatMap(syncData1 -> dataSource.sync(syncType, syncData1, account.getWriteToken()))
                 .flatMapObservable(syncResult -> {
@@ -107,7 +110,14 @@ public class FreshRSSRepository extends ARepository {
                     account.setLastModified(newLastModified);
                     database.accountDao().updateLastModified(account.getId(), newLastModified);
 
-                    database.itemDao().resetReadChanges(account.getId());
+                    if (!syncData.getReadItemsIds().isEmpty() || !syncData.getUnreadItemsIds().isEmpty()) {
+                        database.itemDao().resetReadChanges(account.getId());
+                    }
+
+                    if (!syncData.getStarredItemsIds().isEmpty() || !syncData.getUnstarredItemsIds().isEmpty()) {
+                        database.itemDao().resetStarChanges(account.getId());
+                    }
+
                     logger.addSplit("reset read changes");
                     logger.dumpToLog();
 

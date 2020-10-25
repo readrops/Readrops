@@ -11,6 +11,10 @@ public class FreshRSSSyncData {
 
     private List<String> unreadItemsIds;
 
+    private List<String> starredItemsIds;
+
+    private List<String> unstarredItemsIds;
+
     public FreshRSSSyncData() {
         readItemsIds = new ArrayList<>();
         unreadItemsIds = new ArrayList<>();
@@ -38,5 +42,21 @@ public class FreshRSSSyncData {
 
     public void setUnreadItemsIds(List<String> unreadItemsIds) {
         this.unreadItemsIds = unreadItemsIds;
+    }
+
+    public List<String> getStarredItemsIds() {
+        return starredItemsIds;
+    }
+
+    public void setStarredItemsIds(List<String> starredItemsIds) {
+        this.starredItemsIds = starredItemsIds;
+    }
+
+    public List<String> getUnstarredItemsIds() {
+        return unstarredItemsIds;
+    }
+
+    public void setUnstarredItemsIds(List<String> unstarredItemsIds) {
+        this.unstarredItemsIds = unstarredItemsIds;
     }
 }

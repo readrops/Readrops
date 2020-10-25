@@ -24,6 +24,7 @@ public class FreshRSSDataSource {
     private static final int MAX_ITEMS = 5000;
 
     public static final String GOOGLE_READ = "user/-/state/com.google/read";
+    public static final String GOOGLE_STARRED = "user/-/state/com.google/starred";
 
     private static final String FEED_PREFIX = "feed/";
 
@@ -87,6 +88,7 @@ public class FreshRSSDataSource {
         SyncResult syncResult = new SyncResult();
 
         return setItemsReadState(syncData, writeToken)
+                .andThen(setItemsStarState(syncData, writeToken))
                 .andThen(getFolders()
                         .flatMap(freshRSSFolders -> {
                             syncResult.setFolders(freshRSSFolders);
@@ -149,10 +151,27 @@ public class FreshRSSDataSource {
      * @return Completable
      */
     public Completable markItemsReadUnread(boolean read, @NonNull List<String> itemIds, @NonNull String token) {
-        if (read)
-            return api.setItemsReadState(token, GOOGLE_READ, null, itemIds);
-        else
-            return api.setItemsReadState(token, null, GOOGLE_READ, itemIds);
+        if (read) {
+            return api.setItemsState(token, GOOGLE_READ, null, itemIds);
+        } else {
+            return api.setItemsState(token, null, GOOGLE_READ, itemIds);
+        }
+    }
+
+    /**
+     * Mark items as starred or unstarred
+     *
+     * @param starred true for starred, false for unstarred
+     * @param itemIds items ids to mark
+     * @param token   token for modifications
+     * @return Completable
+     */
+    public Completable markItemsStarredUnstarred(boolean starred, @NonNull List<String> itemIds, @NonNull String token) {
+        if (starred) {
+            return api.setItemsState(token, GOOGLE_STARRED, null, itemIds);
+        } else {
+            return api.setItemsState(token, null, GOOGLE_STARRED, itemIds);
+        }
     }
 
     /**
@@ -225,7 +244,7 @@ public class FreshRSSDataSource {
     }
 
     /**
-     * Set the state of items
+     * Set items star state
      *
      * @param syncData data containing items to mark
      * @param token    token for modifications
@@ -233,17 +252,44 @@ public class FreshRSSDataSource {
      */
     private Completable setItemsReadState(@NonNull FreshRSSSyncData syncData, @NonNull String token) {
         Completable readItemsCompletable;
-        if (syncData.getReadItemsIds().isEmpty())
+        if (syncData.getReadItemsIds().isEmpty()) {
             readItemsCompletable = Completable.complete();
-        else
+        } else {
             readItemsCompletable = markItemsReadUnread(true, syncData.getReadItemsIds(), token);
+        }
 
         Completable unreadItemsCompletable;
-        if (syncData.getUnreadItemsIds().isEmpty())
+        if (syncData.getUnreadItemsIds().isEmpty()) {
             unreadItemsCompletable = Completable.complete();
-        else
+        } else {
             unreadItemsCompletable = markItemsReadUnread(false, syncData.getUnreadItemsIds(), token);
+        }
 
         return readItemsCompletable.concatWith(unreadItemsCompletable);
+    }
+
+    /**
+     * Set items star state
+     *
+     * @param syncData data containing items to mark
+     * @param token    token for modifications
+     * @return A concatenation of two completable (starred and unstarred completable)
+     */
+    private Completable setItemsStarState(@NonNull FreshRSSSyncData syncData, @NonNull String token) {
+        Completable starredItemsCompletable;
+        if (syncData.getStarredItemsIds().isEmpty()) {
+            starredItemsCompletable = Completable.complete();
+        } else {
+            starredItemsCompletable = markItemsStarredUnstarred(true, syncData.getStarredItemsIds(), token);
+        }
+
+        Completable unstarredItemsCompletable;
+        if (syncData.getUnstarredItemsIds().isEmpty()) {
+            unstarredItemsCompletable = Completable.complete();
+        } else {
+            unstarredItemsCompletable = markItemsStarredUnstarred(false, syncData.getUnstarredItemsIds(), token);
+        }
+
+        return starredItemsCompletable.concatWith(unstarredItemsCompletable);
     }
 }

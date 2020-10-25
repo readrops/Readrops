@@ -71,6 +71,12 @@ public interface ItemDao extends BaseDao<Item> {
     @Query("Select Item.remoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where read_changed = 1 And read = 0 And account_id = :accountId")
     List<String> getUnreadChanges(int accountId);
 
+    @Query("Select Item.remoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where starred_changed = 1 And starred = 1 And account_id = :accountId")
+    List<String> getFreshRSSStarChanges(int accountId);
+
+    @Query("Select Item.remoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where starred_changed = 1 And starred = 0 And account_id = :accountId")
+    List<String> getFreshRSSUnstarChanges(int accountId);
+
     @Query("Select Item.guid, Feed.remoteId as feedRemoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where starred_changed = 1 And starred = 1 And account_id = :accountId")
     List<StarItem> getStarChanges(int accountId);
 
