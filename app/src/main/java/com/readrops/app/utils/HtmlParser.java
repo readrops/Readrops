@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 
 import com.readrops.api.localfeed.LocalRSSHelper;
 import com.readrops.api.utils.ApiUtils;
+import com.readrops.api.utils.AuthInterceptor;
 import com.readrops.app.addfeed.ParsingResult;
 
 import org.jsoup.Jsoup;
@@ -87,6 +88,7 @@ public final class HtmlParser {
         try {
             Response response = KoinJavaComponent.get(OkHttpClient.class)
                     .newCall(new Request.Builder().url(url).build()).execute();
+            KoinJavaComponent.get(AuthInterceptor.class).setCredentials(null);
 
             if (response.header("Content-Type").contains(ApiUtils.HTML_CONTENT_TYPE)) {
                 String body = response.body().string();

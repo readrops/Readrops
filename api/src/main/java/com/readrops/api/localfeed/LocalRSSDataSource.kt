@@ -5,6 +5,7 @@ import androidx.annotation.WorkerThread
 import com.readrops.api.localfeed.json.JSONFeedAdapter
 import com.readrops.api.localfeed.json.JSONItemsAdapter
 import com.readrops.api.utils.ApiUtils
+import com.readrops.api.utils.AuthInterceptor
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.exceptions.UnknownFormatException
 import com.readrops.db.entities.Feed
@@ -16,12 +17,14 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okio.Buffer
+import org.koin.core.KoinComponent
+import org.koin.core.get
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStream
 import java.net.HttpURLConnection
 
-class LocalRSSDataSource(private val httpClient: OkHttpClient) {
+class LocalRSSDataSource(private val httpClient: OkHttpClient): KoinComponent {
 
     /**
      * Query RSS url
@@ -32,6 +35,7 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) {
     @Throws(ParseException::class, UnknownFormatException::class, NetworkErrorException::class, IOException::class)
     @WorkerThread
     fun queryRSSResource(url: String, headers: Headers?): Pair<Feed, List<Item>>? {
+        get<AuthInterceptor>().credentials = null
         val response = queryUrl(url, headers)
 
         return when {
