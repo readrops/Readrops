@@ -50,6 +50,11 @@ public class Item implements Comparable<Item> {
     @ColumnInfo(name = "read_changed")
     private boolean readChanged;
 
+    private boolean starred;
+
+    @ColumnInfo(name = "starred_changed", index = true)
+    private boolean starredChanged;
+
     @ColumnInfo(name = "read_it_later")
     private boolean readItLater;
 
@@ -179,6 +184,22 @@ public class Item implements Comparable<Item> {
 
     public void setReadChanged(boolean readChanged) {
         this.readChanged = readChanged;
+    }
+
+    public boolean isStarred() {
+        return starred;
+    }
+
+    public void setStarred(boolean starred) {
+        this.starred = starred;
+    }
+
+    public boolean isStarredChanged() {
+        return starredChanged;
+    }
+
+    public void setStarredChanged(boolean starredChanged) {
+        this.starredChanged = starredChanged;
     }
 
     public boolean isReadItLater() {

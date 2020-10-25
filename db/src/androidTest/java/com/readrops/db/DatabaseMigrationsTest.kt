@@ -22,9 +22,14 @@ class DatabaseMigrationsTest {
     )
 
     @Test
-    @Throws(IOException::class)
     fun migrate1To2() {
         helper.createDatabase(testDb, 1).close()
         helper.runMigrationsAndValidate(testDb, 2, true, Database.MIGRATION_1_2).close()
+    }
+
+    @Test
+    fun migrate2to3() {
+        helper.createDatabase(testDb, 2).close()
+        helper.runMigrationsAndValidate(testDb, 3, true, Database.MIGRATION_2_3).close()
     }
 }
