@@ -38,7 +38,10 @@ public interface NextNewsService {
     Call<List<Item>> getNewItems(@Query("lastModified") long lastModified, @Query("type") int type);
 
     @PUT("items/{stateType}/multiple")
-    Call<ResponseBody> setArticlesState(@Path("stateType") String stateType, @Body Map<String, List<String>> itemIdsMap);
+    Call<ResponseBody> setReadState(@Path("stateType") String stateType, @Body Map<String, List<String>> itemIdsMap);
+
+    @PUT("items/{starType}/multiple")
+    Call<ResponseBody> setStarState(@Path("starType") String starType, @Body Map<String, List<Map<String, String>>> body);
 
     @POST("feeds")
     Call<List<Feed>> createFeed(@Query("url") String url, @Query("folderId") int folderId);

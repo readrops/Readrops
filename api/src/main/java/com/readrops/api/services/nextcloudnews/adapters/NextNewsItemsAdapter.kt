@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import com.readrops.db.entities.Item
 import com.readrops.api.utils.ApiUtils
 import com.readrops.api.utils.exceptions.ParseException
+import com.readrops.api.utils.extensions.nextNonEmptyString
 import com.readrops.api.utils.extensions.nextNullableString
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
@@ -46,7 +47,9 @@ class NextNewsItemsAdapter : JsonAdapter<List<Item>>() {
                             6 -> enclosureMime = reader.nextNullableString()
                             7 -> enclosureLink = reader.nextNullableString()
                             8 -> feedRemoteId = reader.nextInt().toString()
-                            9 -> isRead = !reader.nextBoolean()
+                            9 -> isRead = !reader.nextBoolean() // the negation is important here
+                            10 -> isStarred = reader.nextBoolean()
+                            11 -> guid = reader.nextNullableString()
                             else -> reader.skipValue()
                         }
                     }
@@ -70,6 +73,6 @@ class NextNewsItemsAdapter : JsonAdapter<List<Item>>() {
 
     companion object {
         val NAMES: JsonReader.Options = JsonReader.Options.of("id", "url", "title", "author",
-                "pubDate", "body", "enclosureMime", "enclosureLink", "feedId", "unread")
+                "pubDate", "body", "enclosureMime", "enclosureLink", "feedId", "unread", "starred", "guidHash")
     }
 }

@@ -13,6 +13,7 @@ import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
 import com.readrops.db.pojo.ItemWithFeed;
+import com.readrops.db.pojo.StarItem;
 
 import java.util.List;
 
@@ -40,7 +41,7 @@ public interface ItemDao extends BaseDao<Item> {
      * Set an item read or unread
      *
      * @param itemId      id of the item to update
-     * @param read   1 for read, 0 for unread
+     * @param read        1 for read, 0 for unread
      * @param readChanged
      */
     @Query("Update Item Set read_changed = :readChanged, read = :read Where id = :itemId")
@@ -70,8 +71,17 @@ public interface ItemDao extends BaseDao<Item> {
     @Query("Select Item.remoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where read_changed = 1 And read = 0 And account_id = :accountId")
     List<String> getUnreadChanges(int accountId);
 
+    @Query("Select Item.guid, Feed.remoteId as feedRemoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where starred_changed = 1 And starred = 1 And account_id = :accountId")
+    List<StarItem> getStarChanges(int accountId);
+
+    @Query("Select Item.guid, Feed.remoteId as feedRemoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where starred_changed = 1 And starred = 0 And account_id = :accountId")
+    List<StarItem> getUnstarChanges(int accountId);
+
     @Query("Update Item set read_changed = 0 Where feed_id in (Select id From Feed Where account_id = :accountId)")
     void resetReadChanges(int accountId);
+
+    @Query("Update Item set starred_changed = 0 Where feed_id in (Select id From Feed Where account_id = :accountId)")
+    void resetStarChanges(int accountId);
 
     @Query("Update Item set read = :read Where remoteId = :remoteId")
     void setReadState(String remoteId, boolean read);

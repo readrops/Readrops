@@ -2,6 +2,7 @@ package com.readrops.app.repositories;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteConstraintException;
+import android.util.Log;
 import android.util.TimingLogger;
 
 import androidx.annotation.NonNull;
@@ -88,8 +89,12 @@ public class NextNewsRepository extends ARepository {
 
                 if (syncType == SyncType.CLASSIC_SYNC) {
                     syncData.setLastModified(account.getLastModified() / 1000L);
+
                     syncData.setReadItems(database.itemDao().getReadChanges(account.getId()));
                     syncData.setUnreadItems(database.itemDao().getUnreadChanges(account.getId()));
+
+                    syncData.setStarredItems(database.itemDao().getStarChanges(account.getId()));
+                    syncData.setUnstarredItems(database.itemDao().getUnstarChanges(account.getId()));
                 }
 
                 TimingLogger timings = new TimingLogger(TAG, "nextcloud news " + syncType.name().toLowerCase());
@@ -111,14 +116,22 @@ public class NextNewsRepository extends ARepository {
 
                     account.setLastModified(lastModified);
                     database.accountDao().updateLastModified(account.getId(), lastModified);
-                    database.itemDao().resetReadChanges(account.getId());
+
+                    if (!syncData.getReadItems().isEmpty() || !syncData.getUnreadItems().isEmpty()) {
+                        database.itemDao().resetReadChanges(account.getId());
+                    }
+
+                    if (!syncData.getStarredItems().isEmpty() || !syncData.getUnstarredItems().isEmpty()) {
+                        database.itemDao().resetStarChanges(account.getId());
+                    }
 
                     emitter.onComplete();
-                } else
+                } else {
                     emitter.onError(new Throwable());
+                }
 
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.d(TAG, "sync: " + e.getMessage());
                 emitter.onError(e);
             }
         });

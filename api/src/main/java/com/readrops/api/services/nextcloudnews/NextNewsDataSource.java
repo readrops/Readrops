@@ -14,9 +14,11 @@ import com.readrops.api.utils.exceptions.UnknownFormatException;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
+import com.readrops.db.pojo.StarItem;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,27 +127,11 @@ public class NextNewsDataSource {
     }
 
     private void putModifiedItems(NextNewsSyncData data, SyncResult syncResult) throws IOException {
-        if (!data.getReadItems().isEmpty()) {
-            Map<String, List<String>> itemIdsMap = new HashMap<>();
-            itemIdsMap.put("items", data.getReadItems());
+        setReadState(data.getReadItems(), syncResult, StateType.READ);
+        setReadState(data.getUnreadItems(), syncResult, StateType.UNREAD);
 
-            Response readItemsResponse = api.setArticlesState(StateType.READ.name().toLowerCase(),
-                    itemIdsMap).execute();
-
-            if (!readItemsResponse.isSuccessful())
-                syncResult.setError(true);
-        }
-
-        if (!data.getUnreadItems().isEmpty()) {
-            Map<String, List<String>> itemIdsMap = new HashMap<>();
-            itemIdsMap.put("items", data.getUnreadItems());
-
-            Response unreadItemsResponse = api.setArticlesState(StateType.UNREAD.toString().toLowerCase(),
-                    itemIdsMap).execute();
-
-            if (!unreadItemsResponse.isSuccessful())
-                syncResult.setError(true);
-        }
+        setStarState(data.getStarredItems(), syncResult, StateType.STAR);
+        setStarState(data.getUnstarredItems(), syncResult, StateType.UNSTAR);
     }
 
     public List<Folder> createFolder(Folder folder) throws IOException, UnknownFormatException, ConflictException {
@@ -236,10 +222,42 @@ public class NextNewsDataSource {
             return false;
     }
 
+    private void setReadState(List<String> items, SyncResult syncResult, StateType stateType) throws IOException {
+        if (!items.isEmpty()) {
+            Map<String, List<String>> itemIdsMap = new HashMap<>();
+            itemIdsMap.put("items", items);
+
+            Response readItemsResponse = api.setReadState(stateType.name().toLowerCase(),
+                    itemIdsMap).execute();
+
+            if (!readItemsResponse.isSuccessful())
+                syncResult.setError(true);
+        }
+    }
+
+    private void setStarState(List<StarItem> items, SyncResult syncResult, StateType stateType) throws IOException {
+        if (!items.isEmpty()) {
+            List<Map<String, String>> body = new ArrayList<>();
+            for (StarItem item : items) {
+                Map<String, String> itemBody = new HashMap<>();
+                itemBody.put("feedId", item.getFeedRemoteId());
+                itemBody.put("guidHash", item.getGuidHash());
+
+                body.add(itemBody);
+            }
+
+            Response response = api.setStarState(stateType.name().toLowerCase(),
+                    Collections.singletonMap("items", body)).execute();
+            if (!response.isSuccessful()) {
+                syncResult.setError(true);
+            }
+        }
+    }
+
     public enum StateType {
         READ,
         UNREAD,
-        STARRED,
-        UNSTARRED
+        STAR,
+        UNSTAR
     }
 }
