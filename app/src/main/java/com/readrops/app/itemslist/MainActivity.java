@@ -120,9 +120,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         viewModel = ViewModelCompat.getViewModel(this, MainViewModel.class);
 
-        viewModel.setShowReadItems(SharedPreferencesManager.readBoolean(
-                SharedPreferencesManager.SharedPrefKey.SHOW_READ_ARTICLES));
-
         viewModel.getItemsWithFeed().observe(this, itemWithFeeds -> {
             allItems = itemWithFeeds;
 
@@ -254,6 +251,10 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     break;
                 case DrawerManager.READ_LATER_ID:
                     viewModel.setFilterType(FilterType.READ_IT_LATER_FILTER);
+                    viewModel.invalidate();
+                    break;
+                case DrawerManager.STARS_ID:
+                    viewModel.setFilterType(FilterType.STARS_FILTER);
                     viewModel.invalidate();
                     break;
                 case DrawerManager.ABOUT_ID:

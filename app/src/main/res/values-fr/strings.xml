@@ -133,5 +133,6 @@
     <string name="password_helper">Votre mot de passe d\'API (Configuration > Profil)</string>
     <string name="synchronize">Synchroniser</string>
     <string name="navigator_view">Vue navigateur</string>
+    <string name="favorites">Favoris</string>
 
 </resources>

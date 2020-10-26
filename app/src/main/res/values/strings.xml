@@ -139,4 +139,5 @@
     <string name="show_caption">Show caption</string>
     <string name="synchronize">Synchronize</string>
     <string name="navigator_view">Navigator view</string>
+    <string name="favorites">Favorites</string>
 </resources>

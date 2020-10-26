@@ -41,6 +41,7 @@ public class DrawerManager {
 
     public static final int ARTICLES_ITEM_ID = -5;
     public static final int READ_LATER_ID = -6;
+    public static final int STARS_ID = -10;
     public static final int ADD_ACCOUNT_ID = -4;
     public static final int ABOUT_ID = -7;
     public static final int SETTINGS_ID = -8;
@@ -208,6 +209,12 @@ public class DrawerManager {
                 .withSelectable(true)
                 .withIdentifier(READ_LATER_ID);
 
+        PrimaryDrawerItem favorites = new PrimaryDrawerItem()
+                .withName(R.string.favorites)
+                .withIcon(R.drawable.ic_star)
+                .withSelectable(true)
+                .withIdentifier(STARS_ID);
+
         PrimaryDrawerItem aboutItem = new PrimaryDrawerItem()
                 .withName(R.string.about)
                 .withIcon(R.drawable.ic_about_grey)
@@ -224,6 +231,7 @@ public class DrawerManager {
         drawer.addStickyFooterItem(aboutItem);
 
         drawer.addItem(articles);
+        drawer.addItem(favorites);
         drawer.addItem(toReadLater);
         drawer.addItem(new DividerDrawerItem());
     }
