@@ -46,6 +46,9 @@ import org.koin.java.KoinJavaComponent;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+
 import static com.readrops.app.utils.ReadropsKeys.ACTION_BAR_COLOR;
 import static com.readrops.app.utils.ReadropsKeys.IMAGE_URL;
 import static com.readrops.app.utils.ReadropsKeys.ITEM_ID;
@@ -65,6 +68,8 @@ public class ItemActivity extends AppCompatActivity {
 
     private String urlToDownload;
     private String imageTitle;
+
+    private boolean uiBinded;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,13 +117,43 @@ public class ItemActivity extends AppCompatActivity {
         }));
 
         viewModel = ViewModelCompat.getViewModel(this, ItemViewModel.class);
-        viewModel.getItemById(itemId).observe(this, this::bindUI);
+        viewModel.getItemById(itemId).observe(this, itemWithFeed1 -> {
+            if (!uiBinded) {
+                bindUI(itemWithFeed1);
+                uiBinded = true;
+            }
+        });
+
         binding.activityItemFab.setOnClickListener(v -> openInNavigator());
+
+        binding.itemStarFab.setOnClickListener(v -> {
+            Item item = itemWithFeed.getItem();
+
+            if (item.isStarred()) {
+                binding.itemStarFab.setImageResource(R.drawable.ic_empty_star);
+            } else {
+                binding.itemStarFab.setImageResource(R.drawable.ic_star);
+            }
+
+            item.setStarred(!item.isStarred());
+            item.setStarredChanged(!item.isStarredChanged());
+
+            viewModel.setStarState(item.getId(), item.isStarred(), item.isStarredChanged())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnError(throwable -> Utils.showSnackbar(binding.itemRoot, throwable.getMessage()))
+                    .subscribe();
+        });
+
     }
 
     private void bindUI(ItemWithFeed itemWithFeed) {
         this.itemWithFeed = itemWithFeed;
         Item item = itemWithFeed.getItem();
+
+        if (item.isStarred()) {
+            binding.itemStarFab.setImageResource(R.drawable.ic_star);
+        }
 
         binding.activityItemDate.setText(DateUtils.formattedDateTimeByLocal(item.getPubDate()));
 
@@ -165,6 +200,7 @@ public class ItemActivity extends AppCompatActivity {
 
             getWindow().setStatusBarColor(itemWithFeed.getBgColor());
             binding.activityItemFab.setBackgroundTintList(ColorStateList.valueOf(itemWithFeed.getBgColor()));
+            binding.itemStarFab.setBackgroundTintList(ColorStateList.valueOf(itemWithFeed.getBgColor()));
         } else if (itemWithFeed.getColor() != 0) {
             binding.collapsingLayout.setBackgroundColor(itemWithFeed.getColor());
             binding.collapsingLayout.setContentScrimColor(itemWithFeed.getColor());
@@ -172,6 +208,7 @@ public class ItemActivity extends AppCompatActivity {
 
             getWindow().setStatusBarColor(itemWithFeed.getColor());
             binding.activityItemFab.setBackgroundTintList(ColorStateList.valueOf(itemWithFeed.getColor()));
+            binding.itemStarFab.setBackgroundTintList(ColorStateList.valueOf(itemWithFeed.getColor()));
         }
 
         binding.itemWebview.setItem(itemWithFeed);

@@ -17,6 +17,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import io.reactivex.Completable;
+
 public class ItemViewModel extends ViewModel {
 
     private final Database database;
@@ -29,6 +31,9 @@ public class ItemViewModel extends ViewModel {
         return database.itemDao().getItemById(id);
     }
 
+    public Completable setStarState(int itemId, boolean starred, boolean starredChanged) {
+        return database.itemDao().setStarState(itemId, starred, starredChanged);
+    }
 
     public Uri saveImageInCache(Bitmap bitmap, Context context) throws IOException {
         File imagesFolder = new File(context.getCacheDir().getAbsolutePath(), "images");

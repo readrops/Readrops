@@ -60,8 +60,8 @@ public interface ItemDao extends BaseDao<Item> {
     int getUnreadCount(int feedId);
 
     @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
-    @Query("Select title, Item.description, content, link, pub_date, image_link, author, read, text_color, " +
-            "background_color, read_time, Feed.name, Feed.id as feedId, siteUrl, Folder.id as folder_id, " +
+    @Query("Select Item.id, title, Item.description, content, link, pub_date, image_link, author, read, text_color, " +
+            "background_color, read_time, starred, Feed.name, Feed.id as feedId, siteUrl, Folder.id as folder_id, " +
             "Folder.name as folder_name from Item Inner Join Feed On Item.feed_id = Feed.id Left Join Folder on Folder.id = Feed.folder_id Where Item.id = :id")
     LiveData<ItemWithFeed> getItemById(int id);
 
@@ -91,4 +91,7 @@ public interface ItemDao extends BaseDao<Item> {
 
     @Query("Update Item set read = :read Where remoteId = :remoteId")
     void setReadState(String remoteId, boolean read);
+
+    @Query("Update Item set starred = :starred, starred_changed = :starredChanged Where id = :itemId")
+    Completable setStarState(int itemId, boolean starred, boolean starredChanged);
 }
