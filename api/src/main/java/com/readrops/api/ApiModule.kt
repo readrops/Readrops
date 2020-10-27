@@ -23,6 +23,8 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
 
+const val BASE_URL = "https://baseurl.com"
+
 val apiModule = module {
 
     single(createdAtStart = true) {
@@ -38,7 +40,7 @@ val apiModule = module {
     //region freshrss
 
     single {
-        FreshRSSDataSource(get<FreshRSSService>())
+        FreshRSSDataSource(get())
     }
 
     single {
@@ -47,7 +49,10 @@ val apiModule = module {
     }
 
     single(named("freshrssRetrofit")) {
-        get<Retrofit.Builder>()
+        Retrofit.Builder() // url will be set dynamically in an interceptor
+                .baseUrl(BASE_URL)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .client(get<OkHttpClient>())
                 .addConverterFactory(MoshiConverterFactory.create(get<Moshi>(named("freshrssMoshi"))))
                 .build()
     }
@@ -65,7 +70,7 @@ val apiModule = module {
     //region nextcloud news
 
     single {
-        NextNewsDataSource(get<NextNewsService>())
+        NextNewsDataSource(get())
     }
 
     single {
@@ -74,7 +79,10 @@ val apiModule = module {
     }
 
     single(named("nextcloudNewsRetrofit")) {
-        get<Retrofit.Builder>()
+        Retrofit.Builder() // url will be set dynamically in an interceptor
+                .baseUrl(BASE_URL)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .client(get<OkHttpClient>())
                 .addConverterFactory(MoshiConverterFactory.create(get<Moshi>(named("nextcloudNewsMoshi"))))
                 .build()
     }
@@ -88,13 +96,6 @@ val apiModule = module {
     }
 
     //endregion nextcloud news
-
-    single {
-        Retrofit.Builder() // url will be set dynamically in an interceptor
-                .baseUrl("https://baseurl.com")
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .client(get<OkHttpClient>())
-    }
 
     single {
         AuthInterceptor()
