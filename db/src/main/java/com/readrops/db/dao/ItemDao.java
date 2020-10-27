@@ -89,8 +89,8 @@ public interface ItemDao extends BaseDao<Item> {
     @Query("Update Item set starred_changed = 0 Where feed_id in (Select id From Feed Where account_id = :accountId)")
     void resetStarChanges(int accountId);
 
-    @Query("Update Item set read = :read Where remoteId = :remoteId")
-    void setReadState(String remoteId, boolean read);
+    @Query("Update Item set read = :read, starred = :starred Where remoteId = :remoteId")
+    void setReadAndStarState(String remoteId, boolean read, boolean starred);
 
     @Query("Update Item set starred = :starred, starred_changed = :starredChanged Where id = :itemId")
     Completable setStarState(int itemId, boolean starred, boolean starredChanged);

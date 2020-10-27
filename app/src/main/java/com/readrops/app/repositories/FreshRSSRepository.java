@@ -220,7 +220,7 @@ public class FreshRSSRepository extends ARepository {
             int feedId = database.feedDao().getFeedIdByRemoteId(item.getFeedRemoteId(), account.getId());
 
             if (!initialSync && feedId > 0 && database.itemDao().remoteItemExists(item.getRemoteId(), feedId)) {
-                database.itemDao().setReadState(item.getRemoteId(), item.isRead());
+                database.itemDao().setReadAndStarState(item.getRemoteId(), item.isRead(), item.isStarred());
                 continue;
             }
 
