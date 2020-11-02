@@ -6,6 +6,7 @@ import com.readrops.api.services.freshrss.FreshRSSService
 import com.readrops.api.services.freshrss.adapters.FreshRSSFeedsAdapter
 import com.readrops.api.services.freshrss.adapters.FreshRSSFoldersAdapter
 import com.readrops.api.services.freshrss.adapters.FreshRSSItemsAdapter
+import com.readrops.api.services.freshrss.adapters.FreshRSSItemsIdsAdapter
 import com.readrops.api.services.nextcloudnews.NextNewsDataSource
 import com.readrops.api.services.nextcloudnews.NextNewsService
 import com.readrops.api.services.nextcloudnews.adapters.NextNewsFeedsAdapter
@@ -60,6 +61,7 @@ val apiModule = module {
     single(named("freshrssMoshi")) {
         Moshi.Builder()
                 .add(Types.newParameterizedType(List::class.java, Item::class.java), FreshRSSItemsAdapter())
+                .add(Types.newParameterizedType(List::class.java, String::class.java), FreshRSSItemsIdsAdapter())
                 .add(FreshRSSFeedsAdapter())
                 .add(FreshRSSFoldersAdapter())
                 .build()

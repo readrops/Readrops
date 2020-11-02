@@ -11,6 +11,8 @@ import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
 
 import java.io.StringReader;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -22,9 +24,11 @@ import okhttp3.RequestBody;
 public class FreshRSSDataSource {
 
     private static final int MAX_ITEMS = 5000;
+    private static final int MAX_STARRED_ITEMS = 999;
 
     public static final String GOOGLE_READ = "user/-/state/com.google/read";
     public static final String GOOGLE_STARRED = "user/-/state/com.google/starred";
+    public static final String GOOGLE_READING_LIST = "user/-/state/com.google/reading-list";
 
     private static final String FEED_PREFIX = "feed/";
 
@@ -99,13 +103,21 @@ public class FreshRSSDataSource {
                             syncResult.setFeeds(freshRSSFeeds);
 
                             if (syncType == SyncType.INITIAL_SYNC) {
-                                return getItems(GOOGLE_READ, MAX_ITEMS, null);
+                                return getItems(Arrays.asList(GOOGLE_READ, GOOGLE_STARRED), MAX_ITEMS, null);
                             } else {
-                                return getItems(null, MAX_ITEMS, syncData.getLastModified());
+                                return getItems(Collections.singletonList(GOOGLE_STARRED), MAX_ITEMS, syncData.getLastModified());
                             }
                         })
                         .flatMap(freshRSSItems -> {
                             syncResult.setItems(freshRSSItems);
+
+                            return getStarredItems(MAX_STARRED_ITEMS);
+                        }).flatMap(starredItems -> {
+                            syncResult.setStarredItems(starredItems);
+
+                            return getItemsIds(null, GOOGLE_STARRED, MAX_STARRED_ITEMS);
+                        }).flatMap(starredIds -> {
+                            syncResult.setStarredIds(starredIds);
 
                             return Single.just(syncResult);
                         }));
@@ -132,13 +144,27 @@ public class FreshRSSDataSource {
     /**
      * Fetch the items
      *
-     * @param excludeTarget type of items to exclude (currently only read items)
-     * @param max           max number of items to fetch
-     * @param lastModified  fetch only items created after this timestamp
+     * @param excludeTargets type of items to exclude (read items and starred items)
+     * @param max            max number of items to fetch
+     * @param lastModified   fetch only items created after this timestamp
      * @return the items
      */
-    public Single<List<Item>> getItems(@Nullable String excludeTarget, int max, @Nullable Long lastModified) {
-        return api.getItems(excludeTarget, max, lastModified);
+    public Single<List<Item>> getItems(@Nullable List<String> excludeTargets, int max, @Nullable Long lastModified) {
+        return api.getItems(excludeTargets, max, lastModified);
+    }
+
+    /**
+     * Fetch starred items
+     *
+     * @param max max number of items to fetch
+     * @return items
+     */
+    public Single<List<Item>> getStarredItems(int max) {
+        return api.getStarredItems(max);
+    }
+
+    public Single<List<String>> getItemsIds(String excludeTarget, String includeTarget, int max) {
+        return api.getItemsIds(excludeTarget, includeTarget, max);
     }
 
 

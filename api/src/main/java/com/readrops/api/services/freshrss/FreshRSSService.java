@@ -1,9 +1,9 @@
 package com.readrops.api.services.freshrss;
 
+import com.readrops.api.services.freshrss.json.FreshRSSUserInfo;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
-import com.readrops.api.services.freshrss.json.FreshRSSUserInfo;
 
 import java.util.List;
 
@@ -35,7 +35,13 @@ public interface FreshRSSService {
     Single<List<Feed>> getFeeds();
 
     @GET("reader/api/0/stream/contents/user/-/state/com.google/reading-list")
-    Single<List<Item>> getItems(@Query("xt") String excludeTarget, @Query("n") int max, @Query("ot") Long lastModified);
+    Single<List<Item>> getItems(@Query("xt") List<String> excludeTarget, @Query("n") int max, @Query("ot") Long lastModified);
+
+    @GET("reader/api/0/stream/contents/user/-/state/com.google/starred")
+    Single<List<Item>> getStarredItems(@Query("n") int max);
+
+    @GET("reader/api/0/stream/items/ids")
+    Single<List<String>> getItemsIds(@Query("xt") String excludeTarget, @Query("s") String includeTarget, @Query("n") int max);
 
     @GET("reader/api/0/tag/list?output=json")
     Single<List<Folder>> getFolders();

@@ -107,6 +107,10 @@ public class FreshRSSRepository extends ARepository {
                     insertItems(syncResult.getItems(), syncType == SyncType.INITIAL_SYNC);
                     logger.addSplit("items insertion");
 
+                    insertItems(syncResult.getStarredItems(), syncType == SyncType.INITIAL_SYNC);
+
+                    updateItemsStarState(syncResult.getStarredIds());
+
                     account.setLastModified(newLastModified);
                     database.accountDao().updateLastModified(account.getId(), newLastModified);
 
@@ -216,6 +220,8 @@ public class FreshRSSRepository extends ARepository {
     }
 
     private void insertItems(List<Item> items, boolean initialSync) {
+        List<Item> itemsToInsert = new ArrayList<>();
+
         for (Item item : items) {
             int feedId = database.feedDao().getFeedIdByRemoteId(item.getFeedRemoteId(), account.getId());
 
@@ -226,9 +232,21 @@ public class FreshRSSRepository extends ARepository {
 
             item.setFeedId(feedId);
             item.setReadTime(Utils.readTimeFromString(item.getContent()));
+            itemsToInsert.add(item);
         }
 
-        Collections.sort(items, Item::compareTo);
-        database.itemDao().insert(items);
+        if (!itemsToInsert.isEmpty()) {
+            Collections.sort(itemsToInsert, Item::compareTo);
+            database.itemDao().insert(itemsToInsert);
+        }
     }
+
+    private void updateItemsStarState(List<String> itemsIds) {
+        if (itemsIds != null && !itemsIds.isEmpty()) {
+            database.itemDao().unstarItems(itemsIds, account.getId());
+            database.itemDao().starItems(itemsIds, account.getId());
+        }
+    }
+
+
 }
