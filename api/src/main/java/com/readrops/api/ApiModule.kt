@@ -1,5 +1,8 @@
 package com.readrops.api
 
+import com.icapps.niddler.core.AndroidNiddler
+import com.icapps.niddler.core.Niddler
+import com.icapps.niddler.interceptor.okhttp.NiddlerOkHttpInterceptor
 import com.readrops.api.localfeed.LocalRSSDataSource
 import com.readrops.api.services.freshrss.FreshRSSDataSource
 import com.readrops.api.services.freshrss.FreshRSSService
@@ -33,6 +36,7 @@ val apiModule = module {
                 .callTimeout(1, TimeUnit.MINUTES)
                 .readTimeout(1, TimeUnit.HOURS)
                 .addInterceptor(get<AuthInterceptor>())
+                .addInterceptor(NiddlerOkHttpInterceptor(get(), "niddler"))
                 .build()
     }
 
@@ -99,7 +103,17 @@ val apiModule = module {
 
     //endregion nextcloud news
 
-    single {
-        AuthInterceptor()
+    single { AuthInterceptor() }
+
+    single<Niddler> {
+        val niddler = AndroidNiddler.Builder()
+                .setNiddlerInformation(AndroidNiddler.fromApplication(get()))
+                .setPort(0)
+                .setMaxStackTraceSize(10)
+                .build()
+
+        niddler.attachToApplication(get())
+
+        niddler.apply { start() }
     }
 }

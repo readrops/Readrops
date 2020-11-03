@@ -16,7 +16,6 @@ import com.facebook.flipper.plugins.navigation.NavigationFlipperPlugin;
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin;
 import com.facebook.soloader.SoLoader;
-import com.icapps.niddler.core.AndroidNiddler;
 
 public class ReadropsDebugApp extends ReadropsApp implements Configuration.Provider {
 
@@ -26,7 +25,6 @@ public class ReadropsDebugApp extends ReadropsApp implements Configuration.Provi
         SoLoader.init(this, false);
 
         initFlipper();
-        //initNiddler();
     }
 
     private void initFlipper() {
@@ -44,18 +42,6 @@ public class ReadropsDebugApp extends ReadropsApp implements Configuration.Provi
 
             client.start();
         }
-    }
-
-    private void initNiddler() {
-        AndroidNiddler niddler = new AndroidNiddler.Builder()
-                .setNiddlerInformation(AndroidNiddler.fromApplication(this))
-                .setPort(0)
-                .setMaxStackTraceSize(10)
-                .build();
-
-        niddler.attachToApplication(this);
-
-        niddler.start();
     }
 
     @NonNull
