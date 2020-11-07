@@ -4,13 +4,16 @@ import android.accounts.NetworkErrorException
 import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.icapps.niddler.interceptor.okhttp.NiddlerOkHttpInterceptor
 import com.readrops.api.apiModule
 import com.readrops.api.utils.ApiUtils
+import com.readrops.api.utils.AuthInterceptor
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.exceptions.UnknownFormatException
 import junit.framework.TestCase.*
 import okhttp3.Headers
 import okhttp3.HttpUrl
+import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
@@ -20,16 +23,18 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import java.net.HttpURLConnection
+import java.util.concurrent.TimeUnit
 
 
 @RunWith(AndroidJUnit4::class)
 class LocalRSSDataSourceTest : KoinTest {
 
-    private val context: Context by inject()
+    private val context by inject<Context>()
     private lateinit var url: HttpUrl
 
     private val mockServer: MockWebServer = MockWebServer()
@@ -38,7 +43,15 @@ class LocalRSSDataSourceTest : KoinTest {
     @get:Rule
     val koinTestRule = KoinTestRule.create {
         androidContext(InstrumentationRegistry.getInstrumentation().context)
-        modules(apiModule)
+        modules(apiModule, module {
+            single(override = true) {
+                OkHttpClient.Builder()
+                        .callTimeout(1, TimeUnit.MINUTES)
+                        .readTimeout(1, TimeUnit.HOURS)
+                        .addInterceptor(get<AuthInterceptor>())
+                        .build()
+            }
+        })
     }
 
     @Before

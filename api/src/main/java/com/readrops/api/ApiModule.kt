@@ -1,7 +1,5 @@
 package com.readrops.api
 
-import com.icapps.niddler.core.AndroidNiddler
-import com.icapps.niddler.core.Niddler
 import com.icapps.niddler.interceptor.okhttp.NiddlerOkHttpInterceptor
 import com.readrops.api.localfeed.LocalRSSDataSource
 import com.readrops.api.services.freshrss.FreshRSSDataSource
@@ -40,13 +38,13 @@ val apiModule = module {
                 .build()
     }
 
+    single { AuthInterceptor() }
+
     single { LocalRSSDataSource(get()) }
 
     //region freshrss
 
-    single {
-        FreshRSSDataSource(get())
-    }
+    single { FreshRSSDataSource(get()) }
 
     single {
         get<Retrofit>(named("freshrssRetrofit"))
@@ -54,7 +52,7 @@ val apiModule = module {
     }
 
     single(named("freshrssRetrofit")) {
-        Retrofit.Builder() // url will be set dynamically in an interceptor
+        Retrofit.Builder() // url will be set dynamically in AuthInterceptor
                 .baseUrl(BASE_URL)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(get<OkHttpClient>())
@@ -75,9 +73,7 @@ val apiModule = module {
 
     //region nextcloud news
 
-    single {
-        NextNewsDataSource(get())
-    }
+    single { NextNewsDataSource(get()) }
 
     single {
         get<Retrofit>(named("nextcloudNewsRetrofit"))
@@ -85,7 +81,7 @@ val apiModule = module {
     }
 
     single(named("nextcloudNewsRetrofit")) {
-        Retrofit.Builder() // url will be set dynamically in an interceptor
+        Retrofit.Builder() // url will be set dynamically in AuthInterceptor
                 .baseUrl(BASE_URL)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(get<OkHttpClient>())
@@ -102,18 +98,4 @@ val apiModule = module {
     }
 
     //endregion nextcloud news
-
-    single { AuthInterceptor() }
-
-    single<Niddler> {
-        val niddler = AndroidNiddler.Builder()
-                .setNiddlerInformation(AndroidNiddler.fromApplication(get()))
-                .setPort(0)
-                .setMaxStackTraceSize(10)
-                .build()
-
-        niddler.attachToApplication(get())
-
-        niddler.apply { start() }
-    }
 }

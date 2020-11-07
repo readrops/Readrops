@@ -1,6 +1,8 @@
 package com.readrops.app
 
 import androidx.preference.PreferenceManager
+import com.icapps.niddler.core.AndroidNiddler
+import com.icapps.niddler.core.Niddler
 import com.readrops.app.account.AccountViewModel
 import com.readrops.app.addfeed.AddFeedsViewModel
 import com.readrops.app.feedsfolders.ManageFeedsFoldersViewModel
@@ -56,4 +58,16 @@ val appModule = module {
     single { GlideApp.with(androidApplication()) }
 
     single { PreferenceManager.getDefaultSharedPreferences(androidContext()) }
+
+    single<Niddler> {
+        val niddler = AndroidNiddler.Builder()
+                .setNiddlerInformation(AndroidNiddler.fromApplication(get()))
+                .setPort(0)
+                .setMaxStackTraceSize(10)
+                .build()
+
+        niddler.attachToApplication(get())
+
+        niddler.apply { start() }
+    }
 }

@@ -77,6 +77,6 @@ dependencies {
     api 'io.reactivex.rxjava2:rxandroid:2.1.1'
     api 'org.jsoup:jsoup:1.13.1'
 
-    debugImplementation 'com.icapps.niddler:niddler:1.2.0'
-    releaseImplementation 'com.icapps.niddler:niddler-noop:1.2.0'
+    debugApi 'com.icapps.niddler:niddler:1.2.0'
+    releaseApi 'com.icapps.niddler:niddler-noop:1.2.0'
 }
