@@ -3,6 +3,7 @@ package com.readrops.app.notifications
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,7 +24,7 @@ import org.koin.androidx.viewmodel.ext.android.getViewModel
 class NotificationPermissionActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityNotificationPermissionBinding
-    private val viewModel = getViewModel<NotificationPermissionViewModel>()
+    private lateinit var viewModel: NotificationPermissionViewModel
     private var adapter: NotificationPermissionListAdapter? = null
 
     private var isFirstCheck = true
@@ -40,6 +41,7 @@ class NotificationPermissionActivity : AppCompatActivity() {
 
         val accountId = intent.getIntExtra(ACCOUNT_ID, 0)
 
+        viewModel = getViewModel<NotificationPermissionViewModel>()
         viewModel.getAccount(accountId).observe(this, Observer { account ->
             viewModel.account = account
 
