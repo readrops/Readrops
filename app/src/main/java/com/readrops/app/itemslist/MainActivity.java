@@ -619,6 +619,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
                         Utils.showSnackbar(binding.mainRoot, e.getMessage());
                         drawerManager.enableAccountSelection();
+                        updating = false;
                     }
 
                     @Override
