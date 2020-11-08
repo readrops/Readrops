@@ -10,13 +10,14 @@ import com.bumptech.glide.module.AppGlideModule
 import okhttp3.OkHttpClient
 import org.koin.core.KoinComponent
 import org.koin.core.get
+import org.koin.core.qualifier.named
 import java.io.InputStream
 
 @GlideModule
 class ReadropsGlideModule : AppGlideModule(), KoinComponent {
 
     override fun registerComponents(context: Context, glide: Glide, registry: Registry) {
-        val factory = OkHttpUrlLoader.Factory(get<OkHttpClient>())
+        val factory = OkHttpUrlLoader.Factory(get<OkHttpClient>(named("forGlide")))
 
         glide.registry.replace(GlideUrl::class.java, InputStream::class.java, factory)
     }

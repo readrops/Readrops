@@ -38,6 +38,14 @@ val apiModule = module {
                 .build()
     }
 
+    single(createdAtStart = true, qualifier = named("forGlide")) {
+        OkHttpClient.Builder()
+                .callTimeout(1, TimeUnit.MINUTES)
+                .readTimeout(1, TimeUnit.HOURS)
+                .addInterceptor(NiddlerOkHttpInterceptor(get(), "niddler"))
+                .build()
+    }
+
     single { AuthInterceptor() }
 
     single { LocalRSSDataSource(get()) }
