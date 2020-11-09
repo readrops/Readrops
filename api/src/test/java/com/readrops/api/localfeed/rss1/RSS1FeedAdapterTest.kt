@@ -1,22 +1,16 @@
 package com.readrops.api.localfeed.rss1
 
-import android.content.Context
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
+import com.readrops.api.TestUtils
 import junit.framework.Assert.assertEquals
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class RSS1FeedAdapterTest {
-
-    private val context: Context = InstrumentationRegistry.getInstrumentation().context
 
     private val adapter = RSS1FeedAdapter()
 
     @Test
     fun normalCaseTest() {
-        val stream = context.resources.assets.open("localfeed/rss1/rss1_feed.xml")
+        val stream = TestUtils.loadResource("localfeed/rss1/rss1_feed.xml")
 
         val feed = adapter.fromXml(stream)
 

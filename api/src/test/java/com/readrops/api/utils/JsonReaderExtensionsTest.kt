@@ -67,7 +67,7 @@ class JsonReaderExtensionsTest {
         reader.beginObject()
         reader.nextName()
 
-        assertEquals(reader.nextNullableString(), "value")
+        assertEquals(reader.nextNonEmptyString(), "value")
         reader.endObject()
     }
 

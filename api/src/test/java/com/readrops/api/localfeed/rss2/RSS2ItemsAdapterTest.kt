@@ -1,25 +1,24 @@
 package com.readrops.api.localfeed.rss2
 
-import android.content.Context
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
+import com.readrops.api.TestUtils
 import com.readrops.api.utils.DateUtils
 import com.readrops.api.utils.exceptions.ParseException
-import junit.framework.TestCase.*
-import org.junit.Assert
+import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertNotNull
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.rules.ExpectedException
 
-@RunWith(AndroidJUnit4::class)
 class RSS2ItemsAdapterTest {
-
-    private val context: Context = InstrumentationRegistry.getInstrumentation().context
 
     private val adapter = RSS2ItemsAdapter()
 
+    @get:Rule
+    val expectedException: ExpectedException = ExpectedException.none()
+
     @Test
     fun normalCasesTest() {
-        val stream = context.resources.assets.open("localfeed/rss_feed.xml")
+        val stream = TestUtils.loadResource("localfeed/rss_feed.xml")
 
         val items = adapter.fromXml(stream)
         val item = items.first()
@@ -35,7 +34,7 @@ class RSS2ItemsAdapterTest {
 
     @Test
     fun otherNamespacesTest() {
-        val stream = context.resources.assets.open("localfeed/rss2/rss_items_other_namespaces.xml")
+        val stream = TestUtils.loadResource("localfeed/rss2/rss_items_other_namespaces.xml")
         val item = adapter.fromXml(stream).first()
 
         assertEquals(item.guid, "guid")
@@ -46,7 +45,7 @@ class RSS2ItemsAdapterTest {
 
     @Test
     fun noDateTest() {
-        val stream = context.resources.assets.open("localfeed/rss2/rss_items_no_date.xml")
+        val stream = TestUtils.loadResource("localfeed/rss2/rss_items_no_date.xml")
         val item = adapter.fromXml(stream).first()
 
         assertNotNull(item.pubDate)
@@ -54,23 +53,27 @@ class RSS2ItemsAdapterTest {
 
     @Test
     fun noTitleTest() {
-        val stream = context.resources.assets.open("localfeed/rss2/rss_items_no_title.xml")
+        val stream = TestUtils.loadResource("localfeed/rss2/rss_items_no_title.xml")
 
-        val exception = Assert.assertThrows(ParseException::class.java) { adapter.fromXml(stream) }
-        assertTrue(exception.message!!.contains("Item title is required"))
+        expectedException.expect(ParseException::class.java)
+        expectedException.expectMessage("Item title is required")
+
+        adapter.fromXml(stream)
     }
 
     @Test
     fun noLinkTest() {
-        val stream = context.resources.assets.open("localfeed/rss2/rss_items_no_link.xml")
+        val stream = TestUtils.loadResource("localfeed/rss2/rss_items_no_link.xml")
 
-        val exception = Assert.assertThrows(ParseException::class.java) { adapter.fromXml(stream) }
-        assertTrue(exception.message!!.contains("Item link is required"))
+        expectedException.expect(ParseException::class.java)
+        expectedException.expectMessage("Item link is required")
+
+        adapter.fromXml(stream)
     }
 
     @Test
     fun enclosureTest() {
-        val stream = context.resources.assets.open("localfeed/rss2/rss_items_enclosure.xml")
+        val stream = TestUtils.loadResource("localfeed/rss2/rss_items_enclosure.xml")
         val item = adapter.fromXml(stream).first()
 
         assertEquals(item.imageLink, "https://image1.jpg")
@@ -78,7 +81,7 @@ class RSS2ItemsAdapterTest {
 
     @Test
     fun mediaContentTest() {
-        val stream = context.resources.assets.open("localfeed/rss2/rss_items_media_content.xml")
+        val stream = TestUtils.loadResource("localfeed/rss2/rss_items_media_content.xml")
         val items = adapter.fromXml(stream)
 
         assertEquals(items.first().imageLink, "https://image1.jpg")
@@ -87,7 +90,7 @@ class RSS2ItemsAdapterTest {
 
     @Test
     fun mediaGroupTest() {
-        val stream = context.resources.assets.open("localfeed/rss2/rss_items_media_group.xml")
+        val stream = TestUtils.loadResource("localfeed/rss2/rss_items_media_group.xml")
         val item = adapter.fromXml(stream).first()
 
         assertEquals(item.imageLink, "https://image1.jpg")

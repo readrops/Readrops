@@ -1,28 +1,22 @@
 package com.readrops.api.localfeed.json
 
-import android.content.Context
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
+import com.readrops.api.TestUtils
 import com.readrops.db.entities.Feed
 import com.squareup.moshi.Moshi
 import junit.framework.TestCase.assertEquals
 import okio.Buffer
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class JSONFeedAdapterTest {
-
-    private val context: Context = InstrumentationRegistry.getInstrumentation().context
 
     private val adapter = Moshi.Builder()
             .add(JSONFeedAdapter())
             .build()
-            .adapter<Feed>(Feed::class.java)
+            .adapter(Feed::class.java)
 
     @Test
     fun normalCasesTest() {
-        val stream = context.assets.open("localfeed/json/json_feed.json")
+        val stream = TestUtils.loadResource("localfeed/json/json_feed.json")
 
         val feed = adapter.fromJson(Buffer().readFrom(stream))!!
 

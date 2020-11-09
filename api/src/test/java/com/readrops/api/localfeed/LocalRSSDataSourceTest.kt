@@ -1,10 +1,7 @@
 package com.readrops.api.localfeed
 
 import android.accounts.NetworkErrorException
-import android.content.Context
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
-import com.icapps.niddler.interceptor.okhttp.NiddlerOkHttpInterceptor
+import com.readrops.api.TestUtils
 import com.readrops.api.apiModule
 import com.readrops.api.utils.ApiUtils
 import com.readrops.api.utils.AuthInterceptor
@@ -21,8 +18,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
@@ -31,10 +26,8 @@ import java.net.HttpURLConnection
 import java.util.concurrent.TimeUnit
 
 
-@RunWith(AndroidJUnit4::class)
 class LocalRSSDataSourceTest : KoinTest {
 
-    private val context by inject<Context>()
     private lateinit var url: HttpUrl
 
     private val mockServer: MockWebServer = MockWebServer()
@@ -42,7 +35,6 @@ class LocalRSSDataSourceTest : KoinTest {
 
     @get:Rule
     val koinTestRule = KoinTestRule.create {
-        androidContext(InstrumentationRegistry.getInstrumentation().context)
         modules(apiModule, module {
             single(override = true) {
                 OkHttpClient.Builder()
@@ -67,7 +59,7 @@ class LocalRSSDataSourceTest : KoinTest {
 
     @Test
     fun successfulQueryTest() {
-        val stream = context.resources.assets.open("localfeed/rss_feed.xml")
+        val stream = TestUtils.loadResource("localfeed/rss_feed.xml")
 
         mockServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_OK)
                 .addHeader(ApiUtils.CONTENT_TYPE_HEADER, "application/xml; charset=UTF-8")
@@ -91,7 +83,7 @@ class LocalRSSDataSourceTest : KoinTest {
 
     @Test
     fun headersTest() {
-        val stream = context.resources.assets.open("localfeed/rss_feed.xml")
+        val stream = TestUtils.loadResource("localfeed/rss_feed.xml")
 
         mockServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_OK)
                 .addHeader("Content-Type", "application/rss+xml; charset=UTF-8")
@@ -108,7 +100,7 @@ class LocalRSSDataSourceTest : KoinTest {
 
     @Test
     fun jsonFeedTest() {
-        val stream = context.resources.assets.open("localfeed/json/json_feed.json")
+        val stream = TestUtils.loadResource("localfeed/json/json_feed.json")
 
         mockServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_OK)
                 .addHeader(ApiUtils.CONTENT_TYPE_HEADER, "application/feed+json")
@@ -122,7 +114,7 @@ class LocalRSSDataSourceTest : KoinTest {
 
     @Test
     fun specialCasesAtomTest() {
-        val stream = context.resources.assets.open("localfeed/atom/atom_feed_no_url_siteurl.xml")
+        val stream = TestUtils.loadResource("localfeed/atom/atom_feed_no_url_siteurl.xml")
 
         mockServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_OK)
                 .addHeader(ApiUtils.CONTENT_TYPE_HEADER, "application/atom+xml")
@@ -136,7 +128,7 @@ class LocalRSSDataSourceTest : KoinTest {
 
     @Test
     fun specialCasesRSS1Test() {
-        val stream = context.resources.assets.open("localfeed/rss1/rss1_feed_no_url_siteurl.xml")
+        val stream = TestUtils.loadResource("localfeed/rss1/rss1_feed_no_url_siteurl.xml")
 
         mockServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_OK)
                 .addHeader(ApiUtils.CONTENT_TYPE_HEADER, "application/rdf+xml")
