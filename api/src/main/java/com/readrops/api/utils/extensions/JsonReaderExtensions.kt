@@ -10,3 +10,6 @@ fun JsonReader.nextNonEmptyString(): String {
     val text = nextString()
     return if (text.isNotEmpty()) text.trim() else throw ParseException("Json value can't be null")
 }
+
+fun JsonReader.nextNullableInt(): Int? =
+        if (peek() != JsonReader.Token.NULL) nextInt() else nextNull()

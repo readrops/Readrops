@@ -1,0 +1,49 @@
+{
+  "feeds": [
+    {
+      "id": 3,
+      "url": "https://krebsonsecurity.com/feed/",
+      "title": "Krebs on Security",
+      "faviconLink": "https://krebsonsecurity.com/favicon.ico",
+      "added": 1490999780,
+      "folderId": null,
+      "unreadCount": 1,
+      "ordering": 0,
+      "link": "https://krebsonsecurity.com/",
+      "pinned": false,
+      "updateErrorCount": 0,
+      "lastUpdateError": null,
+      "items": []
+    },
+    {
+      "id": 3,
+      "url": "https://krebsonsecurity.com/feed/",
+      "title": "Krebs on Security",
+      "faviconLink": "https://krebsonsecurity.com/favicon.ico",
+      "added": 1490999780,
+      "folderId": 0,
+      "unreadCount": 1,
+      "ordering": 0,
+      "link": "https://krebsonsecurity.com/",
+      "pinned": false,
+      "updateErrorCount": 0,
+      "lastUpdateError": null,
+      "items": []
+    },
+    {
+      "id": 3,
+      "url": "https://krebsonsecurity.com/feed/",
+      "title": "Krebs on Security",
+      "faviconLink": "https://krebsonsecurity.com/favicon.ico",
+      "added": 1490999780,
+      "folderId": 5,
+      "unreadCount": 1,
+      "ordering": 0,
+      "link": "https://krebsonsecurity.com/",
+      "pinned": false,
+      "updateErrorCount": 0,
+      "lastUpdateError": null,
+      "items": []
+    }
+  ]
+}
