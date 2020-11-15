@@ -11,8 +11,9 @@ import androidx.annotation.Nullable;
 import com.readrops.api.services.SyncResult;
 import com.readrops.api.services.SyncType;
 import com.readrops.api.services.nextcloudnews.NextNewsDataSource;
+import com.readrops.api.services.nextcloudnews.NextNewsService;
 import com.readrops.api.services.nextcloudnews.NextNewsSyncData;
-import com.readrops.api.services.nextcloudnews.json.NextNewsUser;
+import com.readrops.api.utils.AuthInterceptor;
 import com.readrops.api.utils.exceptions.UnknownFormatException;
 import com.readrops.app.addfeed.FeedInsertionResult;
 import com.readrops.app.addfeed.ParsingResult;
@@ -24,6 +25,7 @@ import com.readrops.db.entities.Item;
 import com.readrops.db.entities.account.Account;
 
 import org.joda.time.LocalDateTime;
+import org.koin.java.KoinJavaComponent;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,16 +51,20 @@ public class NextNewsRepository extends ARepository {
     @Override
     public Completable login(Account account, boolean insert) {
         setCredentials(account);
-        return Single.<NextNewsUser>create(emitter -> {
-            NextNewsUser user = dataSource.login();
+        return Single.<String>create(emitter -> {
+            // workaround to have the Nextcloud API call working, as I don't know how to do otherwise
+            AuthInterceptor authInterceptor = KoinJavaComponent.get(AuthInterceptor.class);
+            authInterceptor.getCredentials().setUrl(authInterceptor.getCredentials().getUrl().replace(NextNewsService.END_POINT, ""));
 
-            if (user != null) {
-                emitter.onSuccess(user);
+            String displayName = dataSource.login(account.getLogin());
+
+            if (displayName != null) {
+                emitter.onSuccess(displayName);
             } else {
                 emitter.onError(new Exception("Login failed. Please check your credentials and your Nextcloud News setup."));
             }
-        }).flatMapCompletable(user -> {
-            account.setDisplayedName(user.getDisplayName());
+        }).flatMapCompletable(displayName -> {
+            account.setDisplayedName(displayName);
             account.setCurrentAccount(true);
 
             if (insert) {

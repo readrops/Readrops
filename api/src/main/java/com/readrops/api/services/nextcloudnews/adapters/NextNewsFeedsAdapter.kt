@@ -1,6 +1,7 @@
 package com.readrops.api.services.nextcloudnews.adapters
 
 import android.annotation.SuppressLint
+import androidx.core.net.toUri
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.extensions.nextNonEmptyString
 import com.readrops.api.utils.extensions.nextNullableInt
@@ -9,6 +10,7 @@ import com.readrops.db.entities.Feed
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.ToJson
+import java.net.URI
 
 class NextNewsFeedsAdapter {
 
@@ -47,7 +49,7 @@ class NextNewsFeedsAdapter {
                     when (reader.selectName(NAMES)) {
                         0 -> remoteId = reader.nextNonEmptyString()
                         1 -> url = reader.nextNonEmptyString()
-                        2 -> name = reader.nextNonEmptyString()
+                        2 -> name = reader.nextNullableString()
                         3 -> iconUrl = reader.nextNullableString()
                         4 -> {
                             val nextInt = reader.nextNullableInt()
@@ -58,6 +60,8 @@ class NextNewsFeedsAdapter {
                     }
                 }
             }
+
+            if (feed.name == null) feed.name = URI.create(feed.url).host
 
             feeds += feed
             reader.endObject()

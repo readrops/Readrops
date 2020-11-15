@@ -11,7 +11,7 @@ public abstract class Credentials {
 
     private final String authorization;
 
-    private final String url;
+    private String url;
 
     public Credentials(String authorization, String url) {
         this.authorization = authorization;
@@ -24,6 +24,10 @@ public abstract class Credentials {
 
     public String getUrl() {
         return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public static Credentials toCredentials(Account account) {

@@ -34,6 +34,7 @@ class NextNewsFeedsAdapterTest {
         assertNull(feed2.remoteFolderId)
 
         val feed3 = feeds[2]
+        assertEquals(feed3.name, "krebsonsecurity.com")
         assertEquals(feed3.remoteFolderId, "5")
     }
 }

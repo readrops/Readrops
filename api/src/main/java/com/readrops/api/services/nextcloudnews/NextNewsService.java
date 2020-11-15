@@ -3,7 +3,6 @@ package com.readrops.api.services.nextcloudnews;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
-import com.readrops.api.services.nextcloudnews.json.NextNewsUser;
 
 import java.util.List;
 import java.util.Map;
@@ -13,6 +12,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
@@ -21,9 +21,10 @@ import retrofit2.http.Query;
 public interface NextNewsService {
 
     String END_POINT = "/index.php/apps/news/api/v1-2/";
-
-    @GET("user")
-    Call<NextNewsUser> getUser();
+    
+    @GET("/ocs/v1.php/cloud/users/{userId}")
+    @Headers("OCS-APIRequest: true")
+    Call<ResponseBody> getUser(@Path("userId") String userId);
 
     @GET("folders")
     Call<List<Folder>> getFolders();

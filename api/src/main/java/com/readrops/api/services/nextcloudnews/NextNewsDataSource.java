@@ -7,9 +7,9 @@ import androidx.annotation.Nullable;
 
 import com.readrops.api.services.SyncResult;
 import com.readrops.api.services.SyncType;
-import com.readrops.api.services.nextcloudnews.json.NextNewsUser;
-import com.readrops.api.utils.exceptions.ConflictException;
+import com.readrops.api.services.nextcloudnews.adapters.NextNewsUserAdapter;
 import com.readrops.api.utils.ApiUtils;
+import com.readrops.api.utils.exceptions.ConflictException;
 import com.readrops.api.utils.exceptions.UnknownFormatException;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.ResponseBody;
 import retrofit2.Response;
 
 public class NextNewsDataSource {
@@ -38,13 +39,17 @@ public class NextNewsDataSource {
     }
 
     @Nullable
-    public NextNewsUser login() throws IOException {
-        Response<NextNewsUser> response = api.getUser().execute();
+    public String login(String user) throws IOException {
+        Response<ResponseBody> response = api.getUser(user).execute();
 
-        if (!response.isSuccessful())
+        if (!response.isSuccessful()) {
             return null;
+        }
 
-        return response.body();
+        String displayName = new NextNewsUserAdapter().fromXml(response.body().byteStream());
+        response.body().close();
+
+        return displayName;
     }
 
     @Nullable
