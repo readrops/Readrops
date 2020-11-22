@@ -1,4 +1,9 @@
-#v1.2.0
+# v1.2.1
+
+- Accept null value for Nextcloud News feed attribute folderId #87
+- Fix local RSS url parsing 
+
+# v1.2.0
 
 - Adaptive icon
 - Background synchronisation

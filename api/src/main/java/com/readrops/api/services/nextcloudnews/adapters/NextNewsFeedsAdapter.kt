@@ -1,7 +1,6 @@
 package com.readrops.api.services.nextcloudnews.adapters
 
 import android.annotation.SuppressLint
-import androidx.core.net.toUri
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.extensions.nextNonEmptyString
 import com.readrops.api.utils.extensions.nextNullableInt
