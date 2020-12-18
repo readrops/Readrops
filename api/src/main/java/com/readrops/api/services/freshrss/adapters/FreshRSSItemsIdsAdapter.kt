@@ -40,6 +40,13 @@ class FreshRSSItemsIdsAdapter : JsonAdapter<List<String>>() {
             }
 
             endArray()
+
+            // skip continuation
+            if (hasNext()) {
+                skipName()
+                skipValue()
+            }
+
             endObject()
 
             ids
