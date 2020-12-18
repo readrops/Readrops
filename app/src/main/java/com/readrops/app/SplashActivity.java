@@ -2,6 +2,7 @@ package com.readrops.app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,6 +17,8 @@ import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
 public class SplashActivity extends AppCompatActivity {
+
+    private static final String TAG = SplashActivity.class.getSimpleName();
 
     private AccountViewModel viewModel;
 
@@ -46,7 +49,7 @@ public class SplashActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(Throwable e) {
-                        
+                        Log.d(TAG, e.getMessage());
                     }
                 });
 
