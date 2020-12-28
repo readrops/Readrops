@@ -24,7 +24,8 @@ import okhttp3.RequestBody;
 public class FreshRSSDataSource {
 
     private static final int MAX_ITEMS = 5000;
-    private static final int MAX_STARRED_ITEMS = 999;
+    private static final int MAX_UNREAD_ITEMS_IDS = 5000;
+    private static final int MAX_STARRED_ITEMS = 1000;
 
     public static final String GOOGLE_READ = "user/-/state/com.google/read";
     public static final String GOOGLE_STARRED = "user/-/state/com.google/starred";
@@ -111,13 +112,13 @@ public class FreshRSSDataSource {
                         .flatMap(freshRSSItems -> {
                             syncResult.setItems(freshRSSItems);
 
+                            return getItemsIds(GOOGLE_READ, GOOGLE_READING_LIST, MAX_UNREAD_ITEMS_IDS);
+                        }).flatMap(unreadItemsIds -> {
+                            syncResult.setUnreadIds(unreadItemsIds);
+
                             return getStarredItems(MAX_STARRED_ITEMS);
                         }).flatMap(starredItems -> {
                             syncResult.setStarredItems(starredItems);
-
-                            return getItemsIds(null, GOOGLE_STARRED, MAX_STARRED_ITEMS);
-                        }).flatMap(starredIds -> {
-                            syncResult.setStarredIds(starredIds);
 
                             return Single.just(syncResult);
                         }));
