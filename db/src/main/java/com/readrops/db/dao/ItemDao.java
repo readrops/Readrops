@@ -7,6 +7,7 @@ import androidx.room.Dao;
 import androidx.room.Query;
 import androidx.room.RawQuery;
 import androidx.room.RoomWarnings;
+import androidx.room.Transaction;
 import androidx.sqlite.db.SupportSQLiteQuery;
 
 import com.readrops.db.entities.Feed;
@@ -95,9 +96,11 @@ public interface ItemDao extends BaseDao<Item> {
     @Query("Update Item set starred = :starred, starred_changed = :starredChanged Where id = :itemId")
     Completable setStarState(int itemId, boolean starred, boolean starredChanged);
 
-    @Query("Update Item set starred = 1 Where remoteId In (:ids) And feed_id In (Select id From Feed Where account_id = :accountId)")
-    void starItems(List<String> ids, int accountId);
+    @Transaction
+    @Query("Update Item set read = 0 Where Item.remoteId In (Select  remote_id From UnreadItemsIds) And feed_id In (Select id From Feed Where account_id = :accountId)")
+    void updateUnreadState(int accountId);
 
-    @Query("Update Item set starred = 0 Where remoteId Not In (:ids) And feed_id In (Select id From Feed Where account_id = :accountId)")
-    void unstarItems(List<String> ids, int accountId);
+    @Transaction
+    @Query("Update Item set read = 1 Where Item.remoteId Not In (Select remote_id From UnreadItemsIds) And feed_id In (Select id From Feed Where account_id = :accountId)")
+    void updateReadState(int accountId);
 }

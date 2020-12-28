@@ -67,6 +67,9 @@ dependencies {
     implementation 'androidx.room:room-rxjava2:2.2.5'
     androidTestImplementation "androidx.room:room-testing:2.2.5"
 
+    implementation 'com.github.MatrixDev.Roomigrant:RoomigrantLib:0.2.0'
+    kapt 'com.github.MatrixDev.Roomigrant:RoomigrantCompiler:0.2.0'
+
     api 'androidx.paging:paging-runtime:2.1.2'
     api 'androidx.paging:paging-common:2.1.2'
 
