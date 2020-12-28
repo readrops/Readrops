@@ -6,18 +6,21 @@ public class AccountConfig {
             .setFeedUrlEditable(true)
             .setFolderCreation(true)
             .setNoFolderCase(false)
+            .setUseStarredItems(false)
             .build();
 
     public static final AccountConfig NEXTNEWS = new AccountConfigBuilder()
             .setFeedUrlEditable(false)
             .setFolderCreation(true)
             .setNoFolderCase(false)
+            .setUseStarredItems(false)
             .build();
 
     public static final AccountConfig FRESHRSS = new AccountConfigBuilder()
             .setFeedUrlEditable(false)
             .setFolderCreation(false)
             .setNoFolderCase(true)
+            .setUseStarredItems(true)
             .build();
 
     private boolean feedUrlEditable;
@@ -25,6 +28,8 @@ public class AccountConfig {
     private boolean folderCreation;
 
     private boolean noFolderCase;
+
+    private boolean useStarredItems;
 
     public boolean isFeedUrlEditable() {
         return feedUrlEditable;
@@ -38,16 +43,22 @@ public class AccountConfig {
         return noFolderCase;
     }
 
+    public boolean isUseStarredItems() {
+        return useStarredItems;
+    }
+
     public AccountConfig(AccountConfigBuilder builder) {
         this.feedUrlEditable = builder.feedUrlEditable;
         this.folderCreation = builder.folderCreation;
         this.noFolderCase = builder.noFolderCase;
+        this.useStarredItems = builder.useStarredItems;
     }
 
     public static class AccountConfigBuilder {
         private boolean feedUrlEditable;
         private boolean folderCreation;
         private boolean noFolderCase;
+        private boolean useStarredItems;
 
         public AccountConfigBuilder setFeedUrlEditable(boolean feedUrlEditable) {
             this.feedUrlEditable = feedUrlEditable;
@@ -61,6 +72,11 @@ public class AccountConfig {
 
         public AccountConfigBuilder setNoFolderCase(boolean noFolderCase) {
             this.noFolderCase = noFolderCase;
+            return this;
+        }
+
+        public AccountConfigBuilder setUseStarredItems(boolean useStarredItems) {
+            this.useStarredItems = useStarredItems;
             return this;
         }
 

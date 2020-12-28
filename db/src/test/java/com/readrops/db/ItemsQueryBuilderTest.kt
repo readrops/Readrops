@@ -12,7 +12,7 @@ class ItemsQueryBuilderTest {
     fun noFilterDefaultSortCaseTest() {
         val queryFilters = QueryFilters(accountId = 1)
 
-        val query = ItemsQueryBuilder.buildQuery(queryFilters).sql
+        val query = ItemsQueryBuilder.buildItemsQuery(queryFilters).sql
 
         assertTrue(query.contains("Feed.account_id = 1"))
         assertTrue(query.contains("read_it_later = 0"))
@@ -26,7 +26,7 @@ class ItemsQueryBuilderTest {
         val queryFilters = QueryFilters(accountId = 1, filterType = FilterType.FEED_FILTER,
                 filterFeedId = 15)
 
-        val query = ItemsQueryBuilder.buildQuery(queryFilters).sql
+        val query = ItemsQueryBuilder.buildItemsQuery(queryFilters).sql
 
         assertTrue(query.contains("feed_id = 15 And read_it_later = 0"))
     }
@@ -35,7 +35,7 @@ class ItemsQueryBuilderTest {
     fun readLaterFilterCaseTest() {
         val queryFilters = QueryFilters(accountId = 1, filterType = FilterType.READ_IT_LATER_FILTER)
 
-        val query = ItemsQueryBuilder.buildQuery(queryFilters).sql
+        val query = ItemsQueryBuilder.buildItemsQuery(queryFilters).sql
         assertTrue(query.contains("read_it_later = 1"))
     }
 
@@ -43,7 +43,7 @@ class ItemsQueryBuilderTest {
     fun starsFilterCaseTest() {
         val queryFilters = QueryFilters(accountId = 1, filterType = FilterType.STARS_FILTER)
 
-        val query = ItemsQueryBuilder.buildQuery(queryFilters).sql
+        val query = ItemsQueryBuilder.buildItemsQuery(queryFilters).sql
         assertTrue(query.contains("starred = 1 And read_it_later = 0"))
     }
 
@@ -52,7 +52,7 @@ class ItemsQueryBuilderTest {
         val queryFilters = QueryFilters(accountId = 1, sortType = ListSortType.OLDEST_TO_NEWEST,
                 showReadItems = false)
 
-        val query = ItemsQueryBuilder.buildQuery(queryFilters).sql
+        val query = ItemsQueryBuilder.buildItemsQuery(queryFilters).sql
 
         assertTrue(query.contains("read = 0 And "))
         assertTrue(query.contains("pub_date ASC"))
@@ -62,12 +62,12 @@ class ItemsQueryBuilderTest {
     fun accountIdExceptionTest() {
         val queryFilters = QueryFilters()
 
-        ItemsQueryBuilder.buildQuery(queryFilters)
+        ItemsQueryBuilder.buildItemsQuery(queryFilters)
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun filterFeedIdExceptionTest() {
         val queryFilters = QueryFilters(accountId = 1, filterType = FilterType.FEED_FILTER)
-        ItemsQueryBuilder.buildQuery(queryFilters)
+        ItemsQueryBuilder.buildItemsQuery(queryFilters)
     }
 }
