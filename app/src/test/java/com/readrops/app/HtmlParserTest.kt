@@ -21,6 +21,7 @@ class HtmlParserTest {
         })
     }
 
+/*
     @Test
     fun getFeedLinkTest() {
         val url = "https://github.com/readrops/Readrops"
@@ -32,6 +33,7 @@ class HtmlParserTest {
         val parsingResultList1 = HtmlParser.getFeedLink(url)
         Assert.assertEquals(parsingResultList, parsingResultList1)
     }
+*/
 
     @Test
     fun getFaviconLinkTest() {
