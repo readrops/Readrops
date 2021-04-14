@@ -11,27 +11,24 @@ import com.readrops.db.entities.Item
 import java.io.InputStream
 
 interface XmlAdapter<T> {
-    
+
     fun fromXml(inputStream: InputStream): T
 
     companion object {
-        fun xmlFeedAdapterFactory(type: LocalRSSHelper.RSSType): XmlAdapter<Feed> {
-            return when (type) {
-                LocalRSSHelper.RSSType.RSS_1 -> RSS1FeedAdapter()
-                LocalRSSHelper.RSSType.RSS_2 -> RSS2FeedAdapter()
-                LocalRSSHelper.RSSType.ATOM -> ATOMFeedAdapter()
-                else -> throw IllegalArgumentException("Unknown RSS type : $type")
-            }
+        fun xmlFeedAdapterFactory(type: LocalRSSHelper.RSSType): XmlAdapter<Feed> = when (type) {
+            LocalRSSHelper.RSSType.RSS_1 -> RSS1FeedAdapter()
+            LocalRSSHelper.RSSType.RSS_2 -> RSS2FeedAdapter()
+            LocalRSSHelper.RSSType.ATOM -> ATOMFeedAdapter()
+            else -> throw IllegalArgumentException("Unknown RSS type : $type")
         }
 
-        fun xmlItemsAdapterFactory(type: LocalRSSHelper.RSSType): XmlAdapter<List<Item>> {
-            return when (type) {
-                LocalRSSHelper.RSSType.RSS_1 -> RSS1ItemsAdapter()
-                LocalRSSHelper.RSSType.RSS_2 -> RSS2ItemsAdapter()
-                LocalRSSHelper.RSSType.ATOM -> ATOMItemsAdapter()
-                else -> throw IllegalArgumentException("Unknown RSS type : $type")
-            }
-        }
+        fun xmlItemsAdapterFactory(type: LocalRSSHelper.RSSType): XmlAdapter<List<Item>> =
+                when (type) {
+                    LocalRSSHelper.RSSType.RSS_1 -> RSS1ItemsAdapter()
+                    LocalRSSHelper.RSSType.RSS_2 -> RSS2ItemsAdapter()
+                    LocalRSSHelper.RSSType.ATOM -> ATOMItemsAdapter()
+                    else -> throw IllegalArgumentException("Unknown RSS type : $type")
+                }
 
         const val AUTHORS_MAX = 4
     }

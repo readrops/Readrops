@@ -58,10 +58,10 @@ class RSS2ItemsAdapter : XmlAdapter<List<Item>> {
         }
     }
 
-    private fun parseEnclosure(konsumer: Konsumer, item: Item) {
-        if (konsumer.attributes.getValueOpt("type") != null
-                && ApiUtils.isMimeImage(konsumer.attributes["type"]) && item.imageLink == null)
-            item.imageLink = konsumer.attributes.getValueOpt("url")
+    private fun parseEnclosure(konsumer: Konsumer, item: Item) = with(konsumer) {
+        if (attributes.getValueOpt("type") != null
+                && ApiUtils.isMimeImage(attributes["type"]) && item.imageLink == null)
+            item.imageLink = attributes.getValueOpt("url")
     }
 
     private fun isMediumImage(konsumer: Konsumer) = with(konsumer) {
@@ -88,15 +88,13 @@ class RSS2ItemsAdapter : XmlAdapter<List<Item>> {
         }
     }
 
-    private fun finalizeItem(item: Item, creators: List<String?>) {
-        item.apply {
-            validateItem(this)
+    private fun finalizeItem(item: Item, creators: List<String?>) = with(item) {
+        validateItem(this)
 
-            if (pubDate == null) pubDate = LocalDateTime.now()
-            if (guid == null) guid = link
-            if (author == null && creators.filterNotNull().isNotEmpty())
-                author = creators.filterNotNull().joinToString(limit = AUTHORS_MAX)
-        }
+        if (pubDate == null) pubDate = LocalDateTime.now()
+        if (guid == null) guid = link
+        if (author == null && creators.filterNotNull().isNotEmpty())
+            author = creators.filterNotNull().joinToString(limit = AUTHORS_MAX)
     }
 
     private fun validateItem(item: Item) {

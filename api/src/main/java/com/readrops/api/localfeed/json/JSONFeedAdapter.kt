@@ -14,28 +14,26 @@ class JSONFeedAdapter {
     fun toJson(feed: Feed) = ""
 
     @FromJson
-    fun fromJson(reader: JsonReader): Feed {
-        return try {
-            val feed = Feed()
-            reader.beginObject()
+    fun fromJson(reader: JsonReader): Feed = try {
+        val feed = Feed()
+        reader.beginObject()
 
-            while (reader.hasNext()) {
-                with(feed) {
-                    when (reader.selectName(names)) {
-                        0 -> name = reader.nextNonEmptyString()
-                        1 -> siteUrl = reader.nextNullableString()
-                        2 -> url = reader.nextNullableString()
-                        3 -> description = reader.nextNullableString()
-                        else -> reader.skipValue()
-                    }
+        while (reader.hasNext()) {
+            with(feed) {
+                when (reader.selectName(names)) {
+                    0 -> name = reader.nextNonEmptyString()
+                    1 -> siteUrl = reader.nextNullableString()
+                    2 -> url = reader.nextNullableString()
+                    3 -> description = reader.nextNullableString()
+                    else -> reader.skipValue()
                 }
             }
-
-            reader.endObject()
-            feed
-        } catch (e: Exception) {
-            throw ParseException(e.message)
         }
+
+        reader.endObject()
+        feed
+    } catch (e: Exception) {
+        throw ParseException(e.message)
     }
 
     companion object {
