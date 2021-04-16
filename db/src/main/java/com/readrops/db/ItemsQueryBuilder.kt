@@ -14,10 +14,6 @@ object ItemsQueryBuilder {
 
     private val ITEM_COLUMNS = arrayOf(".id", ".remoteId")
 
-    private const val SELECT_ALL_JOIN = "Item INNER JOIN Feed on Item.feed_id = Feed.id " +
-            "LEFT JOIN Folder on Feed.folder_id = Folder.id LEFT JOIN UnreadItemsIds On " +
-            "Item.remoteId = UnreadItemsIds.remote_id"
-
     private const val ORDER_BY_ASC = ".id DESC"
 
     private const val ORDER_BY_DESC = "pub_date ASC"
@@ -37,10 +33,13 @@ object ItemsQueryBuilder {
         if (filterType == FilterType.FEED_FILTER && filterFeedId == 0)
             throw IllegalArgumentException("FeedId must be greater than 0 if current filter is FEED_FILTER")
 
-        SupportSQLiteQueryBuilder.builder(if (starQuery) SELECT_ALL_JOIN.replace("Item", "StarredItem") else SELECT_ALL_JOIN).run {
-            columns(COLUMNS.plus(buildItemColumns(starQuery)))
+        val tableName = tableName(starQuery)
+        val selectAllJoin = buildSelectAllJoin(tableName)
+
+        SupportSQLiteQueryBuilder.builder(selectAllJoin).run {
+            columns(COLUMNS.plus(buildItemColumns(tableName)))
             selection(buildWhereClause(this@with), null)
-            orderBy(if (sortType == ListSortType.NEWEST_TO_OLDEST) buildOrderByAsc(starQuery) else ORDER_BY_DESC)
+            orderBy(if (sortType == ListSortType.NEWEST_TO_OLDEST) buildOrderByAsc(tableName) else ORDER_BY_DESC)
 
             create()
         }
@@ -62,18 +61,25 @@ object ItemsQueryBuilder {
         toString()
     }
 
-    private fun buildItemColumns(starQuery: Boolean): Array<String> {
+    private fun tableName(starQuery: Boolean): String = if (starQuery) "StarredItem" else "Item"
+
+    private fun buildItemColumns(tableName: String): Array<String> {
         val columns = arrayListOf<String>()
 
         for (column in ITEM_COLUMNS) {
-            columns += if (starQuery) "StarredItem$column" else "Item$column"
+            columns += tableName + column
         }
 
         return columns.toTypedArray()
     }
 
-    private fun buildOrderByAsc(starQuery: Boolean): String =
-            if (starQuery) "StarredItem$ORDER_BY_ASC" else "Item$ORDER_BY_ASC"
+    private fun buildOrderByAsc(tableName: String): String = tableName + ORDER_BY_ASC
+
+    private fun buildSelectAllJoin(tableName: String): String = """
+        $tableName INNER JOIN Feed on $tableName.feed_id = Feed.id
+            LEFT JOIN Folder on Feed.folder_id = Folder.id LEFT JOIN UnreadItemsIds On
+            $tableName.remoteId = UnreadItemsIds.remote_id
+    """.trimIndent()
 
 }
 
