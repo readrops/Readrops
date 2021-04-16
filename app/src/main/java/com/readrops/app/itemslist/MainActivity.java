@@ -36,15 +36,16 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.readrops.app.R;
 import com.readrops.app.account.AccountTypeListActivity;
 import com.readrops.app.addfeed.AddFeedActivity;
+import com.readrops.app.databinding.ActivityMainBinding;
 import com.readrops.app.item.ItemActivity;
 import com.readrops.app.settings.SettingsActivity;
-import com.readrops.app.databinding.ActivityMainBinding;
 import com.readrops.app.utils.GlideRequests;
-import com.readrops.app.utils.customviews.ReadropsItemTouchCallback;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
+import com.readrops.app.utils.customviews.ReadropsItemTouchCallback;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
+import com.readrops.db.entities.Item;
 import com.readrops.db.entities.account.Account;
 import com.readrops.db.filters.FilterType;
 import com.readrops.db.filters.ListSortType;
@@ -230,7 +231,11 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
             startActivity(itemIntent);
 
-            viewModel.setItemReadState(intent.getIntExtra(ITEM_ID, 0), true, true)
+            Item item = new Item();
+            item.setId(intent.getIntExtra(ITEM_ID, 0));
+            item.setRead(true);
+
+            viewModel.setItemReadState(item)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnError(throwable -> Utils.showSnackbar(binding.mainRoot, throwable.getMessage()))
@@ -314,13 +319,13 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     intent.putExtra(IMAGE_URL, itemWithFeed.getItem().getImageLink());
                     startActivityForResult(intent, ITEM_REQUEST);
 
-                    viewModel.setItemReadState(itemWithFeed, true)
+                    itemWithFeed.getItem().setRead(true);
+                    viewModel.setItemReadState(itemWithFeed)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .doOnError(throwable -> Utils.showSnackbar(binding.mainRoot, throwable.getMessage()))
                             .subscribe();
 
-                    itemWithFeed.getItem().setRead(true);
                     adapter.notifyItemChanged(position, itemWithFeed);
                     updateDrawerFeeds();
                 } else {
@@ -412,13 +417,12 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         if (direction == ItemTouchHelper.LEFT) { // set item read state
             ItemWithFeed itemWithFeed = adapter.getItemWithFeed(viewHolder.getAdapterPosition());
 
-            viewModel.setItemReadState(itemWithFeed, !itemWithFeed.getItem().isRead())
+            itemWithFeed.getItem().setRead(!itemWithFeed.getItem().isRead());
+            viewModel.setItemReadState(itemWithFeed)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnError(throwable -> Utils.showSnackbar(binding.mainRoot, throwable.getMessage()))
                     .subscribe();
-
-            itemWithFeed.getItem().setRead(!itemWithFeed.getItem().isRead());
 
             adapter.notifyItemChanged(viewHolder.getAdapterPosition());
         } else { // add item to read it later section
@@ -497,7 +501,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
             allItemsSelected = false;
         } else {
-            viewModel.setItemsReadState(adapter.getSelectedItems(), read)
+            viewModel.setItemsReadState(adapter.getSelectedItems())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnError(throwable -> Utils.showSnackbar(binding.mainRoot, throwable.getMessage()))

@@ -149,7 +149,7 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
             val itemId = intent?.getIntExtra(ReadropsKeys.ITEM_ID, 0)!!
 
             with(get<Database>()) {
-                itemDao().setReadState(itemId, true, true)
+                itemDao().setReadState(itemId, true)
                         .subscribeOn(Schedulers.io())
                         .subscribe()
             }

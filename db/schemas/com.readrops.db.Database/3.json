@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "c5754bffea62bb91c7d79c091c61aca8",
+    "identityHash": "be089eb90d96a8582a76c667963886cc",
     "entities": [
       {
         "tableName": "Feed",
@@ -151,7 +151,7 @@
       },
       {
         "tableName": "Item",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT, `description` TEXT, `clean_description` TEXT, `link` TEXT, `image_link` TEXT, `author` TEXT, `pub_date` INTEGER, `content` TEXT, `feed_id` INTEGER NOT NULL, `guid` TEXT, `read_time` REAL NOT NULL, `read` INTEGER NOT NULL, `read_changed` INTEGER NOT NULL, `starred` INTEGER NOT NULL, `starred_changed` INTEGER NOT NULL, `read_it_later` INTEGER NOT NULL, `remoteId` TEXT, FOREIGN KEY(`feed_id`) REFERENCES `Feed`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT, `description` TEXT, `clean_description` TEXT, `link` TEXT, `image_link` TEXT, `author` TEXT, `pub_date` INTEGER, `content` TEXT, `feed_id` INTEGER NOT NULL, `guid` TEXT, `read_time` REAL NOT NULL, `read` INTEGER NOT NULL, `starred` INTEGER NOT NULL, `read_it_later` INTEGER NOT NULL, `remoteId` TEXT, FOREIGN KEY(`feed_id`) REFERENCES `Feed`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -232,20 +232,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "readChanged",
-            "columnName": "read_changed",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
             "fieldPath": "starred",
             "columnName": "starred",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "starredChanged",
-            "columnName": "starred_changed",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -284,14 +272,6 @@
               "guid"
             ],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_Item_guid` ON `${TABLE_NAME}` (`guid`)"
-          },
-          {
-            "name": "index_Item_starred_changed",
-            "unique": false,
-            "columnNames": [
-              "starred_changed"
-            ],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_Item_starred_changed` ON `${TABLE_NAME}` (`starred_changed`)"
           }
         ],
         "foreignKeys": [
@@ -504,7 +484,7 @@
       },
       {
         "tableName": "ReadStarStateChange",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `read_change` INTEGER NOT NULL, `star_change` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `read_change` INTEGER NOT NULL, `star_change` INTEGER NOT NULL, `account_id` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -523,6 +503,12 @@
             "columnName": "star_change",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "accountId",
+            "columnName": "account_id",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -536,7 +522,7 @@
       },
       {
         "tableName": "StarredItem",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT, `description` TEXT, `clean_description` TEXT, `link` TEXT, `image_link` TEXT, `author` TEXT, `pub_date` INTEGER, `content` TEXT, `feed_id` INTEGER NOT NULL, `guid` TEXT, `read_time` REAL NOT NULL, `read` INTEGER NOT NULL, `read_changed` INTEGER NOT NULL, `starred` INTEGER NOT NULL, `starred_changed` INTEGER NOT NULL, `read_it_later` INTEGER NOT NULL, `remoteId` TEXT, FOREIGN KEY(`feed_id`) REFERENCES `Feed`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT, `description` TEXT, `clean_description` TEXT, `link` TEXT, `image_link` TEXT, `author` TEXT, `pub_date` INTEGER, `content` TEXT, `feed_id` INTEGER NOT NULL, `guid` TEXT, `read_time` REAL NOT NULL, `read` INTEGER NOT NULL, `starred` INTEGER NOT NULL, `read_it_later` INTEGER NOT NULL, `remoteId` TEXT, FOREIGN KEY(`feed_id`) REFERENCES `Feed`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -617,20 +603,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "readChanged",
-            "columnName": "read_changed",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
             "fieldPath": "starred",
             "columnName": "starred",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "starredChanged",
-            "columnName": "starred_changed",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -669,14 +643,6 @@
               "guid"
             ],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_StarredItem_guid` ON `${TABLE_NAME}` (`guid`)"
-          },
-          {
-            "name": "index_StarredItem_starred_changed",
-            "unique": false,
-            "columnNames": [
-              "starred_changed"
-            ],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_StarredItem_starred_changed` ON `${TABLE_NAME}` (`starred_changed`)"
           }
         ],
         "foreignKeys": [
@@ -697,7 +663,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c5754bffea62bb91c7d79c091c61aca8')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'be089eb90d96a8582a76c667963886cc')"
     ]
   }
 }

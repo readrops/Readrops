@@ -136,9 +136,7 @@ public class ItemActivity extends AppCompatActivity {
             }
 
             item.setStarred(!item.isStarred());
-            item.setStarredChanged(!item.isStarredChanged());
-
-            viewModel.setStarState(item.getId(), item.isStarred(), item.isStarredChanged())
+            viewModel.setStarState(item)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnError(throwable -> Utils.showSnackbar(binding.itemRoot, throwable.getMessage()))

@@ -24,9 +24,7 @@ class StarredItem() : Item() {
         guid = item.guid
         readTime = item.readTime
         isRead = item.isRead
-        isReadChanged = item.isReadChanged
         isStarred = true // important here for the items query compatibility
-        isStarredChanged = item.isStarredChanged
         isReadItLater = item.isReadItLater
         remoteId = item.remoteId
         feedRemoteId = item.feedRemoteId

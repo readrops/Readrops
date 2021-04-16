@@ -17,6 +17,7 @@ import com.readrops.db.Database;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
+import com.readrops.db.entities.ReadStarStateChange;
 import com.readrops.db.entities.account.Account;
 
 import org.koin.java.KoinJavaComponent;
@@ -113,12 +114,10 @@ public abstract class ARepository {
         return database.folderDao().delete(folder);
     }
 
-    public Completable setItemReadState(Item item, boolean read) {
-        return setItemReadState(item.getId(), read, !item.isReadChanged());
-    }
-
-    public Completable setItemReadState(int itemId, boolean read, boolean readChanged) {
-        return database.itemDao().setReadState(itemId, read, readChanged);
+    public Completable setItemReadState(Item item) {
+        return database.itemDao().setReadState(item.getId(), item.isRead())
+                .andThen(database.itemsIdsDao().upsertReadStarStateChange(new ReadStarStateChange(item.getId(),
+                        true, false, account.getId())));
     }
 
     public Completable setAllItemsReadState(boolean read) {
@@ -127,6 +126,12 @@ public abstract class ARepository {
 
     public Completable setAllFeedItemsReadState(int feedId, boolean read) {
         return database.itemDao().setAllFeedItemsReadState(feedId, read ? 1 : 0);
+    }
+
+    public Completable setItemStarState(Item item) {
+        return database.itemDao().setStarState(item.getId(), item.isStarred())
+                .andThen(database.itemsIdsDao().upsertReadStarStateChange(new ReadStarStateChange(item.getId(),
+                        false, true, account.getId())));
     }
 
     public Single<Integer> getFeedCount(int accountId) {

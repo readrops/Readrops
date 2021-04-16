@@ -16,6 +16,7 @@ import com.readrops.db.QueryFilters;
 import com.readrops.db.RoomFactoryWrapper;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
+import com.readrops.db.entities.Item;
 import com.readrops.db.entities.account.Account;
 import com.readrops.db.filters.FilterType;
 import com.readrops.db.filters.ListSortType;
@@ -223,19 +224,19 @@ public class MainViewModel extends ViewModel {
 
     //region Item read state
 
-    public Completable setItemReadState(ItemWithFeed itemWithFeed, boolean read) {
-        return repository.setItemReadState(itemWithFeed.getItem(), read);
+    public Completable setItemReadState(ItemWithFeed itemWithFeed) {
+        return repository.setItemReadState(itemWithFeed.getItem());
     }
 
-    public Completable setItemReadState(int itemId, boolean read, boolean readChanged) {
-        return repository.setItemReadState(itemId, read, readChanged);
+    public Completable setItemReadState(Item item) {
+        return repository.setItemReadState(item);
     }
 
-    public Completable setItemsReadState(List<ItemWithFeed> items, boolean read) {
+    public Completable setItemsReadState(List<ItemWithFeed> items) {
         List<Completable> completableList = new ArrayList<>();
 
         for (ItemWithFeed itemWithFeed : items) {
-            completableList.add(setItemReadState(itemWithFeed, read));
+            completableList.add(setItemReadState(itemWithFeed));
         }
 
         return Completable.concat(completableList);

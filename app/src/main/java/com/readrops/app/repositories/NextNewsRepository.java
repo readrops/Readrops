@@ -124,11 +124,11 @@ public class NextNewsRepository extends ARepository {
                     database.accountDao().updateLastModified(account.getId(), lastModified);
 
                     if (!syncData.getReadItems().isEmpty() || !syncData.getUnreadItems().isEmpty()) {
-                        database.itemDao().resetReadChanges(account.getId());
+
                     }
 
                     if (!syncData.getStarredItems().isEmpty() || !syncData.getUnstarredItems().isEmpty()) {
-                        database.itemDao().resetStarChanges(account.getId());
+
                     }
 
                     emitter.onComplete();

@@ -7,14 +7,16 @@ import com.readrops.db.filters.ListSortType
 
 object ItemsQueryBuilder {
 
-    private val COLUMNS = arrayOf("title", "clean_description", "image_link", "pub_date", "read",
-            "read_changed", "read_it_later", "Feed.name", "text_color", "background_color", "icon_url", "read_time",
-            "Feed.id as feedId", "Feed.account_id", "Folder.id as folder_id", "Folder.name as folder_name")
+    private val COLUMNS = arrayOf("title", "clean_description", "image_link", "pub_date",
+            "read_it_later", "Feed.name", "text_color", "background_color", "icon_url", "read_time",
+            "Feed.id as feedId", "Feed.account_id", "Folder.id as folder_id", "Folder.name as folder_name",
+            "case When UnreadItemsIds.remote_id is NULL Then 1 else 0 End read")
 
     private val ITEM_COLUMNS = arrayOf(".id", ".remoteId")
 
     private const val SELECT_ALL_JOIN = "Item INNER JOIN Feed on Item.feed_id = Feed.id " +
-            "LEFT JOIN Folder on Feed.folder_id = Folder.id"
+            "LEFT JOIN Folder on Feed.folder_id = Folder.id LEFT JOIN UnreadItemsIds On " +
+            "Item.remoteId = UnreadItemsIds.remote_id"
 
     private const val ORDER_BY_ASC = ".id DESC"
 
@@ -44,21 +46,20 @@ object ItemsQueryBuilder {
         }
     }
 
-    private fun buildWhereClause(queryFilters: QueryFilters): String {
-        return StringBuilder(500).run {
-            append("Feed.account_id = ${queryFilters.accountId} And ")
+    private fun buildWhereClause(queryFilters: QueryFilters): String = StringBuilder(500).run {
+        append("Feed.account_id = ${queryFilters.accountId} And " +
+                "UnreadItemsIds.account_id = ${queryFilters.accountId} Or UnreadItemsIds.account_id is NULL And ")
 
-            if (!queryFilters.showReadItems) append("read = 0 And ")
+        if (!queryFilters.showReadItems) append("read = 0 And ")
 
-            when (queryFilters.filterType) {
-                FilterType.FEED_FILTER -> append("feed_id = ${queryFilters.filterFeedId} And read_it_later = 0")
-                FilterType.READ_IT_LATER_FILTER -> append("read_it_later = 1")
-                FilterType.STARS_FILTER -> append("starred = 1 And read_it_later = 0")
-                else -> append("read_it_later = 0")
-            }
-
-            toString()
+        when (queryFilters.filterType) {
+            FilterType.FEED_FILTER -> append("feed_id = ${queryFilters.filterFeedId} And read_it_later = 0")
+            FilterType.READ_IT_LATER_FILTER -> append("read_it_later = 1")
+            FilterType.STARS_FILTER -> append("starred = 1 And read_it_later = 0")
+            else -> append("read_it_later = 0")
         }
+
+        toString()
     }
 
     private fun buildItemColumns(starQuery: Boolean): Array<String> {
@@ -76,8 +77,10 @@ object ItemsQueryBuilder {
 
 }
 
-class QueryFilters(var showReadItems: Boolean = true,
-                   var filterFeedId: Int = 0,
-                   var accountId: Int = 0,
-                   var filterType: FilterType = FilterType.NO_FILTER,
-                   var sortType: ListSortType = ListSortType.NEWEST_TO_OLDEST)
+class QueryFilters(
+        var showReadItems: Boolean = true,
+        var filterFeedId: Int = 0,
+        var accountId: Int = 0,
+        var filterType: FilterType = FilterType.NO_FILTER,
+        var sortType: ListSortType = ListSortType.NEWEST_TO_OLDEST,
+)

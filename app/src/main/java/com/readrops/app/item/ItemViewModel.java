@@ -9,8 +9,12 @@ import androidx.core.content.FileProvider;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.readrops.app.repositories.ARepository;
 import com.readrops.db.Database;
+import com.readrops.db.entities.Item;
 import com.readrops.db.pojo.ItemWithFeed;
+
+import org.koin.java.KoinJavaComponent;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,8 +35,8 @@ public class ItemViewModel extends ViewModel {
         return database.itemDao().getItemById(id);
     }
 
-    public Completable setStarState(int itemId, boolean starred, boolean starredChanged) {
-        return database.itemDao().setStarState(itemId, starred, starredChanged);
+    public Completable setStarState(Item item) {
+        return KoinJavaComponent.get(ARepository.class).setItemStarState(item);
     }
 
     public Uri saveImageInCache(Bitmap bitmap, Context context) throws IOException {

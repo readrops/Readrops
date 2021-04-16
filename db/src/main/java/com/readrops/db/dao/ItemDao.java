@@ -7,12 +7,12 @@ import androidx.room.Dao;
 import androidx.room.Query;
 import androidx.room.RawQuery;
 import androidx.room.RoomWarnings;
-import androidx.room.Transaction;
 import androidx.sqlite.db.SupportSQLiteQuery;
 
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
+import com.readrops.db.entities.UnreadItemsIds;
 import com.readrops.db.pojo.ItemWithFeed;
 import com.readrops.db.pojo.StarItem;
 
@@ -23,7 +23,7 @@ import io.reactivex.Completable;
 @Dao
 public interface ItemDao extends BaseDao<Item> {
 
-    @RawQuery(observedEntities = {Item.class, Folder.class, Feed.class})
+    @RawQuery(observedEntities = {Item.class, Folder.class, Feed.class, UnreadItemsIds.class})
     DataSource.Factory<Integer, ItemWithFeed> selectAll(SupportSQLiteQuery query);
 
     @Query("Select * From Item Where id = :itemId")
@@ -43,15 +43,14 @@ public interface ItemDao extends BaseDao<Item> {
      *
      * @param itemId      id of the item to update
      * @param read        1 for read, 0 for unread
-     * @param readChanged
      */
-    @Query("Update Item Set read_changed = :readChanged, read = :read Where id = :itemId")
-    Completable setReadState(int itemId, boolean read, boolean readChanged);
+    @Query("Update Item Set read = :read Where id = :itemId")
+    Completable setReadState(int itemId, boolean read);
 
-    @Query("Update Item set read_changed = 1, read = :readState Where feed_id In (Select id From Feed Where account_id = :accountId)")
+    @Query("Update Item set read = :readState Where feed_id In (Select id From Feed Where account_id = :accountId)")
     Completable setAllItemsReadState(int readState, int accountId);
 
-    @Query("Update Item set read_changed = 1, read = :readState Where feed_id = :feedId")
+    @Query("Update Item set read = :readState Where feed_id = :feedId")
     Completable setAllFeedItemsReadState(int feedId, int readState);
 
     @Query("Update Item set read_it_later = 1 Where id = :itemId")
@@ -66,41 +65,21 @@ public interface ItemDao extends BaseDao<Item> {
             "Folder.name as folder_name from Item Inner Join Feed On Item.feed_id = Feed.id Left Join Folder on Folder.id = Feed.folder_id Where Item.id = :id")
     LiveData<ItemWithFeed> getItemById(int id);
 
-    @Query("Select Item.remoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where read_changed = 1 And read = 1 And account_id = :accountId")
+    @Query("Select Item.remoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where read = 1 And account_id = :accountId")
     List<String> getReadChanges(int accountId);
 
-    @Query("Select Item.remoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where read_changed = 1 And read = 0 And account_id = :accountId")
+    @Query("Select Item.remoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where read = 0 And account_id = :accountId")
     List<String> getUnreadChanges(int accountId);
 
-    @Query("Select Item.remoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where starred_changed = 1 And starred = 1 And account_id = :accountId")
-    List<String> getFreshRSSStarChanges(int accountId);
-
-    @Query("Select Item.remoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where starred_changed = 1 And starred = 0 And account_id = :accountId")
-    List<String> getFreshRSSUnstarChanges(int accountId);
-
-    @Query("Select Item.guid, Feed.remoteId as feedRemoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where starred_changed = 1 And starred = 1 And account_id = :accountId")
+    @Query("Select Item.guid, Feed.remoteId as feedRemoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where starred = 1 And account_id = :accountId")
     List<StarItem> getStarChanges(int accountId);
 
-    @Query("Select Item.guid, Feed.remoteId as feedRemoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where starred_changed = 1 And starred = 0 And account_id = :accountId")
+    @Query("Select Item.guid, Feed.remoteId as feedRemoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where starred = 0 And account_id = :accountId")
     List<StarItem> getUnstarChanges(int accountId);
-
-    @Query("Update Item set read_changed = 0 Where feed_id in (Select id From Feed Where account_id = :accountId)")
-    void resetReadChanges(int accountId);
-
-    @Query("Update Item set starred_changed = 0 Where feed_id in (Select id From Feed Where account_id = :accountId)")
-    void resetStarChanges(int accountId);
 
     @Query("Update Item set read = :read, starred = :starred Where remoteId = :remoteId")
     void setReadAndStarState(String remoteId, boolean read, boolean starred);
 
-    @Query("Update Item set starred = :starred, starred_changed = :starredChanged Where id = :itemId")
-    Completable setStarState(int itemId, boolean starred, boolean starredChanged);
-
-    @Transaction
-    @Query("Update Item set read = 0 Where Item.remoteId In (Select  remote_id From UnreadItemsIds) And feed_id In (Select id From Feed Where account_id = :accountId)")
-    void updateUnreadState(int accountId);
-
-    @Transaction
-    @Query("Update Item set read = 1 Where Item.remoteId Not In (Select remote_id From UnreadItemsIds) And feed_id In (Select id From Feed Where account_id = :accountId)")
-    void updateReadState(int accountId);
+    @Query("Update Item set starred = :starred Where id = :itemId")
+    Completable setStarState(int itemId, boolean starred);
 }
