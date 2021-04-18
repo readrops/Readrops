@@ -31,8 +31,12 @@ public class ItemViewModel extends ViewModel {
         this.database = database;
     }
 
-    public LiveData<ItemWithFeed> getItemById(int id) {
-        return database.itemDao().getItemById(id);
+    public LiveData<ItemWithFeed> getItemById(int id, boolean starredItem) {
+        if (starredItem) {
+            return database.starredItemDao().getStarredItemById(id);
+        } else {
+            return database.itemDao().getItemById(id);
+        }
     }
 
     public Completable setStarState(Item item) {

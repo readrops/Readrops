@@ -315,4 +315,8 @@ public class DrawerManager {
     public void setDrawerSelection(long identifier) {
         drawer.setSelection(identifier);
     }
+
+    public long getCurrentSelection() {
+        return drawer.getCurrentSelection();
+    }
 }

@@ -52,6 +52,7 @@ import io.reactivex.schedulers.Schedulers;
 import static com.readrops.app.utils.ReadropsKeys.ACTION_BAR_COLOR;
 import static com.readrops.app.utils.ReadropsKeys.IMAGE_URL;
 import static com.readrops.app.utils.ReadropsKeys.ITEM_ID;
+import static com.readrops.app.utils.ReadropsKeys.STARRED_ITEM;
 import static com.readrops.app.utils.ReadropsKeys.WEB_URL;
 
 public class ItemActivity extends AppCompatActivity {
@@ -81,6 +82,7 @@ public class ItemActivity extends AppCompatActivity {
         Intent intent = getIntent();
         int itemId = intent.getIntExtra(ITEM_ID, 0);
         String imageUrl = intent.getStringExtra(IMAGE_URL);
+        boolean starredItem = intent.getBooleanExtra(STARRED_ITEM, false);
 
         setSupportActionBar(binding.collapsingLayoutToolbar);
 
@@ -117,7 +119,7 @@ public class ItemActivity extends AppCompatActivity {
         }));
 
         viewModel = ViewModelCompat.getViewModel(this, ItemViewModel.class);
-        viewModel.getItemById(itemId).observe(this, itemWithFeed1 -> {
+        viewModel.getItemById(itemId, starredItem).observe(this, itemWithFeed1 -> {
             if (!uiBinded) {
                 bindUI(itemWithFeed1);
                 uiBinded = true;

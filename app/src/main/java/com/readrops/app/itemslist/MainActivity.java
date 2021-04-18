@@ -73,6 +73,7 @@ import static com.readrops.app.utils.ReadropsKeys.FROM_MAIN_ACTIVITY;
 import static com.readrops.app.utils.ReadropsKeys.IMAGE_URL;
 import static com.readrops.app.utils.ReadropsKeys.ITEM_ID;
 import static com.readrops.app.utils.ReadropsKeys.SETTINGS;
+import static com.readrops.app.utils.ReadropsKeys.STARRED_ITEM;
 import static com.readrops.app.utils.ReadropsKeys.SYNCING;
 
 public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener,
@@ -317,6 +318,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
                     intent.putExtra(ITEM_ID, itemWithFeed.getItem().getId());
                     intent.putExtra(IMAGE_URL, itemWithFeed.getItem().getImageLink());
+                    intent.putExtra(STARRED_ITEM, drawerManager.getCurrentSelection() == DrawerManager.STARS_ID &&
+                            viewModel.getCurrentAccount().getConfig().useStarredItems());
                     startActivityForResult(intent, ITEM_REQUEST);
 
                     itemWithFeed.getItem().setRead(true);

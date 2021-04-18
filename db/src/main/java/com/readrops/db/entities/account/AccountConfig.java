@@ -9,7 +9,7 @@ public class AccountConfig {
             .setUseStarredItems(false)
             .build();
 
-    public static final AccountConfig NEXTNEWS = new AccountConfigBuilder()
+    public static final AccountConfig NEXTCLOUD_NEWS = new AccountConfigBuilder()
             .setFeedUrlEditable(false)
             .setFolderCreation(true)
             .setNoFolderCase(false)
@@ -23,13 +23,17 @@ public class AccountConfig {
             .setUseStarredItems(true)
             .build();
 
-    private boolean feedUrlEditable;
+    private final boolean feedUrlEditable;
 
-    private boolean folderCreation;
+    private final boolean folderCreation;
 
-    private boolean noFolderCase;
+    private final boolean noFolderCase;
 
-    private boolean useStarredItems;
+    /*
+    This parameter lets know if the account separates items and starred items
+    by using the StarredItem table
+     */
+    private final boolean useStarredItems;
 
     public boolean isFeedUrlEditable() {
         return feedUrlEditable;
@@ -43,7 +47,7 @@ public class AccountConfig {
         return noFolderCase;
     }
 
-    public boolean isUseStarredItems() {
+    public boolean useStarredItems() {
         return useStarredItems;
     }
 

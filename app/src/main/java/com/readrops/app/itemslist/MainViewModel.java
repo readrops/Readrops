@@ -4,9 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.paging.DataSource;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
-import androidx.sqlite.db.SupportSQLiteQuery;
 
 import com.readrops.app.repositories.ARepository;
 import com.readrops.app.utils.SharedPreferencesManager;
@@ -69,16 +69,15 @@ public class MainViewModel extends ViewModel {
             itemsWithFeed.removeSource(lastFetch);
         }
 
-        SupportSQLiteQuery query;
+        DataSource.Factory<Integer, ItemWithFeed> items;
 
-        if (queryFilters.getFilterType() == FilterType.STARS_FILTER && currentAccount.getAccountType().getAccountConfig().isUseStarredItems()) {
-            query = ItemsQueryBuilder.buildStarredItemsQuery(queryFilters);
+        if (queryFilters.getFilterType() == FilterType.STARS_FILTER && currentAccount.getAccountType().getAccountConfig().useStarredItems()) {
+            items = database.starredItemDao().selectAll(ItemsQueryBuilder.buildStarredItemsQuery(queryFilters));
         } else {
-            query = ItemsQueryBuilder.buildItemsQuery(queryFilters);
+            items = database.itemDao().selectAll(ItemsQueryBuilder.buildItemsQuery(queryFilters));
         }
 
-        lastFetch = new LivePagedListBuilder<>(new RoomFactoryWrapper<>(database.itemDao()
-                .selectAll(query)),
+        lastFetch = new LivePagedListBuilder<>(new RoomFactoryWrapper<>(items),
                 new PagedList.Config.Builder()
                         .setPageSize(100)
                         .setPrefetchDistance(150)
