@@ -21,3 +21,12 @@ data class ReadStarStateChange(
         @ColumnInfo(name = "star_change") val starChange: Boolean = false,
         @ColumnInfo(name = "account_id") val accountId: Int,
 )
+
+@Entity
+data class ItemStateId(
+        @PrimaryKey(autoGenerate = true) val id: Int = 0,
+        val read: Boolean = false,
+        val starred: Boolean = false,
+        @ColumnInfo(name = "remote_id") val remoteId: String,
+        @ColumnInfo(name = "account_id") val accountId: Int,
+)

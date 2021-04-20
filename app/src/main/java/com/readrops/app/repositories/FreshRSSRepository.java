@@ -17,8 +17,8 @@ import com.readrops.db.Database;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
+import com.readrops.db.entities.ItemStateId;
 import com.readrops.db.entities.StarredItem;
-import com.readrops.db.entities.UnreadItemsIds;
 import com.readrops.db.entities.account.Account;
 
 import org.joda.time.DateTime;
@@ -93,11 +93,11 @@ public class FreshRSSRepository extends ARepository {
         TimingLogger logger = new TimingLogger(TAG, "FreshRSS sync timer");
 
         return Single.<FreshRSSSyncData>create(emitter -> {
-            syncData.setReadItemsIds(database.itemDao().getReadChanges(account.getId()));
-            syncData.setUnreadItemsIds(database.itemDao().getUnreadChanges(account.getId()));
+            syncData.setReadItemsIds(/*database.itemDao().getReadChanges(account.getId()*/Collections.emptyList());
+            syncData.setUnreadItemsIds(/*database.itemDao().getUnreadChanges(account.getId())*/Collections.emptyList());
 
-            syncData.setStarredItemsIds(database.itemDao().getFreshRSSStarChanges(account.getId()));
-            syncData.setUnstarredItemsIds(database.itemDao().getFreshRSSUnstarChanges(account.getId()));
+            syncData.setStarredItemsIds(/*database.itemDao().getFreshRSSStarChanges(account.getId())*/Collections.emptyList());
+            syncData.setUnstarredItemsIds(/*database.itemDao().getFreshRSSUnstarChanges(account.getId())*/Collections.emptyList());
 
             emitter.onSuccess(syncData);
         }).flatMap(syncData1 -> dataSource.sync(syncType, syncData1, account.getWriteToken()))
@@ -115,7 +115,7 @@ public class FreshRSSRepository extends ARepository {
                     insertStarredItems(syncResult.getStarredItems());
                     logger.addSplit("starred items insertion");
 
-                    insertUnreadItemsIds(syncResult.getUnreadIds());
+                    insertItemsIds(syncResult.getUnreadIds(), syncResult.getStarredIds());
                     logger.addSplit("insert and update items ids");
 
                     account.setLastModified(newLastModified);
@@ -266,12 +266,19 @@ public class FreshRSSRepository extends ARepository {
         }
     }
 
-    private void insertUnreadItemsIds(List<String> ids) {
-        database.itemsIdsDao().deleteUnreadItemsIds(account.getId());
-        database.itemsIdsDao().insertUnreadItemsIds(ids.stream().map(id ->
+    private void insertItemsIds(List<String> unreadIds, List<String> starredIds) {
+        /*database.itemsIdsDao().deleteUnreadItemsIds(account.getId());
+        database.itemsIdsDao().insertUnreadItemsIds(unreadIds.stream().map(id ->
                 new UnreadItemsIds(0, id, account.getId())).collect(Collectors.toList()));
 
         database.itemDao().updateUnreadState(account.getId());
-        database.itemDao().updateReadState(account.getId());
+        database.itemDao().updateReadState(account.getId());*/
+
+        database.itemsIdsDao().deleteItemsIds(account.getId());
+        database.itemsIdsDao().insertItemsIds(unreadIds.stream().map(id ->
+                new ItemStateId(0, true, starredIds.stream()
+                        .anyMatch(starredId -> starredId.equals(id)), id, account.getId()))
+                .collect(Collectors.toList()));
+
     }
 }

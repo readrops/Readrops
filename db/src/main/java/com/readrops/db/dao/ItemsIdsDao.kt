@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import com.readrops.db.entities.ItemStateId
 import com.readrops.db.entities.ReadStarStateChange
 import com.readrops.db.entities.UnreadItemsIds
 import com.readrops.db.pojo.ItemReadStarState
@@ -74,4 +75,10 @@ interface ItemsIdsDao {
 
     @Query("Select Case When :itemId In (Select id From ReadStarStateChange Where star_change = 1) Then 1 Else 0 End")
     fun starStateChangeExists(itemId: Int): Boolean
+
+    @Query("Delete From ItemStateId Where account_id = :accountId")
+    fun deleteItemsIds(accountId: Int)
+
+    @Insert
+    fun insertItemsIds(itemsIds: List<ItemStateId>)
 }
