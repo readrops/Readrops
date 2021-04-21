@@ -12,7 +12,7 @@ import androidx.sqlite.db.SupportSQLiteQuery;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
-import com.readrops.db.entities.UnreadItemsIds;
+import com.readrops.db.entities.ItemStateId;
 import com.readrops.db.pojo.ItemWithFeed;
 import com.readrops.db.pojo.StarItem;
 
@@ -23,7 +23,7 @@ import io.reactivex.Completable;
 @Dao
 public interface ItemDao extends BaseDao<Item> {
 
-    @RawQuery(observedEntities = {Item.class, Folder.class, Feed.class, UnreadItemsIds.class})
+    @RawQuery(observedEntities = {Item.class, Folder.class, Feed.class, ItemStateId.class})
     DataSource.Factory<Integer, ItemWithFeed> selectAll(SupportSQLiteQuery query);
 
     @Query("Select * From Item Where id = :itemId")

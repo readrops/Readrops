@@ -10,7 +10,8 @@ object ItemsQueryBuilder {
     private val COLUMNS = arrayOf("title", "clean_description", "image_link", "pub_date",
             "read_it_later", "Feed.name", "text_color", "background_color", "icon_url", "read_time",
             "Feed.id as feedId", "Feed.account_id", "Folder.id as folder_id", "Folder.name as folder_name",
-            "case When UnreadItemsIds.remote_id is NULL Then 1 else 0 End read")
+            "case When ItemStateId.remote_id is NULL Or ItemStateId.read = 1 Then 1 else 0 End read",
+            "case When ItemStateId.remote_id is NULL or ItemStateId.starred = 1 Then 1 else 0 End starred")
 
     private val ITEM_COLUMNS = arrayOf(".id", ".remoteId")
 
@@ -47,9 +48,9 @@ object ItemsQueryBuilder {
 
     private fun buildWhereClause(queryFilters: QueryFilters): String = StringBuilder(500).run {
         append("Feed.account_id = ${queryFilters.accountId} And " +
-                "UnreadItemsIds.account_id = ${queryFilters.accountId} Or UnreadItemsIds.account_id is NULL And ")
+                "ItemStateId.account_id = ${queryFilters.accountId} Or ItemStateId.account_id is NULL And ")
 
-        if (!queryFilters.showReadItems) append("read = 0 And ")
+        //if (!queryFilters.showReadItems) append("read = 0 And ")
 
         when (queryFilters.filterType) {
             FilterType.FEED_FILTER -> append("feed_id = ${queryFilters.filterFeedId} And read_it_later = 0")
@@ -77,8 +78,8 @@ object ItemsQueryBuilder {
 
     private fun buildSelectAllJoin(tableName: String): String = """
         $tableName INNER JOIN Feed on $tableName.feed_id = Feed.id
-            LEFT JOIN Folder on Feed.folder_id = Folder.id LEFT JOIN UnreadItemsIds On
-            $tableName.remoteId = UnreadItemsIds.remote_id
+            LEFT JOIN Folder on Feed.folder_id = Folder.id LEFT JOIN ItemStateId On
+            $tableName.remoteId = ItemStateId.remote_id
     """.trimIndent()
 
 }
