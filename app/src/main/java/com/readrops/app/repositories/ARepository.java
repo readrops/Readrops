@@ -17,6 +17,7 @@ import com.readrops.db.Database;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
+import com.readrops.db.entities.ItemStateId;
 import com.readrops.db.entities.ReadStarStateChange;
 import com.readrops.db.entities.account.Account;
 
@@ -115,7 +116,7 @@ public abstract class ARepository {
     }
 
     public Completable setItemReadState(Item item) {
-        return database.itemDao().setReadState(item.getId(), item.isRead())
+        return database.itemsIdsDao().upsertItemReadState(new ItemStateId(0, item.isRead(), item.isStarred(), item.getRemoteId(), account.getId()))
                 .andThen(database.itemsIdsDao().upsertReadStarStateChange(new ReadStarStateChange(item.getId(),
                         true, false, account.getId())));
     }

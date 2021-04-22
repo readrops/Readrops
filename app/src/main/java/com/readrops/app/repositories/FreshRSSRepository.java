@@ -275,7 +275,7 @@ public class FreshRSSRepository extends ARepository {
         database.itemDao().updateReadState(account.getId());*/
 
         database.itemsIdsDao().deleteItemsIds(account.getId());
-        database.itemsIdsDao().insertItemsIds(unreadIds.stream().map(id ->
+        database.itemsIdsDao().insertItemStateId(unreadIds.stream().map(id ->
                 new ItemStateId(0, false, starredIds.stream()
                         .anyMatch(starredId -> starredId.equals(id)), id, account.getId()))
                 .collect(Collectors.toList()));

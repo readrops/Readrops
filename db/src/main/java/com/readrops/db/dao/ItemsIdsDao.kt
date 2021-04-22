@@ -14,35 +14,10 @@ import io.reactivex.Completable
 interface ItemsIdsDao {
 
     @Insert
-    fun insertUnreadItemsIds(unreadItemsIds: List<UnreadItemsIds>)
-
-    @Insert
-    fun insertUnreadItemId(unreadItemId: UnreadItemsIds)
-
-    @Query("Delete From UnreadItemsIds Where remote_id = :remoteId And account_id = :accountId")
-    fun deleteUnreadItemId(remoteId: String, accountId: Int)
-
-    fun upsertUnreadItemId(unreadItemId: UnreadItemsIds) = Completable.create {
-        if (unreadItemIdExists(unreadItemId.remoteId, unreadItemId.accountId)) {
-            deleteUnreadItemId(unreadItemId.remoteId, unreadItemId.accountId)
-        } else {
-            insertUnreadItemId(unreadItemId)
-        }
-
-        it.onComplete()
-    }
-
-    @Query("Select case When Exists (Select remote_id, account_id From UnreadItemsIds Where remote_id = :remoteId And account_id = :accountId) Then 1 else 0 End")
-    fun unreadItemIdExists(remoteId: String, accountId: Int): Boolean
-
-    @Insert
     fun insertReadStarStateChange(readStarStateChange: ReadStarStateChange)
 
     @Delete
     fun deleteReadStarStateChange(readStarStateChange: ReadStarStateChange)
-
-    @Query("Delete From UnreadItemsIds Where account_id = :accountId")
-    fun deleteUnreadItemsIds(accountId: Int)
 
     @Query("Delete From ReadStarStateChange Where account_id = :accountId")
     fun deleteReadStarStateChanges(accountId: Int)
@@ -50,9 +25,9 @@ interface ItemsIdsDao {
     @Query("Delete From ReadStarStateChange Where account_id = :accountId")
     fun deleteStateChanges(accountId: Int)
 
-    @Query("Select case When UnreadItemsIds.remote_id is NULL Then 1 else 0 End read, Item.remoteId, ReadStarStateChange.read_change, Item.starred, ReadStarStateChange.star_change " +
+    @Query("Select case When ItemStateId.remote_id is NULL Or ItemStateId.read = 1 Then 1 else 0 End read, Item.remoteId, ReadStarStateChange.read_change, Item.starred, ReadStarStateChange.star_change " +
             "From ReadStarStateChange Inner Join Item On ReadStarStateChange.id = Item.id " +
-            "Left Join UnreadItemsIds On UnreadItemsIds.remote_id = Item.remoteId Where ReadStarStateChange.account_id = :accountId")
+            "Left Join ItemStateId On ItemStateId.remote_id = Item.remoteId Where ReadStarStateChange.account_id = :accountId")
     fun getItemStateChanges(accountId: Int): List<ItemReadStarState>
 
     @Query("Select StarredItem.remoteId, Case When StarredItem.read = 1 then 0 else 1 end read, StarredItem.starred, ReadStarStateChange.read_change, " +
@@ -79,6 +54,28 @@ interface ItemsIdsDao {
     @Query("Delete From ItemStateId Where account_id = :accountId")
     fun deleteItemsIds(accountId: Int)
 
+    @Query("Delete From ItemStateId Where remote_id = :remoteId And account_id = :accountId")
+    fun deleteItemStateId(remoteId: String, accountId: Int)
+
     @Insert
-    fun insertItemsIds(itemsIds: List<ItemStateId>)
+    fun insertItemStateId(itemsIds: List<ItemStateId>)
+
+    @Insert
+    fun insertItemStateId(itemStateId: ItemStateId)
+
+    @Query("Update ItemStateId set read = :read Where remote_id = :remoteId And account_id = :accountId")
+    fun updateItemReadState(read: Boolean, remoteId: String, accountId: Int)
+
+    @Query("Select case When Exists (Select remote_id, account_id From ItemStateId Where remote_id = :remoteId And account_id = :accountId) Then 1 else 0 End")
+    fun itemStateExists(remoteId: String, accountId: Int): Boolean
+
+    fun upsertItemReadState(itemStateId: ItemStateId) = Completable.create {
+        if (itemStateExists(itemStateId.remoteId, itemStateId.accountId)) {
+            updateItemReadState(itemStateId.read, itemStateId.remoteId, itemStateId.accountId)
+        } else {
+            insertItemStateId(itemStateId)
+        }
+
+        it.onComplete()
+    }
 }

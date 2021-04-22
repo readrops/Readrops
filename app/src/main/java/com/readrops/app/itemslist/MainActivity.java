@@ -504,7 +504,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
             allItemsSelected = false;
         } else {
-            viewModel.setItemsReadState(adapter.getSelectedItems())
+            viewModel.setItemsReadState(adapter.getSelectedItems(), read)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnError(throwable -> Utils.showSnackbar(binding.mainRoot, throwable.getMessage()))

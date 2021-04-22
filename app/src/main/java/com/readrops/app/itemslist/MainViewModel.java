@@ -232,10 +232,11 @@ public class MainViewModel extends ViewModel {
         return repository.setItemReadState(item);
     }
 
-    public Completable setItemsReadState(List<ItemWithFeed> items) {
+    public Completable setItemsReadState(List<ItemWithFeed> items, boolean read) {
         List<Completable> completableList = new ArrayList<>();
 
         for (ItemWithFeed itemWithFeed : items) {
+            itemWithFeed.getItem().setRead(read);
             completableList.add(setItemReadState(itemWithFeed));
         }
 
