@@ -631,6 +631,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
                     @Override
                     public void onComplete() {
+                        viewModel.invalidate();
+
                         if (viewModel.isAccountLocal() && feedNb > 0) {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
                                 binding.syncProgressBar.setProgress(100, true);

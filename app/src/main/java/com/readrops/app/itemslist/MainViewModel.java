@@ -125,6 +125,7 @@ public class MainViewModel extends ViewModel {
     }
 
     public Observable<Feed> sync(List<Feed> feeds) {
+        itemsWithFeed.removeSource(lastFetch);
         return repository.sync(feeds);
     }
 
