@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.Query
 import com.readrops.db.entities.ItemStateId
 import com.readrops.db.entities.ReadStarStateChange
-import com.readrops.db.entities.UnreadItemsIds
 import com.readrops.db.pojo.ItemReadStarState
 import io.reactivex.Completable
 
@@ -23,16 +22,14 @@ interface ItemsIdsDao {
     fun deleteReadStarStateChanges(accountId: Int)
 
     @Query("Delete From ReadStarStateChange Where account_id = :accountId")
-    fun deleteStateChanges(accountId: Int)
+    fun resetStateChanges(accountId: Int)
 
-    @Query("Select case When ItemStateId.remote_id is NULL Or ItemStateId.read = 1 Then 1 else 0 End read, Item.remoteId, ReadStarStateChange.read_change, Item.starred, ReadStarStateChange.star_change " +
+    @Query("Select case When ItemStateId.remote_id is NULL Or ItemStateId.read = 1 Then 1 else 0 End read,  " +
+            "case When ItemStateId.remote_id is NULL Or ItemStateId.starred = 1 Then 1 else 0 End starred," +
+            "ReadStarStateChange.read_change, ReadStarStateChange.star_change, Item.remoteId " +
             "From ReadStarStateChange Inner Join Item On ReadStarStateChange.id = Item.id " +
             "Left Join ItemStateId On ItemStateId.remote_id = Item.remoteId Where ReadStarStateChange.account_id = :accountId")
     fun getItemStateChanges(accountId: Int): List<ItemReadStarState>
-
-    @Query("Select StarredItem.remoteId, Case When StarredItem.read = 1 then 0 else 1 end read, StarredItem.starred, ReadStarStateChange.read_change, " +
-            "ReadStarStateChange.star_change From StarredItem Inner Join ReadStarStateChange On StarredItem.id = ReadStarStateChange.id Where account_id = :accountId")
-    fun getStarredItemStateChanges(accountId: Int): List<ItemReadStarState>
 
     fun upsertReadStarStateChange(readStarStateChange: ReadStarStateChange) = Completable.create {
         if (readStarStateChange.readChange && readStateChangeExists(readStarStateChange.id) ||

@@ -18,8 +18,8 @@ import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
 import com.readrops.db.entities.ItemStateId;
-import com.readrops.db.entities.StarredItem;
 import com.readrops.db.entities.account.Account;
+import com.readrops.db.pojo.ItemReadStarState;
 
 import org.joda.time.DateTime;
 
@@ -93,11 +93,27 @@ public class FreshRSSRepository extends ARepository {
         TimingLogger logger = new TimingLogger(TAG, "FreshRSS sync timer");
 
         return Single.<FreshRSSSyncData>create(emitter -> {
-            syncData.setReadItemsIds(/*database.itemDao().getReadChanges(account.getId()*/Collections.emptyList());
-            syncData.setUnreadItemsIds(/*database.itemDao().getUnreadChanges(account.getId())*/Collections.emptyList());
+            List<ItemReadStarState> itemStateChanges = database.itemsIdsDao().getItemStateChanges(account.getId());
 
-            syncData.setStarredItemsIds(/*database.itemDao().getFreshRSSStarChanges(account.getId())*/Collections.emptyList());
-            syncData.setUnstarredItemsIds(/*database.itemDao().getFreshRSSUnstarChanges(account.getId())*/Collections.emptyList());
+            syncData.setReadItemsIds(itemStateChanges.stream()
+                    .filter(it -> it.getReadChange() && it.getRead())
+                    .map(ItemReadStarState::getRemoteId)
+                    .collect(Collectors.toList()));
+
+            syncData.setUnreadItemsIds(itemStateChanges.stream()
+                    .filter(it -> it.getReadChange() && !it.getRead())
+                    .map(ItemReadStarState::getRemoteId)
+                    .collect(Collectors.toList()));
+
+            syncData.setStarredItemsIds(itemStateChanges.stream()
+                    .filter(it -> it.getStarChange() && it.getStarred())
+                    .map(ItemReadStarState::getRemoteId)
+                    .collect(Collectors.toList()));
+
+            syncData.setUnstarredItemsIds(itemStateChanges.stream()
+                    .filter(it -> it.getStarChange() && !it.getStarred())
+                    .map(ItemReadStarState::getRemoteId)
+                    .collect(Collectors.toList()));
 
             emitter.onSuccess(syncData);
         }).flatMap(syncData1 -> dataSource.sync(syncType, syncData1, account.getWriteToken()))
@@ -112,14 +128,13 @@ public class FreshRSSRepository extends ARepository {
                     insertItems(syncResult.getItems());
                     logger.addSplit("items insertion");
 
-                    insertStarredItems(syncResult.getStarredItems());
-                    logger.addSplit("starred items insertion");
-
                     insertItemsIds(syncResult.getUnreadIds(), syncResult.getStarredIds());
                     logger.addSplit("insert and update items ids");
 
                     account.setLastModified(newLastModified);
                     database.accountDao().updateLastModified(account.getId(), newLastModified);
+
+                    database.itemsIdsDao().resetStateChanges(account.getId());
 
                     logger.dumpToLog();
 
@@ -237,43 +252,7 @@ public class FreshRSSRepository extends ARepository {
         }
     }
 
-    private void insertStarredItems(List<Item> items) {
-        List<StarredItem> starredItems = items.stream().map(StarredItem::new).collect(Collectors.toList());
-
-        List<StarredItem> itemsToInsert = new ArrayList<>();
-        Map<String, Integer> itemsFeedsIds = new HashMap<>();
-
-        for (StarredItem item : starredItems) {
-            int feedId;
-
-            if (itemsFeedsIds.containsKey(item.getFeedRemoteId())) {
-                feedId = itemsFeedsIds.get(item.getFeedRemoteId());
-            } else {
-                feedId = database.feedDao().getFeedIdByRemoteId(item.getFeedRemoteId(), account.getId());
-                itemsFeedsIds.put(item.getFeedRemoteId(), feedId);
-            }
-
-            item.setFeedId(feedId);
-            item.setReadTime(Utils.readTimeFromString(item.getContent()));
-            itemsToInsert.add(item);
-        }
-
-        if (!itemsToInsert.isEmpty()) {
-            Collections.sort(itemsToInsert, Item::compareTo);
-
-            database.starredItemDao().deleteStarredItems(account.getId());
-            database.starredItemDao().insert(itemsToInsert);
-        }
-    }
-
     private void insertItemsIds(List<String> unreadIds, List<String> starredIds) {
-        /*database.itemsIdsDao().deleteUnreadItemsIds(account.getId());
-        database.itemsIdsDao().insertUnreadItemsIds(unreadIds.stream().map(id ->
-                new UnreadItemsIds(0, id, account.getId())).collect(Collectors.toList()));
-
-        database.itemDao().updateUnreadState(account.getId());
-        database.itemDao().updateReadState(account.getId());*/
-
         database.itemsIdsDao().deleteItemsIds(account.getId());
         database.itemsIdsDao().insertItemStateId(unreadIds.stream().map(id ->
                 new ItemStateId(0, false, starredIds.stream()
