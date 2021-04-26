@@ -71,11 +71,15 @@ public class MainViewModel extends ViewModel {
 
         DataSource.Factory<Integer, ItemWithFeed> items;
 
+
+/*
         if (queryFilters.getFilterType() == FilterType.STARS_FILTER && currentAccount.getAccountType().getAccountConfig().useStarredItems()) {
             items = database.starredItemDao().selectAll(ItemsQueryBuilder.buildStarredItemsQuery(queryFilters));
         } else {
-            items = database.itemDao().selectAll(ItemsQueryBuilder.buildItemsQuery(queryFilters));
+
         }
+*/
+        items = database.itemDao().selectAll(ItemsQueryBuilder.buildItemsQuery(queryFilters));
 
         lastFetch = new LivePagedListBuilder<>(new RoomFactoryWrapper<>(items),
                 new PagedList.Config.Builder()

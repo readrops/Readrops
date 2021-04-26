@@ -119,7 +119,7 @@ public class ItemActivity extends AppCompatActivity {
         }));
 
         viewModel = ViewModelCompat.getViewModel(this, ItemViewModel.class);
-        viewModel.getItemById(itemId, starredItem).observe(this, itemWithFeed1 -> {
+        viewModel.getItemById(itemId).observe(this, itemWithFeed1 -> {
             if (!uiBinded) {
                 bindUI(itemWithFeed1);
                 uiBinded = true;
