@@ -9,7 +9,7 @@ import com.readrops.db.entities.account.Account
 import dev.matrix.roomigrant.GenerateRoomMigrations
 
 @Database(entities = [Feed::class, Item::class, Folder::class, Account::class,
-    ReadStarStateChange::class, ItemStateId::class], version = 3)
+    ItemStateChange::class, ItemState::class], version = 3)
 @TypeConverters(Converters::class)
 @GenerateRoomMigrations
 abstract class Database : RoomDatabase() {
@@ -21,5 +21,7 @@ abstract class Database : RoomDatabase() {
 
     abstract fun accountDao(): AccountDao
 
-    abstract fun itemsIdsDao(): ItemsIdsDao
+    abstract fun itemStateDao(): ItemStateDao
+
+    abstract fun itemStateChangesDao(): ItemStateChangeDao
 }

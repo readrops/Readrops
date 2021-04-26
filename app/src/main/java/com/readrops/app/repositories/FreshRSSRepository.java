@@ -17,7 +17,7 @@ import com.readrops.db.Database;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
-import com.readrops.db.entities.ItemStateId;
+import com.readrops.db.entities.ItemState;
 import com.readrops.db.entities.account.Account;
 import com.readrops.db.pojo.ItemReadStarState;
 
@@ -93,7 +93,9 @@ public class FreshRSSRepository extends ARepository {
         TimingLogger logger = new TimingLogger(TAG, "FreshRSS sync timer");
 
         return Single.<FreshRSSSyncData>create(emitter -> {
-            List<ItemReadStarState> itemStateChanges = database.itemsIdsDao().getItemStateChanges(account.getId());
+            List<ItemReadStarState> itemStateChanges = database
+                    .itemStateChangesDao()
+                    .getItemStateChanges(account.getId());
 
             syncData.setReadItemsIds(itemStateChanges.stream()
                     .filter(it -> it.getReadChange() && it.getRead())
@@ -134,7 +136,7 @@ public class FreshRSSRepository extends ARepository {
                     account.setLastModified(newLastModified);
                     database.accountDao().updateLastModified(account.getId(), newLastModified);
 
-                    database.itemsIdsDao().resetStateChanges(account.getId());
+                    database.itemStateChangesDao().resetStateChanges(account.getId());
 
                     logger.dumpToLog();
 
@@ -253,9 +255,9 @@ public class FreshRSSRepository extends ARepository {
     }
 
     private void insertItemsIds(List<String> unreadIds, List<String> starredIds) {
-        database.itemsIdsDao().deleteItemsIds(account.getId());
-        database.itemsIdsDao().insertItemStateId(unreadIds.stream().map(id ->
-                new ItemStateId(0, false, starredIds.stream()
+        database.itemStateDao().deleteItemsStates(account.getId());
+        database.itemStateDao().insertItemStates(unreadIds.stream().map(id ->
+                new ItemState(0, false, starredIds.stream()
                         .anyMatch(starredId -> starredId.equals(id)), id, account.getId()))
                 .collect(Collectors.toList()));
 

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "276d6f5e56615e86b3634302b7565e95",
+    "identityHash": "a1f1be38bb62d3d52c1563c7a2472a4c",
     "entities": [
       {
         "tableName": "Feed",
@@ -422,7 +422,7 @@
         "foreignKeys": []
       },
       {
-        "tableName": "ReadStarStateChange",
+        "tableName": "ItemStateChange",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `read_change` INTEGER NOT NULL, `star_change` INTEGER NOT NULL, `account_id` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
@@ -460,7 +460,7 @@
         "foreignKeys": []
       },
       {
-        "tableName": "ItemStateId",
+        "tableName": "ItemState",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `read` INTEGER NOT NULL, `starred` INTEGER NOT NULL, `remote_id` TEXT NOT NULL, `account_id` INTEGER NOT NULL)",
         "fields": [
           {
@@ -507,7 +507,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '276d6f5e56615e86b3634302b7565e95')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a1f1be38bb62d3d52c1563c7a2472a4c')"
     ]
   }
 }
