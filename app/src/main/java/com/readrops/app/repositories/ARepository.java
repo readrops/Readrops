@@ -18,7 +18,6 @@ import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
 import com.readrops.db.entities.ItemState;
-import com.readrops.db.entities.ItemStateChange;
 import com.readrops.db.entities.account.Account;
 
 import org.koin.java.KoinJavaComponent;
@@ -116,9 +115,9 @@ public abstract class ARepository {
     }
 
     public Completable setItemReadState(Item item) {
-        return database.itemStateDao().upsertItemReadState(new ItemState(0, item.isRead(), item.isStarred(), item.getRemoteId(), account.getId()))
-                .andThen(database.itemStateChangesDao().upsertItemStateChange(new ItemStateChange(item.getId(),
-                        true, false, account.getId())));
+        return database.itemStateChangesDao().upsertItemReadStateChange(item, account.getId())
+                .andThen(database.itemStateDao().upsertItemReadState(new ItemState(0, item.isRead(),
+                        item.isStarred(), item.getRemoteId(), account.getId())));
     }
 
     public Completable setAllItemsReadState(boolean read) {
@@ -130,9 +129,10 @@ public abstract class ARepository {
     }
 
     public Completable setItemStarState(Item item) {
-        return database.itemDao().setStarState(item.getId(), item.isStarred())
-                .andThen(database.itemStateChangesDao().upsertItemStateChange(new ItemStateChange(item.getId(),
-                        false, true, account.getId())));
+        return database.itemStateChangesDao().upsertItemStarStateChange(item, account.getId())
+                .andThen(database.itemStateDao().upsertItemStarState(new ItemState(0, item.isRead(),
+                        item.isStarred(), item.getRemoteId(), account.getId())));
+
     }
 
     public Single<Integer> getFeedCount(int accountId) {

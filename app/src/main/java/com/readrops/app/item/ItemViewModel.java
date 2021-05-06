@@ -12,8 +12,10 @@ import androidx.lifecycle.ViewModel;
 import com.readrops.app.repositories.ARepository;
 import com.readrops.db.Database;
 import com.readrops.db.entities.Item;
+import com.readrops.db.entities.account.Account;
 import com.readrops.db.pojo.ItemWithFeed;
 
+import org.koin.core.parameter.DefinitionParametersKt;
 import org.koin.java.KoinJavaComponent;
 
 import java.io.File;
@@ -26,9 +28,14 @@ import io.reactivex.Completable;
 public class ItemViewModel extends ViewModel {
 
     private final Database database;
+    private Account account;
 
     public ItemViewModel(@NonNull Database database) {
         this.database = database;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
     public LiveData<ItemWithFeed> getItemById(int id) {
@@ -36,7 +43,8 @@ public class ItemViewModel extends ViewModel {
     }
 
     public Completable setStarState(Item item) {
-        return KoinJavaComponent.get(ARepository.class).setItemStarState(item);
+        return KoinJavaComponent.get(ARepository.class, null, () -> DefinitionParametersKt.parametersOf(account))
+                .setItemStarState(item);
     }
 
     public Uri saveImageInCache(Bitmap bitmap, Context context) throws IOException {

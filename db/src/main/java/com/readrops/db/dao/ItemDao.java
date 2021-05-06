@@ -38,12 +38,6 @@ public interface ItemDao extends BaseDao<Item> {
     @Query("Select * From Item Where remoteId = :remoteId And feed_id = :feedId")
     Item selectByRemoteId(String remoteId, int feedId);
 
-    /**
-     * Set an item read or unread
-     *
-     * @param itemId      id of the item to update
-     * @param read        1 for read, 0 for unread
-     */
     @Query("Update Item Set read = :read Where id = :itemId")
     Completable setReadState(int itemId, boolean read);
 
@@ -60,7 +54,7 @@ public interface ItemDao extends BaseDao<Item> {
     int getUnreadCount(int feedId);
 
     @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
-    @Query("Select Item.id, title, Item.description, content, link, pub_date, image_link, author, read, text_color, " +
+    @Query("Select Item.id, Item.remoteId, title, Item.description, content, link, pub_date, image_link, author, read, text_color, " +
             "background_color, read_time, starred, Feed.name, Feed.id as feedId, siteUrl, Folder.id as folder_id, " +
             "Folder.name as folder_name from Item Inner Join Feed On Item.feed_id = Feed.id Left Join Folder on Folder.id = Feed.folder_id Where Item.id = :id")
     LiveData<ItemWithFeed> getItemById(int id);
@@ -79,7 +73,4 @@ public interface ItemDao extends BaseDao<Item> {
 
     @Query("Update Item set read = :read, starred = :starred Where remoteId = :remoteId")
     void setReadAndStarState(String remoteId, boolean read, boolean starred);
-
-    @Query("Update Item set starred = :starred Where id = :itemId")
-    Completable setStarState(int itemId, boolean starred);
 }

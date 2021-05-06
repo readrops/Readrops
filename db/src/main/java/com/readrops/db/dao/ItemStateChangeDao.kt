@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import com.readrops.db.entities.Item
 import com.readrops.db.entities.ItemStateChange
 import com.readrops.db.pojo.ItemReadStarState
 import io.reactivex.Completable
@@ -27,20 +28,73 @@ interface ItemStateChangeDao : BaseDao<ItemStateChange> {
             "Left Join ItemState On ItemState.remote_id = Item.remoteId Where ItemStateChange.account_id = :accountId")
     fun getItemStateChanges(accountId: Int): List<ItemReadStarState>
 
-    fun upsertItemStateChange(itemStateChange: ItemStateChange) = Completable.create {
-        if (itemStateChange.readChange && readStateChangeExists(itemStateChange.id) ||
-                itemStateChange.starChange && starStateChangeExists(itemStateChange.id)) {
-            deleteItemStateChange(itemStateChange)
-        } else {
-            insertItemStateChange(itemStateChange)
-        }
-
-        it.onComplete()
-    }
-
     @Query("Select Case When :itemId In (Select id From ItemStateChange Where read_change = 1) Then 1 Else 0 End")
     fun readStateChangeExists(itemId: Int): Boolean
 
     @Query("Select Case When :itemId In (Select id From ItemStateChange Where star_change = 1) Then 1 Else 0 End")
     fun starStateChangeExists(itemId: Int): Boolean
+
+    fun upsertItemReadStateChange(item: Item, accountId: Int) = Completable.create {
+        if (itemStateChangeExists(item.id, accountId)) {
+            val oldItemReadState = getItemReadState(item.remoteId, accountId)
+            val readChange = item.isRead != oldItemReadState
+
+            if (readChange) {
+                val oldItemStateChange = selectItemStateChange(item.id)
+                val newReadChange = !oldItemStateChange.readChange
+
+                if (!newReadChange && !oldItemStateChange.starChange) {
+                    deleteItemStateChange(oldItemStateChange)
+                } else {
+                    updateItemReadStateChange(newReadChange, oldItemStateChange.id)
+                }
+            }
+        } else {
+            insertItemStateChange(ItemStateChange(id = item.id, readChange = true, accountId = accountId))
+        }
+
+        it.onComplete()
+    }
+
+    fun upsertItemStarStateChange(item: Item, accountId: Int) = Completable.create {
+        if (itemStateChangeExists(item.id, accountId)) {
+            val oldItemStarState = getItemStarState(item.remoteId, accountId)
+            val starChange = item.isStarred != oldItemStarState
+
+            if (starChange) {
+                val oldItemStateChange = selectItemStateChange(item.id)
+                val newStarChange = !oldItemStateChange.starChange
+
+                if (!newStarChange && !oldItemStateChange.readChange) {
+                    deleteItemStateChange(oldItemStateChange)
+                } else {
+                    updateItemStarStateChange(newStarChange, oldItemStateChange.id)
+                }
+            }
+        } else {
+            insertItemStateChange(ItemStateChange(id = item.id, starChange = true, accountId = accountId))
+        }
+
+
+        it.onComplete()
+    }
+
+    @Query("Select * From ItemStateChange Where id = :id")
+    fun selectItemStateChange(id: Int): ItemStateChange
+
+    @Query("Select case When Exists (Select id, account_id From ItemStateChange Where id = :id And account_id = :accountId) Then 1 else 0 End")
+    fun itemStateChangeExists(id: Int, accountId: Int): Boolean
+
+    @Query("Select read From ItemState Where remote_id = :remoteId And account_id = :accountId")
+    fun getItemReadState(remoteId: String, accountId: Int): Boolean
+
+    @Query("Select starred From ItemState Where remote_id = :remoteId And account_id = :accountId")
+    fun getItemStarState(remoteId: String, accountId: Int): Boolean
+
+    @Query("Update ItemStateChange set read_change = :readChange Where id = :id")
+    fun updateItemReadStateChange(readChange: Boolean, id: Int)
+
+    @Query("Update ItemStateChange set star_change = :starChange Where id = :id")
+    fun updateItemStarStateChange(starChange: Boolean, id: Int)
+
 }

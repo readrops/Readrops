@@ -38,6 +38,7 @@ import com.readrops.app.utils.PermissionManager;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
 import com.readrops.db.entities.Item;
+import com.readrops.db.entities.account.Account;
 import com.readrops.db.pojo.ItemWithFeed;
 
 import org.koin.androidx.viewmodel.compat.ViewModelCompat;
@@ -49,10 +50,10 @@ import java.util.regex.Pattern;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
+import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
 import static com.readrops.app.utils.ReadropsKeys.ACTION_BAR_COLOR;
 import static com.readrops.app.utils.ReadropsKeys.IMAGE_URL;
 import static com.readrops.app.utils.ReadropsKeys.ITEM_ID;
-import static com.readrops.app.utils.ReadropsKeys.STARRED_ITEM;
 import static com.readrops.app.utils.ReadropsKeys.WEB_URL;
 
 public class ItemActivity extends AppCompatActivity {
@@ -82,7 +83,7 @@ public class ItemActivity extends AppCompatActivity {
         Intent intent = getIntent();
         int itemId = intent.getIntExtra(ITEM_ID, 0);
         String imageUrl = intent.getStringExtra(IMAGE_URL);
-        boolean starredItem = intent.getBooleanExtra(STARRED_ITEM, false);
+        Account account = intent.getParcelableExtra(ACCOUNT);
 
         setSupportActionBar(binding.collapsingLayoutToolbar);
 
@@ -119,6 +120,7 @@ public class ItemActivity extends AppCompatActivity {
         }));
 
         viewModel = ViewModelCompat.getViewModel(this, ItemViewModel.class);
+        viewModel.setAccount(account);
         viewModel.getItemById(itemId).observe(this, itemWithFeed1 -> {
             if (!uiBinded) {
                 bindUI(itemWithFeed1);
