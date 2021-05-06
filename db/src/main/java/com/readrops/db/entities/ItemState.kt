@@ -2,9 +2,12 @@ package com.readrops.db.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import com.readrops.db.entities.account.Account
 
-@Entity
+@Entity(foreignKeys = [ForeignKey(entity = Account::class, parentColumns = ["id"],
+        childColumns = ["account_id"], onDelete = ForeignKey.CASCADE)])
 data class ItemStateChange(
         @PrimaryKey val id: Int = 0,
         @ColumnInfo(name = "read_change") val readChange: Boolean = false,
@@ -12,7 +15,8 @@ data class ItemStateChange(
         @ColumnInfo(name = "account_id") val accountId: Int,
 )
 
-@Entity
+@Entity(foreignKeys = [ForeignKey(entity = Account::class, parentColumns = ["id"],
+        childColumns = ["account_id"], onDelete = ForeignKey.CASCADE)])
 data class ItemState(
         @PrimaryKey(autoGenerate = true) val id: Int = 0,
         val read: Boolean = false,
