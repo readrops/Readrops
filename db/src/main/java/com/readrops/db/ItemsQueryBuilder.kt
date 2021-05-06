@@ -10,8 +10,8 @@ object ItemsQueryBuilder {
     private val COLUMNS = arrayOf("title", "clean_description", "image_link", "pub_date",
             "read_it_later", "Feed.name", "text_color", "background_color", "icon_url", "read_time",
             "Feed.id as feedId", "Feed.account_id", "Folder.id as folder_id", "Folder.name as folder_name",
-            "case When ItemStateId.remote_id is NULL Or ItemStateId.read = 1 Then 1 else 0 End read",
-            "case When ItemStateId.remote_id is NULL or ItemStateId.starred = 1 Then 1 else 0 End starred")
+            "case When ItemState.remote_id is NULL Or ItemState.read = 1 Then 1 else 0 End read",
+            "case When ItemState.remote_id is NULL or ItemState.starred = 1 Then 1 else 0 End starred")
 
     private val ITEM_COLUMNS = arrayOf(".id", ".remoteId")
 
@@ -48,7 +48,7 @@ object ItemsQueryBuilder {
 
     private fun buildWhereClause(queryFilters: QueryFilters): String = StringBuilder(500).run {
         append("Feed.account_id = ${queryFilters.accountId} And " +
-                "ItemStateId.account_id = ${queryFilters.accountId} Or ItemStateId.account_id is NULL And ")
+                "ItemState.account_id = ${queryFilters.accountId} Or ItemState.account_id is NULL And ")
 
         //if (!queryFilters.showReadItems) append("read = 0 And ")
 
@@ -78,8 +78,8 @@ object ItemsQueryBuilder {
 
     private fun buildSelectAllJoin(tableName: String): String = """
         $tableName INNER JOIN Feed on $tableName.feed_id = Feed.id
-            LEFT JOIN Folder on Feed.folder_id = Folder.id LEFT JOIN ItemStateId On
-            $tableName.remoteId = ItemStateId.remote_id
+            LEFT JOIN Folder on Feed.folder_id = Folder.id LEFT JOIN ItemState On
+            $tableName.remoteId = ItemState.remote_id
     """.trimIndent()
 
 }
