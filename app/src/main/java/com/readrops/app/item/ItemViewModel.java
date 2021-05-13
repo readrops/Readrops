@@ -14,6 +14,7 @@ import com.readrops.db.Database;
 import com.readrops.db.entities.Item;
 import com.readrops.db.entities.account.Account;
 import com.readrops.db.pojo.ItemWithFeed;
+import com.readrops.db.queries.ItemSelectionQueryBuilder;
 
 import org.koin.core.parameter.DefinitionParametersKt;
 import org.koin.java.KoinJavaComponent;
@@ -39,7 +40,8 @@ public class ItemViewModel extends ViewModel {
     }
 
     public LiveData<ItemWithFeed> getItemById(int id) {
-        return database.itemDao().getItemById(id);
+        return database.itemDao().getItemById(ItemSelectionQueryBuilder.buildQuery(id,
+                account.getConfig().useSeparateState()));
     }
 
     public Completable setStarState(Item item) {
