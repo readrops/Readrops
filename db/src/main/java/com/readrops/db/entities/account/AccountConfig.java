@@ -6,21 +6,21 @@ public class AccountConfig {
             .setFeedUrlEditable(true)
             .setFolderCreation(true)
             .setNoFolderCase(false)
-            .setUseStarredItems(false)
+            .setUseSeparateState(false)
             .build();
 
     public static final AccountConfig NEXTCLOUD_NEWS = new AccountConfigBuilder()
             .setFeedUrlEditable(false)
             .setFolderCreation(true)
             .setNoFolderCase(false)
-            .setUseStarredItems(false)
+            .setUseSeparateState(false)
             .build();
 
     public static final AccountConfig FRESHRSS = new AccountConfigBuilder()
             .setFeedUrlEditable(false)
             .setFolderCreation(false)
             .setNoFolderCase(true)
-            .setUseStarredItems(true)
+            .setUseSeparateState(true)
             .build();
 
     private final boolean feedUrlEditable;
@@ -30,10 +30,9 @@ public class AccountConfig {
     private final boolean noFolderCase;
 
     /*
-    This parameter lets know if the account separates items and starred items
-    by using the StarredItem table
+    Let knows if it uses ItemState table to synchronize state
      */
-    private final boolean useStarredItems;
+    private final boolean useSeparateState;
 
     public boolean isFeedUrlEditable() {
         return feedUrlEditable;
@@ -47,22 +46,22 @@ public class AccountConfig {
         return noFolderCase;
     }
 
-    public boolean useStarredItems() {
-        return useStarredItems;
+    public boolean useSeparateState() {
+        return useSeparateState;
     }
 
     public AccountConfig(AccountConfigBuilder builder) {
         this.feedUrlEditable = builder.feedUrlEditable;
         this.folderCreation = builder.folderCreation;
         this.noFolderCase = builder.noFolderCase;
-        this.useStarredItems = builder.useStarredItems;
+        this.useSeparateState = builder.useSeparateState;
     }
 
     public static class AccountConfigBuilder {
         private boolean feedUrlEditable;
         private boolean folderCreation;
         private boolean noFolderCase;
-        private boolean useStarredItems;
+        private boolean useSeparateState;
 
         public AccountConfigBuilder setFeedUrlEditable(boolean feedUrlEditable) {
             this.feedUrlEditable = feedUrlEditable;
@@ -79,8 +78,8 @@ public class AccountConfig {
             return this;
         }
 
-        public AccountConfigBuilder setUseStarredItems(boolean useStarredItems) {
-            this.useStarredItems = useStarredItems;
+        public AccountConfigBuilder setUseSeparateState(boolean useSeparateState) {
+            this.useSeparateState = useSeparateState;
             return this;
         }
 
