@@ -2,6 +2,8 @@ package com.readrops.db
 
 import com.readrops.db.filters.FilterType
 import com.readrops.db.filters.ListSortType
+import com.readrops.db.queries.ItemsQueryBuilder
+import com.readrops.db.queries.QueryFilters
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import org.junit.Test

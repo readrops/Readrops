@@ -11,8 +11,8 @@ import androidx.paging.PagedList;
 import com.readrops.app.repositories.ARepository;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.db.Database;
-import com.readrops.db.ItemsQueryBuilder;
-import com.readrops.db.QueryFilters;
+import com.readrops.db.queries.ItemsQueryBuilder;
+import com.readrops.db.queries.QueryFilters;
 import com.readrops.db.RoomFactoryWrapper;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
@@ -70,16 +70,7 @@ public class MainViewModel extends ViewModel {
         }
 
         DataSource.Factory<Integer, ItemWithFeed> items;
-
-
-/*
-        if (queryFilters.getFilterType() == FilterType.STARS_FILTER && currentAccount.getAccountType().getAccountConfig().useStarredItems()) {
-            items = database.starredItemDao().selectAll(ItemsQueryBuilder.buildStarredItemsQuery(queryFilters));
-        } else {
-
-        }
-*/
-        items = database.itemDao().selectAll(ItemsQueryBuilder.buildItemsQuery(queryFilters));
+        items = database.itemDao().selectAll(ItemsQueryBuilder.buildItemsQuery(queryFilters, currentAccount.getConfig().useSeparateState()));
 
         lastFetch = new LivePagedListBuilder<>(new RoomFactoryWrapper<>(items),
                 new PagedList.Config.Builder()
