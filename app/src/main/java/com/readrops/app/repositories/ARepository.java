@@ -115,9 +115,16 @@ public abstract class ARepository {
     }
 
     public Completable setItemReadState(Item item) {
-        return database.itemStateChangesDao().upsertItemReadStateChange(item, account.getId())
-                .andThen(database.itemStateDao().upsertItemReadState(new ItemState(0, item.isRead(),
-                        item.isStarred(), item.getRemoteId(), account.getId())));
+        if (account.getConfig().useSeparateState()) {
+            return database.itemStateChangesDao().upsertItemReadStateChange(item, account.getId())
+                    .andThen(database.itemStateDao().upsertItemReadState(new ItemState(0, item.isRead(),
+                            item.isStarred(), item.getRemoteId(), account.getId())));
+        } else if (account.isLocal()) {
+            return database.itemDao().setReadState(item.getId(), item.isRead());
+        } else { // TODO nextcloud case, use only ItemStateChange table
+            return Completable.complete();
+        }
+
     }
 
     public Completable setAllItemsReadState(boolean read) {
@@ -129,9 +136,15 @@ public abstract class ARepository {
     }
 
     public Completable setItemStarState(Item item) {
-        return database.itemStateChangesDao().upsertItemStarStateChange(item, account.getId())
-                .andThen(database.itemStateDao().upsertItemStarState(new ItemState(0, item.isRead(),
-                        item.isStarred(), item.getRemoteId(), account.getId())));
+        if (account.getConfig().useSeparateState()) {
+            return database.itemStateChangesDao().upsertItemStarStateChange(item, account.getId())
+                    .andThen(database.itemStateDao().upsertItemStarState(new ItemState(0, item.isRead(),
+                            item.isStarred(), item.getRemoteId(), account.getId())));
+        } else if (account.isLocal()) {
+            return database.itemDao().setStarState(item.getId(), item.isRead());
+        } else { // TODO nextcloud case, use only ItemStateChange table
+            return Completable.complete();
+        }
 
     }
 

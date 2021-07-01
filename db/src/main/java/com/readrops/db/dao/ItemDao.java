@@ -40,6 +40,9 @@ public interface ItemDao extends BaseDao<Item> {
     @Query("Update Item Set read = :read Where id = :itemId")
     Completable setReadState(int itemId, boolean read);
 
+    @Query("Update Item set starred = :starred Where id = :itemId")
+    Completable setStarState(int itemId, boolean starred);
+
     @Query("Update Item set read = :readState Where feed_id In (Select id From Feed Where account_id = :accountId)")
     Completable setAllItemsReadState(int readState, int accountId);
 
