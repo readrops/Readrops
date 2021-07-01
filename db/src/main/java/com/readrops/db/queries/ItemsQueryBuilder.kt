@@ -53,12 +53,14 @@ object ItemsQueryBuilder {
     }
 
     private fun buildWhereClause(queryFilters: QueryFilters, separateState: Boolean): String = StringBuilder(500).run {
-        if (separateState)
-            append("ItemState.account_id = ${queryFilters.accountId} And ")
-        else
-            append("Feed.account_id = ${queryFilters.accountId} And ")
+        append("Feed.account_id = ${queryFilters.accountId} And ")
 
-        if (!queryFilters.showReadItems) append("ItemState.read = 0 And ")
+        if (!queryFilters.showReadItems) {
+            if (separateState)
+                append("ItemState.read = 0 And ")
+            else
+                append("Item.read = 0 And ")
+        }
 
         when (queryFilters.filterType) {
             FilterType.FEED_FILTER -> append("feed_id = ${queryFilters.filterFeedId} And read_it_later = 0")
