@@ -130,6 +130,9 @@ public class FreshRSSRepository extends ARepository {
                     insertItems(syncResult.getItems());
                     logger.addSplit("items insertion");
 
+                    insertItems(syncResult.getStarredItems());
+                    logger.addSplit("starred items insertion");
+
                     insertItemsIds(syncResult.getUnreadIds(), syncResult.getStarredIds());
                     logger.addSplit("insert and update items ids");
 
@@ -256,10 +259,20 @@ public class FreshRSSRepository extends ARepository {
 
     private void insertItemsIds(List<String> unreadIds, List<String> starredIds) {
         database.itemStateDao().deleteItemsStates(account.getId());
-        database.itemStateDao().insertItemStates(unreadIds.stream().map(id ->
-                new ItemState(0, false, starredIds.stream()
-                        .anyMatch(starredId -> starredId.equals(id)), id, account.getId()))
-                .collect(Collectors.toList()));
 
+        database.itemStateDao().insertItemStates(unreadIds.stream().map(id -> {
+                    boolean starred = starredIds.stream().filter(starredId -> starredId.equals(id)).count() == 1;
+                    starredIds.remove(id);
+
+                    return new ItemState(0, false, starred, id, account.getId());
+                }
+        ).collect(Collectors.toList()));
+
+        // insert starred items ids which are read
+        if (!starredIds.isEmpty()) {
+            database.itemStateDao().insertItemStates(starredIds.stream().map(id ->
+                    new ItemState(0, true, true, id, account.getId()))
+                    .collect(Collectors.toList()));
+        }
     }
 }
