@@ -127,10 +127,10 @@ public class FreshRSSRepository extends ARepository {
                     insertFeeds(syncResult.getFeeds());
                     logger.addSplit("feeds insertion");
 
-                    insertItems(syncResult.getItems());
+                    insertItems(syncResult.getItems(), false);
                     logger.addSplit("items insertion");
 
-                    insertItems(syncResult.getStarredItems());
+                    insertItems(syncResult.getStarredItems(), true);
                     logger.addSplit("starred items insertion");
 
                     insertItemsIds(syncResult.getUnreadIds(), syncResult.getStarredIds());
@@ -233,7 +233,7 @@ public class FreshRSSRepository extends ARepository {
         database.folderDao().foldersUpsert(freshRSSFolders, account);
     }
 
-    private void insertItems(List<Item> items) {
+    private void insertItems(List<Item> items, boolean starredItems) {
         List<Item> itemsToInsert = new ArrayList<>();
         Map<String, Integer> itemsFeedsIds = new HashMap<>();
 
@@ -248,7 +248,16 @@ public class FreshRSSRepository extends ARepository {
 
             item.setFeedId(feedId);
             item.setReadTime(Utils.readTimeFromString(item.getContent()));
-            itemsToInsert.add(item);
+
+            // workaround to avoid inserting starred items coming from the main item call
+            // as the API exclusion filter doesn't seem to work
+            if (!starredItems) {
+                if (!item.isStarred()) {
+                    itemsToInsert.add(item);
+                }
+            } else {
+                itemsToInsert.add(item);
+            }
         }
 
         if (!itemsToInsert.isEmpty()) {
@@ -262,7 +271,9 @@ public class FreshRSSRepository extends ARepository {
 
         database.itemStateDao().insertItemStates(unreadIds.stream().map(id -> {
                     boolean starred = starredIds.stream().filter(starredId -> starredId.equals(id)).count() == 1;
-                    starredIds.remove(id);
+                    if (starred) {
+                        starredIds.remove(id);
+                    }
 
                     return new ItemState(0, false, starred, id, account.getId());
                 }
