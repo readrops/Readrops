@@ -67,7 +67,7 @@ object ItemsQueryBuilder {
             FilterType.READ_IT_LATER_FILTER -> append("read_it_later = 1")
             FilterType.STARS_FILTER -> {
                 if (separateState) {
-                    append("ItemState.remote_id is NULL or ItemState.starred = 1 And read_it_later = 0")
+                    append("ItemState.starred = 1 And read_it_later = 0")
                 } else {
                     append("starred = 1 And read_it_later = 0")
                 }
