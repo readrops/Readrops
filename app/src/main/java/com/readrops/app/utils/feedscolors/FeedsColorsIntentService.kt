@@ -9,8 +9,8 @@ import com.readrops.app.ReadropsApp
 import com.readrops.app.utils.ReadropsKeys.FEEDS
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
-import org.koin.core.KoinComponent
-import org.koin.core.get
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
 class FeedsColorsIntentService : IntentService("FeedsColorsIntentService"), KoinComponent {
 

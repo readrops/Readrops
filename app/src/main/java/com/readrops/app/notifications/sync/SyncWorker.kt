@@ -21,8 +21,8 @@ import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import org.koin.core.KoinComponent
-import org.koin.core.get
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
 
 class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(context, parameters), KoinComponent {

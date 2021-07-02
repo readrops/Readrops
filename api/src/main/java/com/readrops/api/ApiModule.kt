@@ -1,6 +1,6 @@
 package com.readrops.api
 
-import com.icapps.niddler.interceptor.okhttp.NiddlerOkHttpInterceptor
+import com.chimerapps.niddler.interceptor.okhttp.NiddlerOkHttpInterceptor
 import com.readrops.api.localfeed.LocalRSSDataSource
 import com.readrops.api.services.freshrss.FreshRSSDataSource
 import com.readrops.api.services.freshrss.FreshRSSService

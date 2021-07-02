@@ -76,7 +76,7 @@ dependencies {
     implementation "androidx.work:work-runtime-ktx:2.4.0"
     implementation "androidx.fragment:fragment-ktx:1.2.5"
     implementation "androidx.browser:browser:1.2.0"
-    testImplementation "org.koin:koin-test:2.1.6"
+    testImplementation "io.insert-koin:koin-test:2.1.6"
 
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     kapt 'com.github.bumptech.glide:compiler:4.11.0'
@@ -95,7 +95,7 @@ dependencies {
     implementation 'com.mikepenz:materialdrawer:6.1.2'
     implementation "com.mikepenz:aboutlibraries:6.2.3"
 
-    debugImplementation 'com.facebook.flipper:flipper:0.30.1'
-    debugImplementation 'com.facebook.soloader:soloader:0.9.0'
-    debugImplementation 'com.facebook.flipper:flipper-network-plugin:0.30.1'
+    debugImplementation 'com.facebook.flipper:flipper:0.96.1'
+    debugImplementation 'com.facebook.soloader:soloader:0.10.1'
+    debugImplementation 'com.facebook.flipper:flipper-network-plugin:0.96.1'
 }

@@ -6,8 +6,8 @@ import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
 import org.jetbrains.annotations.TestOnly
-import org.koin.core.KoinComponent
-import org.koin.core.get
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
 class SyncResultDebugData {
 

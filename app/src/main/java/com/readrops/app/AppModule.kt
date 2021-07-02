@@ -1,8 +1,8 @@
 package com.readrops.app
 
 import androidx.preference.PreferenceManager
-import com.icapps.niddler.core.AndroidNiddler
-import com.icapps.niddler.core.Niddler
+import com.chimerapps.niddler.core.AndroidNiddler
+import com.chimerapps.niddler.core.Niddler
 import com.readrops.app.account.AccountViewModel
 import com.readrops.app.addfeed.AddFeedsViewModel
 import com.readrops.app.feedsfolders.ManageFeedsFoldersViewModel

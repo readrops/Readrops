@@ -11,8 +11,8 @@ import com.readrops.db.entities.account.Account
 import com.readrops.api.services.SyncResult
 import com.readrops.app.utils.GlideRequests
 import com.readrops.app.utils.Utils
-import org.koin.core.KoinComponent
-import org.koin.core.get
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
 /**
  * Simple class to get synchro notification content (title, content and largeIcon) according to some rules

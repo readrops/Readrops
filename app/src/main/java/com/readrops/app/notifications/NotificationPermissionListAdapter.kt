@@ -10,8 +10,8 @@ import com.readrops.app.R
 import com.readrops.app.databinding.NotificationPermissionLayoutBinding
 import com.readrops.app.utils.GlideRequests
 import com.readrops.db.entities.Feed
-import org.koin.core.KoinComponent
-import org.koin.core.get
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
 class NotificationPermissionListAdapter(var enableAll: Boolean, val listener: (feed: Feed) -> Unit) :
         ListAdapter<Feed, NotificationPermissionListAdapter.NotificationPermissionViewHolder>(DIFF_CALLBACK), KoinComponent {

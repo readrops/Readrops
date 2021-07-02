@@ -47,6 +47,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
 }
 
 dependencies {
@@ -75,8 +78,8 @@ dependencies {
 
     api 'joda-time:joda-time:2.10.5'
 
-    def koin_version = "2.1.6"
-    api "org.koin:koin-android:$koin_version"
-    api "org.koin:koin-androidx-scope:$koin_version"
-    api "org.koin:koin-androidx-viewmodel:$koin_version"
+    def koin_version = "2.2.3"
+    api "io.insert-koin:koin-android:$koin_version"
+    api "io.insert-koin:koin-androidx-scope:$koin_version"
+    api "io.insert-koin:koin-androidx-viewmodel:$koin_version"
 }
