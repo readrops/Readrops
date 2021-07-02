@@ -17,9 +17,9 @@ import com.readrops.db.Database;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
-import com.readrops.db.entities.StarredItem;
-import com.readrops.db.entities.UnreadItemsIds;
+import com.readrops.db.entities.ItemState;
 import com.readrops.db.entities.account.Account;
+import com.readrops.db.pojo.ItemReadStarState;
 
 import org.joda.time.DateTime;
 
@@ -93,11 +93,29 @@ public class FreshRSSRepository extends ARepository {
         TimingLogger logger = new TimingLogger(TAG, "FreshRSS sync timer");
 
         return Single.<FreshRSSSyncData>create(emitter -> {
-            syncData.setReadItemsIds(database.itemDao().getReadChanges(account.getId()));
-            syncData.setUnreadItemsIds(database.itemDao().getUnreadChanges(account.getId()));
+            List<ItemReadStarState> itemStateChanges = database
+                    .itemStateChangesDao()
+                    .getItemStateChanges(account.getId());
 
-            syncData.setStarredItemsIds(database.itemDao().getFreshRSSStarChanges(account.getId()));
-            syncData.setUnstarredItemsIds(database.itemDao().getFreshRSSUnstarChanges(account.getId()));
+            syncData.setReadItemsIds(itemStateChanges.stream()
+                    .filter(it -> it.getReadChange() && it.getRead())
+                    .map(ItemReadStarState::getRemoteId)
+                    .collect(Collectors.toList()));
+
+            syncData.setUnreadItemsIds(itemStateChanges.stream()
+                    .filter(it -> it.getReadChange() && !it.getRead())
+                    .map(ItemReadStarState::getRemoteId)
+                    .collect(Collectors.toList()));
+
+            syncData.setStarredItemsIds(itemStateChanges.stream()
+                    .filter(it -> it.getStarChange() && it.getStarred())
+                    .map(ItemReadStarState::getRemoteId)
+                    .collect(Collectors.toList()));
+
+            syncData.setUnstarredItemsIds(itemStateChanges.stream()
+                    .filter(it -> it.getStarChange() && !it.getStarred())
+                    .map(ItemReadStarState::getRemoteId)
+                    .collect(Collectors.toList()));
 
             emitter.onSuccess(syncData);
         }).flatMap(syncData1 -> dataSource.sync(syncType, syncData1, account.getWriteToken()))
@@ -109,17 +127,19 @@ public class FreshRSSRepository extends ARepository {
                     insertFeeds(syncResult.getFeeds());
                     logger.addSplit("feeds insertion");
 
-                    insertItems(syncResult.getItems());
+                    insertItems(syncResult.getItems(), false);
                     logger.addSplit("items insertion");
 
-                    insertStarredItems(syncResult.getStarredItems());
+                    insertItems(syncResult.getStarredItems(), true);
                     logger.addSplit("starred items insertion");
 
-                    insertUnreadItemsIds(syncResult.getUnreadIds());
+                    insertItemsIds(syncResult.getUnreadIds(), syncResult.getStarredIds());
                     logger.addSplit("insert and update items ids");
 
                     account.setLastModified(newLastModified);
                     database.accountDao().updateLastModified(account.getId(), newLastModified);
+
+                    database.itemStateChangesDao().resetStateChanges(account.getId());
 
                     logger.dumpToLog();
 
@@ -213,7 +233,7 @@ public class FreshRSSRepository extends ARepository {
         database.folderDao().foldersUpsert(freshRSSFolders, account);
     }
 
-    private void insertItems(List<Item> items) {
+    private void insertItems(List<Item> items, boolean starredItems) {
         List<Item> itemsToInsert = new ArrayList<>();
         Map<String, Integer> itemsFeedsIds = new HashMap<>();
 
@@ -228,7 +248,16 @@ public class FreshRSSRepository extends ARepository {
 
             item.setFeedId(feedId);
             item.setReadTime(Utils.readTimeFromString(item.getContent()));
-            itemsToInsert.add(item);
+
+            // workaround to avoid inserting starred items coming from the main item call
+            // as the API exclusion filter doesn't seem to work
+            if (!starredItems) {
+                if (!item.isStarred()) {
+                    itemsToInsert.add(item);
+                }
+            } else {
+                itemsToInsert.add(item);
+            }
         }
 
         if (!itemsToInsert.isEmpty()) {
@@ -237,41 +266,24 @@ public class FreshRSSRepository extends ARepository {
         }
     }
 
-    private void insertStarredItems(List<Item> items) {
-        List<StarredItem> starredItems = items.stream().map(StarredItem::new).collect(Collectors.toList());
+    private void insertItemsIds(List<String> unreadIds, List<String> starredIds) {
+        database.itemStateDao().deleteItemsStates(account.getId());
 
-        List<StarredItem> itemsToInsert = new ArrayList<>();
-        Map<String, Integer> itemsFeedsIds = new HashMap<>();
+        database.itemStateDao().insertItemStates(unreadIds.stream().map(id -> {
+                    boolean starred = starredIds.stream().filter(starredId -> starredId.equals(id)).count() == 1;
+                    if (starred) {
+                        starredIds.remove(id);
+                    }
 
-        for (StarredItem item : starredItems) {
-            int feedId;
+                    return new ItemState(0, false, starred, id, account.getId());
+                }
+        ).collect(Collectors.toList()));
 
-            if (itemsFeedsIds.containsKey(item.getFeedRemoteId())) {
-                feedId = itemsFeedsIds.get(item.getFeedRemoteId());
-            } else {
-                feedId = database.feedDao().getFeedIdByRemoteId(item.getFeedRemoteId(), account.getId());
-                itemsFeedsIds.put(item.getFeedRemoteId(), feedId);
-            }
-
-            item.setFeedId(feedId);
-            item.setReadTime(Utils.readTimeFromString(item.getContent()));
-            itemsToInsert.add(item);
+        // insert starred items ids which are read
+        if (!starredIds.isEmpty()) {
+            database.itemStateDao().insertItemStates(starredIds.stream().map(id ->
+                    new ItemState(0, true, true, id, account.getId()))
+                    .collect(Collectors.toList()));
         }
-
-        if (!itemsToInsert.isEmpty()) {
-            Collections.sort(itemsToInsert, Item::compareTo);
-
-            database.starredItemDao().deleteStarredItems(account.getId());
-            database.starredItemDao().insert(itemsToInsert);
-        }
-    }
-
-    private void insertUnreadItemsIds(List<String> ids) {
-        database.itemsIdsDao().deleteUnreadItemsIds(account.getId());
-        database.itemsIdsDao().insertUnreadItemsIds(ids.stream().map(id ->
-                new UnreadItemsIds(0, id, account.getId())).collect(Collectors.toList()));
-
-        database.itemDao().updateUnreadState(account.getId());
-        database.itemDao().updateReadState(account.getId());
     }
 }

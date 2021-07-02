@@ -17,7 +17,7 @@ import com.readrops.db.Database;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
-import com.readrops.db.entities.ReadStarStateChange;
+import com.readrops.db.entities.ItemState;
 import com.readrops.db.entities.account.Account;
 
 import org.koin.java.KoinJavaComponent;
@@ -115,9 +115,16 @@ public abstract class ARepository {
     }
 
     public Completable setItemReadState(Item item) {
-        return database.itemDao().setReadState(item.getId(), item.isRead())
-                .andThen(database.itemsIdsDao().upsertReadStarStateChange(new ReadStarStateChange(item.getId(),
-                        true, false, account.getId())));
+        if (account.getConfig().useSeparateState()) {
+            return database.itemStateChangesDao().upsertItemReadStateChange(item, account.getId())
+                    .andThen(database.itemStateDao().upsertItemReadState(new ItemState(0, item.isRead(),
+                            item.isStarred(), item.getRemoteId(), account.getId())));
+        } else if (account.isLocal()) {
+            return database.itemDao().setReadState(item.getId(), item.isRead());
+        } else { // TODO nextcloud case, use only ItemStateChange table
+            return Completable.complete();
+        }
+
     }
 
     public Completable setAllItemsReadState(boolean read) {
@@ -129,9 +136,16 @@ public abstract class ARepository {
     }
 
     public Completable setItemStarState(Item item) {
-        return database.itemDao().setStarState(item.getId(), item.isStarred())
-                .andThen(database.itemsIdsDao().upsertReadStarStateChange(new ReadStarStateChange(item.getId(),
-                        false, true, account.getId())));
+        if (account.getConfig().useSeparateState()) {
+            return database.itemStateChangesDao().upsertItemStarStateChange(item, account.getId())
+                    .andThen(database.itemStateDao().upsertItemStarState(new ItemState(0, item.isRead(),
+                            item.isStarred(), item.getRemoteId(), account.getId())));
+        } else if (account.isLocal()) {
+            return database.itemDao().setStarState(item.getId(), item.isRead());
+        } else { // TODO nextcloud case, use only ItemStateChange table
+            return Completable.complete();
+        }
+
     }
 
     public Single<Integer> getFeedCount(int accountId) {
