@@ -97,8 +97,8 @@ class WebViewActivity : AppCompatActivity() {
             super.onBackPressed()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
             android.R.id.home -> {
                 if (binding.webView.canGoBack())
                     binding.webView.goBack()
@@ -114,7 +114,7 @@ class WebViewActivity : AppCompatActivity() {
             }
         }
 
-        return super.onOptionsItemSelected(item!!)
+        return super.onOptionsItemSelected(item)
     }
 
     private fun shareLink() {
