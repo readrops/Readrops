@@ -23,6 +23,7 @@ import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
 import com.readrops.db.entities.account.Account;
+import com.readrops.db.pojo.ItemReadStarState;
 
 import org.joda.time.LocalDateTime;
 import org.koin.java.KoinJavaComponent;
@@ -31,6 +32,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -81,26 +83,55 @@ public class NextNewsRepository extends ARepository {
 
     @Override
     public Observable<Feed> sync(List<Feed> feeds) {
+        setCredentials(account);
         return Observable.create(emitter -> {
             try {
                 long lastModified = LocalDateTime.now().toDateTime().getMillis();
                 SyncType syncType;
 
-                if (account.getLastModified() != 0)
+                if (account.getLastModified() != 0) {
                     syncType = SyncType.CLASSIC_SYNC;
-                else
+                } else {
                     syncType = SyncType.INITIAL_SYNC;
+                }
 
                 NextNewsSyncData syncData = new NextNewsSyncData();
 
                 if (syncType == SyncType.CLASSIC_SYNC) {
                     syncData.setLastModified(account.getLastModified() / 1000L);
 
-                    syncData.setReadItems(database.itemDao().getReadChanges(account.getId()));
-                    syncData.setUnreadItems(database.itemDao().getUnreadChanges(account.getId()));
+                    List<ItemReadStarState> itemStateChanges = database
+                            .itemStateChangesDao()
+                            .getItemStateChanges(account.getId());
 
-                    syncData.setStarredItems(database.itemDao().getStarChanges(account.getId()));
-                    syncData.setUnstarredItems(database.itemDao().getUnstarChanges(account.getId()));
+                    syncData.setReadItems(itemStateChanges.stream()
+                            .filter(it -> it.getReadChange() && it.getRead())
+                            .map(ItemReadStarState::getRemoteId)
+                            .collect(Collectors.toList()));
+
+                    syncData.setUnreadItems(itemStateChanges.stream()
+                            .filter(it -> it.getReadChange() && !it.getRead())
+                            .map(ItemReadStarState::getRemoteId)
+                            .collect(Collectors.toList()));
+
+                    List<String> starredItemsIds = itemStateChanges.stream()
+                            .filter(it -> it.getStarChange() && it.getStarred())
+                            .map(ItemReadStarState::getRemoteId)
+                            .collect(Collectors.toList());
+
+                    if (!starredItemsIds.isEmpty()) {
+                        syncData.setStarredItems(database.itemDao().getStarChanges(starredItemsIds, account.getId()));
+                    }
+
+                    List<String> unstarredItemsIds = itemStateChanges.stream()
+                            .filter(it -> it.getStarChange() && !it.getStarred())
+                            .map(ItemReadStarState::getRemoteId)
+                            .collect(Collectors.toList());
+
+                    if (!unstarredItemsIds.isEmpty()) {
+                        syncData.setUnstarredItems(database.itemDao().getUnstarChanges(unstarredItemsIds, account.getId()));
+                    }
+
                 }
 
                 TimingLogger timings = new TimingLogger(TAG, "nextcloud news " + syncType.name().toLowerCase());
@@ -123,13 +154,7 @@ public class NextNewsRepository extends ARepository {
                     account.setLastModified(lastModified);
                     database.accountDao().updateLastModified(account.getId(), lastModified);
 
-                    if (!syncData.getReadItems().isEmpty() || !syncData.getUnreadItems().isEmpty()) {
-
-                    }
-
-                    if (!syncData.getStarredItems().isEmpty() || !syncData.getUnstarredItems().isEmpty()) {
-
-                    }
+                    database.itemStateChangesDao().resetStateChanges(account.getId());
 
                     emitter.onComplete();
                 } else {
@@ -145,6 +170,7 @@ public class NextNewsRepository extends ARepository {
 
     @Override
     public Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results) {
+        setCredentials(account);
         return Single.create(emitter -> {
             List<FeedInsertionResult> feedInsertionResults = new ArrayList<>();
 

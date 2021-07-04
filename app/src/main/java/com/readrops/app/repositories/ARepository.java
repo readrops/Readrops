@@ -121,8 +121,9 @@ public abstract class ARepository {
                             item.isStarred(), item.getRemoteId(), account.getId())));
         } else if (account.isLocal()) {
             return database.itemDao().setReadState(item.getId(), item.isRead());
-        } else { // TODO nextcloud case, use only ItemStateChange table
-            return Completable.complete();
+        } else { // nextcloud case
+            return database.itemStateChangesDao().upsertItemReadStateChange(item, account.getId())
+                    .andThen(database.itemDao().setReadState(item.getId(), item.isRead()));
         }
 
     }
@@ -142,8 +143,9 @@ public abstract class ARepository {
                             item.isStarred(), item.getRemoteId(), account.getId())));
         } else if (account.isLocal()) {
             return database.itemDao().setStarState(item.getId(), item.isRead());
-        } else { // TODO nextcloud case, use only ItemStateChange table
-            return Completable.complete();
+        } else { // nextcloud case
+            return database.itemStateChangesDao().upsertItemReadStateChange(item, account.getId())
+                    .andThen(database.itemDao().setStarState(item.getId(), item.isRead()));
         }
 
     }

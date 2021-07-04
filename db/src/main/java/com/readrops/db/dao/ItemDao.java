@@ -58,17 +58,11 @@ public interface ItemDao extends BaseDao<Item> {
     @RawQuery(observedEntities = {Item.class, ItemState.class})
     LiveData<ItemWithFeed> getItemById(SupportSQLiteQuery query);
 
-    @Query("Select Item.remoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where read = 1 And account_id = :accountId")
-    List<String> getReadChanges(int accountId);
+    @Query("Select Item.guid, Feed.remoteId as feedRemoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where Item.remoteId In (:remoteIds) And account_id = :accountId")
+    List<StarItem> getStarChanges(List<String> remoteIds, int accountId);
 
-    @Query("Select Item.remoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where read = 0 And account_id = :accountId")
-    List<String> getUnreadChanges(int accountId);
-
-    @Query("Select Item.guid, Feed.remoteId as feedRemoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where starred = 1 And account_id = :accountId")
-    List<StarItem> getStarChanges(int accountId);
-
-    @Query("Select Item.guid, Feed.remoteId as feedRemoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where starred = 0 And account_id = :accountId")
-    List<StarItem> getUnstarChanges(int accountId);
+    @Query("Select Item.guid, Feed.remoteId as feedRemoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where Item.remoteId In (:remoteIds) And account_id = :accountId")
+    List<StarItem> getUnstarChanges(List<String> remoteIds, int accountId);
 
     @Query("Update Item set read = :read, starred = :starred Where remoteId = :remoteId")
     void setReadAndStarState(String remoteId, boolean read, boolean starred);
