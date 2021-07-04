@@ -18,7 +18,7 @@ class ItemsQueryBuilderTest {
 
         assertTrue(query.contains("Feed.account_id = 1"))
         assertTrue(query.contains("read_it_later = 0"))
-        assertTrue(query.contains("Item.id DESC"))
+        assertTrue(query.contains("pub_date DESC"))
 
         assertFalse(query.contains("read = 0 And"))
     }
