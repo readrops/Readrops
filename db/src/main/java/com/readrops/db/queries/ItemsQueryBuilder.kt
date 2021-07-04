@@ -21,7 +21,7 @@ object ItemsQueryBuilder {
 
     private const val SEPARATE_STATE_JOIN = "LEFT JOIN ItemState On Item.remoteId = ItemState.remote_id"
 
-    private const val ORDER_BY_ASC = "Item.id DESC"
+    private const val ORDER_BY_ASC = "pub_date DESC"
 
     private const val ORDER_BY_DESC = "pub_date ASC"
 
