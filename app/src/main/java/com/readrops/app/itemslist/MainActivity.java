@@ -250,6 +250,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             int id = (int) drawerItem.getIdentifier();
 
             switch (id) {
+                default:
                 case DrawerManager.ARTICLES_ITEM_ID:
                     viewModel.setFilterType(FilterType.NO_FILTER);
                     scrollToTop = true;
@@ -358,7 +359,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         RecyclerViewPreloader<String> preloader = new RecyclerViewPreloader<String>(Glide.with(this), adapter, preloadSizeProvider, 10);
         binding.itemsRecyclerView.addOnScrollListener(preloader);
 
-        binding.itemsRecyclerView.setRecyclerListener(viewHolder -> {
+        binding.itemsRecyclerView.addRecyclerListener(viewHolder -> {
             MainItemListAdapter.ItemViewHolder vh = (MainItemListAdapter.ItemViewHolder) viewHolder;
             KoinJavaComponent.get(GlideRequests.class).clear(vh.getItemImage());
         });
@@ -418,7 +419,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     @Override
     public void onSwipe(@NotNull RecyclerView.ViewHolder viewHolder, int direction) {
         if (direction == ItemTouchHelper.LEFT) { // set item read state
-            ItemWithFeed itemWithFeed = adapter.getItemWithFeed(viewHolder.getAdapterPosition());
+            ItemWithFeed itemWithFeed = adapter.getItemWithFeed(viewHolder.getBindingAdapterPosition());
 
             itemWithFeed.getItem().setRead(!itemWithFeed.getItem().isRead());
             viewModel.setItemReadState(itemWithFeed)
@@ -427,16 +428,16 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     .doOnError(throwable -> Utils.showSnackbar(binding.mainRoot, throwable.getMessage()))
                     .subscribe();
 
-            adapter.notifyItemChanged(viewHolder.getAdapterPosition());
+            adapter.notifyItemChanged(viewHolder.getBindingAdapterPosition());
         } else { // add item to read it later section
-            viewModel.setItemReadItLater((int) adapter.getItemId(viewHolder.getAdapterPosition()))
+            viewModel.setItemReadItLater((int) adapter.getItemId(viewHolder.getBindingAdapterPosition()))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnError(throwable -> Utils.showSnackbar(binding.mainRoot, throwable.getMessage()))
                     .subscribe();
 
             if (viewModel.getFilterType() == FilterType.READ_IT_LATER_FILTER)
-                adapter.notifyItemChanged(viewHolder.getAdapterPosition());
+                adapter.notifyItemChanged(viewHolder.getBindingAdapterPosition());
         }
     }
 
@@ -461,23 +462,21 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     @Override
     public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case R.id.item_mark_read:
-                setReadState(true);
-                break;
-            case R.id.item_mark_unread:
-                setReadState(false);
-                break;
-            case R.id.item_select_all:
-                if (allItemsSelected) {
-                    adapter.unselectAll();
-                    allItemsSelected = false;
-                    actionMode.finish();
-                } else {
-                    adapter.selectAll();
-                    allItemsSelected = true;
-                }
-                break;
+        int itemId = menuItem.getItemId();
+
+        if (itemId == R.id.item_mark_read) {
+            setReadState(true);
+        } else if (itemId == R.id.item_mark_unread) {
+            setReadState(false);
+        } else if (itemId == R.id.item_select_all) {
+            if (allItemsSelected) {
+                adapter.unselectAll();
+                allItemsSelected = false;
+                actionMode.finish();
+            } else {
+                adapter.selectAll();
+                allItemsSelected = true;
+            }
         }
 
         return true;
@@ -528,13 +527,13 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new DisposableSingleObserver<Integer>() {
                         @Override
-                        public void onSuccess(Integer integer) {
+                        public void onSuccess(@NonNull Integer integer) {
                             feedNb = integer;
                             sync(null);
                         }
 
                         @Override
-                        public void onError(Throwable e) {
+                        public void onError(@NonNull Throwable e) {
                             Utils.showSnackbar(binding.mainRoot, e.getMessage());
                         }
                     });
@@ -596,7 +595,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Feed>() {
                     @Override
-                    public void onSubscribe(Disposable d) {
+                    public void onSubscribe(@NonNull Disposable d) {
                         syncDisposable = d;
 
                         if (viewModel.isAccountLocal() && feedNb > 0) {
@@ -606,7 +605,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     }
 
                     @Override
-                    public void onNext(Feed feed) {
+                    public void onNext(@NonNull Feed feed) {
                         if (viewModel.isAccountLocal() && feedNb > 0) {
                             binding.syncProgressTextView.setText(getString(R.string.updating_feed, feed.getName()));
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -619,7 +618,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void onError(@NonNull Throwable e) {
                         e.printStackTrace();
                         binding.swipeRefreshLayout.setRefreshing(false);
                         binding.syncProgressLayout.setVisibility(View.GONE);
@@ -667,31 +666,31 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.item_filter_read_items:
-                if (item.isChecked()) {
-                    item.setChecked(false);
-                    viewModel.setShowReadItems(false);
-                    SharedPreferencesManager.writeValue(
-                            SharedPreferencesManager.SharedPrefKey.SHOW_READ_ARTICLES, false);
-                } else {
-                    item.setChecked(true);
-                    viewModel.setShowReadItems(true);
-                    SharedPreferencesManager.writeValue(
-                            SharedPreferencesManager.SharedPrefKey.SHOW_READ_ARTICLES, true);
-                }
+        int itemId = item.getItemId();
 
-                viewModel.invalidate();
-                return true;
-            case R.id.item_sort:
-                displayFilterDialog();
-                return true;
-            case R.id.start_sync:
-                if (!viewModel.isAccountLocal()) {
-                    binding.swipeRefreshLayout.setRefreshing(true);
-                }
-                onRefresh();
-                break;
+        if (itemId == R.id.item_filter_read_items) {
+            if (item.isChecked()) {
+                item.setChecked(false);
+                viewModel.setShowReadItems(false);
+                SharedPreferencesManager.writeValue(
+                        SharedPreferencesManager.SharedPrefKey.SHOW_READ_ARTICLES, false);
+            } else {
+                item.setChecked(true);
+                viewModel.setShowReadItems(true);
+                SharedPreferencesManager.writeValue(
+                        SharedPreferencesManager.SharedPrefKey.SHOW_READ_ARTICLES, true);
+            }
+
+            viewModel.invalidate();
+            return true;
+        } else if (itemId == R.id.item_sort) {
+            displayFilterDialog();
+            return true;
+        } else if (itemId == R.id.start_sync) {
+            if (!viewModel.isAccountLocal()) {
+                binding.swipeRefreshLayout.setRefreshing(true);
+            }
+            onRefresh();
         }
 
         return super.onOptionsItemSelected(item);
@@ -730,7 +729,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     private void startAboutActivity() {
         Libs.ActivityStyle activityStyle;
-        if (Boolean.valueOf(SharedPreferencesManager.readString(SharedPreferencesManager.SharedPrefKey.DARK_THEME)))
+        if (Boolean.parseBoolean(SharedPreferencesManager.readString(SharedPreferencesManager.SharedPrefKey.DARK_THEME)))
             activityStyle = Libs.ActivityStyle.DARK;
         else
             activityStyle = Libs.ActivityStyle.LIGHT_DARK_TOOLBAR;
@@ -757,7 +756,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         if (binding.swipeRefreshLayout.isRefreshing())
             outState.putBoolean(SYNCING, true);
 
