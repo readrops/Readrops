@@ -30,7 +30,8 @@ public class NextNewsDataSource {
 
     private static final String TAG = NextNewsDataSource.class.getSimpleName();
 
-    protected static final int MAX_ITEMS = 5000;
+    private static final int MAX_ITEMS = 5000;
+    private static final int MAX_STARRED_ITEMS = 1000;
 
     private NextNewsService api;
 
@@ -86,7 +87,8 @@ public class NextNewsDataSource {
     private void initialSync(SyncResult syncResult) throws IOException {
         getFeedsAndFolders(syncResult);
 
-        Response<List<Item>> itemsResponse = api.getItems(3, false, MAX_ITEMS).execute();
+        // unread items
+        Response<List<Item>> itemsResponse = api.getItems(ItemQueryType.ALL.value, false, MAX_ITEMS).execute();
         List<Item> itemList = itemsResponse.body();
 
         if (!itemsResponse.isSuccessful())
@@ -94,13 +96,23 @@ public class NextNewsDataSource {
 
         if (itemList != null)
             syncResult.setItems(itemList);
+
+        // starred items
+        Response<List<Item>> starredItemsResponse = api.getItems(ItemQueryType.STARRED.value, true, MAX_STARRED_ITEMS).execute();
+        List<Item> starredItems = starredItemsResponse.body();
+
+        if (!itemsResponse.isSuccessful())
+            syncResult.setError(true);
+
+        if (itemList != null)
+            syncResult.setStarredItems(starredItems);
     }
 
     private void classicSync(SyncResult syncResult, NextNewsSyncData data) throws IOException {
         putModifiedItems(data, syncResult);
         getFeedsAndFolders(syncResult);
 
-        Response<List<Item>> itemsResponse = api.getNewItems(data.getLastModified(), 3).execute();
+        Response<List<Item>> itemsResponse = api.getNewItems(data.getLastModified(), ItemQueryType.ALL.value).execute();
         List<Item> itemList = itemsResponse.body();
 
         if (!itemsResponse.isSuccessful())
@@ -264,5 +276,20 @@ public class NextNewsDataSource {
         UNREAD,
         STAR,
         UNSTAR
+    }
+
+    public enum ItemQueryType {
+        ALL(3),
+        STARRED(2);
+
+        private int value;
+
+         ItemQueryType(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
     }
 }

@@ -147,8 +147,11 @@ public class NextNewsRepository extends ARepository {
                     insertFeeds(result.getFeeds(), false);
                     timings.addSplit("insert feeds");
 
-                    insertItems(result.getItems(), syncType == SyncType.INITIAL_SYNC);
+                    boolean initialSync = syncType == SyncType.INITIAL_SYNC;
+                    insertItems(result.getItems(), initialSync);
                     timings.addSplit("insert items");
+
+                    insertItems(result.getStarredItems(), initialSync);
                     timings.dumpToLog();
 
                     account.setLastModified(lastModified);
