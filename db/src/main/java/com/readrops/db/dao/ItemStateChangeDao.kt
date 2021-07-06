@@ -28,15 +28,25 @@ interface ItemStateChangeDao : BaseDao<ItemStateChange> {
             "Left Join ItemState On ItemState.remote_id = Item.remoteId Where ItemStateChange.account_id = :accountId")
     fun getItemStateChanges(accountId: Int): List<ItemReadStarState>
 
+    @Query("Select Item.read, Item.starred," +
+            "ItemStateChange.read_change, ItemStateChange.star_change, Item.remoteId " +
+            "From ItemStateChange Inner Join Item On ItemStateChange.id = Item.id " +
+            "Where ItemStateChange.account_id = :accountId")
+    fun getNextcloudNewsStateChanges(accountId: Int): List<ItemReadStarState>
+
     @Query("Select Case When :itemId In (Select id From ItemStateChange Where read_change = 1) Then 1 Else 0 End")
     fun readStateChangeExists(itemId: Int): Boolean
 
     @Query("Select Case When :itemId In (Select id From ItemStateChange Where star_change = 1) Then 1 Else 0 End")
     fun starStateChangeExists(itemId: Int): Boolean
 
-    fun upsertItemReadStateChange(item: Item, accountId: Int) = Completable.create {
+    fun upsertItemReadStateChange(item: Item, accountId: Int, useSeparateState: Boolean) = Completable.create {
         if (itemStateChangeExists(item.id, accountId)) {
-            val oldItemReadState = getItemReadState(item.remoteId, accountId)
+            val oldItemReadState = if (useSeparateState)
+                getItemReadState(item.remoteId, accountId)
+            else
+                getStandardItemReadState(item.remoteId, accountId)
+
             val readChange = item.isRead != oldItemReadState
 
             if (readChange) {
@@ -56,9 +66,13 @@ interface ItemStateChangeDao : BaseDao<ItemStateChange> {
         it.onComplete()
     }
 
-    fun upsertItemStarStateChange(item: Item, accountId: Int) = Completable.create {
+    fun upsertItemStarStateChange(item: Item, accountId: Int, useSeparateState: Boolean) = Completable.create {
         if (itemStateChangeExists(item.id, accountId)) {
-            val oldItemStarState = getItemStarState(item.remoteId, accountId)
+            val oldItemStarState = if (useSeparateState)
+                getItemStarState(item.remoteId, accountId)
+            else
+                getStandardItemStarState(item.remoteId, accountId)
+
             val starChange = item.isStarred != oldItemStarState
 
             if (starChange) {
@@ -75,7 +89,6 @@ interface ItemStateChangeDao : BaseDao<ItemStateChange> {
             insertItemStateChange(ItemStateChange(id = item.id, starChange = true, accountId = accountId))
         }
 
-
         it.onComplete()
     }
 
@@ -88,8 +101,14 @@ interface ItemStateChangeDao : BaseDao<ItemStateChange> {
     @Query("Select read From ItemState Where remote_id = :remoteId And account_id = :accountId")
     fun getItemReadState(remoteId: String, accountId: Int): Boolean
 
+    @Query("Select read From Item Inner Join Feed On Item.feed_id = Feed.id Where Item.remoteId = :remoteId And account_id = :accountId")
+    fun getStandardItemReadState(remoteId: String, accountId: Int): Boolean
+
     @Query("Select starred From ItemState Where remote_id = :remoteId And account_id = :accountId")
     fun getItemStarState(remoteId: String, accountId: Int): Boolean
+
+    @Query("Select starred From Item Inner Join Feed On Item.feed_id = Feed.id Where Item.remoteId = :remoteId And account_id = :accountId")
+    fun getStandardItemStarState(remoteId: String, accountId: Int): Boolean
 
     @Query("Update ItemStateChange set read_change = :readChange Where id = :id")
     fun updateItemReadStateChange(readChange: Boolean, id: Int)

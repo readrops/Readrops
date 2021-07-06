@@ -102,7 +102,7 @@ public class NextNewsRepository extends ARepository {
 
                     List<ItemReadStarState> itemStateChanges = database
                             .itemStateChangesDao()
-                            .getItemStateChanges(account.getId());
+                            .getNextcloudNewsStateChanges(account.getId());
 
                     syncData.setReadItems(itemStateChanges.stream()
                             .filter(it -> it.getReadChange() && it.getRead())
@@ -129,7 +129,7 @@ public class NextNewsRepository extends ARepository {
                             .collect(Collectors.toList());
 
                     if (!unstarredItemsIds.isEmpty()) {
-                        syncData.setUnstarredItems(database.itemDao().getUnstarChanges(unstarredItemsIds, account.getId()));
+                        syncData.setUnstarredItems(database.itemDao().getStarChanges(unstarredItemsIds, account.getId()));
                     }
 
                 }

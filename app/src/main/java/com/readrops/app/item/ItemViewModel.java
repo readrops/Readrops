@@ -45,8 +45,9 @@ public class ItemViewModel extends ViewModel {
     }
 
     public Completable setStarState(Item item) {
-        return KoinJavaComponent.get(ARepository.class, null, () -> DefinitionParametersKt.parametersOf(account))
-                .setItemStarState(item);
+        ARepository repository = KoinJavaComponent.get(ARepository.class, null, () -> DefinitionParametersKt.parametersOf(account));
+
+        return repository.setItemStarState(item);
     }
 
     public Uri saveImageInCache(Bitmap bitmap, Context context) throws IOException {
