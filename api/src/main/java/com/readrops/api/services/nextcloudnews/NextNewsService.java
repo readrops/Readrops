@@ -20,7 +20,7 @@ import retrofit2.http.Query;
 
 public interface NextNewsService {
 
-    String END_POINT = "/index.php/apps/news/api/v1-2";
+    String END_POINT = "/index.php/apps/news/api/v1-2/";
     
     @GET("/ocs/v1.php/cloud/users/{userId}")
     @Headers("OCS-APIRequest: true")

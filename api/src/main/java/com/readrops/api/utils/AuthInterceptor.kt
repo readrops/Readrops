@@ -9,22 +9,13 @@ class AuthInterceptor(var credentials: Credentials? = null) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val requestBuilder = chain.request().newBuilder()
-        val urlBuilder = chain.request().url.newBuilder()
 
-        if (credentials != null) {
-            if (credentials!!.url != null) {
-                val uri = URI.create(credentials!!.url)
-                urlBuilder
-                        .scheme(uri.scheme!!)
-                        .host(uri.host!!)
-                        .encodedPath(uri.path + chain.request().url.encodedPath)
-            }
-
-            if (credentials!!.authorization != null) {
-                requestBuilder.addHeader("Authorization", credentials!!.authorization)
+        credentials?.let {
+            if (it.authorization != null) {
+                requestBuilder.addHeader("Authorization", it.authorization)
             }
         }
 
-        return chain.proceed(requestBuilder.url(urlBuilder.build()).build())
+        return chain.proceed(requestBuilder.build())
     }
 }

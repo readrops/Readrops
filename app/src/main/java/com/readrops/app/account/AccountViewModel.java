@@ -12,7 +12,6 @@ import com.readrops.db.Database;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.account.Account;
-import com.readrops.db.entities.account.AccountType;
 
 import org.koin.core.parameter.DefinitionParametersKt;
 import org.koin.java.KoinJavaComponent;
@@ -32,17 +31,13 @@ public class AccountViewModel extends ViewModel {
         this.database = database;
     }
 
-    public void setAccountType(AccountType accountType) {
-        repository = KoinJavaComponent.get(ARepository.class, null,
-                () -> DefinitionParametersKt.parametersOf(new Account(null, null, accountType)));
-    }
-
     public void setAccount(Account account) {
         repository = KoinJavaComponent.get(ARepository.class, null,
                 () -> DefinitionParametersKt.parametersOf(account));
     }
 
     public Completable login(Account account, boolean insert) {
+        setAccount(account);
         return repository.login(account, insert);
     }
 

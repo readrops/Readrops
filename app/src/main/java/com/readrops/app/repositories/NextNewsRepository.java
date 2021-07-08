@@ -11,9 +11,8 @@ import androidx.annotation.Nullable;
 import com.readrops.api.services.SyncResult;
 import com.readrops.api.services.SyncType;
 import com.readrops.api.services.nextcloudnews.NextNewsDataSource;
-import com.readrops.api.services.nextcloudnews.NextNewsService;
 import com.readrops.api.services.nextcloudnews.NextNewsSyncData;
-import com.readrops.api.utils.AuthInterceptor;
+import com.readrops.api.services.nextcloudnews.adapters.NextNewsUserAdapter;
 import com.readrops.api.utils.exceptions.UnknownFormatException;
 import com.readrops.app.addfeed.FeedInsertionResult;
 import com.readrops.app.addfeed.ParsingResult;
@@ -37,6 +36,9 @@ import java.util.stream.Collectors;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class NextNewsRepository extends ARepository {
 
@@ -54,16 +56,23 @@ public class NextNewsRepository extends ARepository {
     public Completable login(Account account, boolean insert) {
         setCredentials(account);
         return Single.<String>create(emitter -> {
-            // workaround to have the Nextcloud API call working, as I don't know how to do otherwise
-            AuthInterceptor authInterceptor = KoinJavaComponent.get(AuthInterceptor.class);
-            authInterceptor.getCredentials().setUrl(authInterceptor.getCredentials().getUrl().replace(NextNewsService.END_POINT, ""));
+            OkHttpClient httpClient = KoinJavaComponent.get(OkHttpClient.class);
 
-            String displayName = dataSource.login(account.getLogin());
+            Request request = new Request.Builder()
+                    .url(account.getUrl() + "/ocs/v1.php/cloud/users/" + account.getLogin())
+                    .addHeader("OCS-APIRequest", "true")
+                    .build();
 
-            if (displayName != null) {
+            Response response = httpClient.newCall(request).execute();
+
+            if (response.isSuccessful()) {
+                String displayName = new NextNewsUserAdapter().fromXml(response.body().byteStream());
+                response.body().close();
+
                 emitter.onSuccess(displayName);
             } else {
-                emitter.onError(new Exception("Login failed. Please check your credentials and your Nextcloud News setup."));
+                // TODO better error handling
+                emitter.onError(new Exception("Login exception : " + response.code() + " error"));
             }
         }).flatMapCompletable(displayName -> {
             account.setDisplayedName(displayName);
@@ -211,6 +220,7 @@ public class NextNewsRepository extends ARepository {
 
     @Override
     public Completable updateFeed(Feed feed) {
+        setCredentials(account);
         return Completable.create(emitter -> {
             Folder folder = feed.getFolderId() == null ? null : database.folderDao().select(feed.getFolderId());
 
@@ -232,6 +242,7 @@ public class NextNewsRepository extends ARepository {
 
     @Override
     public Completable deleteFeed(Feed feed) {
+        setCredentials(account);
         return Completable.create(emitter -> {
             try {
                 if (dataSource.deleteFeed(Integer.parseInt(feed.getRemoteId()))) {
@@ -248,6 +259,7 @@ public class NextNewsRepository extends ARepository {
 
     @Override
     public Single<Long> addFolder(Folder folder) {
+        setCredentials(account);
         return Single.<Folder>create(emitter -> {
             try {
                 List<Folder> folders = dataSource.createFolder(folder);
@@ -267,6 +279,7 @@ public class NextNewsRepository extends ARepository {
 
     @Override
     public Completable updateFolder(Folder folder) {
+        setCredentials(account);
         return Completable.create(emitter -> {
             try {
                 if (dataSource.renameFolder(folder)) {
@@ -284,6 +297,7 @@ public class NextNewsRepository extends ARepository {
 
     @Override
     public Completable deleteFolder(Folder folder) {
+        setCredentials(account);
         return Completable.create(emitter -> {
             try {
                 if (dataSource.deleteFolder(folder)) {

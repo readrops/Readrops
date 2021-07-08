@@ -2,6 +2,7 @@ package com.readrops.api
 
 import com.chimerapps.niddler.interceptor.okhttp.NiddlerOkHttpInterceptor
 import com.readrops.api.localfeed.LocalRSSDataSource
+import com.readrops.api.services.Credentials
 import com.readrops.api.services.freshrss.FreshRSSDataSource
 import com.readrops.api.services.freshrss.FreshRSSService
 import com.readrops.api.services.freshrss.adapters.FreshRSSFeedsAdapter
@@ -25,8 +26,6 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
 
-const val BASE_URL = "https://baseurl.com"
-
 val apiModule = module {
 
     single(createdAtStart = true) {
@@ -44,19 +43,19 @@ val apiModule = module {
 
     //region freshrss
 
-    single { FreshRSSDataSource(get()) }
+    factory { params -> FreshRSSDataSource(get(parameters = { params })) }
 
-    single {
-        get<Retrofit>(named("freshrssRetrofit"))
+    factory { params ->
+        get<Retrofit>(named("freshrssRetrofit"), parameters = { params })
                 .create(FreshRSSService::class.java)
     }
 
-    single(named("freshrssRetrofit")) {
-        Retrofit.Builder() // url will be set dynamically in AuthInterceptor
-                .baseUrl(BASE_URL)
+    factory(named("freshrssRetrofit")) { (credentials: Credentials) ->
+        Retrofit.Builder()
+                .baseUrl(credentials.url)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .client(get<OkHttpClient>())
-                .addConverterFactory(MoshiConverterFactory.create(get<Moshi>(named("freshrssMoshi"))))
+                .client(get())
+                .addConverterFactory(MoshiConverterFactory.create(get(named("freshrssMoshi"))))
                 .build()
     }
 
@@ -73,19 +72,19 @@ val apiModule = module {
 
     //region nextcloud news
 
-    single { NextNewsDataSource(get()) }
+    factory { params -> NextNewsDataSource(get(parameters = { params })) }
 
-    single {
-        get<Retrofit>(named("nextcloudNewsRetrofit"))
+    factory { params ->
+        get<Retrofit>(named("nextcloudNewsRetrofit"), parameters = { params })
                 .create(NextNewsService::class.java)
     }
 
-    single(named("nextcloudNewsRetrofit")) {
-        Retrofit.Builder() // url will be set dynamically in AuthInterceptor
-                .baseUrl(BASE_URL)
+    factory(named("nextcloudNewsRetrofit")) { (credentials: Credentials) ->
+        Retrofit.Builder()
+                .baseUrl(credentials.url)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .client(get<OkHttpClient>())
-                .addConverterFactory(MoshiConverterFactory.create(get<Moshi>(named("nextcloudNewsMoshi"))))
+                .client(get())
+                .addConverterFactory(MoshiConverterFactory.create(get(named("nextcloudNewsMoshi"))))
                 .build()
     }
 

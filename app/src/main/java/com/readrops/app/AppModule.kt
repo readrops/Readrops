@@ -3,6 +3,7 @@ package com.readrops.app
 import androidx.preference.PreferenceManager
 import com.chimerapps.niddler.core.AndroidNiddler
 import com.chimerapps.niddler.core.Niddler
+import com.readrops.api.services.Credentials
 import com.readrops.app.account.AccountViewModel
 import com.readrops.app.addfeed.AddFeedsViewModel
 import com.readrops.app.feedsfolders.ManageFeedsFoldersViewModel
@@ -18,6 +19,7 @@ import com.readrops.db.entities.account.AccountType
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 
 val appModule = module {
@@ -25,8 +27,10 @@ val appModule = module {
     factory { (account: Account) ->
         when (account.accountType) {
             AccountType.LOCAL -> LocalFeedRepository(get(), get(), androidContext(), account)
-            AccountType.NEXTCLOUD_NEWS -> NextNewsRepository(get(), get(), androidContext(), account)
-            AccountType.FRESHRSS -> FreshRSSRepository(get(), get(), androidContext(), account)
+            AccountType.NEXTCLOUD_NEWS -> NextNewsRepository(get(parameters = { parametersOf(Credentials.toCredentials(account)) }),
+                    get(), androidContext(), account)
+            AccountType.FRESHRSS -> FreshRSSRepository(get(parameters = { parametersOf(Credentials.toCredentials(account)) }),
+                    get(), androidContext(), account)
             else -> throw IllegalArgumentException("Account type not supported")
         }
     }

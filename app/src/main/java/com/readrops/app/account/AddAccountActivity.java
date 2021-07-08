@@ -61,15 +61,13 @@ public class AddAccountActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (accountToEdit != null) {
-            viewModel.setAccountType(accountToEdit.getAccountType());
             editAccount = true;
             fillFields();
         } else {
-            viewModel.setAccountType(accountType);
-
             binding.providerImage.setImageResource(accountType.getIconRes());
             binding.providerName.setText(accountType.getName());
             binding.addAccountName.setText(accountType.getName());
+
             if (accountType == AccountType.FRESHRSS) {
                 binding.addAccountPasswordLayout.setHelperText(getString(R.string.password_helper));
             }
