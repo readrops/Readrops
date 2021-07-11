@@ -115,6 +115,10 @@ public class MainViewModel extends ViewModel {
         queryFilters.setFilterFeedId(filterFeedId);
     }
 
+    public void setFilerFolderId(int folderId) {
+        queryFilters.setFilterFolderId(folderId);
+    }
+
     public MediatorLiveData<PagedList<ItemWithFeed>> getItemsWithFeed() {
         return itemsWithFeed;
     }

@@ -64,6 +64,7 @@ object ItemsQueryBuilder {
 
         when (queryFilters.filterType) {
             FilterType.FEED_FILTER -> append("feed_id = ${queryFilters.filterFeedId} And read_it_later = 0")
+            FilterType.FOLDER_FILER -> append("folder_id = ${queryFilters.filterFolderId} And read_it_later = 0")
             FilterType.READ_IT_LATER_FILTER -> append("read_it_later = 1")
             FilterType.STARS_FILTER -> {
                 if (separateState) {
@@ -83,6 +84,7 @@ object ItemsQueryBuilder {
 class QueryFilters(
         var showReadItems: Boolean = true,
         var filterFeedId: Int = 0,
+        var filterFolderId: Int = 0,
         var accountId: Int = 0,
         var filterType: FilterType = FilterType.NO_FILTER,
         var sortType: ListSortType = ListSortType.NEWEST_TO_OLDEST,
