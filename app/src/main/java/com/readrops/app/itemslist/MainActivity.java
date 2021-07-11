@@ -42,6 +42,7 @@ import com.readrops.app.settings.SettingsActivity;
 import com.readrops.app.utils.GlideRequests;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
+import com.readrops.app.utils.customviews.CustomExpandableBadgeDrawerItem;
 import com.readrops.app.utils.customviews.ReadropsItemTouchCallback;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
@@ -279,6 +280,12 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
             viewModel.setFilterFeedId((int) drawerItem.getIdentifier());
             viewModel.setFilterType(FilterType.FEED_FILTER);
+            viewModel.invalidate();
+        } else if (drawerItem instanceof CustomExpandableBadgeDrawerItem) {
+            drawer.closeDrawer();
+
+            viewModel.setFilerFolderId((int) (drawerItem.getIdentifier() / 1000));
+            viewModel.setFilterType(FilterType.FOLDER_FILER);
             viewModel.invalidate();
         }
     }

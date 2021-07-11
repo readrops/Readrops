@@ -90,10 +90,12 @@ dependencies {
 
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
 
-    implementation 'com.mikepenz:fastadapter:3.3.1'
+    implementation 'com.mikepenz:fastadapter:3.2.9'
     implementation 'com.mikepenz:fastadapter-commons:3.3.0'
     implementation 'com.mikepenz:materialdrawer:6.1.2'
     implementation "com.mikepenz:aboutlibraries:6.2.3"
+    implementation "com.mikepenz:iconics-views:3.2.5"
+    implementation "com.mikepenz:iconics-core:3.2.5"
 
     debugImplementation 'com.facebook.flipper:flipper:0.96.1'
     debugImplementation 'com.facebook.soloader:soloader:0.10.1'

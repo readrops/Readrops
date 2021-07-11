@@ -2,23 +2,28 @@ package com.readrops.app.itemslist;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.mikepenz.fastadapter.FastAdapter;
+import com.mikepenz.fastadapter.expandable.ExpandableExtension;
+import com.mikepenz.fastadapter.listeners.ClickEventHook;
+import com.mikepenz.fastadapter.select.SelectExtension;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.holder.ImageHolder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
-import com.mikepenz.materialdrawer.model.ExpandableBadgeDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileSettingDrawerItem;
@@ -26,11 +31,14 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.readrops.app.R;
+import com.readrops.app.utils.customviews.CustomExpandableBadgeDrawerItem;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.account.Account;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +58,7 @@ public class DrawerManager {
     private Activity activity;
     private Toolbar toolbar;
     private Drawer drawer;
+    private FastAdapter<IDrawerItem> adapter;
 
     private AccountHeader header;
     private Drawer.OnDrawerItemClickListener listener;
@@ -76,9 +85,74 @@ public class DrawerManager {
                 .withOnDrawerItemClickListener(listener)
                 .build();
 
+        adapter = drawer.getAdapter();
+        buildFastAdapter();
+
         addDefaultPlaces();
 
         return drawer;
+    }
+
+    public void buildFastAdapter() {
+        // Folder click
+        adapter.withEventHook(new ClickEventHook<IDrawerItem>() {
+            @Override
+            public void onClick(@NonNull View v, int position, @NonNull FastAdapter<IDrawerItem> fastAdapter, @NonNull IDrawerItem item) {
+                SelectExtension selectExtension = adapter.getExtension(SelectExtension.class);
+
+                selectExtension.deselect(selectExtension.getSelections());
+
+                if (!item.isSelected()) {
+                    selectExtension.select(position);
+                }
+
+                listener.onItemClick(v, position, item);
+            }
+
+            @Override
+            public List<View> onBindMany(@NonNull RecyclerView.ViewHolder viewHolder) {
+                if (viewHolder instanceof CustomExpandableBadgeDrawerItem.ViewHolder) {
+                    CustomExpandableBadgeDrawerItem.ViewHolder expandableViewHolder = (CustomExpandableBadgeDrawerItem.ViewHolder) viewHolder;
+
+                    return Arrays.asList(new View[]{
+                            expandableViewHolder.itemView.findViewById(R.id.expandable_item_container),
+                            expandableViewHolder.itemView.findViewById(R.id.material_drawer_icon),
+                            expandableViewHolder.itemView.findViewById(R.id.material_drawer_name),
+                            expandableViewHolder.itemView.findViewById(R.id.material_drawer_description)
+                    }.clone());
+
+                } else {
+                    return Collections.emptyList();
+                }
+            }
+        });
+
+        // Expandable click
+        adapter.withEventHook(new ClickEventHook<IDrawerItem>() {
+            @Override
+            public void onClick(@NonNull View v, int position, @NonNull FastAdapter<IDrawerItem> fastAdapter, @NonNull IDrawerItem item) {
+                ExpandableExtension expandableExtension = adapter.getExtension(ExpandableExtension.class);
+
+                expandableExtension.toggleExpandable(position);
+            }
+
+            @Override
+            public List<View> onBindMany(@NonNull RecyclerView.ViewHolder viewHolder) {
+                if (viewHolder instanceof CustomExpandableBadgeDrawerItem.ViewHolder) {
+                    CustomExpandableBadgeDrawerItem.ViewHolder expandableViewHolder = (CustomExpandableBadgeDrawerItem.ViewHolder) viewHolder;
+
+                    return Arrays.asList(new View[]{
+                            expandableViewHolder.badge,
+                            expandableViewHolder.badgeContainer,
+                            expandableViewHolder.arrow,
+                            expandableViewHolder.itemView.findViewById(R.id.material_drawer_arrow_container)
+                    }.clone());
+
+                } else {
+                    return Collections.emptyList();
+                }
+            }
+        });
     }
 
     public void updateDrawer(Map<Folder, List<Feed>> folderListMap) {
@@ -92,9 +166,8 @@ public class DrawerManager {
         for (Map.Entry<Folder, List<Feed>> entry : folderListMap.entrySet()) {
             Folder folder = entry.getKey();
             if (folder != null) {
-                // no identifier for badge items, but if needed, be aware of not getting conflicts
-                // with secondary item identifiers (folder and feed ids can be the same)
-                ExpandableBadgeDrawerItem badgeDrawerItem = new ExpandableBadgeDrawerItem()
+                CustomExpandableBadgeDrawerItem badgeDrawerItem = new CustomExpandableBadgeDrawerItem()
+                        .withIdentifier(folder.getId() * 1000L) // to avoid any id conflict with other items
                         .withName(folder.getName())
                         .withIcon(R.drawable.ic_folder_grey);
 
