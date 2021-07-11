@@ -256,14 +256,17 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     viewModel.setFilterType(FilterType.NO_FILTER);
                     scrollToTop = true;
                     viewModel.invalidate();
+                    setTitle(R.string.articles);
                     break;
                 case DrawerManager.READ_LATER_ID:
                     viewModel.setFilterType(FilterType.READ_IT_LATER_FILTER);
                     viewModel.invalidate();
+                    setTitle(R.string.read_later);
                     break;
                 case DrawerManager.STARS_ID:
                     viewModel.setFilterType(FilterType.STARS_FILTER);
                     viewModel.invalidate();
+                    setTitle(R.string.favorites);
                     break;
                 case DrawerManager.ABOUT_ID:
                     startAboutActivity();
@@ -281,12 +284,14 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             viewModel.setFilterFeedId((int) drawerItem.getIdentifier());
             viewModel.setFilterType(FilterType.FEED_FILTER);
             viewModel.invalidate();
+            setTitle(((SecondaryDrawerItem) drawerItem).getName().getText());
         } else if (drawerItem instanceof CustomExpandableBadgeDrawerItem) {
             drawer.closeDrawer();
 
             viewModel.setFilerFolderId((int) (drawerItem.getIdentifier() / 1000));
             viewModel.setFilterType(FilterType.FOLDER_FILER);
             viewModel.invalidate();
+            setTitle(((CustomExpandableBadgeDrawerItem) drawerItem).getName().getText());
         }
     }
 
