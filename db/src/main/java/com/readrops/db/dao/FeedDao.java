@@ -29,9 +29,6 @@ public abstract class FeedDao implements BaseDao<Feed> {
     @Query("Select * from Feed Where id = :feedId")
     public abstract Feed getFeedById(int feedId);
 
-    @Query("Select id From Feed Where url = :url and account_id = :accountId")
-    public abstract int getFeedIdByUrl(String url, int accountId);
-
     @Query("Select case When :feedUrl In (Select url from Feed Where account_id = :accountId) Then 1 else 0 end")
     public abstract boolean feedExists(String feedUrl, int accountId);
 
@@ -81,8 +78,8 @@ public abstract class FeedDao implements BaseDao<Feed> {
     @Query("Select remoteId From Feed Where account_id = :accountId")
     public abstract List<String> getFeedRemoteIdsOfAccount(int accountId);
 
-    @Query("Delete from Feed Where remoteId in (:ids)")
-    abstract void deleteByIds(List<String> ids);
+    @Query("Delete from Feed Where remoteId in (:ids) And account_id = :accountId")
+    abstract void deleteByIds(List<String> ids, int accountId);
 
     @Query("Select id From Folder Where remoteId = :remoteId And account_id = :accountId")
     abstract int getRemoteFolderLocalId(String remoteId, int accountId);
@@ -126,8 +123,9 @@ public abstract class FeedDao implements BaseDao<Feed> {
             }
         }
 
-        if (!accountFeedIds.isEmpty())
-            deleteByIds(accountFeedIds);
+        if (!accountFeedIds.isEmpty()) {
+            deleteByIds(accountFeedIds, account.getId());
+        }
 
         return insert(feedsToInsert);
     }
