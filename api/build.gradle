@@ -65,11 +65,7 @@ dependencies {
         exclude group: 'moshi', module: 'moshi' // moshi converter uses moshi 1.8.0 which breaks codegen 1.9.2
     }
 
-    implementation ('com.squareup.retrofit2:converter-simplexml:2.9.0') {
-        exclude module: 'stax'
-        exclude module: 'stax-api'
-        exclude module: 'xpp3'
-    }
+    implementation ('com.squareup.retrofit2:converter-simplexml:2.9.0')
 
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.9.0'
 

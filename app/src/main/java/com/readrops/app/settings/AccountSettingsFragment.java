@@ -24,6 +24,7 @@ import com.readrops.api.opml.OPMLHelper;
 import com.readrops.api.opml.OPMLParser;
 import com.readrops.app.R;
 import com.readrops.app.ReadropsApp;
+import com.readrops.app.account.AccountViewModel;
 import com.readrops.app.account.AddAccountActivity;
 import com.readrops.app.feedsfolders.ManageFeedsFoldersActivity;
 import com.readrops.app.notifications.NotificationPermissionActivity;
@@ -31,11 +32,15 @@ import com.readrops.app.utils.FileUtils;
 import com.readrops.app.utils.PermissionManager;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
-import com.readrops.app.account.AccountViewModel;
+import com.readrops.db.entities.Feed;
+import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.account.Account;
 import com.readrops.db.entities.account.AccountType;
 
 import org.koin.androidx.viewmodel.compat.ViewModelCompat;
+
+import java.util.List;
+import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableCompletableObserver;
@@ -239,13 +244,14 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
         String fileName = "subscriptions.opml";
 
         try {
-            String path = FileUtils.writeDownloadFile(getContext(), fileName, "text/xml", outputStream -> {
-                viewModel.getFoldersWithFeeds()
-                        .flatMapCompletable(folderListMap -> OPMLParser.write(folderListMap, outputStream))
+            String path = FileUtils.writeDownloadFile(getContext(), fileName, "text/x-opml", outputStream -> {
+                Map<Folder, List<Feed>> folderListMap = viewModel.getFoldersWithFeeds()
                         .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .doOnError(e -> Utils.showSnackbar(getView(), e.getMessage()))
-                        .subscribe();
+                        .blockingGet();
+
+
+                OPMLParser.write(folderListMap, outputStream)
+                        .blockingAwait();
 
                 return Unit.INSTANCE;
             });

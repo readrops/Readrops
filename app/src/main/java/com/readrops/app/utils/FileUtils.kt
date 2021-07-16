@@ -34,20 +34,20 @@ object FileUtils {
 
         val contentUri = resolver.insert(downloadsUri, fileDetails)
 
-        resolver.openFileDescriptor(contentUri!!, "w", null).use { pfd ->
-            val outputStream = FileOutputStream(pfd?.fileDescriptor!!)
-
+        resolver.openOutputStream(contentUri!!)!!.use { stream ->
             try {
-                listener(outputStream)
+                listener(stream)
             } catch (e: Exception) {
                 throw e
             } finally {
-                outputStream.flush()
-                outputStream.close()
+                stream.flush()
+                stream.close()
             }
+
+            fileDetails.put(MediaStore.Downloads.IS_PENDING, 0)
+            resolver.update(contentUri, fileDetails, null, null)
         }
 
-        fileDetails.clear()
         fileDetails.put(MediaStore.Downloads.IS_PENDING, 0)
         resolver.update(contentUri, fileDetails, null, null)
 
