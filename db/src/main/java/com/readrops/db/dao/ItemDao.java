@@ -49,8 +49,8 @@ public interface ItemDao extends BaseDao<Item> {
     @Query("Update Item set read = :readState Where feed_id = :feedId")
     Completable setAllFeedItemsReadState(int feedId, int readState);
 
-    @Query("Update Item set read_it_later = 1 Where id = :itemId")
-    Completable setReadItLater(int itemId);
+    @Query("Update Item set read_it_later = :readLater Where id = :itemId")
+    Completable setReadItLater(boolean readLater, int itemId);
 
     @Query("Select count(*) From Item Where feed_id = :feedId And read = 0")
     int getUnreadCount(int feedId);

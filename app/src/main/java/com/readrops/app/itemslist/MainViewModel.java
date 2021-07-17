@@ -249,8 +249,8 @@ public class MainViewModel extends ViewModel {
             return repository.setAllItemsReadState(read);
     }
 
-    public Completable setItemReadItLater(int itemId) {
-        return database.itemDao().setReadItLater(itemId);
+    public Completable setItemReadItLater(boolean readLater, int itemId) {
+        return database.itemDao().setReadItLater(readLater, itemId);
     }
 
     //endregion

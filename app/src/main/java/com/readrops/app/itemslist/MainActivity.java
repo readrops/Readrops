@@ -430,27 +430,28 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     @Override
     public void onSwipe(@NotNull RecyclerView.ViewHolder viewHolder, int direction) {
+        Item item = adapter.getItemWithFeed(viewHolder.getBindingAdapterPosition()).getItem();
+
         if (direction == ItemTouchHelper.LEFT) { // set item read state
-            ItemWithFeed itemWithFeed = adapter.getItemWithFeed(viewHolder.getBindingAdapterPosition());
+            item.setRead(!item.isRead());
 
-            itemWithFeed.getItem().setRead(!itemWithFeed.getItem().isRead());
-            viewModel.setItemReadState(itemWithFeed)
+            viewModel.setItemReadState(item)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnError(throwable -> Utils.showSnackbar(binding.mainRoot, throwable.getMessage()))
                     .subscribe();
 
-            adapter.notifyItemChanged(viewHolder.getBindingAdapterPosition());
-        } else { // add item to read it later section
-            viewModel.setItemReadItLater((int) adapter.getItemId(viewHolder.getBindingAdapterPosition()))
+        } else { // set item read it later state
+            item.setReadItLater(!item.isReadItLater());
+
+            viewModel.setItemReadItLater(item.isReadItLater(), item.getId())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnError(throwable -> Utils.showSnackbar(binding.mainRoot, throwable.getMessage()))
                     .subscribe();
-
-            if (viewModel.getFilterType() == FilterType.READ_IT_LATER_FILTER)
-                adapter.notifyItemChanged(viewHolder.getBindingAdapterPosition());
         }
+
+        adapter.notifyItemChanged(viewHolder.getBindingAdapterPosition());
     }
 
     @Override
