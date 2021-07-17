@@ -129,11 +129,19 @@ public abstract class ARepository {
     }
 
     public Completable setAllItemsReadState(boolean read) {
-        return database.itemDao().setAllItemsReadState(read ? 1 : 0, account.getId());
+        if (account.isLocal()) { // TODO see if it's possible to implement for others accounts
+            return database.itemDao().setAllItemsReadState(read ? 1 : 0, account.getId());
+        } else {
+            return Completable.complete();
+        }
     }
 
     public Completable setAllFeedItemsReadState(int feedId, boolean read) {
-        return database.itemDao().setAllFeedItemsReadState(feedId, read ? 1 : 0);
+        if (account.isLocal()) {
+            return database.itemDao().setAllFeedItemsReadState(feedId, read ? 1 : 0);
+        } else {
+            return Completable.complete();
+        }
     }
 
     public Completable setItemStarState(Item item) {
@@ -147,7 +155,6 @@ public abstract class ARepository {
             return database.itemStateChangesDao().upsertItemStarStateChange(item, account.getId(), false)
                     .andThen(database.itemDao().setStarState(item.getId(), item.isStarred()));
         }
-
     }
 
     public Single<Integer> getFeedCount(int accountId) {
