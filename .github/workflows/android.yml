@@ -22,7 +22,7 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew clean build
     - name: Android Emulator Runner
-      uses: ReactiveCircus/android-emulator-runner@v2
+      uses: ReactiveCircus/android-emulator-runner@v2.19.0
       with:
         api-level: 28
         script: ./gradlew connectedCheck
