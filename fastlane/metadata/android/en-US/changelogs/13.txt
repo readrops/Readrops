@@ -1,0 +1,7 @@
+<ul>
+    <li>New local RSS parser, much reliable</li>
+    <li>New external navigator view for items (Custom tabs)</li>
+    <li>FreshRSS and Nextcloud News favorites</li>
+    <li>FreshRSS read state synchronisation</li>
+    <li>New folder view when clicking on a drawer expandable item (#56)</li>
+</ul>
