@@ -1,6 +1,7 @@
 package com.readrops.api.services.freshrss.adapters
 
 import android.annotation.SuppressLint
+import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.db.entities.Feed
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonReader
@@ -16,36 +17,40 @@ class FreshRSSFeedsAdapter {
     fun fromJson(reader: JsonReader): List<Feed> {
         val feeds = mutableListOf<Feed>()
 
-        reader.beginObject()
-        reader.nextName() // "subscriptions", beginning of the feed array
-        reader.beginArray()
-
-        while (reader.hasNext()) {
+        return try {
             reader.beginObject()
+            reader.nextName() // "subscriptions", beginning of the feed array
+            reader.beginArray()
 
-            val feed = Feed()
             while (reader.hasNext()) {
-                with(feed) {
-                    when (reader.selectName(NAMES)) {
-                        0 -> name = reader.nextString()
-                        1 -> url = reader.nextString()
-                        2 -> siteUrl = reader.nextString()
-                        3 -> iconUrl = reader.nextString()
-                        4 -> remoteId = reader.nextString()
-                        5 -> remoteFolderId = getCategoryId(reader)
-                        else -> reader.skipValue()
+                reader.beginObject()
+
+                val feed = Feed()
+                while (reader.hasNext()) {
+                    with(feed) {
+                        when (reader.selectName(NAMES)) {
+                            0 -> name = reader.nextString()
+                            1 -> url = reader.nextString()
+                            2 -> siteUrl = reader.nextString()
+                            3 -> iconUrl = reader.nextString()
+                            4 -> remoteId = reader.nextString()
+                            5 -> remoteFolderId = getCategoryId(reader)
+                            else -> reader.skipValue()
+                        }
                     }
                 }
+
+                feeds += feed
+                reader.endObject()
             }
 
-            feeds += feed
+            reader.endArray()
             reader.endObject()
+
+            feeds
+        } catch (e: Exception) {
+            throw ParseException(e.message)
         }
-
-        reader.endArray()
-        reader.endObject()
-
-        return feeds
     }
 
     private fun getCategoryId(reader: JsonReader): String? {
@@ -72,6 +77,7 @@ class FreshRSSFeedsAdapter {
     }
 
     companion object {
-        val NAMES: JsonReader.Options = JsonReader.Options.of("title", "url", "htmlUrl", "iconUrl", "id", "categories")
+        val NAMES: JsonReader.Options = JsonReader.Options.of("title", "url", "htmlUrl",
+                "iconUrl", "id", "categories")
     }
 }

@@ -20,4 +20,6 @@ object ReadropsKeys {
     const val ACTION_BAR_COLOR = "ACTION_BAR_COLOR_KEY"
 
     const val FEEDS = "FEEDS"
+
+    const val STARRED_ITEM = "STARRED_ITEM"
 }

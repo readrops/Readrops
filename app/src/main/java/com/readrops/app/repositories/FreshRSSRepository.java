@@ -7,77 +7,74 @@ import android.util.TimingLogger;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.readrops.app.utils.FeedInsertionResult;
-import com.readrops.app.utils.ParsingResult;
+import com.readrops.api.services.SyncType;
+import com.readrops.api.services.freshrss.FreshRSSDataSource;
+import com.readrops.api.services.freshrss.FreshRSSSyncData;
+import com.readrops.app.addfeed.FeedInsertionResult;
+import com.readrops.app.addfeed.ParsingResult;
 import com.readrops.app.utils.Utils;
+import com.readrops.db.Database;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
+import com.readrops.db.entities.ItemState;
 import com.readrops.db.entities.account.Account;
-import com.readrops.api.services.Credentials;
-import com.readrops.api.services.SyncType;
-import com.readrops.api.services.freshrss.FreshRSSAPI;
-import com.readrops.api.services.freshrss.FreshRSSCredentials;
-import com.readrops.api.services.freshrss.FreshRSSSyncData;
+import com.readrops.db.pojo.ItemReadStarState;
 
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
-public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
+public class FreshRSSRepository extends ARepository {
 
     private static final String TAG = FreshRSSRepository.class.getSimpleName();
 
-    public FreshRSSRepository(@NonNull Context context, @Nullable Account account) {
-        super(context, account);
+    private final FreshRSSDataSource dataSource;
+
+    public FreshRSSRepository(FreshRSSDataSource dataSource, Database database, @NonNull Context context, @Nullable Account account) {
+        super(database, context, account);
+
+        this.dataSource = dataSource;
     }
 
     @Override
-    protected FreshRSSAPI createAPI() {
-        if (account != null)
-            return new FreshRSSAPI(Credentials.toCredentials(account));
+    public Completable login(Account account, boolean insert) {
+        setCredentials(account);
 
-        return null;
-    }
-
-    @Override
-    public Single<Boolean> login(Account account, boolean insert) {
-        if (api == null)
-            api = new FreshRSSAPI(Credentials.toCredentials(account));
-        else
-            api.setCredentials(Credentials.toCredentials(account));
-
-        return api.login(account.getLogin(), account.getPassword())
+        return dataSource.login(account.getLogin(), account.getPassword())
                 .flatMap(token -> {
                     account.setToken(token);
-                    api.setCredentials(new FreshRSSCredentials(token, account.getUrl()));
+                    setCredentials(account);
 
-                    return api.getWriteToken();
+                    return dataSource.getWriteToken();
                 })
                 .flatMap(writeToken -> {
                     account.setWriteToken(writeToken);
 
-                    return api.getUserInfo();
+                    return dataSource.getUserInfo();
                 })
-                .flatMap(userInfo -> {
+                .flatMapCompletable(userInfo -> {
                     account.setDisplayedName(userInfo.getUserName());
 
                     if (insert) {
                         return database.accountDao().insert(account)
-                                .flatMap(id -> {
+                                .flatMapCompletable(id -> {
                                     account.setId(id.intValue());
 
-                                    return Single.just(true);
+                                    return Completable.complete();
                                 });
                     }
 
-                    return Single.just(true);
+                    return Completable.complete();
                 });
     }
 
@@ -96,11 +93,32 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
         TimingLogger logger = new TimingLogger(TAG, "FreshRSS sync timer");
 
         return Single.<FreshRSSSyncData>create(emitter -> {
-            syncData.setReadItemsIds(database.itemDao().getReadChanges(account.getId()));
-            syncData.setUnreadItemsIds(database.itemDao().getUnreadChanges(account.getId()));
+            List<ItemReadStarState> itemStateChanges = database
+                    .itemStateChangesDao()
+                    .getItemStateChanges(account.getId());
+
+            syncData.setReadItemsIds(itemStateChanges.stream()
+                    .filter(it -> it.getReadChange() && it.getRead())
+                    .map(ItemReadStarState::getRemoteId)
+                    .collect(Collectors.toList()));
+
+            syncData.setUnreadItemsIds(itemStateChanges.stream()
+                    .filter(it -> it.getReadChange() && !it.getRead())
+                    .map(ItemReadStarState::getRemoteId)
+                    .collect(Collectors.toList()));
+
+            syncData.setStarredItemsIds(itemStateChanges.stream()
+                    .filter(it -> it.getStarChange() && it.getStarred())
+                    .map(ItemReadStarState::getRemoteId)
+                    .collect(Collectors.toList()));
+
+            syncData.setUnstarredItemsIds(itemStateChanges.stream()
+                    .filter(it -> it.getStarChange() && !it.getStarred())
+                    .map(ItemReadStarState::getRemoteId)
+                    .collect(Collectors.toList()));
 
             emitter.onSuccess(syncData);
-        }).flatMap(syncData1 -> api.sync(syncType, syncData1, account.getWriteToken()))
+        }).flatMap(syncData1 -> dataSource.sync(syncType, syncData1, account.getWriteToken()))
                 .flatMapObservable(syncResult -> {
                     logger.addSplit("server queries");
 
@@ -109,14 +127,20 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
                     insertFeeds(syncResult.getFeeds());
                     logger.addSplit("feeds insertion");
 
-                    insertItems(syncResult.getItems(), syncType == SyncType.INITIAL_SYNC);
+                    insertItems(syncResult.getItems(), false);
                     logger.addSplit("items insertion");
+
+                    insertItems(syncResult.getStarredItems(), true);
+                    logger.addSplit("starred items insertion");
+
+                    insertItemsIds(syncResult.getUnreadIds(), syncResult.getStarredIds());
+                    logger.addSplit("insert and update items ids");
 
                     account.setLastModified(newLastModified);
                     database.accountDao().updateLastModified(account.getId(), newLastModified);
 
-                    database.itemDao().resetReadChanges(account.getId());
-                    logger.addSplit("reset read changes");
+                    database.itemStateChangesDao().resetStateChanges(account.getId());
+
                     logger.dumpToLog();
 
                     this.syncResult = syncResult;
@@ -131,7 +155,7 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
         List<FeedInsertionResult> insertionResults = new ArrayList<>();
 
         for (ParsingResult result : results) {
-            completableList.add(api.createFeed(account.getWriteToken(), result.getUrl())
+            completableList.add(dataSource.createFeed(account.getWriteToken(), result.getUrl())
                     .doOnComplete(() -> {
                         FeedInsertionResult feedInsertionResult = new FeedInsertionResult();
                         feedInsertionResult.setParsingResult(result);
@@ -159,26 +183,26 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
             Folder folder = feed.getFolderId() == null ? null : database.folderDao().select(feed.getFolderId());
             emitter.onSuccess(folder);
 
-        }).flatMapCompletable(folder -> api.updateFeed(account.getWriteToken(),
+        }).flatMapCompletable(folder -> dataSource.updateFeed(account.getWriteToken(),
                 feed.getUrl(), feed.getName(), folder == null ? null : folder.getRemoteId())
                 .andThen(super.updateFeed(feed)));
     }
 
     @Override
     public Completable deleteFeed(Feed feed) {
-        return api.deleteFeed(account.getWriteToken(), feed.getUrl())
+        return dataSource.deleteFeed(account.getWriteToken(), feed.getUrl())
                 .andThen(super.deleteFeed(feed));
     }
 
     @Override
     public Single<Long> addFolder(Folder folder) {
-        return api.createFolder(account.getWriteToken(), folder.getName())
+        return dataSource.createFolder(account.getWriteToken(), folder.getName())
                 .andThen(super.addFolder(folder));
     }
 
     @Override
     public Completable updateFolder(Folder folder) {
-        return api.updateFolder(account.getWriteToken(), folder.getRemoteId(), folder.getName())
+        return dataSource.updateFolder(account.getWriteToken(), folder.getRemoteId(), folder.getName())
                 .andThen(Completable.create(emitter -> {
                     folder.setRemoteId("user/-/label/" + folder.getName());
                     emitter.onComplete();
@@ -188,14 +212,12 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
 
     @Override
     public Completable deleteFolder(Folder folder) {
-        return api.deleteFolder(account.getWriteToken(), folder.getRemoteId())
+        return dataSource.deleteFolder(account.getWriteToken(), folder.getRemoteId())
                 .andThen(super.deleteFolder(folder));
     }
 
     private void insertFeeds(List<Feed> freshRSSFeeds) {
-        for (Feed feed : freshRSSFeeds) {
-            feed.setAccountId(account.getId());
-        }
+        freshRSSFeeds.stream().forEach(feed -> feed.setAccountId(account.getId()));
 
         List<Long> insertedFeedsIds = database.feedDao().feedsUpsert(freshRSSFeeds, account);
 
@@ -206,27 +228,62 @@ public class FreshRSSRepository extends ARepository<FreshRSSAPI> {
     }
 
     private void insertFolders(List<Folder> freshRSSFolders) {
-        for (Folder folder : freshRSSFolders) {
-            folder.setAccountId(account.getId());
-        }
+        freshRSSFolders.stream().forEach(folder -> folder.setAccountId(account.getId()));
 
         database.folderDao().foldersUpsert(freshRSSFolders, account);
     }
 
-    private void insertItems(List<Item> items, boolean initialSync) {
-        for (Item item : items) {
-            int feedId = database.feedDao().getFeedIdByRemoteId(item.getFeedRemoteId(), account.getId());
+    private void insertItems(List<Item> items, boolean starredItems) {
+        List<Item> itemsToInsert = new ArrayList<>();
+        Map<String, Integer> itemsFeedsIds = new HashMap<>();
 
-            if (!initialSync && feedId > 0 && database.itemDao().remoteItemExists(item.getRemoteId(), feedId)) {
-                database.itemDao().setReadState(item.getRemoteId(), item.isRead());
-                continue;
+        for (Item item : items) {
+            Integer feedId;
+            if (itemsFeedsIds.containsKey(item.getFeedRemoteId())) {
+                feedId = itemsFeedsIds.get(item.getFeedRemoteId());
+            } else {
+                feedId = database.feedDao().getFeedIdByRemoteId(item.getFeedRemoteId(), account.getId());
+                itemsFeedsIds.put(item.getFeedRemoteId(), feedId);
             }
 
             item.setFeedId(feedId);
             item.setReadTime(Utils.readTimeFromString(item.getContent()));
+
+            // workaround to avoid inserting starred items coming from the main item call
+            // as the API exclusion filter doesn't seem to work
+            if (!starredItems) {
+                if (!item.isStarred()) {
+                    itemsToInsert.add(item);
+                }
+            } else {
+                itemsToInsert.add(item);
+            }
         }
 
-        Collections.sort(items, Item::compareTo);
-        database.itemDao().insert(items);
+        if (!itemsToInsert.isEmpty()) {
+            Collections.sort(itemsToInsert, Item::compareTo);
+            database.itemDao().insert(itemsToInsert);
+        }
+    }
+
+    private void insertItemsIds(List<String> unreadIds, List<String> starredIds) {
+        database.itemStateDao().deleteItemsStates(account.getId());
+
+        database.itemStateDao().insertItemStates(unreadIds.stream().map(id -> {
+                    boolean starred = starredIds.stream().filter(starredId -> starredId.equals(id)).count() == 1;
+                    if (starred) {
+                        starredIds.remove(id);
+                    }
+
+                    return new ItemState(0, false, starred, id, account.getId());
+                }
+        ).collect(Collectors.toList()));
+
+        // insert starred items ids which are read
+        if (!starredIds.isEmpty()) {
+            database.itemStateDao().insertItemStates(starredIds.stream().map(id ->
+                    new ItemState(0, true, true, id, account.getId()))
+                    .collect(Collectors.toList()));
+        }
     }
 }

@@ -3,12 +3,10 @@ name: Android CI
 on:
   push:
     branches:
-      - master
-      - develop
+      - '**'
   pull_request:
     branches:
-      - master
-      - develop
+      - '**'
 
 jobs:
   build:
@@ -24,7 +22,7 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew clean build
     - name: Android Emulator Runner
-      uses: ReactiveCircus/android-emulator-runner@v2.5.0
+      uses: ReactiveCircus/android-emulator-runner@v2.19.0
       with:
         api-level: 29
         script: ./gradlew connectedCheck

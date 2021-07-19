@@ -6,13 +6,14 @@ import androidx.paging.DataSource;
 import androidx.room.Dao;
 import androidx.room.Query;
 import androidx.room.RawQuery;
-import androidx.room.RoomWarnings;
 import androidx.sqlite.db.SupportSQLiteQuery;
 
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
+import com.readrops.db.entities.ItemState;
 import com.readrops.db.pojo.ItemWithFeed;
+import com.readrops.db.pojo.StarItem;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ import io.reactivex.Completable;
 @Dao
 public interface ItemDao extends BaseDao<Item> {
 
-    @RawQuery(observedEntities = {Item.class, Folder.class, Feed.class})
+    @RawQuery(observedEntities = {Item.class, Folder.class, Feed.class, ItemState.class})
     DataSource.Factory<Integer, ItemWithFeed> selectAll(SupportSQLiteQuery query);
 
     @Query("Select * From Item Where id = :itemId")
@@ -36,43 +37,30 @@ public interface ItemDao extends BaseDao<Item> {
     @Query("Select * From Item Where remoteId = :remoteId And feed_id = :feedId")
     Item selectByRemoteId(String remoteId, int feedId);
 
-    /**
-     * Set an item read or unread
-     *
-     * @param itemId      id of the item to update
-     * @param read   1 for read, 0 for unread
-     * @param readChanged
-     */
-    @Query("Update Item Set read_changed = :readChanged, read = :read Where id = :itemId")
-    Completable setReadState(int itemId, boolean read, boolean readChanged);
+    @Query("Update Item Set read = :read Where id = :itemId")
+    Completable setReadState(int itemId, boolean read);
 
-    @Query("Update Item set read_changed = 1, read = :readState Where feed_id In (Select id From Feed Where account_id = :accountId)")
+    @Query("Update Item set starred = :starred Where id = :itemId")
+    Completable setStarState(int itemId, boolean starred);
+
+    @Query("Update Item set read = :readState Where feed_id In (Select id From Feed Where account_id = :accountId)")
     Completable setAllItemsReadState(int readState, int accountId);
 
-    @Query("Update Item set read_changed = 1, read = :readState Where feed_id = :feedId")
+    @Query("Update Item set read = :readState Where feed_id = :feedId")
     Completable setAllFeedItemsReadState(int feedId, int readState);
 
-    @Query("Update Item set read_it_later = 1 Where id = :itemId")
-    Completable setReadItLater(int itemId);
+    @Query("Update Item set read_it_later = :readLater Where id = :itemId")
+    Completable setReadItLater(boolean readLater, int itemId);
 
     @Query("Select count(*) From Item Where feed_id = :feedId And read = 0")
     int getUnreadCount(int feedId);
+    
+    @RawQuery(observedEntities = {Item.class, ItemState.class})
+    LiveData<ItemWithFeed> getItemById(SupportSQLiteQuery query);
 
-    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
-    @Query("Select title, Item.description, content, link, pub_date, image_link, author, read, text_color, " +
-            "background_color, read_time, Feed.name, Feed.id as feedId, siteUrl, Folder.id as folder_id, " +
-            "Folder.name as folder_name from Item Inner Join Feed On Item.feed_id = Feed.id Left Join Folder on Folder.id = Feed.folder_id Where Item.id = :id")
-    LiveData<ItemWithFeed> getItemById(int id);
+    @Query("Select Item.guid, Feed.remoteId as feedRemoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where Item.remoteId In (:remoteIds) And account_id = :accountId")
+    List<StarItem> getStarChanges(List<String> remoteIds, int accountId);
 
-    @Query("Select Item.remoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where read_changed = 1 And read = 1 And account_id = :accountId")
-    List<String> getReadChanges(int accountId);
-
-    @Query("Select Item.remoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where read_changed = 1 And read = 0 And account_id = :accountId")
-    List<String> getUnreadChanges(int accountId);
-
-    @Query("Update Item set read_changed = 0 Where feed_id in (Select id From Feed Where account_id = :accountId)")
-    void resetReadChanges(int accountId);
-
-    @Query("Update Item set read = :read Where remoteId = :remoteId")
-    void setReadState(String remoteId, boolean read);
+    @Query("Update Item set read = :read, starred = :starred Where remoteId = :remoteId")
+    void setReadAndStarState(String remoteId, boolean read, boolean starred);
 }

@@ -11,6 +11,8 @@ import androidx.room.PrimaryKey;
 
 import com.readrops.db.entities.account.Account;
 
+import java.util.Objects;
+
 @Entity(foreignKeys = @ForeignKey(entity = Account.class, parentColumns = "id",
         childColumns = "account_id", onDelete = ForeignKey.CASCADE))
 public class Folder implements Parcelable, Comparable<Folder> {
@@ -92,6 +94,26 @@ public class Folder implements Parcelable, Comparable<Folder> {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
         dest.writeString(name);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        } else if (!(o instanceof Folder)) {
+            return false;
+        } else {
+            Folder folder = (Folder) o;
+
+            return id == folder.id && Objects.equals(name, folder.name) &&
+                    Objects.equals(remoteId, folder.remoteId) &&
+                    accountId == folder.accountId;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, remoteId, accountId);
     }
 
     @Override

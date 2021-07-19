@@ -74,7 +74,7 @@
 
     <string name="credentials">Credentials</string>
     <string name="filter_newest">Newest to oldest</string>
-    <string name="filter_oldest">Oldest to newsest</string>
+    <string name="filter_oldest">Oldest to newest</string>
     <string name="login_failed">Login failed. Please check your credentials</string>
     <string name="new_account">New account</string>
     <string name="app_licence">App released under the GPLv3 licence</string>
@@ -138,4 +138,6 @@
     <string name="back">Back</string>
     <string name="show_caption">Show caption</string>
     <string name="synchronize">Synchronize</string>
+    <string name="navigator_view">Navigator view</string>
+    <string name="favorites">Favorites</string>
 </resources>

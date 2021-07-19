@@ -6,19 +6,24 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.readrops.app.utils.FeedInsertionResult;
-import com.readrops.app.utils.ParsingResult;
+import com.readrops.api.services.Credentials;
+import com.readrops.api.services.SyncResult;
+import com.readrops.api.utils.AuthInterceptor;
+import com.readrops.app.addfeed.FeedInsertionResult;
+import com.readrops.app.addfeed.ParsingResult;
 import com.readrops.app.utils.feedscolors.FeedColorsKt;
 import com.readrops.app.utils.feedscolors.FeedsColorsIntentService;
 import com.readrops.db.Database;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
+import com.readrops.db.entities.ItemState;
 import com.readrops.db.entities.account.Account;
-import com.readrops.db.entities.account.AccountType;
-import com.readrops.api.services.SyncResult;
+
+import org.koin.java.KoinJavaComponent;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -29,28 +34,28 @@ import io.reactivex.Single;
 
 import static com.readrops.app.utils.ReadropsKeys.FEEDS;
 
-public abstract class ARepository<T> {
+public abstract class ARepository {
 
     protected Context context;
     protected Database database;
     protected Account account;
 
-    protected T api;
-
     protected SyncResult syncResult;
 
-    protected ARepository(@NonNull Context context, @Nullable Account account) {
+    protected ARepository(Database database, @NonNull Context context, @Nullable Account account) {
         this.context = context;
-        this.database = Database.getInstance(context);
+        this.database = database;
         this.account = account;
 
-        api = createAPI();
+        setCredentials(account);
     }
 
-    protected abstract T createAPI();
+    protected void setCredentials(@Nullable Account account) {
+        KoinJavaComponent.get(AuthInterceptor.class)
+                .setCredentials(account != null && !account.isLocal() ? Credentials.toCredentials(account) : null);
+    }
 
-    // TODO : replace Single by Completable
-    public abstract Single<Boolean> login(Account account, boolean insert);
+    public abstract Completable login(Account account, boolean insert);
 
     public abstract Observable<Feed> sync(List<Feed> feeds);
 
@@ -109,20 +114,47 @@ public abstract class ARepository<T> {
         return database.folderDao().delete(folder);
     }
 
-    public Completable setItemReadState(Item item, boolean read) {
-        return setItemReadState(item.getId(), read, !item.isReadChanged());
-    }
+    public Completable setItemReadState(Item item) {
+        if (account.getConfig().useSeparateState()) {
+            return database.itemStateChangesDao().upsertItemReadStateChange(item, account.getId(), true)
+                    .andThen(database.itemStateDao().upsertItemReadState(new ItemState(0, item.isRead(),
+                            item.isStarred(), item.getRemoteId(), account.getId())));
+        } else if (account.isLocal()) {
+            return database.itemDao().setReadState(item.getId(), item.isRead());
+        } else { // nextcloud case
+            return database.itemStateChangesDao().upsertItemReadStateChange(item, account.getId(), false)
+                    .andThen(database.itemDao().setReadState(item.getId(), item.isRead()));
+        }
 
-    public Completable setItemReadState(int itemId, boolean read, boolean readChanged) {
-        return database.itemDao().setReadState(itemId, read, readChanged);
     }
 
     public Completable setAllItemsReadState(boolean read) {
-        return database.itemDao().setAllItemsReadState(read ? 1 : 0, account.getId());
+        if (account.isLocal()) { // TODO see if it's possible to implement for others accounts
+            return database.itemDao().setAllItemsReadState(read ? 1 : 0, account.getId());
+        } else {
+            return Completable.complete();
+        }
     }
 
     public Completable setAllFeedItemsReadState(int feedId, boolean read) {
-        return database.itemDao().setAllFeedItemsReadState(feedId, read ? 1 : 0);
+        if (account.isLocal()) {
+            return database.itemDao().setAllFeedItemsReadState(feedId, read ? 1 : 0);
+        } else {
+            return Completable.complete();
+        }
+    }
+
+    public Completable setItemStarState(Item item) {
+        if (account.getConfig().useSeparateState()) {
+            return database.itemStateChangesDao().upsertItemStarStateChange(item, account.getId(), true)
+                    .andThen(database.itemStateDao().upsertItemStarState(new ItemState(0, item.isRead(),
+                            item.isStarred(), item.getRemoteId(), account.getId())));
+        } else if (account.isLocal()) {
+            return database.itemDao().setStarState(item.getId(), item.isRead());
+        } else { // nextcloud case
+            return database.itemStateChangesDao().upsertItemStarStateChange(item, account.getId(), false)
+                    .andThen(database.itemDao().setStarState(item.getId(), item.isStarred()));
+        }
     }
 
     public Single<Integer> getFeedCount(int accountId) {
@@ -132,7 +164,7 @@ public abstract class ARepository<T> {
     public Single<Map<Folder, List<Feed>>> getFoldersWithFeeds() {
         return Single.create(emitter -> {
             List<Folder> folders = database.folderDao().getFolders(account.getId());
-            Map<Folder, List<Feed>> foldersWithFeeds = new TreeMap<>(Folder::compareTo);
+            Map<Folder, List<Feed>> foldersWithFeeds = new TreeMap<>(Comparator.nullsLast(Folder::compareTo));
 
             for (Folder folder : folders) {
                 List<Feed> feeds = database.feedDao().getFeedsByFolder(folder.getId());
@@ -145,14 +177,13 @@ public abstract class ARepository<T> {
                 foldersWithFeeds.put(folder, feeds);
             }
 
-            Folder noFolder = new Folder("no folder");
-
+            // feeds without folder
             List<Feed> feedsWithoutFolder = database.feedDao().getFeedsWithoutFolder(account.getId());
             for (Feed feed : feedsWithoutFolder) {
                 feed.setUnreadCount(database.itemDao().getUnreadCount(feed.getId()));
             }
 
-            foldersWithFeeds.put(noFolder, feedsWithoutFolder);
+            foldersWithFeeds.put(null, feedsWithoutFolder);
 
             emitter.onSuccess(foldersWithFeeds);
         });
@@ -169,23 +200,6 @@ public abstract class ARepository<T> {
         intent.putParcelableArrayListExtra(FEEDS, new ArrayList<>(feeds));
 
         context.startService(intent);
-    }
-
-    public static ARepository repositoryFactory(Account account, AccountType accountType, Context context) throws Exception {
-        switch (accountType) {
-            case LOCAL:
-                return new LocalFeedRepository(context, account);
-            case NEXTCLOUD_NEWS:
-                return new NextNewsRepository(context, account);
-            case FRESHRSS:
-                return new FreshRSSRepository(context, account);
-            default:
-                throw new Exception("account type not supported");
-        }
-    }
-
-    public static ARepository repositoryFactory(Account account, Context context) throws Exception {
-        return ARepository.repositoryFactory(account, account.getAccountType(), context);
     }
 
     public SyncResult getSyncResult() {

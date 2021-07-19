@@ -5,28 +5,28 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.readrops.api.utils.HttpManager;
-import com.readrops.api.utils.LibUtils;
+import com.readrops.api.localfeed.LocalRSSHelper;
+import com.readrops.api.utils.ApiUtils;
+import com.readrops.api.utils.AuthInterceptor;
+import com.readrops.app.addfeed.ParsingResult;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.koin.java.KoinJavaComponent;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 public final class HtmlParser {
 
     private static final String TAG = HtmlParser.class.getSimpleName();
-
-    public static final String COVER_IMAGE_REGEX = "^(<p>|(<div.*>))?<img.*>";
 
     /**
      * Parse the html page to get all rss urls
@@ -46,7 +46,7 @@ public final class HtmlParser {
             for (Element element : elements) {
                 String type = element.attributes().get("type");
 
-                if (isTypeRssFeed(type)) {
+                if (LocalRSSHelper.isRSSType(type)) {
                     String feedUrl = element.absUrl("href");
                     String label = element.attributes().get("title");
 
@@ -58,35 +58,6 @@ public final class HtmlParser {
         } else {
             return Collections.emptyList();
         }
-    }
-
-    private static boolean isTypeRssFeed(String type) {
-        return type.equals(LibUtils.RSS_DEFAULT_CONTENT_TYPE) ||
-                type.equals(LibUtils.ATOM_CONTENT_TYPE) ||
-                type.equals(LibUtils.JSON_CONTENT_TYPE) ||
-                type.equals(LibUtils.RSS_TEXT_CONTENT_TYPE) ||
-                type.equals(LibUtils.RSS_APPLICATION_CONTENT_TYPE);
-    }
-
-    /**
-     * get the feed item image based on open graph metadata.
-     * Warning, This method is slow.
-     *
-     * @param url url to request
-     * @return the item image
-     */
-    public static String getOGImageLink(String url) throws IOException {
-        String imageUrl = null;
-
-        String head = getHTMLHeadFromUrl(url);
-
-        Document document = Jsoup.parse(head);
-        Element element = document.select("meta[property=og:image]").first();
-
-        if (element != null)
-            imageUrl = element.attributes().get("content");
-
-        return imageUrl;
     }
 
     @Nullable
@@ -115,10 +86,11 @@ public final class HtmlParser {
         long start = System.currentTimeMillis();
 
         try {
-            Response response = HttpManager.getInstance().getOkHttpClient()
+            Response response = KoinJavaComponent.get(OkHttpClient.class)
                     .newCall(new Request.Builder().url(url).build()).execute();
+            KoinJavaComponent.get(AuthInterceptor.class).setCredentials(null);
 
-            if (response.header("Content-Type").contains(LibUtils.HTML_CONTENT_TYPE)) {
+            if (response.header("Content-Type").contains(ApiUtils.HTML_CONTENT_TYPE)) {
                 String body = response.body().string();
                 String head = body.substring(body.indexOf("<head"), body.indexOf("</head>"));
 
@@ -130,32 +102,9 @@ public final class HtmlParser {
                 return null;
             }
         } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
             return null;
         }
 
-    }
-
-    public static String getDescImageLink(String description, String url) {
-        Document document = Jsoup.parse(description, url);
-        Elements elements = document.select("img");
-
-        if (!elements.isEmpty())
-            return elements.first().absUrl("src");
-        else
-            return null;
-    }
-
-    public static String deleteCoverImage(String content) {
-        Document document = Jsoup.parse(content);
-
-        if (Pattern.compile(COVER_IMAGE_REGEX).matcher(document.body().html()).find()) {
-            Elements elements = document.select("img");
-
-            if (!elements.isEmpty())
-                elements.first().remove();
-
-            return document.toString();
-        } else
-            return content;
     }
 }

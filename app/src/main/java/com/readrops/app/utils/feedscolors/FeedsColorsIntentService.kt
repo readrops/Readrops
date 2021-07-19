@@ -6,15 +6,17 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.readrops.app.R
 import com.readrops.app.ReadropsApp
+import com.readrops.app.utils.ReadropsKeys.FEEDS
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
-import com.readrops.app.utils.ReadropsKeys.FEEDS
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
-class FeedsColorsIntentService : IntentService("FeedsColorsIntentService") {
+class FeedsColorsIntentService : IntentService("FeedsColorsIntentService"), KoinComponent {
 
     override fun onHandleIntent(intent: Intent?) {
         val feeds: List<Feed> = intent!!.getParcelableArrayListExtra(FEEDS)!!
-        val database = Database.getInstance(this)
+        val database = get<Database>()
 
         val notificationBuilder = NotificationCompat.Builder(this, ReadropsApp.FEEDS_COLORS_CHANNEL_ID)
                 .setContentTitle(getString(R.string.get_feeds_colors))

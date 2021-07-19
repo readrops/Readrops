@@ -2,30 +2,24 @@ package com.readrops.app.repositories;
 
 import android.accounts.NetworkErrorException;
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.readrops.app.utils.FeedInsertionResult;
-import com.readrops.app.utils.HtmlParser;
-import com.readrops.app.utils.ParsingResult;
+import com.readrops.api.localfeed.LocalRSSDataSource;
+import com.readrops.api.services.SyncResult;
+import com.readrops.api.utils.ApiUtils;
+import com.readrops.api.utils.exceptions.ParseException;
+import com.readrops.api.utils.exceptions.UnknownFormatException;
+import com.readrops.app.addfeed.FeedInsertionResult;
+import com.readrops.app.addfeed.ParsingResult;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
-import com.readrops.app.utils.matchers.FeedMatcher;
-import com.readrops.app.utils.matchers.ItemMatcher;
+import com.readrops.db.Database;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Item;
 import com.readrops.db.entities.account.Account;
-import com.readrops.api.localfeed.AFeed;
-import com.readrops.api.localfeed.RSSQuery;
-import com.readrops.api.localfeed.RSSQueryResult;
-import com.readrops.api.localfeed.atom.ATOMFeed;
-import com.readrops.api.localfeed.json.JSONFeed;
-import com.readrops.api.localfeed.rss.RSSFeed;
-import com.readrops.api.services.SyncResult;
-import com.readrops.api.utils.LibUtils;
-import com.readrops.api.utils.ParseException;
-import com.readrops.api.utils.UnknownFormatException;
 
 import org.jsoup.Jsoup;
 
@@ -33,29 +27,29 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
+import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import kotlin.Pair;
+import okhttp3.Headers;
 
-public class LocalFeedRepository extends ARepository<Void> {
+public class LocalFeedRepository extends ARepository {
 
     private static final String TAG = LocalFeedRepository.class.getSimpleName();
 
-    public LocalFeedRepository(@NonNull Context context, @Nullable Account account) {
-        super(context, account);
+    private LocalRSSDataSource dataSource;
+
+    public LocalFeedRepository(LocalRSSDataSource dataSource, Database database, @NonNull Context context, @Nullable Account account) {
+        super(database, context, account);
 
         syncResult = new SyncResult();
+        this.dataSource = dataSource;
     }
 
     @Override
-    protected Void createAPI() {
-        return null;
-    }
-
-    @Override
-    public Single<Boolean> login(Account account, boolean insert) {
+    public Completable login(Account account, boolean insert) {
         return null;
     }
 
@@ -64,47 +58,31 @@ public class LocalFeedRepository extends ARepository<Void> {
         return Observable.create(emitter -> {
             List<Feed> feedList;
 
-            if (feeds == null || feeds.size() == 0)
+            if (feeds == null || feeds.isEmpty()) {
                 feedList = database.feedDao().getFeeds(account.getId());
-            else
-                feedList = new ArrayList<>(feeds);
-
-            RSSQuery rssQuery = new RSSQuery();
-            List<FeedInsertionResult> syncErrors = new ArrayList<>();
+            } else {
+                feedList = feeds;
+            }
 
             for (Feed feed : feedList) {
                 emitter.onNext(feed);
-                FeedInsertionResult syncError = new FeedInsertionResult();
 
                 try {
-                    HashMap<String, String> headers = new HashMap<>();
-                    if (feed.getEtag() != null)
-                        headers.put(LibUtils.IF_NONE_MATCH_HEADER, feed.getEtag());
-                    if (feed.getLastModified() != null)
-                        headers.put(LibUtils.IF_MODIFIED_HEADER, feed.getLastModified());
+                    Headers.Builder headers = new Headers.Builder();
+                    if (feed.getEtag() != null) {
+                        headers.add(ApiUtils.IF_NONE_MATCH_HEADER, feed.getEtag());
+                    }
+                    if (feed.getLastModified() != null) {
+                        headers.add(ApiUtils.IF_MODIFIED_HEADER, feed.getLastModified());
+                    }
 
-                    RSSQueryResult queryResult = rssQuery.queryUrl(feed.getUrl(), headers);
-                    if (queryResult != null && queryResult.getException() == null)
-                        insertNewItems(queryResult.getFeed(), queryResult.getRssType());
-                    else if (queryResult != null && queryResult.getException() != null) {
-                        Exception e = queryResult.getException();
+                    Pair<Feed, List<Item>> pair = dataSource.queryRSSResource(feed.getUrl(), headers.build());
 
-                        if (e instanceof UnknownFormatException)
-                            syncError.setInsertionError(FeedInsertionResult.FeedInsertionError.FORMAT_ERROR);
-                        else if (e instanceof NetworkErrorException)
-                            syncError.setInsertionError(FeedInsertionResult.FeedInsertionError.NETWORK_ERROR);
-
-                        syncError.setFeed(feed);
-                        syncErrors.add(syncError);
+                    if (pair != null) {
+                        insertNewItems(feed, pair.getSecond());
                     }
                 } catch (Exception e) {
-                    if (e instanceof IOException)
-                        syncError.setInsertionError(FeedInsertionResult.FeedInsertionError.NETWORK_ERROR);
-                    else
-                        syncError.setInsertionError(FeedInsertionResult.FeedInsertionError.PARSE_ERROR);
-
-                    syncError.setFeed(feed);
-                    syncErrors.add(syncError);
+                    Log.d(TAG, "sync: " + e.getMessage());
                 }
             }
 
@@ -121,28 +99,26 @@ public class LocalFeedRepository extends ARepository<Void> {
                 FeedInsertionResult insertionResult = new FeedInsertionResult();
 
                 try {
-                    RSSQuery rssNet = new RSSQuery();
-                    RSSQueryResult queryResult = rssNet.queryUrl(parsingResult.getUrl(), new HashMap<>());
+                    Pair<Feed, List<Item>> pair = dataSource.queryRSSResource(parsingResult.getUrl(),
+                            null);
+                    Feed feed = insertFeed(pair.getFirst(), parsingResult);
 
-                    if (queryResult != null && queryResult.getException() == null) {
-                        Feed feed = insertFeed(queryResult.getFeed(), queryResult.getRssType(), parsingResult);
-                        if (feed != null) {
-                            insertionResult.setFeed(feed);
-                            insertionResult.setParsingResult(parsingResult);
-                            insertionResults.add(insertionResult);
-                        }
-                    } else if (queryResult != null && queryResult.getException() != null) {
-                        insertionResult.setParsingResult(parsingResult);
-                        insertionResult.setInsertionError(getErrorFromException(queryResult.getException()));
-
-                        insertionResults.add(insertionResult);
+                    if (feed != null) {
+                        insertionResult.setFeed(feed);
                     }
+                } catch (ParseException e) {
+                    Log.d(TAG, "addFeeds: " + e.getMessage());
+                    insertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.PARSE_ERROR);
+                } catch (UnknownFormatException e) {
+                    Log.d(TAG, "addFeeds: " + e.getMessage());
+                    insertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.FORMAT_ERROR);
+                } catch (NetworkErrorException | IOException e) {
+                    Log.d(TAG, "addFeeds: " + e.getMessage());
+                    insertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.NETWORK_ERROR);
                 } catch (Exception e) {
-                    if (e instanceof IOException)
-                        insertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.NETWORK_ERROR);
-                    else
-                        insertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.PARSE_ERROR);
-
+                    Log.d(TAG, "addFeeds: " + e.getMessage());
+                    insertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.UNKNOWN_ERROR);
+                } finally {
                     insertionResult.setParsingResult(parsingResult);
                     insertionResults.add(insertionResult);
                 }
@@ -152,67 +128,38 @@ public class LocalFeedRepository extends ARepository<Void> {
         });
     }
 
-    private void insertNewItems(AFeed feed, RSSQuery.RSSType type) throws ParseException {
-        Feed dbFeed;
-        List<Item> items;
+    @SuppressWarnings("SimplifyStreamApiCallChains")
+    private void insertNewItems(Feed feed, List<Item> items) {
+        database.feedDao().updateHeaders(feed.getEtag(), feed.getLastModified(), feed.getId());
 
-        switch (type) {
-            case RSS_2:
-                dbFeed = database.feedDao().getFeedByUrl(((RSSFeed) feed).getChannel().getFeedUrl(), account.getId());
-                items = ItemMatcher.itemsFromRSS(((RSSFeed) feed).getChannel().getItems(), dbFeed);
-                break;
-            case RSS_ATOM:
-                dbFeed = database.feedDao().getFeedByUrl(((ATOMFeed) feed).getUrl(), account.getId());
-                items = ItemMatcher.itemsFromATOM(((ATOMFeed) feed).getEntries(), dbFeed);
-                break;
-            case RSS_JSON:
-                dbFeed = database.feedDao().getFeedByUrl(((JSONFeed) feed).getFeedUrl(), account.getId());
-                items = ItemMatcher.itemsFromJSON(((JSONFeed) feed).getItems(), dbFeed);
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown RSS type");
-        }
-
-        database.feedDao().updateHeaders(dbFeed.getEtag(), dbFeed.getLastModified(), dbFeed.getId());
         Collections.sort(items, Item::compareTo);
 
-        int maxItems = Integer.parseInt(SharedPreferencesManager.readString(context, SharedPreferencesManager.SharedPrefKey.ITEMS_TO_PARSE_MAX_NB));
-        if (maxItems > 0 && items.size() > maxItems)
+        int maxItems = Integer.parseInt(SharedPreferencesManager.readString(
+                SharedPreferencesManager.SharedPrefKey.ITEMS_TO_PARSE_MAX_NB));
+        if (maxItems > 0 && items.size() > maxItems) {
             items = items.subList(items.size() - maxItems, items.size());
-
-        insertItems(items, dbFeed);
-    }
-
-    private Feed insertFeed(AFeed feed, RSSQuery.RSSType type, ParsingResult parsingResult) {
-        Feed dbFeed;
-        switch (type) {
-            case RSS_2:
-                dbFeed = FeedMatcher.feedFromRSS((RSSFeed) feed);
-                break;
-            case RSS_ATOM:
-                dbFeed = FeedMatcher.feedFromATOM((ATOMFeed) feed);
-                break;
-            case RSS_JSON:
-                dbFeed = FeedMatcher.feedFromJSON((JSONFeed) feed);
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown RSS type");
         }
 
-        dbFeed.setFolderId(parsingResult.getFolderId());
+        items.stream().forEach(item -> item.setFeedId(feed.getId()));
+        insertItems(items, feed);
+    }
 
-        if (database.feedDao().feedExists(dbFeed.getUrl(), account.getId()))
+    private Feed insertFeed(Feed feed, ParsingResult parsingResult) {
+        feed.setFolderId(parsingResult.getFolderId());
+
+        if (database.feedDao().feedExists(feed.getUrl(), account.getId())) {
             return null; // feed already inserted
+        }
 
-        setFeedColors(dbFeed);
-        dbFeed.setAccountId(account.getId());
+        setFeedColors(feed);
+        feed.setAccountId(account.getId());
 
         // we need empty headers to query the feed just after, without any 304 result
-        dbFeed.setEtag(null);
-        dbFeed.setLastModified(null);
+        feed.setEtag(null);
+        feed.setLastModified(null);
 
-        dbFeed.setId((int) (database.feedDao().compatInsert(dbFeed)));
-        return dbFeed;
+        feed.setId((int) (database.feedDao().compatInsert(feed)));
+        return feed;
     }
 
     private void insertItems(Collection<Item> items, Feed feed) {
@@ -222,29 +169,13 @@ public class LocalFeedRepository extends ARepository<Void> {
             if (!database.itemDao().itemExists(dbItem.getGuid(), feed.getAccountId())) {
                 if (dbItem.getDescription() != null) {
                     dbItem.setCleanDescription(Jsoup.parse(dbItem.getDescription()).text());
-
-                    if (dbItem.getImageLink() == null) {
-                        String imageUrl = HtmlParser.getDescImageLink(dbItem.getDescription(), feed.getSiteUrl());
-
-                        if (imageUrl != null)
-                            dbItem.setImageLink(imageUrl);
-                    }
                 }
 
-                // we check a second time because imageLink could have been set earlier with media:content tag value
-                if (dbItem.getImageLink() != null) {
-                    if (dbItem.getContent() != null) {
-                        // removing cover image in content if found in description
-                        dbItem.setContent(HtmlParser.deleteCoverImage(dbItem.getContent()));
-
-                    } else if (dbItem.getDescription() != null)
-                        dbItem.setDescription(HtmlParser.deleteCoverImage(dbItem.getDescription()));
-                }
-
-                if (dbItem.getContent() != null)
-                    dbItem.setReadTime(Utils.readTimeFromString(Jsoup.parse(dbItem.getContent()).text()));
-                else if (dbItem.getDescription() != null)
+                if (dbItem.getContent() != null) {
+                    dbItem.setReadTime(Utils.readTimeFromString(dbItem.getContent()));
+                } else if (dbItem.getDescription() != null) {
                     dbItem.setReadTime(Utils.readTimeFromString(dbItem.getCleanDescription()));
+                }
 
                 itemsToInsert.add(dbItem);
             }
@@ -252,14 +183,5 @@ public class LocalFeedRepository extends ARepository<Void> {
 
         syncResult.getItems().addAll(itemsToInsert);
         database.itemDao().insert(itemsToInsert);
-    }
-
-    private FeedInsertionResult.FeedInsertionError getErrorFromException(Exception e) {
-        if (e instanceof UnknownFormatException)
-            return FeedInsertionResult.FeedInsertionError.FORMAT_ERROR;
-        else if (e instanceof NetworkErrorException)
-            return FeedInsertionResult.FeedInsertionError.NETWORK_ERROR;
-        else
-            return FeedInsertionResult.FeedInsertionError.UNKNOWN_ERROR;
     }
 }

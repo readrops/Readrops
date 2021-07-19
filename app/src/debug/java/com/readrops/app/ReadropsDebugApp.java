@@ -13,13 +13,9 @@ import com.facebook.flipper.plugins.databases.DatabasesFlipperPlugin;
 import com.facebook.flipper.plugins.inspector.DescriptorMapping;
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
 import com.facebook.flipper.plugins.navigation.NavigationFlipperPlugin;
-import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor;
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin;
 import com.facebook.soloader.SoLoader;
-import com.icapps.niddler.core.AndroidNiddler;
-import com.icapps.niddler.interceptor.okhttp.NiddlerOkHttpInterceptor;
-import com.readrops.api.utils.HttpManager;
 
 public class ReadropsDebugApp extends ReadropsApp implements Configuration.Provider {
 
@@ -29,7 +25,6 @@ public class ReadropsDebugApp extends ReadropsApp implements Configuration.Provi
         SoLoader.init(this, false);
 
         initFlipper();
-        initNiddler();
     }
 
     private void initFlipper() {
@@ -40,13 +35,6 @@ public class ReadropsDebugApp extends ReadropsApp implements Configuration.Provi
             NetworkFlipperPlugin networkPlugin = new NetworkFlipperPlugin();
             client.addPlugin(networkPlugin);
 
-            HttpManager.setInstance(
-                    HttpManager.getInstance()
-                            .getOkHttpClient()
-                            .newBuilder()
-                            .addInterceptor(new FlipperOkhttpInterceptor(networkPlugin))
-                            .build());
-
             client.addPlugin(new DatabasesFlipperPlugin(this));
             client.addPlugin(CrashReporterPlugin.getInstance());
             client.addPlugin(NavigationFlipperPlugin.getInstance());
@@ -54,24 +42,6 @@ public class ReadropsDebugApp extends ReadropsApp implements Configuration.Provi
 
             client.start();
         }
-    }
-
-    private void initNiddler() {
-        AndroidNiddler niddler = new AndroidNiddler.Builder()
-                .setNiddlerInformation(AndroidNiddler.fromApplication(this))
-                .setPort(0)
-                .setMaxStackTraceSize(10)
-                .build();
-
-        niddler.attachToApplication(this);
-
-        HttpManager.setInstance(HttpManager.getInstance().
-                getOkHttpClient().
-                newBuilder().
-                addInterceptor(new NiddlerOkHttpInterceptor(niddler, "default"))
-                .build());
-
-        niddler.start();
     }
 
     @NonNull

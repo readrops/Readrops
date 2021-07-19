@@ -1,12 +1,15 @@
 package com.readrops.api.services.nextcloudnews.adapters
 
 import android.annotation.SuppressLint
-import com.readrops.api.utils.nextNullableInt
+import com.readrops.api.utils.exceptions.ParseException
+import com.readrops.api.utils.extensions.nextNonEmptyString
+import com.readrops.api.utils.extensions.nextNullableInt
+import com.readrops.api.utils.extensions.nextNullableString
 import com.readrops.db.entities.Feed
-import com.readrops.api.utils.nextNullableString
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.ToJson
+import java.net.URI
 
 class NextNewsFeedsAdapter {
 
@@ -18,15 +21,19 @@ class NextNewsFeedsAdapter {
     fun fromJson(reader: JsonReader): List<Feed> {
         val feeds = mutableListOf<Feed>()
 
-        reader.beginObject()
+        return try {
+            reader.beginObject()
 
-        while (reader.hasNext()) {
-            if (reader.nextName() == "feeds") parseFeeds(reader, feeds) else reader.skipValue()
+            while (reader.hasNext()) {
+                if (reader.nextName() == "feeds") parseFeeds(reader, feeds) else reader.skipValue()
+            }
+
+            reader.endObject()
+
+            feeds
+        } catch (e: Exception) {
+            throw ParseException(e.message)
         }
-
-        reader.endObject()
-
-        return feeds
     }
 
     private fun parseFeeds(reader: JsonReader, feeds: MutableList<Feed>) {
@@ -39,10 +46,10 @@ class NextNewsFeedsAdapter {
             while (reader.hasNext()) {
                 with(feed) {
                     when (reader.selectName(NAMES)) {
-                        0 -> remoteId = reader.nextString()
-                        1 -> url = reader.nextString()
-                        2 -> name = reader.nextString()
-                        3 -> iconUrl = reader.nextString()
+                        0 -> remoteId = reader.nextNonEmptyString()
+                        1 -> url = reader.nextNonEmptyString()
+                        2 -> name = reader.nextNullableString()
+                        3 -> iconUrl = reader.nextNullableString()
                         4 -> {
                             val nextInt = reader.nextNullableInt()
                             remoteFolderId = if (nextInt != null && nextInt > 0) nextInt.toString() else null
@@ -53,6 +60,8 @@ class NextNewsFeedsAdapter {
                 }
             }
 
+            if (feed.name == null) feed.name = URI.create(feed.url).host
+
             feeds += feed
             reader.endObject()
         }
@@ -61,6 +70,7 @@ class NextNewsFeedsAdapter {
     }
 
     companion object {
-        val NAMES: JsonReader.Options = JsonReader.Options.of("id", "url", "title", "faviconLink", "folderId", "link")
+        val NAMES: JsonReader.Options = JsonReader.Options.of("id", "url", "title",
+                "faviconLink", "folderId", "link")
     }
 }

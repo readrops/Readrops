@@ -36,8 +36,8 @@ public abstract class FolderDao implements BaseDao<Folder> {
     @Query("Select remoteId From Folder Where account_id = :accountId")
     public abstract List<String> getFolderRemoteIdsOfAccount(int accountId);
 
-    @Query("Delete From Folder Where remoteId in (:ids)")
-    abstract void deleteByIds(List<String> ids);
+    @Query("Delete From Folder Where remoteId in (:ids) And account_id = :accountId")
+    abstract void deleteByIds(List<String> ids, int accountId);
 
     @Query("Select * From Folder Where name = :name And account_id = :accountId")
     public abstract Folder getFolderByName(String name, int accountId);
@@ -47,7 +47,7 @@ public abstract class FolderDao implements BaseDao<Folder> {
      *
      * @param folders folders to insert or update
      * @param account owner of the feeds
-     * @return the list of the inserted feeds ids
+     * @return the list of the inserted folders ids
      */
     @Transaction
     public List<Long> foldersUpsert(List<Folder> folders, Account account) {
@@ -64,8 +64,9 @@ public abstract class FolderDao implements BaseDao<Folder> {
             }
         }
 
-        if (!accountFolderIds.isEmpty())
-            deleteByIds(accountFolderIds);
+        if (!accountFolderIds.isEmpty()) {
+            deleteByIds(accountFolderIds, account.getId());
+        }
 
         return insert(foldersToInsert);
     }

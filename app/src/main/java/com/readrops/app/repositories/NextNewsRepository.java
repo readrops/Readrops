@@ -2,106 +2,149 @@ package com.readrops.app.repositories;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteConstraintException;
+import android.util.Log;
 import android.util.TimingLogger;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.readrops.api.services.Credentials;
 import com.readrops.api.services.SyncResult;
 import com.readrops.api.services.SyncType;
-import com.readrops.api.services.nextcloudnews.NextNewsAPI;
+import com.readrops.api.services.nextcloudnews.NextNewsDataSource;
 import com.readrops.api.services.nextcloudnews.NextNewsSyncData;
-import com.readrops.api.services.nextcloudnews.json.NextNewsUser;
-import com.readrops.api.utils.UnknownFormatException;
-import com.readrops.app.utils.FeedInsertionResult;
-import com.readrops.app.utils.ParsingResult;
+import com.readrops.api.services.nextcloudnews.adapters.NextNewsUserAdapter;
+import com.readrops.api.utils.exceptions.UnknownFormatException;
+import com.readrops.app.addfeed.FeedInsertionResult;
+import com.readrops.app.addfeed.ParsingResult;
 import com.readrops.app.utils.Utils;
+import com.readrops.db.Database;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
 import com.readrops.db.entities.account.Account;
+import com.readrops.db.pojo.ItemReadStarState;
 
 import org.joda.time.LocalDateTime;
+import org.koin.java.KoinJavaComponent;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
-public class NextNewsRepository extends ARepository<NextNewsAPI> {
+public class NextNewsRepository extends ARepository {
 
     private static final String TAG = NextNewsRepository.class.getSimpleName();
 
-    public NextNewsRepository(@NonNull Context context, @Nullable Account account) {
-        super(context, account);
+    private final NextNewsDataSource dataSource;
+
+    public NextNewsRepository(NextNewsDataSource dataSource, Database database, @NonNull Context context, @Nullable Account account) {
+        super(database, context, account);
+
+        this.dataSource = dataSource;
     }
 
     @Override
-    protected NextNewsAPI createAPI() {
-        if (account != null)
-            return new NextNewsAPI(Credentials.toCredentials(account));
+    public Completable login(Account account, boolean insert) {
+        setCredentials(account);
+        return Single.<String>create(emitter -> {
+            OkHttpClient httpClient = KoinJavaComponent.get(OkHttpClient.class);
 
-        return null;
-    }
+            Request request = new Request.Builder()
+                    .url(account.getUrl() + "/ocs/v1.php/cloud/users/" + account.getLogin())
+                    .addHeader("OCS-APIRequest", "true")
+                    .build();
 
-    @Override
-    public Single<Boolean> login(Account account, boolean insert) {
-        return Single.<NextNewsUser>create(emitter -> {
-            if (api == null)
-                api = new NextNewsAPI(Credentials.toCredentials(account));
-            else
-                api.setCredentials(Credentials.toCredentials(account));
+            Response response = httpClient.newCall(request).execute();
 
-            NextNewsUser user = api.login();
+            if (response.isSuccessful()) {
+                String displayName = new NextNewsUserAdapter().fromXml(response.body().byteStream());
+                response.body().close();
 
-            if (user != null) {
-                emitter.onSuccess(user);
+                emitter.onSuccess(displayName);
             } else {
-                emitter.onError(new Exception("Login failed. Please check your credentials and your Nextcloud News setup."));
+                // TODO better error handling
+                emitter.onError(new Exception("Login exception : " + response.code() + " error"));
             }
-        }).flatMap(user -> {
-            account.setDisplayedName(user.getDisplayName());
+        }).flatMapCompletable(displayName -> {
+            account.setDisplayedName(displayName);
             account.setCurrentAccount(true);
 
             if (insert) {
                 return database.accountDao().insert(account)
-                        .flatMap(id -> {
+                        .flatMapCompletable(id -> {
                             account.setId(id.intValue());
-                            return Single.just(true);
+                            return Completable.complete();
                         });
             }
 
-            return Single.just(true);
+            return Completable.complete();
         });
     }
 
     @Override
     public Observable<Feed> sync(List<Feed> feeds) {
+        setCredentials(account);
         return Observable.create(emitter -> {
             try {
                 long lastModified = LocalDateTime.now().toDateTime().getMillis();
                 SyncType syncType;
 
-                if (account.getLastModified() != 0)
+                if (account.getLastModified() != 0) {
                     syncType = SyncType.CLASSIC_SYNC;
-                else
+                } else {
                     syncType = SyncType.INITIAL_SYNC;
+                }
 
                 NextNewsSyncData syncData = new NextNewsSyncData();
 
                 if (syncType == SyncType.CLASSIC_SYNC) {
                     syncData.setLastModified(account.getLastModified() / 1000L);
-                    syncData.setReadItems(database.itemDao().getReadChanges(account.getId()));
-                    syncData.setUnreadItems(database.itemDao().getUnreadChanges(account.getId()));
+
+                    List<ItemReadStarState> itemStateChanges = database
+                            .itemStateChangesDao()
+                            .getNextcloudNewsStateChanges(account.getId());
+
+                    syncData.setReadItems(itemStateChanges.stream()
+                            .filter(it -> it.getReadChange() && it.getRead())
+                            .map(ItemReadStarState::getRemoteId)
+                            .collect(Collectors.toList()));
+
+                    syncData.setUnreadItems(itemStateChanges.stream()
+                            .filter(it -> it.getReadChange() && !it.getRead())
+                            .map(ItemReadStarState::getRemoteId)
+                            .collect(Collectors.toList()));
+
+                    List<String> starredItemsIds = itemStateChanges.stream()
+                            .filter(it -> it.getStarChange() && it.getStarred())
+                            .map(ItemReadStarState::getRemoteId)
+                            .collect(Collectors.toList());
+
+                    if (!starredItemsIds.isEmpty()) {
+                        syncData.setStarredItems(database.itemDao().getStarChanges(starredItemsIds, account.getId()));
+                    }
+
+                    List<String> unstarredItemsIds = itemStateChanges.stream()
+                            .filter(it -> it.getStarChange() && !it.getStarred())
+                            .map(ItemReadStarState::getRemoteId)
+                            .collect(Collectors.toList());
+
+                    if (!unstarredItemsIds.isEmpty()) {
+                        syncData.setUnstarredItems(database.itemDao().getStarChanges(unstarredItemsIds, account.getId()));
+                    }
+
                 }
 
                 TimingLogger timings = new TimingLogger(TAG, "nextcloud news " + syncType.name().toLowerCase());
-                SyncResult result = api.sync(syncType, syncData);
+                SyncResult result = dataSource.sync(syncType, syncData);
                 timings.addSplit("server queries");
 
                 if (!result.isError()) {
@@ -113,20 +156,25 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
                     insertFeeds(result.getFeeds(), false);
                     timings.addSplit("insert feeds");
 
-                    insertItems(result.getItems(), syncType == SyncType.INITIAL_SYNC);
+                    boolean initialSync = syncType == SyncType.INITIAL_SYNC;
+                    insertItems(result.getItems(), initialSync);
                     timings.addSplit("insert items");
+
+                    insertItems(result.getStarredItems(), initialSync);
                     timings.dumpToLog();
 
                     account.setLastModified(lastModified);
                     database.accountDao().updateLastModified(account.getId(), lastModified);
-                    database.itemDao().resetReadChanges(account.getId());
+
+                    database.itemStateChangesDao().resetStateChanges(account.getId());
 
                     emitter.onComplete();
-                } else
+                } else {
                     emitter.onError(new Throwable());
+                }
 
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.d(TAG, "sync: " + e.getMessage());
                 emitter.onError(e);
             }
         });
@@ -134,6 +182,7 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
 
     @Override
     public Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results) {
+        setCredentials(account);
         return Single.create(emitter -> {
             List<FeedInsertionResult> feedInsertionResults = new ArrayList<>();
 
@@ -141,11 +190,11 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
                 FeedInsertionResult insertionResult = new FeedInsertionResult();
 
                 try {
-                    List<Feed> nextNewsFeeds = api.createFeed(result.getUrl(), 0);
+                    List<Feed> nextNewsFeeds = dataSource.createFeed(result.getUrl(), 0);
 
                     if (nextNewsFeeds != null) {
                         List<Feed> newFeeds = insertFeeds(nextNewsFeeds, true);
-                        // there is always only one object in the list, see nextcloud news api doc
+                        // there is always only one object in the list, see nextcloud news dataSource doc
                         insertionResult.setFeed(newFeeds.get(0));
                     } else
                         insertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.UNKNOWN_ERROR);
@@ -171,6 +220,7 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
 
     @Override
     public Completable updateFeed(Feed feed) {
+        setCredentials(account);
         return Completable.create(emitter -> {
             Folder folder = feed.getFolderId() == null ? null : database.folderDao().select(feed.getFolderId());
 
@@ -180,7 +230,7 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
                 feed.setRemoteFolderId(String.valueOf(0)); // 0 for no folder
 
             try {
-                if (api.renameFeed(feed) && api.changeFeedFolder(feed)) {
+                if (dataSource.renameFeed(feed) && dataSource.changeFeedFolder(feed)) {
                     emitter.onComplete();
                 } else
                     emitter.onError(new Exception("Unknown error when updating feed"));
@@ -192,9 +242,10 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
 
     @Override
     public Completable deleteFeed(Feed feed) {
+        setCredentials(account);
         return Completable.create(emitter -> {
             try {
-                if (api.deleteFeed(Integer.parseInt(feed.getRemoteId()))) {
+                if (dataSource.deleteFeed(Integer.parseInt(feed.getRemoteId()))) {
                     emitter.onComplete();
                 } else
                     emitter.onError(new Exception("Unknown error"));
@@ -208,9 +259,10 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
 
     @Override
     public Single<Long> addFolder(Folder folder) {
+        setCredentials(account);
         return Single.<Folder>create(emitter -> {
             try {
-                List<Folder> folders = api.createFolder(folder);
+                List<Folder> folders = dataSource.createFolder(folder);
 
                 if (folders != null) {
                     Folder nextNewsFolder = folders.get(0); // always only one item returned by the server, see doc
@@ -227,9 +279,10 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
 
     @Override
     public Completable updateFolder(Folder folder) {
+        setCredentials(account);
         return Completable.create(emitter -> {
             try {
-                if (api.renameFolder(folder)) {
+                if (dataSource.renameFolder(folder)) {
                     emitter.onComplete();
                 } else
                     emitter.onError(new Exception("Unknown error"));
@@ -244,9 +297,10 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
 
     @Override
     public Completable deleteFolder(Folder folder) {
+        setCredentials(account);
         return Completable.create(emitter -> {
             try {
-                if (api.deleteFolder(folder)) {
+                if (dataSource.deleteFolder(folder)) {
                     emitter.onComplete();
                 } else
                     emitter.onError(new Exception("Unknown error"));
@@ -296,7 +350,7 @@ public class NextNewsRepository extends ARepository<NextNewsAPI> {
 
             //if the item already exists, update only its read state
             if (!initialSync && feedId > 0 && database.itemDao().remoteItemExists(String.valueOf(item.getRemoteId()), feedId)) {
-                database.itemDao().setReadState(item.getRemoteId(), item.isRead());
+                database.itemDao().setReadAndStarState(item.getRemoteId(), item.isRead(), item.isStarred());
                 continue;
             }
 

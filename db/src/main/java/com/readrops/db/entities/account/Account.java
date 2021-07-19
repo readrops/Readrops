@@ -185,6 +185,10 @@ public class Account implements Parcelable {
         this.notificationsEnabled = notificationsEnabled;
     }
 
+    public AccountConfig getConfig() {
+        return accountType.getAccountConfig();
+    }
+
     @Override
     public int describeContents() {
         return 0;

@@ -1,5 +1,7 @@
 package com.readrops.api.services.nextcloudnews;
 
+import com.readrops.db.pojo.StarItem;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,9 +11,9 @@ public class NextNewsSyncData {
 
     private List<String> readItems;
 
-    private List<Integer> starredItems;
+    private List<StarItem> starredItems;
 
-    private List<Integer> unstarredItems;
+    private List<StarItem> unstarredItems;
 
     private long lastModified;
 
@@ -38,19 +40,19 @@ public class NextNewsSyncData {
         this.readItems = readItems;
     }
 
-    public List<Integer> getStarredItems() {
+    public List<StarItem> getStarredItems() {
         return starredItems;
     }
 
-    public void setStarredItems(List<Integer> starredItems) {
+    public void setStarredItems(List<StarItem> starredItems) {
         this.starredItems = starredItems;
     }
 
-    public List<Integer> getUnstarredItems() {
+    public List<StarItem> getUnstarredItems() {
         return unstarredItems;
     }
 
-    public void setUnstarredItems(List<Integer> unstarredItems) {
+    public void setUnstarredItems(List<StarItem> unstarredItems) {
         this.unstarredItems = unstarredItems;
     }
 
