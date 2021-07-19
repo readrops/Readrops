@@ -1,7 +1,5 @@
 package com.readrops.api.utils;
 
-import android.util.Log;
-
 import androidx.annotation.Nullable;
 
 import org.joda.time.LocalDateTime;
@@ -57,7 +55,6 @@ public final class DateUtils {
 
             return formatter.parseLocalDateTime(value);
         } catch (Exception e) {
-            Log.d(TAG, e.getMessage());
             return null;
         }
     }

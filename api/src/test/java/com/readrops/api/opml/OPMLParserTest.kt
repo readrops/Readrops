@@ -1,35 +1,20 @@
-package com.readrops.api
+package com.readrops.api.opml
 
-import android.Manifest
-import android.content.Context
-import android.os.Environment
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.rule.GrantPermissionRule
-import com.readrops.api.opml.OPMLParser
+import com.readrops.api.TestUtils
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import io.reactivex.schedulers.Schedulers
 import junit.framework.TestCase.assertEquals
-import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import java.io.File
 import java.io.FileOutputStream
-import java.io.OutputStream
 
-@RunWith(AndroidJUnit4::class)
 class OPMLParserTest {
-
-    private val context: Context = InstrumentationRegistry.getInstrumentation().context
-
-    @get:Rule
-    val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
     @Test
     fun readOpmlTest() {
-        val stream = context.resources.assets.open("opml/subscriptions.opml")
+        val stream = TestUtils.loadResource("opml/subscriptions.opml")
 
         var foldersAndFeeds: Map<Folder?, List<Feed>>? = null
 
@@ -52,7 +37,7 @@ class OPMLParserTest {
 
     @Test
     fun readLiteSubscriptionsTest() {
-        val stream = context.resources.assets.open("opml/lite_subscriptions.opml")
+        val stream = TestUtils.loadResource("opml/lite_subscriptions.opml")
 
         var foldersAndFeeds: Map<Folder?, List<Feed>>? = null
 
@@ -68,7 +53,7 @@ class OPMLParserTest {
 
     @Test
     fun opmlVersionTest() {
-        val stream = context.resources.assets.open("opml/wrong_version.opml")
+        val stream = TestUtils.loadResource("opml/wrong_version.opml")
 
         OPMLParser.read(stream)
                 .test()
@@ -79,10 +64,9 @@ class OPMLParserTest {
 
     @Test
     fun writeOpmlTest() {
-        val filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath
-        val file = File(filePath, "subscriptions.opml")
+        val file = File("subscriptions.opml")
+        val outputStream = FileOutputStream(file)
 
-        val outputStream: OutputStream = FileOutputStream(file)
         val foldersAndFeeds: Map<Folder?, List<Feed>> = HashMap<Folder?, List<Feed>>().apply {
             put(null, listOf(Feed("Feed1", "", "https://feed1.com"),
                     Feed("Feed2", "", "https://feed2.com")))

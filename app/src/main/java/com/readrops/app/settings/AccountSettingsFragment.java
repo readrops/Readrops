@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,6 +40,7 @@ import com.readrops.db.entities.account.AccountType;
 
 import org.koin.androidx.viewmodel.compat.ViewModelCompat;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
 
@@ -203,13 +205,18 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
                     .cancelable(false)
                     .show();
 
-            parseOPMLFile(uri, dialog);
+            try {
+                parseOPMLFile(uri, dialog);
+            } catch (FileNotFoundException e) {
+                Log.d(TAG, e.getMessage());
+                displayErrorMessage();
+            }
         }
 
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void parseOPMLFile(Uri uri, MaterialDialog dialog) {
+    private void parseOPMLFile(Uri uri, MaterialDialog dialog) throws FileNotFoundException {
         viewModel.parseOPMLFile(uri, getContext())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

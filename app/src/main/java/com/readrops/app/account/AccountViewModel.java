@@ -16,6 +16,7 @@ import com.readrops.db.entities.account.Account;
 import org.koin.core.parameter.DefinitionParametersKt;
 import org.koin.java.KoinJavaComponent;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
 
@@ -62,8 +63,8 @@ public class AccountViewModel extends ViewModel {
         return repository.getFoldersWithFeeds();
     }
 
-    public Completable parseOPMLFile(Uri uri, Context context) {
-        return OPMLParser.read(uri, context)
+    public Completable parseOPMLFile(Uri uri, Context context) throws FileNotFoundException {
+        return OPMLParser.read(context.getContentResolver().openInputStream(uri))
                 .flatMapCompletable(foldersAndFeeds -> repository.insertOPMLFoldersAndFeeds(foldersAndFeeds));
     }
 }

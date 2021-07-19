@@ -1,8 +1,5 @@
 package com.readrops.api.opml
 
-import android.content.Context
-import android.net.Uri
-import android.util.Log
 import com.readrops.api.opml.model.Body
 import com.readrops.api.opml.model.Head
 import com.readrops.api.opml.model.OPML
@@ -12,7 +9,6 @@ import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import io.reactivex.Completable
 import io.reactivex.Single
-import io.reactivex.SingleOnSubscribe
 import org.simpleframework.xml.Serializer
 import org.simpleframework.xml.core.Persister
 import java.io.InputStream
@@ -20,15 +16,7 @@ import java.io.OutputStream
 
 object OPMLParser {
 
-    val TAG = OPMLParser.javaClass.simpleName
-
-    @JvmStatic
-    fun read(uri: Uri, context: Context): Single<Map<Folder?, List<Feed>>> {
-        return Single.create(SingleOnSubscribe<InputStream> {
-            val stream = context.contentResolver.openInputStream(uri)
-            it.onSuccess(stream!!)
-        }).flatMap { stream -> read(stream) }
-    }
+    val TAG: String = OPMLParser.javaClass.simpleName
 
     @JvmStatic
     fun read(stream: InputStream): Single<Map<Folder?, List<Feed>>> {
@@ -40,7 +28,6 @@ object OPMLParser {
 
                 emitter.onSuccess(opmlToFoldersAndFeeds(opml))
             } catch (e: Exception) {
-                Log.d(TAG, e.message, e)
                 emitter.onError(e)
             }
         }
@@ -148,8 +135,10 @@ object OPMLParser {
      * @param folder the folder feeds will be associated to
      *
      */
-    private fun associateOrphanFeedsToFolder(foldersAndFeeds: MutableMap<Folder?, List<Feed>>,
-                                             parsingResult: MutableMap<Folder?, List<Feed>>, folder: Folder?) {
+    private fun associateOrphanFeedsToFolder(
+            foldersAndFeeds: MutableMap<Folder?, List<Feed>>,
+            parsingResult: MutableMap<Folder?, List<Feed>>, folder: Folder?,
+    ) {
         val feeds = parsingResult[null]
         if (feeds != null && feeds.isNotEmpty()) {
             if (foldersAndFeeds[folder] == null) foldersAndFeeds[folder] = feeds
