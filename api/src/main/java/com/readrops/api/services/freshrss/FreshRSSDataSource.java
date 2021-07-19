@@ -5,7 +5,7 @@ import androidx.annotation.Nullable;
 
 import com.readrops.api.services.SyncResult;
 import com.readrops.api.services.SyncType;
-import com.readrops.api.services.freshrss.json.FreshRSSUserInfo;
+import com.readrops.api.services.freshrss.adapters.FreshRSSUserInfo;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
