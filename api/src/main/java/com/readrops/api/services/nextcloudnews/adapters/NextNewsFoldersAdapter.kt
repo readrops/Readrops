@@ -2,6 +2,7 @@ package com.readrops.api.services.nextcloudnews.adapters
 
 import android.annotation.SuppressLint
 import com.readrops.api.utils.exceptions.ParseException
+import com.readrops.api.utils.extensions.nextNonEmptyString
 import com.readrops.db.entities.Folder
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonReader
@@ -30,7 +31,7 @@ class NextNewsFoldersAdapter {
                     with(folder) {
                         when (reader.selectName(NAMES)) {
                             0 -> remoteId = reader.nextInt().toString()
-                            1 -> name = reader.nextString()
+                            1 -> name = reader.nextNonEmptyString()
                             else -> reader.skipValue()
                         }
                     }

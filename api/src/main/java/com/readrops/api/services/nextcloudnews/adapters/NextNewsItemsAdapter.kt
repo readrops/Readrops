@@ -40,10 +40,10 @@ class NextNewsItemsAdapter : JsonAdapter<List<Item>>() {
                         when (reader.selectName(NAMES)) {
                             0 -> remoteId = reader.nextInt().toString()
                             1 -> link = reader.nextNullableString()
-                            2 -> title = reader.nextString()
-                            3 -> author = reader.nextString()
+                            2 -> title = reader.nextNonEmptyString()
+                            3 -> author = reader.nextNullableString()
                             4 -> pubDate = LocalDateTime(reader.nextLong() * 1000L, DateTimeZone.getDefault())
-                            5 -> content = reader.nextString()
+                            5 -> content = reader.nextNullableString()
                             6 -> enclosureMime = reader.nextNullableString()
                             7 -> enclosureLink = reader.nextNullableString()
                             8 -> feedRemoteId = reader.nextInt().toString()

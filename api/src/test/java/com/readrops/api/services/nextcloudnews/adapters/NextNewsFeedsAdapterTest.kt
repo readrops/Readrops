@@ -18,7 +18,7 @@ class NextNewsFeedsAdapterTest {
 
     @Test
     fun validFeedsTest() {
-        val stream = TestUtils.loadResource("services/nextcloudnews/feeds.json")
+        val stream = TestUtils.loadResource("services/nextcloudnews/adapters/feeds.json")
 
         val feeds = adapter.fromJson(Buffer().readFrom(stream))!!
         val feed1 = feeds[0]
@@ -31,6 +31,8 @@ class NextNewsFeedsAdapterTest {
         assertEquals(feed1.iconUrl, "https://krebsonsecurity.com/favicon.ico")
 
         val feed2 = feeds[1]
+        assertNull(feed2.iconUrl)
+        assertNull(feed2.siteUrl)
         assertNull(feed2.remoteFolderId)
 
         val feed3 = feeds[2]
