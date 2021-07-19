@@ -1,3 +1,10 @@
+# v1.3.0
+- New local RSS parser, much reliable
+- New external navigator view for items (Custom tabs)
+- FreshRSS and Nextcloud News favorites
+- FreshRSS read state synchronisation
+- New folder view when clicking on a drawer expandable item (#56)
+
 # v1.2.1
 
 - Accept null value for Nextcloud News feed attribute folderId #87
