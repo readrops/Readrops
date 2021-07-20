@@ -17,9 +17,9 @@ import com.readrops.api.utils.exceptions.ConflictException;
 import com.readrops.api.utils.exceptions.UnknownFormatException;
 import com.readrops.app.R;
 import com.readrops.app.databinding.FragmentFoldersBinding;
+import com.readrops.app.feedsfolders.ManageFeedsFoldersViewModel;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
-import com.readrops.app.feedsfolders.ManageFeedsFoldersViewModel;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.account.Account;
 

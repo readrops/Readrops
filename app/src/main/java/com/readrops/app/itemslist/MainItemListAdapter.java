@@ -25,13 +25,13 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
 import com.bumptech.glide.util.ViewPreloadSizeProvider;
-import com.readrops.app.R;
-import com.readrops.db.entities.Item;
-import com.readrops.db.pojo.ItemWithFeed;
-import com.readrops.app.databinding.ListItemBinding;
 import com.readrops.api.utils.DateUtils;
+import com.readrops.app.R;
+import com.readrops.app.databinding.ListItemBinding;
 import com.readrops.app.utils.GlideRequests;
 import com.readrops.app.utils.Utils;
+import com.readrops.db.entities.Item;
+import com.readrops.db.pojo.ItemWithFeed;
 
 import java.util.ArrayList;
 import java.util.Collections;
