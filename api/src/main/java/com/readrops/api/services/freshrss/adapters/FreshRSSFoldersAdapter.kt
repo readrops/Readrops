@@ -2,6 +2,7 @@ package com.readrops.api.services.freshrss.adapters
 
 import android.annotation.SuppressLint
 import com.readrops.api.utils.exceptions.ParseException
+import com.readrops.api.utils.extensions.nextNonEmptyString
 import com.readrops.db.entities.Folder
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonReader
@@ -33,7 +34,7 @@ class FreshRSSFoldersAdapter {
                     with(folder) {
                         when (reader.selectName(NAMES)) {
                             0 -> {
-                                val id = reader.nextString()
+                                val id = reader.nextNonEmptyString()
                                 name = StringTokenizer(id, "/")
                                         .toList()
                                         .last() as String

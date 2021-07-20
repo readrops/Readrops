@@ -1,0 +1,57 @@
+{
+  "id": "user/-/state/com.google/reading-list",
+  "updated": 1625235516,
+  "items": [
+    {
+      "id": "tag:google.com,2005:reader/item/0005c62466ee28fe",
+      "crawlTimeMsec": "1625234531559",
+      "timestampUsec": "1625234531559678",
+      "published": 1625234040,
+      "title": "GNOME’s Default Theme is Getting a Revamp",
+      "summary": {
+        "content": "<p><img width=\"406\" height=\"232\" src=\"https://149366088.v2.pressablecdn.com/wp-content/uploads/2021/07/borderless-adwaita-tile-406x232.jpg\" alt=\"a screenshot of Adwaita borderless theme\" loading=\"lazy\">GNOME developers are working a \"borderless\" version of the Adwaita GTK theme for potential inclusion in GNOME 41. More details and pictures inside.</p>\n<p>This post, <a rel=\"nofollow\" href=\"https://www.omgubuntu.co.uk/2021/07/adwaita-borderless-theme-in-development-gnome-41\">GNOME’s Default Theme is Getting a Revamp</a> is from <a rel=\"nofollow\" href=\"https://www.omgubuntu.co.uk/\">OMG! Ubuntu!</a>. Do not reproduce elsewhere without permission.</p><div>\n<a href=\"https://feeds.feedburner.com/~ff/d0od?a=4Zk-fncSuek:uQOFOGAnOHI:wBxX2hOkimM\"><img src=\"https://feeds.feedburner.com/~ff/d0od?i=4Zk-fncSuek:uQOFOGAnOHI:wBxX2hOkimM\" border=\"0\"></a> <a href=\"https://feeds.feedburner.com/~ff/d0od?a=4Zk-fncSuek:uQOFOGAnOHI:I9og5sOYxJI\"><img src=\"https://feeds.feedburner.com/~ff/d0od?d=I9og5sOYxJI\" border=\"0\"></a> <a href=\"https://feeds.feedburner.com/~ff/d0od?a=4Zk-fncSuek:uQOFOGAnOHI:qj6IDK7rITs\"><img src=\"https://feeds.feedburner.com/~ff/d0od?d=qj6IDK7rITs\" border=\"0\"></a> <a href=\"https://feeds.feedburner.com/~ff/d0od?a=4Zk-fncSuek:uQOFOGAnOHI:V_sGLiPBpWU\"><img src=\"https://feeds.feedburner.com/~ff/d0od?i=4Zk-fncSuek:uQOFOGAnOHI:V_sGLiPBpWU\" border=\"0\"></a> <a href=\"https://feeds.feedburner.com/~ff/d0od?a=4Zk-fncSuek:uQOFOGAnOHI:gIN9vFwOqvQ\"><img src=\"https://feeds.feedburner.com/~ff/d0od?i=4Zk-fncSuek:uQOFOGAnOHI:gIN9vFwOqvQ\" border=\"0\"></a> <a href=\"https://feeds.feedburner.com/~ff/d0od?a=4Zk-fncSuek:uQOFOGAnOHI:yIl2AUoC8zA\"><img src=\"https://feeds.feedburner.com/~ff/d0od?d=yIl2AUoC8zA\" border=\"0\"></a>\n</div><img src=\"https://feeds.feedburner.com/~r/d0od/~4/4Zk-fncSuek\" height=\"1\" width=\"1\" alt=\"\">"
+      },
+      "alternate": [
+        {
+          "href": "http://feedproxy.google.com/~r/d0od/~3/4Zk-fncSuek/adwaita-borderless-theme-in-development-gnome-41"
+        }
+      ],
+      "categories": [
+        "user/-/state/com.google/reading-list",
+        "user/-/label/Libre"
+      ],
+      "origin": {
+        "streamId": "feed/15",
+        "title": "OMG! Ubuntu!"
+      },
+      "author": "Joey Sneddon"
+    },
+    {
+      "id": "tag:google.com,2005:reader/item/0005c62466ee28fe",
+      "crawlTimeMsec": "1625234531559",
+      "timestampUsec": "1625234531559678",
+      "published": 1625234040,
+      "title": "GNOME’s Default Theme is Getting a Revamp",
+      "summary": {
+        "content": "<p><img width=\"406\" height=\"232\" src=\"https://149366088.v2.pressablecdn.com/wp-content/uploads/2021/07/borderless-adwaita-tile-406x232.jpg\" alt=\"a screenshot of Adwaita borderless theme\" loading=\"lazy\">GNOME developers are working a \"borderless\" version of the Adwaita GTK theme for potential inclusion in GNOME 41. More details and pictures inside.</p>\n<p>This post, <a rel=\"nofollow\" href=\"https://www.omgubuntu.co.uk/2021/07/adwaita-borderless-theme-in-development-gnome-41\">GNOME’s Default Theme is Getting a Revamp</a> is from <a rel=\"nofollow\" href=\"https://www.omgubuntu.co.uk/\">OMG! Ubuntu!</a>. Do not reproduce elsewhere without permission.</p><div>\n<a href=\"https://feeds.feedburner.com/~ff/d0od?a=4Zk-fncSuek:uQOFOGAnOHI:wBxX2hOkimM\"><img src=\"https://feeds.feedburner.com/~ff/d0od?i=4Zk-fncSuek:uQOFOGAnOHI:wBxX2hOkimM\" border=\"0\"></a> <a href=\"https://feeds.feedburner.com/~ff/d0od?a=4Zk-fncSuek:uQOFOGAnOHI:I9og5sOYxJI\"><img src=\"https://feeds.feedburner.com/~ff/d0od?d=I9og5sOYxJI\" border=\"0\"></a> <a href=\"https://feeds.feedburner.com/~ff/d0od?a=4Zk-fncSuek:uQOFOGAnOHI:qj6IDK7rITs\"><img src=\"https://feeds.feedburner.com/~ff/d0od?d=qj6IDK7rITs\" border=\"0\"></a> <a href=\"https://feeds.feedburner.com/~ff/d0od?a=4Zk-fncSuek:uQOFOGAnOHI:V_sGLiPBpWU\"><img src=\"https://feeds.feedburner.com/~ff/d0od?i=4Zk-fncSuek:uQOFOGAnOHI:V_sGLiPBpWU\" border=\"0\"></a> <a href=\"https://feeds.feedburner.com/~ff/d0od?a=4Zk-fncSuek:uQOFOGAnOHI:gIN9vFwOqvQ\"><img src=\"https://feeds.feedburner.com/~ff/d0od?i=4Zk-fncSuek:uQOFOGAnOHI:gIN9vFwOqvQ\" border=\"0\"></a> <a href=\"https://feeds.feedburner.com/~ff/d0od?a=4Zk-fncSuek:uQOFOGAnOHI:yIl2AUoC8zA\"><img src=\"https://feeds.feedburner.com/~ff/d0od?d=yIl2AUoC8zA\" border=\"0\"></a>\n</div><img src=\"https://feeds.feedburner.com/~r/d0od/~4/4Zk-fncSuek\" height=\"1\" width=\"1\" alt=\"\">"
+      },
+      "alternate": [
+        {
+          "href": "http://feedproxy.google.com/~r/d0od/~3/4Zk-fncSuek/adwaita-borderless-theme-in-development-gnome-41"
+        }
+      ],
+      "categories": [
+        "user/-/state/com.google/reading-list",
+        "user/-/label/Libre",
+        "user/-/state/com.google/starred",
+        "user/-/state/com.google/read"
+      ],
+      "origin": {
+        "streamId": "feed/15",
+        "title": "OMG! Ubuntu!"
+      },
+      "author": "Joey Sneddon"
+    }
+  ],
+  "continuation": 1620164205822673
+}

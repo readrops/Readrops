@@ -4,6 +4,8 @@ import android.util.TimingLogger
 import com.readrops.api.services.freshrss.FreshRSSDataSource.GOOGLE_READ
 import com.readrops.api.services.freshrss.FreshRSSDataSource.GOOGLE_STARRED
 import com.readrops.api.utils.exceptions.ParseException
+import com.readrops.api.utils.extensions.nextNonEmptyString
+import com.readrops.api.utils.extensions.nextNullableString
 import com.readrops.db.entities.Item
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
@@ -18,7 +20,6 @@ class FreshRSSItemsAdapter : JsonAdapter<List<Item>>() {
     }
 
     override fun fromJson(reader: JsonReader): List<Item>? {
-        val logger = TimingLogger(TAG, "item parsing")
         val items = mutableListOf<Item>()
 
         return try {
@@ -28,9 +29,6 @@ class FreshRSSItemsAdapter : JsonAdapter<List<Item>>() {
             }
 
             reader.endObject()
-
-            logger.addSplit("item parsing done")
-            logger.dumpToLog()
 
             items
         } catch (e: Exception) {
@@ -48,15 +46,15 @@ class FreshRSSItemsAdapter : JsonAdapter<List<Item>>() {
             while (reader.hasNext()) {
                 with(item) {
                     when (reader.selectName(NAMES)) {
-                        0 -> remoteId = reader.nextString()
+                        0 -> remoteId = reader.nextNonEmptyString()
                         1 -> pubDate = LocalDateTime(reader.nextLong() * 1000L,
                                 DateTimeZone.getDefault())
-                        2 -> title = reader.nextString()
+                        2 -> title = reader.nextNonEmptyString()
                         3 -> content = getContent(reader)
                         4 -> link = getLink(reader)
                         5 -> getStates(reader, this)
                         6 -> feedRemoteId = getRemoteFeedId(reader)
-                        7 -> author = reader.nextString()
+                        7 -> author = reader.nextNullableString()
                         else -> reader.skipValue()
                     }
                 }
@@ -75,7 +73,7 @@ class FreshRSSItemsAdapter : JsonAdapter<List<Item>>() {
 
         while (reader.hasNext()) {
             when (reader.nextName()) {
-                "content" -> content = reader.nextString()
+                "content" -> content = reader.nextNullableString()
                 else -> reader.skipValue()
             }
         }
@@ -92,7 +90,7 @@ class FreshRSSItemsAdapter : JsonAdapter<List<Item>>() {
             reader.beginObject()
 
             when (reader.nextName()) {
-                "href" -> href = reader.nextString()
+                "href" -> href = reader.nextNullableString()
                 else -> reader.skipValue()
             }
 
@@ -110,6 +108,7 @@ class FreshRSSItemsAdapter : JsonAdapter<List<Item>>() {
             when (reader.nextString()) {
                 GOOGLE_READ -> item.isRead = true
                 GOOGLE_STARRED -> item.isStarred = true
+                else -> reader.skipValue()
             }
         }
 
@@ -135,6 +134,6 @@ class FreshRSSItemsAdapter : JsonAdapter<List<Item>>() {
         val NAMES: JsonReader.Options = JsonReader.Options.of("id", "published", "title",
                 "summary", "alternate", "categories", "origin", "author")
 
-        val TAG = FreshRSSItemsAdapter::class.java.simpleName
+        val TAG: String = FreshRSSItemsAdapter::class.java.simpleName
     }
 }

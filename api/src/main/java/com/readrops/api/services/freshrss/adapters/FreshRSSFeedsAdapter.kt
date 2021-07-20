@@ -2,6 +2,8 @@ package com.readrops.api.services.freshrss.adapters
 
 import android.annotation.SuppressLint
 import com.readrops.api.utils.exceptions.ParseException
+import com.readrops.api.utils.extensions.nextNonEmptyString
+import com.readrops.api.utils.extensions.nextNullableString
 import com.readrops.db.entities.Feed
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonReader
@@ -29,11 +31,11 @@ class FreshRSSFeedsAdapter {
                 while (reader.hasNext()) {
                     with(feed) {
                         when (reader.selectName(NAMES)) {
-                            0 -> name = reader.nextString()
-                            1 -> url = reader.nextString()
-                            2 -> siteUrl = reader.nextString()
-                            3 -> iconUrl = reader.nextString()
-                            4 -> remoteId = reader.nextString()
+                            0 -> name = reader.nextNonEmptyString()
+                            1 -> url = reader.nextNonEmptyString()
+                            2 -> siteUrl = reader.nextNullableString()
+                            3 -> iconUrl = reader.nextNullableString()
+                            4 -> remoteId = reader.nextNonEmptyString()
                             5 -> remoteFolderId = getCategoryId(reader)
                             else -> reader.skipValue()
                         }
@@ -62,7 +64,7 @@ class FreshRSSFeedsAdapter {
 
             while (reader.hasNext()) {
                 when (reader.nextName()) {
-                    "id" -> id = reader.nextString()
+                    "id" -> id = reader.nextNullableString()
                     else -> reader.skipValue()
                 }
             }
