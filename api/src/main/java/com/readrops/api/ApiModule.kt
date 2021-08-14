@@ -42,18 +42,14 @@ val apiModule = module {
 
     factory { params -> FreshRSSDataSource(get(parameters = { params })) }
 
-    factory { params ->
-        get<Retrofit>(named("freshrssRetrofit"), parameters = { params })
-                .create(FreshRSSService::class.java)
-    }
-
-    factory(named("freshrssRetrofit")) { (credentials: Credentials) ->
+    factory { (credentials: Credentials) ->
         Retrofit.Builder()
                 .baseUrl(credentials.url)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(get())
                 .addConverterFactory(MoshiConverterFactory.create(get(named("freshrssMoshi"))))
                 .build()
+                .create(FreshRSSService::class.java)
     }
 
     single(named("freshrssMoshi")) {
@@ -72,18 +68,14 @@ val apiModule = module {
 
     factory { params -> NextNewsDataSource(get(parameters = { params })) }
 
-    factory { params ->
-        get<Retrofit>(named("nextcloudNewsRetrofit"), parameters = { params })
-                .create(NextNewsService::class.java)
-    }
-
-    factory(named("nextcloudNewsRetrofit")) { (credentials: Credentials) ->
+    factory { (credentials: Credentials) ->
         Retrofit.Builder()
                 .baseUrl(credentials.url)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(get())
                 .addConverterFactory(MoshiConverterFactory.create(get(named("nextcloudNewsMoshi"))))
                 .build()
+                .create(NextNewsService::class.java)
     }
 
     single(named("nextcloudNewsMoshi")) {
