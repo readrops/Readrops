@@ -2,6 +2,7 @@ package com.readrops.api.localfeed
 
 import android.accounts.NetworkErrorException
 import androidx.annotation.WorkerThread
+import com.gitlab.mvysny.konsumexml.konsumeXml
 import com.readrops.api.localfeed.json.JSONFeedAdapter
 import com.readrops.api.localfeed.json.JSONItemsAdapter
 import com.readrops.api.utils.ApiUtils
@@ -49,10 +50,17 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient): KoinComponent {
                 var type = LocalRSSHelper.getRSSType(contentType)
 
                 val bodyArray = response.peekBody(Long.MAX_VALUE).bytes()
+                val konsumer = ByteArrayInputStream(bodyArray).konsumeXml()
 
                 // if we can't guess type based on content-type header, we use the content
-                if (type == LocalRSSHelper.RSSType.UNKNOWN)
-                    type = LocalRSSHelper.getRSSContentType(ByteArrayInputStream(bodyArray))
+                if (type == LocalRSSHelper.RSSType.UNKNOWN) {
+                    val rootKonsumer = konsumer.nextElement(LocalRSSHelper.RSS_ROOT_NAMES)
+
+                    if (rootKonsumer != null) {
+                        type = LocalRSSHelper.guessRSSType(rootKonsumer)
+                        konsumer.close()
+                    }
+                }
                 // if we can't guess type even with the content, we are unable to go further
                 if (type == LocalRSSHelper.RSSType.UNKNOWN) throw UnknownFormatException("Unable to guess $url RSS type")
 
@@ -85,8 +93,15 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient): KoinComponent {
 
             var type = LocalRSSHelper.getRSSType(contentType)
 
-            if (type == LocalRSSHelper.RSSType.UNKNOWN)
-                type = LocalRSSHelper.getRSSContentType(response.body?.byteStream()!!) // stream is closed in helper method
+            if (type == LocalRSSHelper.RSSType.UNKNOWN) {
+                val konsumer = response.body!!.byteStream().konsumeXml().apply {
+                    val rootKonsumer = nextElement(LocalRSSHelper.RSS_ROOT_NAMES)
+
+                    rootKonsumer?.let { type = LocalRSSHelper.guessRSSType(rootKonsumer) }
+                }
+
+                konsumer.close()
+            }
 
             type != LocalRSSHelper.RSSType.UNKNOWN
         } else false

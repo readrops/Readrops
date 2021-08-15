@@ -19,3 +19,10 @@ fun Konsumer.nullableTextRecursively(): String? {
     val text = textRecursively()
     return if (text.isNotEmpty()) text.trim() else null
 }
+
+fun Konsumer.checkRoot(name: String): Boolean = try {
+    checkCurrent(name)
+    true
+} catch (e: Exception) {
+    false
+}
