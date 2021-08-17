@@ -3,7 +3,6 @@ package com.readrops.api.localfeed.atom
 import com.gitlab.mvysny.konsumexml.Konsumer
 import com.gitlab.mvysny.konsumexml.Names
 import com.gitlab.mvysny.konsumexml.allChildrenAutoIgnore
-import com.gitlab.mvysny.konsumexml.konsumeXml
 import com.readrops.api.localfeed.XmlAdapter
 import com.readrops.api.utils.*
 import com.readrops.api.utils.exceptions.ParseException
@@ -12,12 +11,10 @@ import com.readrops.api.utils.extensions.nullableText
 import com.readrops.api.utils.extensions.nullableTextRecursively
 import com.readrops.db.entities.Item
 import org.joda.time.LocalDateTime
-import java.io.InputStream
 
 class ATOMItemsAdapter : XmlAdapter<List<Item>> {
 
-    override fun fromXml(inputStream: InputStream): List<Item> {
-        val konsumer = inputStream.konsumeXml()
+    override fun fromXml(konsumer: Konsumer): List<Item> {
         val items = arrayListOf<Item>()
 
         return try {

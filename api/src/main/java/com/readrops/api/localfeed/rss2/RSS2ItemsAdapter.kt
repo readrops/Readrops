@@ -10,12 +10,10 @@ import com.readrops.api.utils.extensions.nullableText
 import com.readrops.api.utils.extensions.nullableTextRecursively
 import com.readrops.db.entities.Item
 import org.joda.time.LocalDateTime
-import java.io.InputStream
 
 class RSS2ItemsAdapter : XmlAdapter<List<Item>> {
 
-    override fun fromXml(inputStream: InputStream): List<Item> {
-        val konsumer = inputStream.konsumeXml()
+    override fun fromXml(konsumer: Konsumer): List<Item> {
         val items = mutableListOf<Item>()
 
         return try {

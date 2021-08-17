@@ -3,23 +3,22 @@ package com.readrops.api.localfeed.atom
 import com.gitlab.mvysny.konsumexml.Konsumer
 import com.gitlab.mvysny.konsumexml.Names
 import com.gitlab.mvysny.konsumexml.allChildrenAutoIgnore
-import com.gitlab.mvysny.konsumexml.konsumeXml
+import com.readrops.api.localfeed.LocalRSSHelper
 import com.readrops.api.localfeed.XmlAdapter
 import com.readrops.api.utils.exceptions.ParseException
+import com.readrops.api.utils.extensions.checkElement
 import com.readrops.api.utils.extensions.nonNullText
 import com.readrops.api.utils.extensions.nullableText
 import com.readrops.db.entities.Feed
-import java.io.InputStream
 
 class ATOMFeedAdapter : XmlAdapter<Feed> {
 
-    override fun fromXml(inputStream: InputStream): Feed {
-        val konsume = inputStream.konsumeXml()
+    override fun fromXml(konsumer: Konsumer): Feed {
         val feed = Feed()
 
         return try {
-            konsume.child("feed") {
-                allChildrenAutoIgnore(names) {
+            konsumer.checkElement(LocalRSSHelper.ATOM_ROOT_NAME) {
+                it.allChildrenAutoIgnore(names) {
                     with(feed) {
                         when (tagName) {
                             "title" -> name = nonNullText()
@@ -30,7 +29,7 @@ class ATOMFeedAdapter : XmlAdapter<Feed> {
                 }
             }
 
-            konsume.close()
+            konsumer.close()
             feed
         } catch (e: Exception) {
             throw ParseException(e.message)
@@ -38,7 +37,7 @@ class ATOMFeedAdapter : XmlAdapter<Feed> {
     }
 
     private fun parseLink(konsume: Konsumer, feed: Feed) = with(konsume) {
-        val rel = attributes.getValueOpt("rel")
+        val rel = attributes.getValueOrNull("rel")
 
         if (rel == "self")
             feed.url = attributes["href"]

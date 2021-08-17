@@ -12,7 +12,6 @@ import com.readrops.api.services.SyncResult;
 import com.readrops.api.services.SyncType;
 import com.readrops.api.services.nextcloudnews.NextNewsDataSource;
 import com.readrops.api.services.nextcloudnews.NextNewsSyncData;
-import com.readrops.api.services.nextcloudnews.adapters.NextNewsUserAdapter;
 import com.readrops.api.utils.exceptions.UnknownFormatException;
 import com.readrops.app.addfeed.FeedInsertionResult;
 import com.readrops.app.addfeed.ParsingResult;
@@ -37,8 +36,6 @@ import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class NextNewsRepository extends ARepository {
 
@@ -58,22 +55,8 @@ public class NextNewsRepository extends ARepository {
         return Single.<String>create(emitter -> {
             OkHttpClient httpClient = KoinJavaComponent.get(OkHttpClient.class);
 
-            Request request = new Request.Builder()
-                    .url(account.getUrl() + "/ocs/v1.php/cloud/users/" + account.getLogin())
-                    .addHeader("OCS-APIRequest", "true")
-                    .build();
-
-            Response response = httpClient.newCall(request).execute();
-
-            if (response.isSuccessful()) {
-                String displayName = new NextNewsUserAdapter().fromXml(response.body().byteStream());
-                response.body().close();
-
-                emitter.onSuccess(displayName);
-            } else {
-                // TODO better error handling
-                emitter.onError(new Exception("Login exception : " + response.code() + " error"));
-            }
+            String displayName = dataSource.login(httpClient, account);
+            emitter.onSuccess(displayName);
         }).flatMapCompletable(displayName -> {
             account.setDisplayedName(displayName);
             account.setCurrentAccount(true);

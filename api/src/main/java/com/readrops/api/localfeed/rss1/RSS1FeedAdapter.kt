@@ -1,24 +1,24 @@
 package com.readrops.api.localfeed.rss1
 
+import com.gitlab.mvysny.konsumexml.Konsumer
 import com.gitlab.mvysny.konsumexml.Names
 import com.gitlab.mvysny.konsumexml.allChildrenAutoIgnore
-import com.gitlab.mvysny.konsumexml.konsumeXml
+import com.readrops.api.localfeed.LocalRSSHelper
 import com.readrops.api.localfeed.XmlAdapter
 import com.readrops.api.utils.exceptions.ParseException
+import com.readrops.api.utils.extensions.checkElement
 import com.readrops.api.utils.extensions.nonNullText
 import com.readrops.api.utils.extensions.nullableText
 import com.readrops.db.entities.Feed
-import java.io.InputStream
 
 class RSS1FeedAdapter : XmlAdapter<Feed> {
 
-    override fun fromXml(inputStream: InputStream): Feed {
-        val konsume = inputStream.konsumeXml()
+    override fun fromXml(konsumer: Konsumer): Feed {
         val feed = Feed()
 
         return try {
-            konsume.child("RDF") {
-                allChildrenAutoIgnore("channel") {
+            konsumer.checkElement(LocalRSSHelper.RSS_1_ROOT_NAME) {
+                it.allChildrenAutoIgnore("channel") {
                     feed.url = attributes.getValueOpt("about",
                             namespace = "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
 
@@ -34,7 +34,7 @@ class RSS1FeedAdapter : XmlAdapter<Feed> {
                 }
             }
 
-            konsume.close()
+            konsumer.close()
             feed
         } catch (e: Exception) {
             throw ParseException(e.message)
