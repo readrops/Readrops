@@ -17,7 +17,7 @@ object LocalRSSHelper {
     private const val RSS_2_REGEX = "rss.*version=\"2.0\""
     private const val ATOM_REGEX = "<feed.* xmlns=\"http://www.w3.org/2005/Atom\""
 
-    const val RSS_1_ROOT_NAME = "rdf"
+    const val RSS_1_ROOT_NAME = "RDF"
     const val RSS_2_ROOT_NAME = "rss"
     const val ATOM_ROOT_NAME = "feed"
     val RSS_ROOT_NAMES = Names.of(RSS_1_ROOT_NAME, RSS_2_ROOT_NAME, ATOM_ROOT_NAME)
