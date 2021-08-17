@@ -1,5 +1,6 @@
 package com.readrops.api.localfeed.rss1
 
+import com.gitlab.mvysny.konsumexml.konsumeXml
 import com.readrops.api.TestUtils
 import junit.framework.Assert.assertEquals
 import org.junit.Test
@@ -12,7 +13,7 @@ class RSS1FeedAdapterTest {
     fun normalCaseTest() {
         val stream = TestUtils.loadResource("localfeed/rss1/rss1_feed.xml")
 
-        val feed = adapter.fromXml(stream)
+        val feed = adapter.fromXml(stream.konsumeXml())
 
         assertEquals(feed.name, "Slashdot")
         assertEquals(feed.url, "https://slashdot.org/")

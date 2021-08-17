@@ -1,5 +1,6 @@
 package com.readrops.api.localfeed.rss2
 
+import com.gitlab.mvysny.konsumexml.konsumeXml
 import com.readrops.api.TestUtils
 import com.readrops.api.utils.DateUtils
 import com.readrops.api.utils.exceptions.ParseException
@@ -20,7 +21,7 @@ class RSS2ItemsAdapterTest {
     fun normalCasesTest() {
         val stream = TestUtils.loadResource("localfeed/rss_feed.xml")
 
-        val items = adapter.fromXml(stream)
+        val items = adapter.fromXml(stream.konsumeXml())
         val item = items.first()
 
         assertEquals(items.size, 7)
@@ -35,7 +36,7 @@ class RSS2ItemsAdapterTest {
     @Test
     fun otherNamespacesTest() {
         val stream = TestUtils.loadResource("localfeed/rss2/rss_items_other_namespaces.xml")
-        val item = adapter.fromXml(stream).first()
+        val item = adapter.fromXml(stream.konsumeXml()).first()
 
         assertEquals(item.guid, "guid")
         assertEquals(item.author, "creator 1, creator 2, creator 3, creator 4")
@@ -46,7 +47,7 @@ class RSS2ItemsAdapterTest {
     @Test
     fun noDateTest() {
         val stream = TestUtils.loadResource("localfeed/rss2/rss_items_no_date.xml")
-        val item = adapter.fromXml(stream).first()
+        val item = adapter.fromXml(stream.konsumeXml()).first()
 
         assertNotNull(item.pubDate)
     }
@@ -58,7 +59,7 @@ class RSS2ItemsAdapterTest {
         expectedException.expect(ParseException::class.java)
         expectedException.expectMessage("Item title is required")
 
-        adapter.fromXml(stream)
+        adapter.fromXml(stream.konsumeXml())
     }
 
     @Test
@@ -68,13 +69,13 @@ class RSS2ItemsAdapterTest {
         expectedException.expect(ParseException::class.java)
         expectedException.expectMessage("Item link is required")
 
-        adapter.fromXml(stream)
+        adapter.fromXml(stream.konsumeXml())
     }
 
     @Test
     fun enclosureTest() {
         val stream = TestUtils.loadResource("localfeed/rss2/rss_items_enclosure.xml")
-        val item = adapter.fromXml(stream).first()
+        val item = adapter.fromXml(stream.konsumeXml()).first()
 
         assertEquals(item.imageLink, "https://image1.jpg")
     }
@@ -82,7 +83,7 @@ class RSS2ItemsAdapterTest {
     @Test
     fun mediaContentTest() {
         val stream = TestUtils.loadResource("localfeed/rss2/rss_items_media_content.xml")
-        val items = adapter.fromXml(stream)
+        val items = adapter.fromXml(stream.konsumeXml())
 
         assertEquals(items.first().imageLink, "https://image1.jpg")
         assertEquals(items[1].imageLink, "https://image2.jpg")
@@ -91,7 +92,7 @@ class RSS2ItemsAdapterTest {
     @Test
     fun mediaGroupTest() {
         val stream = TestUtils.loadResource("localfeed/rss2/rss_items_media_group.xml")
-        val item = adapter.fromXml(stream).first()
+        val item = adapter.fromXml(stream.konsumeXml()).first()
 
         assertEquals(item.imageLink, "https://image1.jpg")
     }

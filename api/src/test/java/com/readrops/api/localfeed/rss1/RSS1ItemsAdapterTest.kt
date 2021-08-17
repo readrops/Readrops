@@ -1,5 +1,6 @@
 package com.readrops.api.localfeed.rss1
 
+import com.gitlab.mvysny.konsumexml.konsumeXml
 import com.readrops.api.TestUtils
 import com.readrops.api.utils.DateUtils
 import com.readrops.api.utils.exceptions.ParseException
@@ -20,7 +21,7 @@ class RSS1ItemsAdapterTest {
     fun normalCasesTest() {
         val stream = TestUtils.loadResource("localfeed/rss1/rss1_feed.xml")
 
-        val items = adapter.fromXml(stream)
+        val items = adapter.fromXml(stream.konsumeXml())
         val item = items.first()
 
         assertEquals(items.size, 4)
@@ -39,7 +40,7 @@ class RSS1ItemsAdapterTest {
     fun specialCasesTest() {
         val stream = TestUtils.loadResource("localfeed/rss1/rss1_items_special_cases.xml")
 
-        val item = adapter.fromXml(stream).first()
+        val item = adapter.fromXml(stream.konsumeXml()).first()
 
         assertEquals(item.author, "msmash, creator 2, creator 3, creator 4, ...")
         assertEquals(item.link, "https://news.slashdot.org/story/20/09/23/1420240/a-new-york-clock-" +
@@ -50,7 +51,7 @@ class RSS1ItemsAdapterTest {
     fun nullDateTest() {
         val stream = TestUtils.loadResource("localfeed/rss1/rss1_items_no_date.xml")
 
-        val item = adapter.fromXml(stream).first()
+        val item = adapter.fromXml(stream.konsumeXml()).first()
         assertNotNull(item.pubDate)
     }
 
@@ -61,7 +62,7 @@ class RSS1ItemsAdapterTest {
         expectedException.expect(ParseException::class.java)
         expectedException.expectMessage("Item title is required")
 
-        adapter.fromXml(stream)
+        adapter.fromXml(stream.konsumeXml())
     }
 
     @Test
@@ -71,6 +72,6 @@ class RSS1ItemsAdapterTest {
         expectedException.expect(ParseException::class.java)
         expectedException.expectMessage("RSS1 link or about element is required")
 
-        adapter.fromXml(stream)
+        adapter.fromXml(stream.konsumeXml())
     }
 }

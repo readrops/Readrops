@@ -1,5 +1,6 @@
 package com.readrops.api.localfeed.atom
 
+import com.gitlab.mvysny.konsumexml.konsumeXml
 import com.readrops.api.TestUtils
 import com.readrops.api.utils.DateUtils
 import com.readrops.api.utils.exceptions.ParseException
@@ -20,7 +21,7 @@ class ATOMItemsAdapterTest {
     fun normalCasesTest() {
         val stream = TestUtils.loadResource("localfeed/atom/atom_items.xml")
 
-        val items = adapter.fromXml(stream)
+        val items = adapter.fromXml(stream.konsumeXml())
         val item = items[0]
 
         assertEquals(items.size, 4)
@@ -37,7 +38,7 @@ class ATOMItemsAdapterTest {
     fun noDateTest() {
         val stream = TestUtils.loadResource("localfeed/atom/atom_items_no_date.xml")
 
-        val item = adapter.fromXml(stream).first()
+        val item = adapter.fromXml(stream.konsumeXml()).first()
         assertNotNull(item.pubDate)
     }
 
@@ -48,7 +49,7 @@ class ATOMItemsAdapterTest {
         expectedException.expect(ParseException::class.java)
         expectedException.expectMessage("Item title is required")
 
-        adapter.fromXml(stream)
+        adapter.fromXml(stream.konsumeXml())
     }
 
     @Test
@@ -58,7 +59,7 @@ class ATOMItemsAdapterTest {
         expectedException.expect(ParseException::class.java)
         expectedException.expectMessage("Item link is required")
 
-        adapter.fromXml(stream)
+        adapter.fromXml(stream.konsumeXml())
     }
 
 }

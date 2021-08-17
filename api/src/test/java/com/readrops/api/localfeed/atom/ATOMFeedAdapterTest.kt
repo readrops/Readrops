@@ -1,5 +1,6 @@
 package com.readrops.api.localfeed.atom
 
+import com.gitlab.mvysny.konsumexml.konsumeXml
 import com.readrops.api.TestUtils
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
@@ -12,7 +13,7 @@ class ATOMFeedAdapterTest {
     fun normalCasesTest() {
         val stream = TestUtils.loadResource("localfeed/atom/atom_feed.xml")
 
-        val feed = adapter.fromXml(stream)
+        val feed = adapter.fromXml(stream.konsumeXml())
 
         assertEquals(feed.name, "Recent Commits to Readrops:develop")
         assertEquals(feed.url, "https://github.com/readrops/Readrops/commits/develop.atom")
