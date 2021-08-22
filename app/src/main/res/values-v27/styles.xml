@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme" parent="MaterialDrawerTheme.Light.ActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="colorControlNormal">@color/colorControlNormal</item>
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+
+        <item name="actionModeBackground">@color/colorPrimary</item>
+        <item name="actionBarTheme">@style/ToolbarTheme</item>
+        <item name="android:navigationBarColor">@color/colorBackground</item>
+        <item name="android:windowLightNavigationBar">true</item>
+
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+    </style>
+
+    <style name="SplashTheme" parent="AppTheme.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+</resources>
