@@ -80,7 +80,7 @@ class SyncResultAnalyser(val context: Context, private val syncResults: Map<Acco
             }
 
             if (items.size == 1) {
-                val item = database.itemDao().selectByRemoteId(items.first().remoteId,
+                val item = database.itemDao().selectByRemoteId(items.first().remoteId!!,
                         items.first().feedId)
                 notifContent.content = item.title
                 notifContent.item = item
