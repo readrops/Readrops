@@ -62,10 +62,9 @@ public abstract class FeedDao implements BaseDao<Feed> {
     @Query("Update Feed set text_color = :textColor, background_color = :bgColor Where id = :feedId")
     public abstract void updateColors(int feedId, int textColor, int bgColor);
 
-    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Query("Select Feed.name as feed_name, Feed.id as feed_id, Folder.name as folder_name, Folder.id as folder_id, Folder.remoteId as folder_remoteId, Folder.account_id as folder_account_id," +
-            "Feed.description as feed_description, Feed.icon_url as feed_icon_url, Feed.url as feed_url, Feed.folder_id as feed_folder_id" +
-            ", Feed.siteUrl as feed_siteUrl, Feed.remoteId as feed_remoteId from Feed Left Join Folder on Feed.folder_id = Folder.id Where Feed.account_id = :accountId Order by Feed.name")
+            "Feed.description as feed_description, Feed.icon_url as feed_icon_url, Feed.url as feed_url, Feed.folder_id as feed_folder_id, Feed.text_color as feed_text_color, Feed.background_color as feed_background_color" +
+            ", Feed.account_id as feed_account_id, Feed.notification_enabled as feed_notification_enabled, Feed.siteUrl as feed_siteUrl, Feed.remoteId as feed_remoteId from Feed Left Join Folder on Feed.folder_id = Folder.id Where Feed.account_id = :accountId Order by Feed.name")
     public abstract LiveData<List<FeedWithFolder>> getAllFeedsWithFolder(int accountId);
 
     @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
