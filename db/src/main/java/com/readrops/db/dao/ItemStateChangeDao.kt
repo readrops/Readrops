@@ -43,9 +43,9 @@ interface ItemStateChangeDao : BaseDao<ItemStateChange> {
     fun upsertItemReadStateChange(item: Item, accountId: Int, useSeparateState: Boolean) = Completable.create {
         if (itemStateChangeExists(item.id, accountId)) {
             val oldItemReadState = if (useSeparateState)
-                getItemReadState(item.remoteId, accountId)
+                getItemReadState(item.remoteId!!, accountId)
             else
-                getStandardItemReadState(item.remoteId, accountId)
+                getStandardItemReadState(item.remoteId!!, accountId)
 
             val readChange = item.isRead != oldItemReadState
 
@@ -69,9 +69,9 @@ interface ItemStateChangeDao : BaseDao<ItemStateChange> {
     fun upsertItemStarStateChange(item: Item, accountId: Int, useSeparateState: Boolean) = Completable.create {
         if (itemStateChangeExists(item.id, accountId)) {
             val oldItemStarState = if (useSeparateState)
-                getItemStarState(item.remoteId, accountId)
+                getItemStarState(item.remoteId!!, accountId)
             else
-                getStandardItemStarState(item.remoteId, accountId)
+                getStandardItemStarState(item.remoteId!!, accountId)
 
             val starChange = item.isStarred != oldItemStarState
 
