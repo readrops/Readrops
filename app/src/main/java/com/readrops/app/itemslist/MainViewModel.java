@@ -70,7 +70,7 @@ public class MainViewModel extends ViewModel {
         }
 
         DataSource.Factory<Integer, ItemWithFeed> items;
-        items = database.itemDao().selectAll(ItemsQueryBuilder.buildItemsQuery(queryFilters, currentAccount.getConfig().useSeparateState()));
+        items = database.itemDao().selectAll(ItemsQueryBuilder.buildItemsQuery(queryFilters, currentAccount.getConfig().getUseSeparateState()));
 
         lastFetch = new LivePagedListBuilder<>(new RoomFactoryWrapper<>(items),
                 new PagedList.Config.Builder()

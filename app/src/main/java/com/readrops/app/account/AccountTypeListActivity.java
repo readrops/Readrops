@@ -79,7 +79,7 @@ public class AccountTypeListActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             } else {
-                Account account = new Account(null, getString(AccountType.LOCAL.getName()), AccountType.LOCAL);
+                Account account = new Account(null, getString(AccountType.LOCAL.getTypeName()), AccountType.LOCAL);
                 account.setCurrentAccount(true);
 
                 viewModel.insert(account)
@@ -150,7 +150,7 @@ public class AccountTypeListActivity extends AppCompatActivity {
     }
 
     private void parseOPMLFile(Uri uri, MaterialDialog dialog) {
-        Account account = new Account(null, getString(AccountType.LOCAL.getName()), AccountType.LOCAL);
+        Account account = new Account(null, getString(AccountType.LOCAL.getTypeName()), AccountType.LOCAL);
         account.setCurrentAccount(true);
 
         viewModel.insert(account)

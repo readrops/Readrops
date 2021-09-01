@@ -65,8 +65,8 @@ public class AddAccountActivity extends AppCompatActivity {
             fillFields();
         } else {
             binding.providerImage.setImageResource(accountType.getIconRes());
-            binding.providerName.setText(accountType.getName());
-            binding.addAccountName.setText(accountType.getName());
+            binding.providerName.setText(accountType.getTypeName());
+            binding.addAccountName.setText(accountType.getTypeName());
 
             if (accountType == AccountType.FRESHRSS) {
                 binding.addAccountPasswordLayout.setHelperText(getString(R.string.password_helper));
@@ -178,7 +178,7 @@ public class AddAccountActivity extends AppCompatActivity {
 
     private void fillFields() {
         binding.providerImage.setImageResource(accountToEdit.getAccountType().getIconRes());
-        binding.providerName.setText(accountToEdit.getAccountType().getName());
+        binding.providerName.setText(accountToEdit.getAccountType().getTypeName());
 
         binding.addAccountUrl.setText(accountToEdit.getUrl());
         binding.addAccountName.setText(accountToEdit.getAccountName());

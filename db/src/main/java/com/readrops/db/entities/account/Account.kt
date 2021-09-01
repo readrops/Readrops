@@ -28,7 +28,7 @@ data class Account(
             this(url = accountUrl, accountName =  accountName, accountType = accountType)
 
     val config: AccountConfig
-        get() =  accountType!!.accountConfig
+        get() =  accountType!!.accountConfig!!
 
     val isLocal
         get() = accountType == AccountType.LOCAL
