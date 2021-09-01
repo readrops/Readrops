@@ -11,7 +11,7 @@ import com.squareup.moshi.ToJson
 class NextNewsFoldersAdapter {
 
     @ToJson
-    fun toJson(folder: Folder): String = ""
+    fun toJson(folders: List<Folder>): String = ""
 
     @SuppressLint("CheckResult")
     @FromJson
