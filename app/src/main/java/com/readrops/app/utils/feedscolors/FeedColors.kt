@@ -31,7 +31,7 @@ fun getFaviconLink(feed: Feed) {
     feed.iconUrl = if (feed.iconUrl != null)
         feed.iconUrl
     else
-        HtmlParser.getFaviconLink(feed.siteUrl)
+        HtmlParser.getFaviconLink(feed.siteUrl!!)
 }
 
 

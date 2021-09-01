@@ -108,7 +108,7 @@ object OPMLParser {
 
                 val feedOutlines = arrayListOf<Outline>()
                 for (feed in folderAndFeeds.value) {
-                    val feedOutline = Outline(feed.name, feed.url, feed.siteUrl)
+                    val feedOutline = Outline(feed.name, feed.url!!, feed.siteUrl)
 
                     feedOutlines += feedOutline
                 }
@@ -117,7 +117,7 @@ object OPMLParser {
                 outlines += outline
             } else {
                 for (feed in folderAndFeeds.value) {
-                    outlines += Outline(feed.name, feed.url, feed.siteUrl)
+                    outlines += Outline(feed.name, feed.url!!, feed.siteUrl)
                 }
             }
         }
