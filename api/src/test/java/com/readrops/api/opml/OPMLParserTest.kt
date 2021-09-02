@@ -25,11 +25,11 @@ class OPMLParserTest {
 
         assertEquals(foldersAndFeeds?.size, 6)
 
-        assertEquals(foldersAndFeeds?.get(Folder("Folder 1"))?.size, 2)
-        assertEquals(foldersAndFeeds?.get(Folder("Subfolder 1"))?.size, 4)
-        assertEquals(foldersAndFeeds?.get(Folder("Subfolder 2"))?.size, 1)
-        assertEquals(foldersAndFeeds?.get(Folder("Sub subfolder 1"))?.size, 2)
-        assertEquals(foldersAndFeeds?.get(Folder("Sub subfolder 2"))?.size, 0)
+        assertEquals(foldersAndFeeds?.get(Folder(name = "Folder 1"))?.size, 2)
+        assertEquals(foldersAndFeeds?.get(Folder(name = "Subfolder 1"))?.size, 4)
+        assertEquals(foldersAndFeeds?.get(Folder(name = "Subfolder 2"))?.size, 1)
+        assertEquals(foldersAndFeeds?.get(Folder(name = "Sub subfolder 1"))?.size, 2)
+        assertEquals(foldersAndFeeds?.get(Folder(name = "Sub subfolder 2"))?.size, 0)
         assertEquals(foldersAndFeeds?.get(null)?.size, 2)
 
         stream.close()
@@ -68,11 +68,11 @@ class OPMLParserTest {
         val outputStream = FileOutputStream(file)
 
         val foldersAndFeeds: Map<Folder?, List<Feed>> = HashMap<Folder?, List<Feed>>().apply {
-            put(null, listOf(Feed("Feed1", "", "https://feed1.com"),
-                    Feed("Feed2", "", "https://feed2.com")))
-            put(Folder("Folder1"), listOf())
-            put(Folder("Folder2"), listOf(Feed("Feed3", "", "https://feed3.com"),
-                    Feed("Feed4", "", "https://feed4.com")))
+            put(null, listOf(Feed(name = "Feed1", url = "https://feed1.com"),
+                    Feed(name = "Feed2", url = "https://feed2.com")))
+            put(Folder(name = "Folder1"), listOf())
+            put(Folder(name = "Folder2"), listOf(Feed(name = "Feed3", url = "https://feed3.com"),
+                    Feed(name = "Feed4", url ="https://feed4.com")))
         }
 
         OPMLParser.write(foldersAndFeeds, outputStream)
@@ -87,8 +87,8 @@ class OPMLParserTest {
         OPMLParser.read(inputStream).subscribe { result -> foldersAndFeeds2 = result }
 
         assertEquals(foldersAndFeeds.size, foldersAndFeeds2?.size)
-        assertEquals(foldersAndFeeds[Folder("Folder1")]?.size, foldersAndFeeds2?.get(Folder("Folder1"))?.size)
-        assertEquals(foldersAndFeeds[Folder("Folder2")]?.size, foldersAndFeeds2?.get(Folder("Folder2"))?.size)
+        assertEquals(foldersAndFeeds[Folder(name = "Folder1")]?.size, foldersAndFeeds2?.get(Folder(name = "Folder1"))?.size)
+        assertEquals(foldersAndFeeds[Folder(name = "Folder2")]?.size, foldersAndFeeds2?.get(Folder(name = "Folder2"))?.size)
         assertEquals(foldersAndFeeds[null]?.size, foldersAndFeeds2?.get(null)?.size)
 
         inputStream.close()

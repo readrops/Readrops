@@ -3,6 +3,7 @@ package com.readrops.db.dao
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.RoomWarnings
 import androidx.room.Transaction
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.account.Account
@@ -57,11 +58,13 @@ abstract class FeedDao : BaseDao<Feed> {
     @Query("Update Feed set text_color = :textColor, background_color = :bgColor Where id = :feedId")
     abstract fun updateColors(feedId: Int, textColor: Int, bgColor: Int)
 
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Query("Select Feed.name as feed_name, Feed.id as feed_id, Folder.name as folder_name, Folder.id as folder_id, Folder.remoteId as folder_remoteId, Folder.account_id as folder_account_id," +
             "Feed.description as feed_description, Feed.icon_url as feed_icon_url, Feed.url as feed_url, Feed.folder_id as feed_folder_id, Feed.text_color as feed_text_color, Feed.background_color as feed_background_color" +
             ", Feed.account_id as feed_account_id, Feed.notification_enabled as feed_notification_enabled, Feed.siteUrl as feed_siteUrl, Feed.remoteId as feed_remoteId from Feed Left Join Folder on Feed.folder_id = Folder.id Where Feed.account_id = :accountId Order by Feed.name")
     abstract fun getAllFeedsWithFolder(accountId: Int): LiveData<List<FeedWithFolder>>
 
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Query("Select id, name, icon_url, notification_enabled, text_color, background_color, account_id From Feed Where account_id = :accountId")
     abstract fun getFeedsForNotifPermission(accountId: Int): LiveData<List<Feed>>
 
