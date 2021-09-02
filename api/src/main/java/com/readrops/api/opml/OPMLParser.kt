@@ -71,7 +71,7 @@ object OPMLParser {
         if ((outline.outlines != null && !outline.outlines?.isEmpty()!!) || outline.xmlUrl.isNullOrEmpty()) {
             // if the outline doesn't have text or title value but contains sub outlines,
             // those sub outlines will be considered as not belonging to any folder and join the others at the top level of the hierarchy
-            val folder = if (outline.name != null) Folder(outline.name) else null
+            val folder = if (outline.name != null) Folder(name = outline.name) else null
 
             outline.outlines?.forEach {
                 val recursiveFeedsFolders = parseOutline(it)
@@ -108,7 +108,7 @@ object OPMLParser {
 
                 val feedOutlines = arrayListOf<Outline>()
                 for (feed in folderAndFeeds.value) {
-                    val feedOutline = Outline(feed.name, feed.url, feed.siteUrl)
+                    val feedOutline = Outline(feed.name, feed.url!!, feed.siteUrl)
 
                     feedOutlines += feedOutline
                 }
@@ -117,7 +117,7 @@ object OPMLParser {
                 outlines += outline
             } else {
                 for (feed in folderAndFeeds.value) {
-                    outlines += Outline(feed.name, feed.url, feed.siteUrl)
+                    outlines += Outline(feed.name, feed.url!!, feed.siteUrl)
                 }
             }
         }

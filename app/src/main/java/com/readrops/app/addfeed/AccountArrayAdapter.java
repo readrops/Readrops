@@ -44,7 +44,7 @@ public class AccountArrayAdapter extends ArrayAdapter<Account> {
         TextView accountName = convertView.findViewById(R.id.account_type_name);
 
         accountIcon.setImageResource(account.getAccountType().getIconRes());
-        accountName.setText(account.getAccountType().getName());
+        accountName.setText(account.getAccountType().getTypeName());
 
         return convertView;
     }

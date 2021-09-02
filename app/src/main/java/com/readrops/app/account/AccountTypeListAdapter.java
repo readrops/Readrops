@@ -33,7 +33,7 @@ public class AccountTypeListAdapter extends RecyclerView.Adapter<AccountTypeList
     public void onBindViewHolder(@NonNull AccountTypeViewHolder holder, int position) {
         AccountType accountType = accountTypes.get(position);
 
-        holder.binding.accountTypeName.setText(accountType.getName());
+        holder.binding.accountTypeName.setText(accountType.getTypeName());
         holder.binding.accountTypeLogo.setImageResource(accountType.getIconRes());
 
         holder.binding.getRoot().setOnClickListener(v -> listener.onItemClick(accountType));

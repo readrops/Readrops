@@ -51,7 +51,7 @@ class SyncResultAnalyser(val context: Context, private val syncResults: Map<Acco
                     if (feedsIdsForNewItems.size > 1 && itemCount > 1) {
                         notifContent.title = account.accountName
                         notifContent.content = context.getString(R.string.new_items, itemCount.toString())
-                        notifContent.largeIcon = Utils.getBitmapFromDrawable(ContextCompat.getDrawable(context, account.accountType.iconRes))
+                        notifContent.largeIcon = Utils.getBitmapFromDrawable(ContextCompat.getDrawable(context, account.accountType!!.iconRes))
                     } else if (feedsIdsForNewItems.size == 1) // new items from only one feed from one account
                         oneFeedCase(feedsIdsForNewItems.first(), syncResult.items)
                     else if (itemCount == 1)
@@ -80,7 +80,7 @@ class SyncResultAnalyser(val context: Context, private val syncResults: Map<Acco
             }
 
             if (items.size == 1) {
-                val item = database.itemDao().selectByRemoteId(items.first().remoteId,
+                val item = database.itemDao().selectByRemoteId(items.first().remoteId!!,
                         items.first().feedId)
                 notifContent.content = item.title
                 notifContent.item = item

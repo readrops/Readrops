@@ -41,7 +41,7 @@ public class ItemViewModel extends ViewModel {
 
     public LiveData<ItemWithFeed> getItemById(int id) {
         return database.itemDao().getItemById(ItemSelectionQueryBuilder.buildQuery(id,
-                account.getConfig().useSeparateState()));
+                account.getConfig().getUseSeparateState()));
     }
 
     public Completable setStarState(Item item) {

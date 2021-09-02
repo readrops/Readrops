@@ -115,7 +115,7 @@ public abstract class ARepository {
     }
 
     public Completable setItemReadState(Item item) {
-        if (account.getConfig().useSeparateState()) {
+        if (account.getConfig().getUseSeparateState()) {
             return database.itemStateChangesDao().upsertItemReadStateChange(item, account.getId(), true)
                     .andThen(database.itemStateDao().upsertItemReadState(new ItemState(0, item.isRead(),
                             item.isStarred(), item.getRemoteId(), account.getId())));
@@ -145,7 +145,7 @@ public abstract class ARepository {
     }
 
     public Completable setItemStarState(Item item) {
-        if (account.getConfig().useSeparateState()) {
+        if (account.getConfig().getUseSeparateState()) {
             return database.itemStateChangesDao().upsertItemStarStateChange(item, account.getId(), true)
                     .andThen(database.itemStateDao().upsertItemStarState(new ItemState(0, item.isRead(),
                             item.isStarred(), item.getRemoteId(), account.getId())));
