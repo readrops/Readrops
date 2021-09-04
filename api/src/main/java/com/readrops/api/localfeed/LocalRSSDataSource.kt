@@ -12,6 +12,7 @@ import com.readrops.api.utils.exceptions.UnknownFormatException
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Item
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
 import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -20,6 +21,7 @@ import okio.Buffer
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import java.io.IOException
+import java.lang.Exception
 import java.net.HttpURLConnection
 
 class LocalRSSDataSource(private val httpClient: OkHttpClient) : KoinComponent {
@@ -38,7 +40,7 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) : KoinComponent {
 
         return when {
             response.isSuccessful -> {
-                val pair = parseContent(response, url)
+                val pair = parseResponse(response, url)
 
                 response.body?.close()
                 pair
@@ -68,9 +70,13 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) : KoinComponent {
 
             if (type == LocalRSSHelper.RSSType.UNKNOWN) {
                 val konsumer = response.body!!.byteStream().konsumeXml().apply {
-                    val rootKonsumer = nextElement(LocalRSSHelper.RSS_ROOT_NAMES)
+                    try {
+                        val rootKonsumer = nextElement(LocalRSSHelper.RSS_ROOT_NAMES)
+                        rootKonsumer?.let { type = LocalRSSHelper.guessRSSType(rootKonsumer) }
+                    } catch (e: Exception) {
+                        throw UnknownFormatException(e.message)
+                    }
 
-                    rootKonsumer?.let { type = LocalRSSHelper.guessRSSType(rootKonsumer) }
                 }
 
                 konsumer.close()
@@ -88,7 +94,7 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) : KoinComponent {
         return httpClient.newCall(requestBuilder.build()).execute()
     }
 
-    private fun parseContent(response: Response, url: String): Pair<Feed, List<Item>> {
+    private fun parseResponse(response: Response, url: String): Pair<Feed, List<Item>> {
         val header = response.header(ApiUtils.CONTENT_TYPE_HEADER)
                 ?: throw UnknownFormatException("Unable to get $url content-type")
 
@@ -104,73 +110,64 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) : KoinComponent {
         var rootKonsumer: Konsumer? = null
         // if we can't guess type based on content-type header, we use the content
         if (type == LocalRSSHelper.RSSType.UNKNOWN) {
-            konsumer = response.body!!.byteStream().konsumeXml()
-            rootKonsumer = konsumer.nextElement(LocalRSSHelper.RSS_ROOT_NAMES)
+            try {
+                konsumer = response.body!!.byteStream().konsumeXml()
+                rootKonsumer = konsumer.nextElement(LocalRSSHelper.RSS_ROOT_NAMES)
 
-            if (rootKonsumer != null) {
-                type = LocalRSSHelper.guessRSSType(rootKonsumer)
+                if (rootKonsumer != null) {
+                    type = LocalRSSHelper.guessRSSType(rootKonsumer)
+                }
+            } catch (e: Exception) {
+                throw UnknownFormatException(e.message)
             }
+
         }
 
         // if we can't guess type even with the content, we are unable to go further
         if (type == LocalRSSHelper.RSSType.UNKNOWN) throw UnknownFormatException("Unable to guess $url RSS type")
 
-        val feed = parseFeed(rootKonsumer ?: konsumer, type, response)
-        //val items = parseItems(ByteArrayInputStream(bodyArray), type)
+        val pair = parseFeed(rootKonsumer ?: konsumer, type, response)
 
         rootKonsumer?.finish()
         konsumer?.close()
 
-        return Pair(feed, listOf())
+        return pair
     }
 
-    private fun parseFeed(konsumer: Konsumer?, type: LocalRSSHelper.RSSType, response: Response): Feed {
-        val feed = if (type != LocalRSSHelper.RSSType.JSONFEED) {
+    private fun parseFeed(konsumer: Konsumer?, type: LocalRSSHelper.RSSType, response: Response): Pair<Feed, List<Item>> {
+        val pair = if (type != LocalRSSHelper.RSSType.JSONFEED) {
             val adapter = XmlAdapter.xmlFeedAdapterFactory(type)
 
             adapter.fromXml(konsumer!!)
         } else {
+            val pairType = Types.newParameterizedType(Pair::class.java, Feed::class.java,
+                    Types.newParameterizedType(List::class.java, Item::class.java))
+
             val adapter = Moshi.Builder()
-                    .add(JSONFeedAdapter())
+                    .add(pairType, JSONFeedAdapter())
                     .build()
-                    .adapter(Feed::class.java)
+                    .adapter<Pair<Feed, List<Item>>>(pairType)
 
             adapter.fromJson(Buffer().readFrom(response.body!!.byteStream()))!!
         }
 
-        handleSpecialCases(feed, type, response)
+        handleSpecialCases(pair.first, type, response)
 
-        feed.etag = response.header(ApiUtils.ETAG_HEADER)
-        feed.lastModified = response.header(ApiUtils.LAST_MODIFIED_HEADER)
+        pair.first.etag = response.header(ApiUtils.ETAG_HEADER)
+        pair.first.lastModified = response.header(ApiUtils.LAST_MODIFIED_HEADER)
 
-        return feed
+        return pair
     }
 
-    /*private fun parseItems(stream: InputStream, type: LocalRSSHelper.RSSType): List<Item> {
-        return if (type != LocalRSSHelper.RSSType.JSONFEED) {
-            val adapter = XmlAdapter.xmlItemsAdapterFactory(type)
-
-            adapter.fromXml(stream)
-        } else {
-            val adapter = Moshi.Builder()
-                    .add(Types.newParameterizedType(MutableList::class.java, Item::class.java), JSONItemsAdapter())
-                    .build()
-                    .adapter<List<Item>>(Types.newParameterizedType(MutableList::class.java, Item::class.java))
-
-            adapter.fromJson(Buffer().readFrom(stream))!!
-        }
-    }*/
-
-    private fun handleSpecialCases(feed: Feed, type: LocalRSSHelper.RSSType, response: Response) {
-        with(feed) {
-            if (type == LocalRSSHelper.RSSType.RSS_2) {
-                // if an atom:link element was parsed, we still replace its value as it is unreliable,
-                // otherwise we just add the rss url
-                url = response.request.url.toString()
-            } else if (type == LocalRSSHelper.RSSType.ATOM || type == LocalRSSHelper.RSSType.RSS_1) {
-                if (url == null) url = response.request.url.toString()
-                if (siteUrl == null) siteUrl = response.request.url.scheme + "://" + response.request.url.host
+    private fun handleSpecialCases(feed: Feed, type: LocalRSSHelper.RSSType, response: Response) =
+            with(feed) {
+                if (type == LocalRSSHelper.RSSType.RSS_2) {
+                    // if an atom:link element was parsed, we still replace its value as it is unreliable,
+                    // otherwise we just add the rss url
+                    url = response.request.url.toString()
+                } else if (type == LocalRSSHelper.RSSType.ATOM || type == LocalRSSHelper.RSSType.RSS_1) {
+                    if (url == null) url = response.request.url.toString()
+                    if (siteUrl == null) siteUrl = response.request.url.scheme + "://" + response.request.url.host
+                }
             }
-        }
-    }
 }
