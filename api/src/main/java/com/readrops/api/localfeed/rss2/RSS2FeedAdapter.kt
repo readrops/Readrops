@@ -10,12 +10,16 @@ import com.readrops.api.utils.extensions.checkElement
 import com.readrops.api.utils.extensions.nonNullText
 import com.readrops.api.utils.extensions.nullableText
 import com.readrops.db.entities.Feed
+import com.readrops.db.entities.Item
 import org.jsoup.Jsoup
 
-class RSS2FeedAdapter : XmlAdapter<Feed> {
+class RSS2FeedAdapter : XmlAdapter<Pair<Feed, List<Item>>> {
 
-    override fun fromXml(konsumer: Konsumer): Feed {
+    override fun fromXml(konsumer: Konsumer): Pair<Feed, List<Item>> {
         val feed = Feed()
+
+        val items = arrayListOf<Item>()
+        val itemAdapter = RSS2ItemAdapter()
 
         return try {
             konsumer.checkElement(LocalRSSHelper.RSS_2_ROOT_NAME) {
@@ -27,9 +31,10 @@ class RSS2FeedAdapter : XmlAdapter<Feed> {
                                 "description" -> description = nullableText()
                                 "link" -> siteUrl = nullableText()
                                 "atom:link" -> {
-                                    if (attributes.getValueOpt("rel") == "self")
-                                        url = attributes.getValueOpt("href")
+                                    if (attributes.getValueOrNull("rel") == "self")
+                                        url = attributes.getValueOrNull("href")
                                 }
+                                "item" -> items += itemAdapter.fromXml(this@allChildrenAutoIgnore)
                                 else -> skipContents()
                             }
                         }
@@ -38,13 +43,13 @@ class RSS2FeedAdapter : XmlAdapter<Feed> {
             }
 
             konsumer.close()
-            feed
+            Pair(feed, items)
         } catch (e: Exception) {
             throw ParseException(e.message)
         }
     }
 
     companion object {
-        val names = Names.of("title", "description", "link")
+        val names = Names.of("title", "description", "link", "item")
     }
 }
