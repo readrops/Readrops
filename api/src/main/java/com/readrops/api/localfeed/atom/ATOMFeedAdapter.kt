@@ -10,11 +10,15 @@ import com.readrops.api.utils.extensions.checkElement
 import com.readrops.api.utils.extensions.nonNullText
 import com.readrops.api.utils.extensions.nullableText
 import com.readrops.db.entities.Feed
+import com.readrops.db.entities.Item
 
-class ATOMFeedAdapter : XmlAdapter<Feed> {
+class ATOMFeedAdapter : XmlAdapter<Pair<Feed, List<Item>>> {
 
-    override fun fromXml(konsumer: Konsumer): Feed {
+    override fun fromXml(konsumer: Konsumer): Pair<Feed, List<Item>> {
         val feed = Feed()
+
+        val items = arrayListOf<Item>()
+        val itemAdapter = ATOMItemAdapter()
 
         return try {
             konsumer.checkElement(LocalRSSHelper.ATOM_ROOT_NAME) {
@@ -24,19 +28,20 @@ class ATOMFeedAdapter : XmlAdapter<Feed> {
                             "title" -> name = nonNullText()
                             "link" -> parseLink(this@allChildrenAutoIgnore, feed)
                             "subtitle" -> description = nullableText()
+                            "entry" -> items += itemAdapter.fromXml(this@allChildrenAutoIgnore)
                         }
                     }
                 }
             }
 
             konsumer.close()
-            feed
+            Pair(feed, items)
         } catch (e: Exception) {
             throw ParseException(e.message)
         }
     }
 
-    private fun parseLink(konsume: Konsumer, feed: Feed) = with(konsume) {
+    private fun parseLink(konsumer: Konsumer, feed: Feed) = with(konsumer) {
         val rel = attributes.getValueOrNull("rel")
 
         if (rel == "self")
@@ -46,6 +51,6 @@ class ATOMFeedAdapter : XmlAdapter<Feed> {
     }
 
     companion object {
-        val names = Names.of("title", "link", "subtitle")
+        val names = Names.of("title", "link", "subtitle", "entry")
     }
 }

@@ -5,6 +5,7 @@
     <link type="application/atom+xml" rel="self" href="https://github.com/readrops/Readrops/commits/develop.atom"/>
     <title>Recent Commits to Readrops:develop</title>
     <updated>2020-09-06T21:09:59Z</updated>
+    <subtitle>Here is a subtitle</subtitle>
     <entry>
         <id>tag:github.com,2008:Grit::Commit/c15f093a1bc4211e85f8d1817c9073e307afe5ac</id>
         <link type="text/html" rel="alternate" href="https://github.com/readrops/Readrops/commit/c15f093a1bc4211e85f8d1817c9073e307afe5ac"/>
