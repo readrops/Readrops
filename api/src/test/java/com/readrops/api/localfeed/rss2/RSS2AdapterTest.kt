@@ -16,7 +16,7 @@ class RSS2AdapterTest {
 
     @Test
     fun normalCasesTest() {
-        val stream = TestUtils.loadResource("localfeed/rss_feed.xml")
+        val stream = TestUtils.loadResource("localfeed/rss2/rss_feed.xml")
 
         val pair = adapter.fromXml(stream.konsumeXml())
         val feed = pair.first
