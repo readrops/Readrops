@@ -37,7 +37,6 @@ class ATOMItemAdapter : XmlAdapter<Item> {
             if (item.pubDate == null) item.pubDate = LocalDateTime.now()
             if (item.guid == null) item.guid = item.link
 
-            konsumer.close()
             item
         } catch (e: Exception) {
             throw ParseException(e.message)
