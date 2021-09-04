@@ -12,7 +12,7 @@ import java.util.*
 class FreshRSSFoldersAdapter {
 
     @ToJson
-    fun toJson(folder: Folder): String = ""
+    fun toJson(folders: List<Folder>): String = ""
 
     @SuppressLint("CheckResult")
     @FromJson

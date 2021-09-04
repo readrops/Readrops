@@ -218,7 +218,7 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
     @NonNull
     @Override
     public List<String> getPreloadItems(int position) {
-        if (getItem(position).getItem().hasImage()) {
+        if (getItem(position).getItem().getHasImage()) {
             String url = getItem(position).getItem().getImageLink();
             return Collections.singletonList(url);
         } else {
@@ -296,13 +296,13 @@ public class MainItemListAdapter extends PagedListAdapter<ItemWithFeed, MainItem
                 binding.itemDescription.setText(item.getCleanDescription());
             } else {
                 binding.itemDescription.setVisibility(View.GONE);
-                if (itemWithFeed.getItem().hasImage())
+                if (itemWithFeed.getItem().getHasImage())
                     binding.itemTitle.setMaxLines(4);
             }
         }
 
         private void setImages(ItemWithFeed itemWithFeed) {
-            if (itemWithFeed.getItem().hasImage()) {
+            if (itemWithFeed.getItem().getHasImage()) {
                 binding.itemImage.setVisibility(View.VISIBLE);
 
                 glideRequests

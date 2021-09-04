@@ -1,6 +1,6 @@
 package com.readrops.db.filters;
 
-public enum FilterType {
+enum class FilterType {
     FEED_FILTER,
     FOLDER_FILER,
     READ_IT_LATER_FILTER,

@@ -12,7 +12,7 @@ abstract class Credentials(val authorization: String?, val url: String) {
     companion object {
         @JvmStatic
         fun toCredentials(account: Account): Credentials {
-            val endPoint = getEndPoint(account.accountType)
+            val endPoint = getEndPoint(account.accountType!!)
 
             return when (account.accountType) {
                 AccountType.NEXTCLOUD_NEWS -> NextNewsCredentials(account.login, account.password, account.url + endPoint)

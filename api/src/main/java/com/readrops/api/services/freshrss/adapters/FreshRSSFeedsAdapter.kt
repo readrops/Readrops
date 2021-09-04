@@ -12,7 +12,7 @@ import com.squareup.moshi.ToJson
 class FreshRSSFeedsAdapter {
 
     @ToJson
-    fun toJson(feed: Feed): String = ""
+    fun toJson(feeds: List<Feed>): String = ""
 
     @SuppressLint("CheckResult")
     @FromJson

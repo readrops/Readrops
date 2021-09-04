@@ -90,7 +90,8 @@ public class ManageFeedsFoldersActivity extends AppCompatActivity {
                 .title(R.string.add_folder)
                 .positiveText(R.string.validate)
                 .input(R.string.folder, 0, (dialog, input) -> {
-                    Folder folder = new Folder(input.toString());
+                    Folder folder = new Folder();
+                    folder.setName(input.toString());
                     folder.setAccountId(account.getId());
 
                     viewModel.addFolder(folder)
