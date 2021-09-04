@@ -17,59 +17,50 @@ class JSONItemsAdapter : JsonAdapter<List<Item>>() {
         // not useful
     }
 
-    override fun fromJson(reader: JsonReader): List<Item> = try {
+    override fun fromJson(reader: JsonReader): List<Item> = with(reader) {
         val items = arrayListOf<Item>()
-        reader.beginObject()
 
-        while (reader.hasNext()) {
-            when (reader.nextName()) {
-                "items" -> parseItems(reader, items)
-                else -> reader.skipValue()
-            }
-        }
-
-        items
-    } catch (e: Exception) {
-        throw ParseException(e.message)
-    }
-
-    private fun parseItems(reader: JsonReader, items: MutableList<Item>) = with(reader) {
-        beginArray()
-
-        while (hasNext()) {
-            beginObject()
-            val item = Item()
-
-            var contentText: String? = null
-            var contentHtml: String? = null
+        try {
+            beginArray()
 
             while (hasNext()) {
-                with(item) {
-                    when (selectName(names)) {
-                        0 -> guid = nextNonEmptyString()
-                        1 -> link = nextNonEmptyString()
-                        2 -> title = nextNonEmptyString()
-                        3 -> contentHtml = nextNullableString()
-                        4 -> contentText = nextNullableString()
-                        5 -> description = nextNullableString()
-                        6 -> imageLink = nextNullableString()
-                        7 -> pubDate = DateUtils.parse(nextNullableString())
-                        8 -> author = parseAuthor(reader) // jsonfeed 1.0
-                        9 -> author = parseAuthors(reader) // jsonfeed 1.1
-                        else -> skipValue()
+                beginObject()
+                val item = Item()
+
+                var contentText: String? = null
+                var contentHtml: String? = null
+
+                while (hasNext()) {
+                    with(item) {
+                        when (selectName(names)) {
+                            0 -> guid = nextNonEmptyString()
+                            1 -> link = nextNonEmptyString()
+                            2 -> title = nextNonEmptyString()
+                            3 -> contentHtml = nextNullableString()
+                            4 -> contentText = nextNullableString()
+                            5 -> description = nextNullableString()
+                            6 -> imageLink = nextNullableString()
+                            7 -> pubDate = DateUtils.parse(nextNullableString())
+                            8 -> author = parseAuthor(reader) // jsonfeed 1.0
+                            9 -> author = parseAuthors(reader) // jsonfeed 1.1
+                            else -> skipValue()
+                        }
                     }
                 }
+
+                validateItem(item)
+                item.content = if (contentHtml != null) contentHtml else contentText
+                if (item.pubDate == null) item.pubDate = LocalDateTime.now()
+
+                endObject()
+                items += item
             }
 
-            validateItem(item)
-            item.content = if (contentHtml != null) contentHtml else contentText
-            if (item.pubDate == null) item.pubDate = LocalDateTime.now()
-
-            endObject()
-            items += item
+            endArray()
+            items
+        } catch (e: Exception) {
+            throw ParseException(e.message)
         }
-
-        endArray()
     }
 
     private fun parseAuthor(reader: JsonReader): String? {
