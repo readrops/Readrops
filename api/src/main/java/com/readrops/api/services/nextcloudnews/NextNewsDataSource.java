@@ -11,9 +11,11 @@ import com.readrops.api.services.nextcloudnews.adapters.NextNewsUserAdapter;
 import com.readrops.api.utils.ApiUtils;
 import com.readrops.api.utils.exceptions.ConflictException;
 import com.readrops.api.utils.exceptions.UnknownFormatException;
+import com.readrops.api.utils.extensions.KonsumerExtensionsKt;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
+import com.readrops.db.entities.account.Account;
 import com.readrops.db.pojo.StarItem;
 
 import java.io.IOException;
@@ -23,7 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import okhttp3.ResponseBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import retrofit2.Response;
 
 public class NextNewsDataSource {
@@ -40,14 +43,16 @@ public class NextNewsDataSource {
     }
 
     @Nullable
-    public String login(String user) throws IOException {
-        Response<ResponseBody> response = api.getUser(user).execute();
+    public String login(OkHttpClient client, Account account) throws IOException {
+        Request request = new Request.Builder()
+                .url(account.getUrl() + "/ocs/v1.php/cloud/users/" + account.getLogin())
+                .addHeader("OCS-APIRequest", "true")
+                .build();
 
-        if (!response.isSuccessful()) {
-            return null;
-        }
+        okhttp3.Response response = client.newCall(request).execute();
 
-        String displayName = new NextNewsUserAdapter().fromXml(response.body().byteStream());
+        String displayName = new NextNewsUserAdapter().fromXml(KonsumerExtensionsKt
+                .instantiateKonsumer(response.body().byteStream()));
         response.body().close();
 
         return displayName;
@@ -284,7 +289,7 @@ public class NextNewsDataSource {
 
         private int value;
 
-         ItemQueryType(int value) {
+        ItemQueryType(int value) {
             this.value = value;
         }
 

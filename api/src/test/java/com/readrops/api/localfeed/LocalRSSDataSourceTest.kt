@@ -59,7 +59,7 @@ class LocalRSSDataSourceTest : KoinTest {
 
     @Test
     fun successfulQueryTest() {
-        val stream = TestUtils.loadResource("localfeed/rss_feed.xml")
+        val stream = TestUtils.loadResource("localfeed/rss2/rss_feed.xml")
 
         mockServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_OK)
                 .addHeader(ApiUtils.CONTENT_TYPE_HEADER, "application/xml; charset=UTF-8")
@@ -83,7 +83,7 @@ class LocalRSSDataSourceTest : KoinTest {
 
     @Test
     fun headersTest() {
-        val stream = TestUtils.loadResource("localfeed/rss_feed.xml")
+        val stream = TestUtils.loadResource("localfeed/rss2/rss_feed.xml")
 
         mockServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_OK)
                 .addHeader("Content-Type", "application/rss+xml; charset=UTF-8")

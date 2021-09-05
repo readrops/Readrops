@@ -14,5 +14,5 @@ data class ItemWithFeed(
         @ColumnInfo(name = "background_color") @ColorInt val bgColor: Int,
         @ColumnInfo(name = "icon_url") val feedIconUrl: String?,
         @ColumnInfo(name = "siteUrl") val websiteUrl: String?,
-        @Embedded(prefix = "folder_") val folder: Folder,
+        @Embedded(prefix = "folder_") val folder: Folder?,
 )
