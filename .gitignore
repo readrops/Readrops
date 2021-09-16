@@ -133,3 +133,5 @@ fastlane/Fastfile
 Gemfile
 
 mapping/
+
+**/*.exec

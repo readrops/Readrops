@@ -40,6 +40,7 @@ android {
 
         debug {
             minifyEnabled false
+            testCoverageEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -50,6 +51,14 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+}
+
+// Needed for kapt starting with kotlin plugin 1.5
+kapt {
+    arguments {
+        arg("room.schemaLocation", "$projectDir/schemas".toString())
+        arg("room.incremental", "true")
     }
 }
 
