@@ -26,7 +26,7 @@ jobs:
           script: ./gradlew clean build connectedCheck jacocoFullReport
       - uses: codecov/codecov-action@v2.1.0
         with:
-          directory: ./build/reports/jacoco/
-          files: ./jacocoFullReport.xml
+         # directory: ./build/reports/jacoco/
+          files: ./build/reports/jacoco/jacocoFullReport.xml
           fail_ci_if_error: true
           verbose: true
