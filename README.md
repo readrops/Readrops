@@ -2,19 +2,18 @@
 	<img src="fastlane/metadata/android/en-US/images/icon.png" width=180>
 </p>
 
-
-# Readrops
+<h1 align="center"><b>Readrops</b></h1>
 
 <p align="center">
 <a href="https://github.com/readrops/Readrops/actions"><img src="https://github.com/readrops/Readrops/workflows/Android%20CI/badge.svg?branch=develop"></a>
 <a href="https://codecov.io/gh/readrops/Readrops"><img src="https://codecov.io/gh/readrops/Readrops/branch/develop/graph/badge.svg?token=229PNPQPMM"></a>
 
-<br/><br/>
-Readrops is a multi-services RSS client for Android. Its name is composed of "Read" and "drops", where drops are information drops in an ocean of news.
+<h4 align="center">Readrops is a multi-services RSS client for Android. Its name is composed of "Read" and "drops", where drops are information drops in an ocean of news.</h4>
 
-<br/><br/>
-<a href="https://play.google.com/store/apps/details?id=com.readrops.app"><img src="images/google-play-badge.png" width=250></a>
-<a href="https://f-droid.org/en/packages/com.readrops.app/"><img src="images/fdroid-badge.png" width=250></a>
+<p align="center">
+	<a href="https://play.google.com/store/apps/details?id=com.readrops.app"><img src="images/google-play-badge.png" width=250></a>
+	<a href="https://f-droid.org/en/packages/com.readrops.app/"><img src="images/fdroid-badge.png" width=250></a>
+</p>
 
 </p>
 
