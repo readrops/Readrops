@@ -247,7 +247,10 @@ public class FreshRSSRepository extends ARepository {
             }
 
             item.setFeedId(feedId);
-            item.setReadTime(Utils.readTimeFromString(item.getContent()));
+            if (item.getText() != null) {
+                item.setReadTime(Utils.readTimeFromString(item.getText()));
+            }
+
 
             // workaround to avoid inserting starred items coming from the main item call
             // as the API exclusion filter doesn't seem to work
