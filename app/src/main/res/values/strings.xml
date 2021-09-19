@@ -1,6 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">Readrops</string>
-
     <string name="to_read">To read</string>
     <string name="non_read_articles">Non read articles</string>
     <string name="open_nav_drawer">Open menu</string>
@@ -51,7 +51,7 @@
     <string name="account_name">Account name</string>
     <string name="login">Login</string>
     <string name="password">Password</string>
-    <string name="password_helper">This is your FreshRSS API password (Configuration > Profile)</string>
+    <string name="password_helper">This is your FreshRSS API password (Configuration &gt; Profile)</string>
     <string name="account_settings">Account settings</string>
     <string name="add_account">Add account</string>
     <string name="no_feed">No feed</string>
@@ -71,7 +71,6 @@
     <string name="folder_already_exists">The folder already exists</string>
     <string name="folder_bad_format">Bad format for the new folder</string>
     <string name="folder_doesnt_exist">The folder doesn\'t exist on the server</string>
-
     <string name="credentials">Credentials</string>
     <string name="filter_newest">Newest to oldest</string>
     <string name="filter_oldest">Oldest to newest</string>
@@ -95,7 +94,7 @@
     <string name="reload_feeds_colors">Reload feeds colors</string>
     <string name="open_items_in">Open items in</string>
     <string name="webview">Webview</string>
-    <string name="external_navigator">External navigator</string>
+    <string name="external_navigator">External web browser</string>
     <string name="actualize">Actualize</string>
     <string name="share_url">Share url</string>
     <string name="opml_import_export">OPML Import/Export</string>
