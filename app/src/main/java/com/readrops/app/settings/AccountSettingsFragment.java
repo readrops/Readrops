@@ -21,7 +21,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.readrops.api.opml.OPMLHelper;
+import com.readrops.app.utils.OPMLHelper;
 import com.readrops.api.opml.OPMLParser;
 import com.readrops.app.R;
 import com.readrops.app.ReadropsApp;
@@ -48,7 +48,7 @@ import io.reactivex.schedulers.Schedulers;
 import kotlin.Unit;
 
 import static android.app.Activity.RESULT_OK;
-import static com.readrops.api.opml.OPMLHelper.OPEN_OPML_FILE_REQUEST;
+import static com.readrops.app.utils.OPMLHelper.OPEN_OPML_FILE_REQUEST;
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT_ID;
 import static com.readrops.app.utils.ReadropsKeys.EDIT_ACCOUNT;

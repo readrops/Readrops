@@ -1,4 +1,4 @@
-package com.readrops.api.opml
+package com.readrops.app.utils
 
 import android.app.Activity
 import android.content.Intent

@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.readrops.api.opml.OPMLHelper;
+import com.readrops.app.utils.OPMLHelper;
 import com.readrops.app.R;
 import com.readrops.app.databinding.ActivityAccountTypeListBinding;
 import com.readrops.app.itemslist.MainActivity;
@@ -31,7 +31,7 @@ import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.readrops.api.opml.OPMLHelper.OPEN_OPML_FILE_REQUEST;
+import static com.readrops.app.utils.OPMLHelper.OPEN_OPML_FILE_REQUEST;
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT_TYPE;
 import static com.readrops.app.utils.ReadropsKeys.FROM_MAIN_ACTIVITY;
