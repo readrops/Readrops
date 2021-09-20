@@ -22,7 +22,7 @@ import com.readrops.db.filters.FilterType;
 import com.readrops.db.filters.ListSortType;
 import com.readrops.db.pojo.ItemWithFeed;
 
-import org.koin.core.parameter.DefinitionParametersKt;
+import org.koin.core.parameter.ParametersHolderKt;
 import org.koin.java.KoinJavaComponent;
 
 import java.util.ArrayList;
@@ -61,7 +61,7 @@ public class MainViewModel extends ViewModel {
 
     private void setRepository() {
         repository = KoinJavaComponent.get(ARepository.class, null,
-                () -> DefinitionParametersKt.parametersOf(currentAccount));
+                () -> ParametersHolderKt.parametersOf(currentAccount));
     }
 
     private void buildPagedList() {

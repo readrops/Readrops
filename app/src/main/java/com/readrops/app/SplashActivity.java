@@ -10,7 +10,7 @@ import com.readrops.app.account.AccountTypeListActivity;
 import com.readrops.app.account.AccountViewModel;
 import com.readrops.app.itemslist.MainActivity;
 
-import org.koin.androidx.viewmodel.compat.ViewModelCompat;
+import org.koin.android.compat.ViewModelCompat;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;

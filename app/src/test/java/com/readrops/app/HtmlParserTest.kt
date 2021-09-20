@@ -2,16 +2,15 @@ package com.readrops.app
 
 import com.readrops.api.utils.AuthInterceptor
 import com.readrops.app.utils.HtmlParser
-import com.readrops.app.addfeed.ParsingResult
 import junit.framework.TestCase
 import okhttp3.OkHttpClient
-import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
 import org.koin.dsl.module
+import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 
-class HtmlParserTest {
+class HtmlParserTest : KoinTest {
 
     @get:Rule
     val koinTestRule = KoinTestRule.create {

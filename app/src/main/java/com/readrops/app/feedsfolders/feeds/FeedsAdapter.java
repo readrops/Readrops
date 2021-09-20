@@ -66,7 +66,7 @@ public class FeedsAdapter extends ListAdapter<FeedWithFolder, FeedsAdapter.FeedV
         FeedWithFolder feedWithFolder = getItem(i);
 
         if (feedWithFolder.getFeed().getIconUrl() != null) {
-            KoinJavaComponent.get(GlideRequests.class)
+            KoinJavaComponent.<GlideRequests>get(GlideRequests.class)
                     .load(feedWithFolder.getFeed().getIconUrl())
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .placeholder(R.drawable.ic_rss_feed_grey)

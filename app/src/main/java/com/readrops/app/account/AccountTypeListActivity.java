@@ -23,8 +23,6 @@ import com.readrops.app.utils.Utils;
 import com.readrops.db.entities.account.Account;
 import com.readrops.db.entities.account.AccountType;
 
-import org.koin.androidx.viewmodel.compat.ViewModelCompat;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +35,8 @@ import static com.readrops.api.opml.OPMLHelper.OPEN_OPML_FILE_REQUEST;
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT_TYPE;
 import static com.readrops.app.utils.ReadropsKeys.FROM_MAIN_ACTIVITY;
+
+import org.koin.android.compat.ViewModelCompat;
 
 public class AccountTypeListActivity extends AppCompatActivity {
 

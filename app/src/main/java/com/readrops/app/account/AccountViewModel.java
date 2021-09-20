@@ -13,7 +13,7 @@ import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.account.Account;
 
-import org.koin.core.parameter.DefinitionParametersKt;
+import org.koin.core.parameter.ParametersHolderKt;
 import org.koin.java.KoinJavaComponent;
 
 import java.io.FileNotFoundException;
@@ -34,7 +34,7 @@ public class AccountViewModel extends ViewModel {
 
     public void setAccount(Account account) {
         repository = KoinJavaComponent.get(ARepository.class, null,
-                () -> DefinitionParametersKt.parametersOf(account));
+                () -> ParametersHolderKt.parametersOf(account));
     }
 
     public Completable login(Account account, boolean insert) {

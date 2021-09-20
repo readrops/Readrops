@@ -37,9 +37,9 @@ public final class Utils {
     public static Bitmap getImageFromUrl(String url) {
         try {
             Request request = new Request.Builder().url(url).build();
-            KoinJavaComponent.get(AuthInterceptor.class).setCredentials(null);
+            KoinJavaComponent.<AuthInterceptor>get(AuthInterceptor.class).setCredentials(null);
 
-            Response response = KoinJavaComponent.get(OkHttpClient.class).newCall(request).execute();
+            Response response = KoinJavaComponent.<OkHttpClient>get(OkHttpClient.class).newCall(request).execute();
 
             if (response.isSuccessful()) {
                 InputStream inputStream = response.body().byteStream();

@@ -23,13 +23,13 @@ import com.readrops.app.utils.Utils;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.account.Account;
 
-import org.koin.androidx.viewmodel.compat.SharedViewModelCompat;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
+
+import org.koin.android.compat.SharedViewModelCompat;
 
 public class FoldersFragment extends Fragment {
 

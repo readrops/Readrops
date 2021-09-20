@@ -20,8 +20,6 @@ import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.account.Account;
 import com.readrops.db.pojo.FeedWithFolder;
 
-import org.koin.androidx.viewmodel.compat.SharedViewModelCompat;
-
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
@@ -30,6 +28,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
+
+import org.koin.android.compat.SharedViewModelCompat;
 
 public class EditFeedDialogFragment extends DialogFragment implements AdapterView.OnItemSelectedListener {
 

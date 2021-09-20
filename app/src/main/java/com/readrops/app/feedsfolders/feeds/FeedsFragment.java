@@ -22,13 +22,13 @@ import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.account.Account;
 import com.readrops.db.pojo.FeedWithFolder;
 
-import org.koin.androidx.viewmodel.compat.SharedViewModelCompat;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
+
+import org.koin.android.compat.SharedViewModelCompat;
 
 
 public class FeedsFragment extends Fragment {

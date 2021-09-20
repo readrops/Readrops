@@ -12,7 +12,7 @@ import com.readrops.db.entities.account.Account;
 import com.readrops.db.pojo.FeedWithFolder;
 import com.readrops.db.pojo.FolderWithFeedCount;
 
-import org.koin.core.parameter.DefinitionParametersKt;
+import org.koin.core.parameter.ParametersHolderKt;
 import org.koin.java.KoinJavaComponent;
 
 import java.util.List;
@@ -35,7 +35,7 @@ public class ManageFeedsFoldersViewModel extends ViewModel {
 
     private void setup() {
         repository = KoinJavaComponent.get(ARepository.class, null,
-                () -> DefinitionParametersKt.parametersOf(account));
+                () -> ParametersHolderKt.parametersOf(account));
 
         feedsWithFolder = database.feedDao().getAllFeedsWithFolder(account.getId());
         folders = database.folderDao().getAllFolders(account.getId());

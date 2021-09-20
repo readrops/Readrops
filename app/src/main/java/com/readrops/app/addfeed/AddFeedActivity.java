@@ -28,8 +28,6 @@ import com.readrops.app.utils.Utils;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.account.Account;
 
-import org.koin.androidx.viewmodel.compat.ViewModelCompat;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,6 +38,8 @@ import io.reactivex.schedulers.Schedulers;
 
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT_ID;
 import static com.readrops.app.utils.ReadropsKeys.FEEDS;
+
+import org.koin.android.compat.ViewModelCompat;
 
 public class AddFeedActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -73,7 +73,7 @@ public class AddFeedActivity extends AppCompatActivity implements View.OnClickLi
         fastAdapter.withSelectable(true);
         fastAdapter.withOnClickListener((v, adapter, item, position) -> {
             item.setChecked(!item.isChecked());
-            
+
             fastAdapter.notifyAdapterItemChanged(position);
             binding.addFeedOk.setEnabled(recyclerViewHasCheckedItems());
 

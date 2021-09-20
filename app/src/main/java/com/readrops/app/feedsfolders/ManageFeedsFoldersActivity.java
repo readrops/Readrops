@@ -21,12 +21,12 @@ import com.readrops.app.utils.Utils;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.account.Account;
 
-import org.koin.androidx.viewmodel.compat.ViewModelCompat;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
+
+import org.koin.android.compat.ViewModelCompat;
 
 public class ManageFeedsFoldersActivity extends AppCompatActivity {
 

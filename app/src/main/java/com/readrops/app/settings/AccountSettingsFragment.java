@@ -38,8 +38,6 @@ import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.account.Account;
 import com.readrops.db.entities.account.AccountType;
 
-import org.koin.androidx.viewmodel.compat.ViewModelCompat;
-
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +52,8 @@ import static com.readrops.api.opml.OPMLHelper.OPEN_OPML_FILE_REQUEST;
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT_ID;
 import static com.readrops.app.utils.ReadropsKeys.EDIT_ACCOUNT;
+
+import org.koin.android.compat.ViewModelCompat;
 
 /**
  * A simple {@link Fragment} subclass.

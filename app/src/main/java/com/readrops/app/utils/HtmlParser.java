@@ -86,9 +86,9 @@ public final class HtmlParser {
         long start = System.currentTimeMillis();
 
         try {
-            Response response = KoinJavaComponent.get(OkHttpClient.class)
+            Response response = KoinJavaComponent.<OkHttpClient>get(OkHttpClient.class)
                     .newCall(new Request.Builder().url(url).build()).execute();
-            KoinJavaComponent.get(AuthInterceptor.class).setCredentials(null);
+            KoinJavaComponent.<AuthInterceptor>get(AuthInterceptor.class).setCredentials(null);
 
             if (response.header("Content-Type").contains(ApiUtils.HTML_CONTENT_TYPE)) {
                 String body = response.body().string();

@@ -10,7 +10,7 @@ import com.readrops.app.utils.HtmlParser;
 import com.readrops.db.Database;
 import com.readrops.db.entities.account.Account;
 
-import org.koin.core.parameter.DefinitionParametersKt;
+import org.koin.core.parameter.ParametersHolderKt;
 import org.koin.java.KoinJavaComponent;
 
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ public class AddFeedsViewModel extends ViewModel {
 
     public Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results, Account account) {
         ARepository repository = KoinJavaComponent.get(ARepository.class, null,
-                () -> DefinitionParametersKt.parametersOf(account));
+                () -> ParametersHolderKt.parametersOf(account));
 
         return repository.addFeeds(results);
     }

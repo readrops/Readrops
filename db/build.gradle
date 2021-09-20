@@ -89,8 +89,7 @@ dependencies {
 
     api 'joda-time:joda-time:2.10.10'
 
-    def koin_version = "2.2.3"
-    api "io.insert-koin:koin-android:$koin_version"
-    api "io.insert-koin:koin-androidx-scope:$koin_version"
-    api "io.insert-koin:koin-androidx-viewmodel:$koin_version"
+    api "io.insert-koin:koin-core:$rootProject.ext.koin_version"
+    api "io.insert-koin:koin-android:$rootProject.ext.koin_version"
+    api "io.insert-koin:koin-android-compat:$rootProject.ext.koin_version"
 }

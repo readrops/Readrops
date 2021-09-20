@@ -53,7 +53,7 @@ import com.readrops.db.filters.ListSortType;
 import com.readrops.db.pojo.ItemWithFeed;
 
 import org.jetbrains.annotations.NotNull;
-import org.koin.androidx.viewmodel.compat.ViewModelCompat;
+import org.koin.android.compat.ViewModelCompat;
 import org.koin.java.KoinJavaComponent;
 
 import java.lang.ref.WeakReference;
@@ -373,7 +373,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         binding.itemsRecyclerView.addRecyclerListener(viewHolder -> {
             MainItemListAdapter.ItemViewHolder vh = (MainItemListAdapter.ItemViewHolder) viewHolder;
-            KoinJavaComponent.get(GlideRequests.class).clear(vh.getItemImage());
+            KoinJavaComponent.<GlideRequests>get(GlideRequests.class).clear(vh.getItemImage());
         });
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);

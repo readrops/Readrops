@@ -16,7 +16,7 @@ import com.readrops.db.entities.account.Account;
 import com.readrops.db.pojo.ItemWithFeed;
 import com.readrops.db.queries.ItemSelectionQueryBuilder;
 
-import org.koin.core.parameter.DefinitionParametersKt;
+import org.koin.core.parameter.ParametersHolderKt;
 import org.koin.java.KoinJavaComponent;
 
 import java.io.File;
@@ -45,7 +45,8 @@ public class ItemViewModel extends ViewModel {
     }
 
     public Completable setStarState(Item item) {
-        ARepository repository = KoinJavaComponent.get(ARepository.class, null, () -> DefinitionParametersKt.parametersOf(account));
+        ARepository repository = KoinJavaComponent.get(ARepository.class, null,
+                () -> ParametersHolderKt.parametersOf(account));
 
         return repository.setItemStarState(item);
     }

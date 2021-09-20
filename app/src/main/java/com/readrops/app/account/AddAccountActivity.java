@@ -18,8 +18,6 @@ import com.readrops.app.utils.Utils;
 import com.readrops.db.entities.account.Account;
 import com.readrops.db.entities.account.AccountType;
 
-import org.koin.androidx.viewmodel.compat.ViewModelCompat;
-
 import io.reactivex.CompletableObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -28,6 +26,8 @@ import io.reactivex.schedulers.Schedulers;
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
 import static com.readrops.app.utils.ReadropsKeys.ACCOUNT_TYPE;
 import static com.readrops.app.utils.ReadropsKeys.EDIT_ACCOUNT;
+
+import org.koin.android.compat.ViewModelCompat;
 
 public class AddAccountActivity extends AppCompatActivity {
 

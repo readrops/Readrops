@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit
 
 val apiModule = module {
 
-    single(createdAtStart = true) {
+    single {
         OkHttpClient.Builder()
                 .callTimeout(1, TimeUnit.MINUTES)
                 .readTimeout(1, TimeUnit.HOURS)

@@ -35,8 +35,8 @@ class LocalRSSDataSourceTest : KoinTest {
 
     @get:Rule
     val koinTestRule = KoinTestRule.create {
-        modules(apiModule, module {
-            single(override = true) {
+        modules(apiModule, module() {
+            single() {
                 OkHttpClient.Builder()
                         .callTimeout(1, TimeUnit.MINUTES)
                         .readTimeout(1, TimeUnit.HOURS)

@@ -51,7 +51,7 @@ public abstract class ARepository {
     }
 
     protected void setCredentials(@Nullable Account account) {
-        KoinJavaComponent.get(AuthInterceptor.class)
+        KoinJavaComponent.<AuthInterceptor>get(AuthInterceptor.class)
                 .setCredentials(account != null && !account.isLocal() ? Credentials.toCredentials(account) : null);
     }
 

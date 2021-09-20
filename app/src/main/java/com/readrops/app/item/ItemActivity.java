@@ -41,7 +41,7 @@ import com.readrops.db.entities.Item;
 import com.readrops.db.entities.account.Account;
 import com.readrops.db.pojo.ItemWithFeed;
 
-import org.koin.androidx.viewmodel.compat.ViewModelCompat;
+import org.koin.android.compat.ViewModelCompat;
 import org.koin.java.KoinJavaComponent;
 
 import java.util.regex.Matcher;
@@ -101,7 +101,7 @@ public class ItemActivity extends AppCompatActivity {
             binding.appBarLayout.setExpanded(true);
             binding.collapsingLayout.setTitleEnabled(true);
 
-            KoinJavaComponent.get(GlideRequests.class)
+            KoinJavaComponent.<GlideRequests>get(GlideRequests.class)
                     .load(imageUrl)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(binding.collapsingLayoutImage);
@@ -397,7 +397,7 @@ public class ItemActivity extends AppCompatActivity {
     }
 
     private void shareImage(String url) {
-        KoinJavaComponent.get(GlideRequests.class)
+        KoinJavaComponent.<GlideRequests>get(GlideRequests.class)
                 .asBitmap()
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .load(url)
