@@ -96,7 +96,7 @@
     <string name="webview">Webview</string>
     <string name="external_navigator">External web browser</string>
     <string name="actualize">Actualize</string>
-    <string name="share_url">Share url</string>
+    <string name="share_url">Share URL</string>
     <string name="opml_import_export">OPML Import/Export</string>
     <string name="opml_processing">Processing OPML file</string>
     <string name="operation_takes_time">This operation can take a significant time as each feed needs to be queried.</string>
