@@ -1,6 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">Readrops</string>
-
     <string name="to_read">To read</string>
     <string name="non_read_articles">Non read articles</string>
     <string name="open_nav_drawer">Buka menu</string>
@@ -51,7 +51,7 @@
     <string name="account_name">Nama akun</string>
     <string name="login">Masuk</string>
     <string name="password">Sandi</string>
-    <string name="password_helper">Ini adalah sandi API FreshRSS Anda (Konfigurasi > Profil)</string>
+    <string name="password_helper">Ini adalah sandi API FreshRSS Anda (Konfigurasi &gt; Profil)</string>
     <string name="account_settings">Pengaturan akun</string>
     <string name="add_account">Tambah akun</string>
     <string name="no_feed">Tidak ada feed</string>
@@ -71,10 +71,9 @@
     <string name="folder_already_exists">Folder sudah ada</string>
     <string name="folder_bad_format">Format tidak valid untuk folder baru</string>
     <string name="folder_doesnt_exist">Folder tidak ada pada server</string>
-
     <string name="credentials">Kredensial</string>
-    <string name="filter_newest">Terbaru > terlama</string>
-    <string name="filter_oldest">Terlama > terbaru</string>
+    <string name="filter_newest">Terbaru &gt; terlama</string>
+    <string name="filter_oldest">Terlama &gt; terbaru</string>
     <string name="login_failed">Gagal masuk. Silakan periksa kredensial Anda</string>
     <string name="new_account">Akun baru</string>
     <string name="app_licence">Aplikasi dirilis dengan lisensi GPLv3</string>
@@ -97,7 +96,7 @@
     <string name="webview">Webview</string>
     <string name="external_navigator">Peramban eksternal</string>
     <string name="actualize">Aktualisasikan</string>
-    <string name="share_url">Bagikan url</string>
+    <string name="share_url">Bagikan URL</string>
     <string name="opml_import_export">Impor/Ekspor OPML</string>
     <string name="opml_processing">Memproses berkas OPML</string>
     <string name="operation_takes_time">Proses ini bisa memakan waktu lama karena feed harus diproses satu persatu.</string>
