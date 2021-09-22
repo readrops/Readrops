@@ -55,4 +55,15 @@
     <string name="add_feed_item">Legg til informasjonskanal</string>
     <string name="close_nav_drawer">Lukk meny</string>
     <string name="open_nav_drawer">Åpne meny</string>
+    <string name="share_url">Del nettadresse</string>
+    <string name="credentials">Identitetsdetaljer</string>
+    <string name="results">Resultater</string>
+    <string name="share_article">Del artikkel</string>
+    <string name="read_time_one_minute">Ett minutt</string>
+    <string name="read_time_lower_than_1">Mindre enn ett minutt</string>
+    <string name="read_time">%1$s min</string>
+    <string name="by_author">av %1$s</string>
+    <string name="add_feed_unknownhost_error">Ukjent vert</string>
+    <string name="add_feed_connexion_error">Tilkoblingsfeil</string>
+    <string name="non_read_articles">Ikke-leste artikler</string>
 </resources>
