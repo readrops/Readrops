@@ -1,5 +1,14 @@
 package com.readrops.app.itemslist;
 
+import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
+import static com.readrops.app.utils.ReadropsKeys.ACCOUNT_ID;
+import static com.readrops.app.utils.ReadropsKeys.FEEDS;
+import static com.readrops.app.utils.ReadropsKeys.FROM_MAIN_ACTIVITY;
+import static com.readrops.app.utils.ReadropsKeys.IMAGE_URL;
+import static com.readrops.app.utils.ReadropsKeys.ITEM_ID;
+import static com.readrops.app.utils.ReadropsKeys.SETTINGS;
+import static com.readrops.app.utils.ReadropsKeys.SYNCING;
+
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -35,6 +44,7 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.readrops.app.R;
 import com.readrops.app.account.AccountTypeListActivity;
+import com.readrops.app.account.AccountViewModel;
 import com.readrops.app.addfeed.AddFeedActivity;
 import com.readrops.app.databinding.ActivityMainBinding;
 import com.readrops.app.item.ItemActivity;
@@ -66,15 +76,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
-
-import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
-import static com.readrops.app.utils.ReadropsKeys.ACCOUNT_ID;
-import static com.readrops.app.utils.ReadropsKeys.FEEDS;
-import static com.readrops.app.utils.ReadropsKeys.FROM_MAIN_ACTIVITY;
-import static com.readrops.app.utils.ReadropsKeys.IMAGE_URL;
-import static com.readrops.app.utils.ReadropsKeys.ITEM_ID;
-import static com.readrops.app.utils.ReadropsKeys.SETTINGS;
-import static com.readrops.app.utils.ReadropsKeys.SYNCING;
 
 public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener,
         ReadropsItemTouchCallback.SwipeCallback, ActionMode.Callback {
@@ -109,7 +110,21 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme_NoActionBar);
         super.onCreate(savedInstanceState);
+
+        // surely a better way to do this, but hopefully this code will be replaced with jetpack compose
+        AccountViewModel accountViewModel = ViewModelCompat.getViewModel(this, AccountViewModel.class);
+        int accountCount = accountViewModel.getAccountCount()
+                .subscribeOn(Schedulers.io())
+                .blockingGet();
+
+        if (accountCount == 0) {
+            Intent intent = new Intent(getApplicationContext(), AccountTypeListActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
 
         setContentView(binding.getRoot());
