@@ -73,7 +73,6 @@
     <string name="filter_oldest">Du plus ancien au plus récent</string>
     <string name="login_failed">La connexion a échoué. Veuillez vérifier vos identifiants</string>
     <string name="new_account">Nouveau compte</string>
-    <string name="app_licence">App distribuée sous la licence GPLv3</string>
     <string name="number_items_to_parse">Nombre maximum d\'articles par flux</string>
     <string name="unlimited">Illimité</string>
     <string name="local">Local</string>
@@ -134,5 +133,8 @@
     <string name="synchronize">Synchroniser</string>
     <string name="navigator_view">Vue navigateur</string>
     <string name="favorites">Favoris</string>
+    <string name="source_code">Code source</string>
+    <string name="changelog">Journal des modifications</string>
+    <string name="app_description">App distribuée sous la licence GPLv3</string>
 
 </resources>

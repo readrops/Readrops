@@ -11,6 +11,7 @@ import static com.readrops.app.utils.ReadropsKeys.SYNCING;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -38,6 +39,8 @@ import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
 import com.bumptech.glide.util.ViewPreloadSizeProvider;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
+import com.mikepenz.aboutlibraries.LibsConfiguration;
+import com.mikepenz.aboutlibraries.entity.Library;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
@@ -757,21 +760,76 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     private void startAboutActivity() {
         Libs.ActivityStyle activityStyle;
-        if (Boolean.parseBoolean(SharedPreferencesManager.readString(SharedPreferencesManager.SharedPrefKey.DARK_THEME)))
+        if (Boolean.parseBoolean(SharedPreferencesManager.readString(SharedPreferencesManager.SharedPrefKey.DARK_THEME))) {
             activityStyle = Libs.ActivityStyle.DARK;
-        else
+        } else {
             activityStyle = Libs.ActivityStyle.LIGHT_DARK_TOOLBAR;
+        }
 
         new LibsBuilder()
                 .withAboutIconShown(true)
                 .withAboutVersionShown(true)
                 .withAboutAppName(getString(R.string.app_name))
-                .withAboutDescription(getString(R.string.app_description, getString(R.string.app_licence), getString(R.string.app_url)))
+                .withAboutDescription(getString(R.string.app_description))
                 .withLicenseShown(true)
                 .withLicenseDialog(false)
                 .withActivityTitle(getString(R.string.about))
                 .withActivityStyle(activityStyle)
                 .withFields(R.string.class.getFields())
+                .withAboutSpecial1(getString(R.string.source_code))
+                .withAboutSpecial2(getString(R.string.changelog))
+                .withListener(new LibsConfiguration.LibsListener() {
+                    @Override
+                    public void onIconClicked(View v) {
+
+                    }
+
+                    @Override
+                    public boolean onLibraryAuthorClicked(View v, Library library) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onLibraryContentClicked(View v, Library library) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onLibraryBottomClicked(View v, Library library) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onExtraClicked(View v, Libs.SpecialButton specialButton) {
+                        if (v.getId() == R.id.aboutSpecial1) {
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.app_url))));
+                        } else if (v.getId() == R.id.aboutSpecial2) {
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.changelog_url))));
+                        }
+
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onIconLongClicked(View v) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onLibraryAuthorLongClicked(View v, Library library) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onLibraryContentLongClicked(View v, Library library) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onLibraryBottomLongClicked(View v, Library library) {
+                        return false;
+                    }
+                })
                 .start(this);
     }
 

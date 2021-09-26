@@ -1,6 +1,4 @@
 <resources>
-    <string name="app_name" translatable="false">Readrops</string>
-
     <string name="to_read">To read</string>
     <string name="non_read_articles">Non read articles</string>
     <string name="open_nav_drawer">Buka menu</string>
@@ -21,7 +19,6 @@
     <string name="read_time">%1$s mnt</string>
     <string name="read_time_lower_than_1">Kurang dari 1 menit</string>
     <string name="read_time_one_minute">1 mnt</string>
-    <string name="interpoint" translatable="false">·</string>
     <string name="share_article">Bagikan Artikel</string>
     <string name="open_url">Buka url</string>
     <string name="add_folder">Tambah folder</string>
@@ -77,15 +74,13 @@
     <string name="filter_oldest">Terlama > terbaru</string>
     <string name="login_failed">Gagal masuk. Silakan periksa kredensial Anda</string>
     <string name="new_account">Akun baru</string>
-    <string name="app_licence">Aplikasi dirilis dengan lisensi GPLv3</string>
-    <string name="app_url" translatable="false">https://github.com/readrops/Readrops</string>
     <string name="number_items_to_parse">Jumlah maksimum item per feed</string>
     <string name="unlimited">Tidak terbatas</string>
     <string name="local">Lokal</string>
     <string name="feeds_number">%1$s feed</string>
     <string name="feed_number">%1$s feed</string>
     <string name="delete">Hapus</string>
-    <string name="app_description" translatable="false"><![CDATA[%1$s <br/><br/> %2$s]]></string>
+    <string name="app_description">Aplikasi dirilis dengan lisensi GPLv3</string>
     <string name="no_item">Tidak ada item</string>
     <string name="no_feed_found">Feed tidak ditemukan</string>
     <string name="feed_insertion_error">Galat feed %1$s</string>
@@ -104,7 +99,6 @@
     <string name="processing_file_failed">Telah terjadi kesalahan saat memproses berkas</string>
     <string name="opml_import">Impor OPML</string>
     <string name="opml_export">Ekspor OPML</string>
-    <string name="subscriptions" translatable="false">Subscriptions</string>
     <string name="external_storage_opml_export">Ekspor berkas OPML membutuhkan izin akses penyimpanan eksternal</string>
     <string name="try_again">Coba lagi</string>
     <string name="permissions">Perizinan</string>

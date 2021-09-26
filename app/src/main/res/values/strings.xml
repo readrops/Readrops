@@ -77,7 +77,6 @@
     <string name="filter_oldest">Oldest to newest</string>
     <string name="login_failed">Login failed. Please check your credentials</string>
     <string name="new_account">New account</string>
-    <string name="app_licence">App released under the GPLv3 licence</string>
     <string name="app_url" translatable="false">https://github.com/readrops/Readrops</string>
     <string name="number_items_to_parse">Maximum number of items per feed</string>
     <string name="unlimited">Unlimited</string>
@@ -85,7 +84,7 @@
     <string name="feeds_number">%1$s feeds</string>
     <string name="feed_number">%1$s feed</string>
     <string name="delete">Delete</string>
-    <string name="app_description" translatable="false"><![CDATA[%1$s <br/><br/> %2$s]]></string>
+    <string name="app_description">App released under the GPLv3 licence</string>
     <string name="no_item">No item</string>
     <string name="no_feed_found">No feed found</string>
     <string name="feed_insertion_error">Error for feed %1$s</string>
@@ -104,7 +103,6 @@
     <string name="processing_file_failed">An error occurred during the file processing</string>
     <string name="opml_import">OPML import</string>
     <string name="opml_export">OPML export</string>
-    <string name="subscriptions" translatable="false">Subscriptions</string>
     <string name="external_storage_opml_export">Subscriptions export needs external storage permission</string>
     <string name="try_again">Try again</string>
     <string name="permissions">Permissions</string>
@@ -140,4 +138,7 @@
     <string name="synchronize">Synchronize</string>
     <string name="navigator_view">Navigator view</string>
     <string name="favorites">Favorites</string>
+    <string name="source_code">Source code</string>
+    <string name="changelog">Changelog</string>
+    <string name="changelog_url" translatable="false">https://github.com/readrops/Readrops/blob/develop/CHANGELOG.md</string>
 </resources>
