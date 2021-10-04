@@ -66,6 +66,7 @@ task jacocoFullReport(type: JacocoReport) {
     dependsOn ":api:testDebugUnitTest"
     dependsOn ":db:testDebugUnitTest"
     dependsOn ":app:connectedAndroidTest"
+    dependsOn ":db:connectedAndroidTest"
 
     final fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', 'android/**/*.*']
 
@@ -88,6 +89,7 @@ task jacocoFullReport(type: JacocoReport) {
             'app/jacoco.exec',
             'db/jacoco.exec',
             'api/jacoco.exec',
-            'app/build/outputs/code_coverage/debugAndroidTest/connected/*-coverage.ec'
+            'app/build/outputs/code_coverage/debugAndroidTest/connected/*-coverage.ec',
+            'db/build/outputs/code_coverage/debugAndroidTest/connected/*-coverage.ec'
     ])
 }
