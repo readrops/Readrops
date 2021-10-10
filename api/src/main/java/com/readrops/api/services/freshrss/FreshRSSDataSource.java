@@ -12,6 +12,7 @@ import com.readrops.db.entities.Item;
 
 import java.io.StringReader;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -22,10 +23,11 @@ import okhttp3.RequestBody;
 
 public class FreshRSSDataSource {
 
-    private static final int MAX_ITEMS = 5000;
+    private static final int MAX_ITEMS = 2500;
     private static final int MAX_STARRED_ITEMS = 1000;
 
     public static final String GOOGLE_READ = "user/-/state/com.google/read";
+    public static final String GOOGLE_UNREAD = "user/-/state/com.google/unread";
     public static final String GOOGLE_STARRED = "user/-/state/com.google/starred";
     public static final String GOOGLE_READING_LIST = "user/-/state/com.google/reading-list";
 
@@ -88,46 +90,32 @@ public class FreshRSSDataSource {
      * @return the result of the synchronization
      */
     public Single<SyncResult> sync(@NonNull SyncType syncType, @NonNull FreshRSSSyncData syncData, @NonNull String writeToken) {
-        SyncResult syncResult = new SyncResult();
+        if (syncType == SyncType.INITIAL_SYNC) {
+            return Single.zip(setItemsReadState(syncData, writeToken).toSingleDefault(""),
+                    setItemsStarState(syncData, writeToken).toSingleDefault(""),
+                    getFolders(),
+                    getFeeds(),
+                    getItems(Arrays.asList(GOOGLE_READ, GOOGLE_STARRED), MAX_ITEMS, null),
+                    getItemsIds(GOOGLE_READ, GOOGLE_READING_LIST, MAX_ITEMS), // unread items ids
+                    getItemsIds(null, GOOGLE_STARRED, MAX_STARRED_ITEMS), // starred items ids
+                    getStarredItems(MAX_STARRED_ITEMS),
+                    (readState, starState, folders, feeds, items, unreadItemsIds, starredItemsIds, starredItems) ->
+                            new SyncResult(items, starredItems, feeds, folders, unreadItemsIds, Collections.emptyList(), starredItemsIds, false)
+            );
+        } else {
+            return Single.zip(setItemsReadState(syncData, writeToken).toSingleDefault(""),
+                    setItemsStarState(syncData, writeToken).toSingleDefault(""),
+                    getFolders(),
+                    getFeeds(),
+                    getItems(null, MAX_ITEMS, syncData.getLastModified()),
+                    getItemsIds(GOOGLE_READ, GOOGLE_READING_LIST, MAX_ITEMS), // unread items ids
+                    getItemsIds(GOOGLE_UNREAD, GOOGLE_READING_LIST, MAX_ITEMS), // read items ids
+                    getItemsIds(null, GOOGLE_STARRED, MAX_STARRED_ITEMS), // starred items ids
+                    (readState, starState, folders, feeds, items, unreadItemsIds, readItemsIds, starredItemsIds) ->
+                            new SyncResult(items, Collections.emptyList(), feeds, folders, unreadItemsIds, readItemsIds, starredItemsIds, false)
 
-        return setItemsReadState(syncData, writeToken)
-                .andThen(setItemsStarState(syncData, writeToken))
-                .andThen(getFolders()
-                        .flatMap(freshRSSFolders -> {
-                            syncResult.setFolders(freshRSSFolders);
-
-                            return getFeeds();
-                        })
-                        .flatMap(freshRSSFeeds -> {
-                            syncResult.setFeeds(freshRSSFeeds);
-
-                            if (syncType == SyncType.INITIAL_SYNC) {
-                                return getItems(Arrays.asList(GOOGLE_READ, GOOGLE_STARRED), MAX_ITEMS, null);
-                            } else {
-                                return getItems(null, MAX_ITEMS, syncData.getLastModified());
-                            }
-                        })
-                        .flatMap(freshRSSItems -> {
-                            syncResult.setItems(freshRSSItems);
-
-                            return getItemsIds(GOOGLE_READ, GOOGLE_READING_LIST, MAX_ITEMS);
-                        }).flatMap(unreadItemsIds -> {
-                            syncResult.setUnreadIds(unreadItemsIds);
-
-                            return getItemsIds(null, GOOGLE_STARRED, MAX_STARRED_ITEMS);
-                        }).flatMap(starredItemsIds -> {
-                            syncResult.setStarredIds(starredItemsIds);
-
-                            if (syncType == SyncType.INITIAL_SYNC) {
-                                return getStarredItems(MAX_STARRED_ITEMS).flatMap(starredItems -> {
-                                    syncResult.setStarredItems(starredItems);
-
-                                    return Single.just(syncResult);
-                                });
-                            } else {
-                                return Single.just(syncResult);
-                            }
-                        }));
+            );
+        }
     }
 
     /**
@@ -183,7 +171,7 @@ public class FreshRSSDataSource {
      * @param token   token for modifications
      * @return Completable
      */
-    public Completable markItemsReadUnread(boolean read, @NonNull List<String> itemIds, @NonNull String token) {
+    public Completable setItemsReadState(boolean read, @NonNull List<String> itemIds, @NonNull String token) {
         if (read) {
             return api.setItemsState(token, GOOGLE_READ, null, itemIds);
         } else {
@@ -199,7 +187,7 @@ public class FreshRSSDataSource {
      * @param token   token for modifications
      * @return Completable
      */
-    public Completable markItemsStarredUnstarred(boolean starred, @NonNull List<String> itemIds, @NonNull String token) {
+    public Completable setItemsStarState(boolean starred, @NonNull List<String> itemIds, @NonNull String token) {
         if (starred) {
             return api.setItemsState(token, GOOGLE_STARRED, null, itemIds);
         } else {
@@ -288,14 +276,14 @@ public class FreshRSSDataSource {
         if (syncData.getReadItemsIds().isEmpty()) {
             readItemsCompletable = Completable.complete();
         } else {
-            readItemsCompletable = markItemsReadUnread(true, syncData.getReadItemsIds(), token);
+            readItemsCompletable = setItemsReadState(true, syncData.getReadItemsIds(), token);
         }
 
         Completable unreadItemsCompletable;
         if (syncData.getUnreadItemsIds().isEmpty()) {
             unreadItemsCompletable = Completable.complete();
         } else {
-            unreadItemsCompletable = markItemsReadUnread(false, syncData.getUnreadItemsIds(), token);
+            unreadItemsCompletable = setItemsReadState(false, syncData.getUnreadItemsIds(), token);
         }
 
         return readItemsCompletable.concatWith(unreadItemsCompletable);
@@ -313,14 +301,14 @@ public class FreshRSSDataSource {
         if (syncData.getStarredItemsIds().isEmpty()) {
             starredItemsCompletable = Completable.complete();
         } else {
-            starredItemsCompletable = markItemsStarredUnstarred(true, syncData.getStarredItemsIds(), token);
+            starredItemsCompletable = setItemsStarState(true, syncData.getStarredItemsIds(), token);
         }
 
         Completable unstarredItemsCompletable;
         if (syncData.getUnstarredItemsIds().isEmpty()) {
             unstarredItemsCompletable = Completable.complete();
         } else {
-            unstarredItemsCompletable = markItemsStarredUnstarred(false, syncData.getUnstarredItemsIds(), token);
+            unstarredItemsCompletable = setItemsStarState(false, syncData.getUnstarredItemsIds(), token);
         }
 
         return starredItemsCompletable.concatWith(unstarredItemsCompletable);

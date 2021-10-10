@@ -133,7 +133,7 @@ public class FreshRSSRepository extends ARepository {
                     insertItems(syncResult.getStarredItems(), true);
                     logger.addSplit("starred items insertion");
 
-                    insertItemsIds(syncResult.getUnreadIds(), syncResult.getStarredIds());
+                    insertItemsIds(syncResult.getUnreadIds(), syncResult.getReadIds(), syncResult.getStarredIds());
                     logger.addSplit("insert and update items ids");
 
                     account.setLastModified(newLastModified);
@@ -269,7 +269,7 @@ public class FreshRSSRepository extends ARepository {
         }
     }
 
-    private void insertItemsIds(List<String> unreadIds, List<String> starredIds) {
+    private void insertItemsIds(List<String> unreadIds, List<String> readIds, List<String> starredIds) {
         database.itemStateDao().deleteItemsStates(account.getId());
 
         database.itemStateDao().insertItemStates(unreadIds.stream().map(id -> {
@@ -279,6 +279,16 @@ public class FreshRSSRepository extends ARepository {
                     }
 
                     return new ItemState(0, false, starred, id, account.getId());
+                }
+        ).collect(Collectors.toList()));
+
+        database.itemStateDao().insertItemStates(readIds.stream().map(id -> {
+                    boolean starred = starredIds.stream().filter(starredId -> starredId.equals(id)).count() == 1;
+                    if (starred) {
+                        starredIds.remove(id);
+                    }
+
+                    return new ItemState(0, true, starred, id, account.getId());
                 }
         ).collect(Collectors.toList()));
 

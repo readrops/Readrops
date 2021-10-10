@@ -1,0 +1,4 @@
+<ul>
+    <li>FreshRSS : Fix items being fav unintentionally</li>
+    <li>FreshRSS : Fix 401 error when synchronising for the second time</li>
+</ul>
