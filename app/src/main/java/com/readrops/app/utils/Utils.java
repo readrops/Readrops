@@ -15,7 +15,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.readrops.api.utils.AuthInterceptor;
 
 import org.koin.java.KoinJavaComponent;
 
@@ -37,7 +36,6 @@ public final class Utils {
     public static Bitmap getImageFromUrl(String url) {
         try {
             Request request = new Request.Builder().url(url).build();
-            KoinJavaComponent.get(AuthInterceptor.class).setCredentials(null);
 
             Response response = KoinJavaComponent.get(OkHttpClient.class).newCall(request).execute();
 
