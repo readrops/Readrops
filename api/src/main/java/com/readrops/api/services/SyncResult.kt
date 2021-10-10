@@ -9,6 +9,7 @@ class SyncResult(var items: List<Item> = mutableListOf(),
                  var feeds: List<Feed> = listOf(),
                  var folders: List<Folder> = listOf(),
                  var unreadIds: List<String>? = null,
+                 var readIds: List<String>? = null,
                  var starredIds: List<String>? = null,
                  var isError: Boolean = false
 )
