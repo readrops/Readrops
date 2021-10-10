@@ -1,3 +1,7 @@
+# v1.3.1
+- FreshRSS : Fix items being fav unintentionally
+- FreshRSS : Fix 401 error when synchronising for the second time
+
 # v1.3.0
 - New local RSS parser, much reliable
 - New external navigator view for items (Custom tabs)
