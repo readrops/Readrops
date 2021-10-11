@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="to_read">A lire</string>
+    <string name="to_read">À lire</string>
     <string name="non_read_articles">Articles non lus</string>
     <string name="open_nav_drawer">Ouvrir le menu</string>
     <string name="close_nav_drawer">Fermer le menu</string>
     <string name="add_feed_item">Ajouter un flux</string>
     <string name="add_folder_item">Ajouter un dossier</string>
     <string name="settings">Paramètres</string>
-    <string name="about">A propos</string>
+    <string name="about">À propos</string>
     <string name="add_feed_title">Ajouter un flux</string>
     <string name="feed_url">Adresse du flux</string>
     <string name="validate">Valider</string>
@@ -39,13 +39,13 @@
     <string name="feed_insertion_wrong_format">Mauvais format pour le flux %1$s</string>
     <string name="feed_insertion_unknown_error">Erreur inconnue pour le flux %1$s</string>
     <string name="articles">Articles</string>
-    <string name="read_later">A lire plus tard</string>
+    <string name="read_later">À lire plus tard</string>
     <string name="show_read_articles">Afficher les articles lus</string>
     <string name="filter">Filtrer</string>
     <string name="unread">Marquer comme non lu</string>
     <string name="read">Marquer comme lu</string>
     <string name="select_all">Tout sélectionner</string>
-    <string name="account_url">Url du compte</string>
+    <string name="account_url">URL du compte</string>
     <string name="account_name">Nom du compte</string>
     <string name="login">Identifiant</string>
     <string name="password">Mot de passe</string>
@@ -73,6 +73,7 @@
     <string name="filter_oldest">Du plus ancien au plus récent</string>
     <string name="login_failed">La connexion a échoué. Veuillez vérifier vos identifiants</string>
     <string name="new_account">Nouveau compte</string>
+    <string name="app_licence">Appli distribuée sous la licence GPLv3</string>
     <string name="number_items_to_parse">Nombre maximum d\'articles par flux</string>
     <string name="unlimited">Illimité</string>
     <string name="local">Local</string>
@@ -91,7 +92,7 @@
     <string name="external_navigator">Navigateur externe</string>
     <string name="actualize">Actualiser</string>
     <string name="share_url">Partager le lien</string>
-    <string name="opml_import_export">Import/Export OPML</string>
+    <string name="opml_import_export">Importation/Exportation OPML</string>
     <string name="opml_processing">Traitement du fichier OPML</string>
     <string name="operation_takes_time">Cette opération peut prendre un certain temps car il faut interroger chaque flux.</string>
     <string name="processing_file_failed">Une erreur s\'est produite lors du traitement du fichier</string>
@@ -129,7 +130,7 @@
     <string name="open">Ouvrir</string>
     <string name="back">Retour</string>
     <string name="show_caption">Afficher la légende</string>
-    <string name="password_helper">Votre mot de passe d\'API (Configuration > Profil)</string>
+    <string name="password_helper">Votre mot de passe d\'API (Configuration &gt; Profil)</string>
     <string name="synchronize">Synchroniser</string>
     <string name="navigator_view">Vue navigateur</string>
     <string name="favorites">Favoris</string>
