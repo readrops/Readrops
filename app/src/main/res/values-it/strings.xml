@@ -60,7 +60,6 @@
     <string name="local">Locale</string>
     <string name="unlimited">Illimitato</string>
     <string name="number_items_to_parse">Numero massimo di articoli per flusso</string>
-    <string name="app_licence">Applicazione pubblicata sotto licenza GPLv3</string>
     <string name="new_account">Nuovo account</string>
     <string name="login_failed">Accesso non riuscito. Per favore controlla le tue credenziali</string>
     <string name="filter_oldest">Dal più vecchio al più recente</string>
