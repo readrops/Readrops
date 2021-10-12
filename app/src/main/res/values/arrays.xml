@@ -45,11 +45,13 @@
     <string-array name="themes">
         <item>@string/light</item>
         <item>@string/dark</item>
+        <item>@string/system</item>
     </string-array>
 
     <string-array name="themes_values">
-        <item>false</item>
-        <item>true</item>
+        <item>@string/theme_value_light</item>
+        <item>@string/theme_value_dark</item>
+        <item>@string/theme_value_system</item>
     </string-array>
 
     <string-array name="synchro">

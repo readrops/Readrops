@@ -31,10 +31,13 @@ open class ReadropsApp : Application() {
             modules(apiModule, dbModule, appModule)
         }
 
-        if (SharedPreferencesManager.readString(SharedPreferencesManager.SharedPrefKey.DARK_THEME).toBoolean())
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        else
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        val theme = when (SharedPreferencesManager.readString(SharedPreferencesManager.SharedPrefKey.DARK_THEME)) {
+            getString(R.string.theme_value_light) -> AppCompatDelegate.MODE_NIGHT_NO
+            getString(R.string.theme_value_dark) -> AppCompatDelegate.MODE_NIGHT_YES
+            else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        }
+
+        AppCompatDelegate.setDefaultNightMode(theme)
     }
 
     private fun createNotificationChannels() {

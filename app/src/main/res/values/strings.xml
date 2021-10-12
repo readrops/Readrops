@@ -140,4 +140,8 @@
     <string name="source_code">Source code</string>
     <string name="changelog">Changelog</string>
     <string name="changelog_url" translatable="false">https://github.com/readrops/Readrops/blob/develop/CHANGELOG.md</string>
+    <string name="system">System theme</string>
+    <string name="theme_value_light" translatable="false">light</string>
+    <string name="theme_value_dark" translatable="false">dark</string>
+    <string name="theme_value_system" translatable="false">system</string>
 </resources>

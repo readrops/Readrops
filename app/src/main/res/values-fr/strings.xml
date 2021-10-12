@@ -137,5 +137,6 @@
     <string name="source_code">Code source</string>
     <string name="changelog">Journal des modifications</string>
     <string name="app_description">App distribuée sous la licence GPLv3</string>
+    <string name="system">Thème du système</string>
 
 </resources>

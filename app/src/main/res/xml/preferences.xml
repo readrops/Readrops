@@ -23,7 +23,7 @@
             android:title="@string/open_items_in" />
 
         <ListPreference
-            android:defaultValue="false"
+            android:defaultValue="system"
             android:entries="@array/themes"
             android:entryValues="@array/themes_values"
             android:key="dark_theme"

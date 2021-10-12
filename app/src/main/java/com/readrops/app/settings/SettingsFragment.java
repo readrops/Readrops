@@ -1,5 +1,7 @@
 package com.readrops.app.settings;
 
+import static com.readrops.app.utils.ReadropsKeys.FEEDS;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Pair;
@@ -24,8 +26,6 @@ import org.koin.java.KoinJavaComponent;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static com.readrops.app.utils.ReadropsKeys.FEEDS;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
 
@@ -56,12 +56,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
 
         themePreference.setOnPreferenceChangeListener((preference, newValue) -> {
-            boolean darkTheme = Boolean.parseBoolean(newValue.toString());
-
-            if (darkTheme) {
+            if (newValue.equals(getString(R.string.theme_value_light))) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            } else if (newValue.equals(getString(R.string.theme_value_dark))) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
             } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
             }
 
             return true;
