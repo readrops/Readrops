@@ -760,10 +760,10 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     private void startAboutActivity() {
         Libs.ActivityStyle activityStyle;
-        if (Boolean.parseBoolean(SharedPreferencesManager.readString(SharedPreferencesManager.SharedPrefKey.DARK_THEME))) {
-            activityStyle = Libs.ActivityStyle.DARK;
-        } else {
+        if (SharedPreferencesManager.readString(SharedPreferencesManager.SharedPrefKey.DARK_THEME).equals(getString(R.string.theme_value_light))) {
             activityStyle = Libs.ActivityStyle.LIGHT_DARK_TOOLBAR;
+        } else {
+            activityStyle = Libs.ActivityStyle.DARK;
         }
 
         new LibsBuilder()
