@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name" translatable="false">Readrops</string>
     <string name="to_read">Reading</string>
-    <string name="non_read_articles">Non-read</string>
+    <string name="non_read_articles">Unread</string>
     <string name="open_nav_drawer">Open menu</string>
     <string name="close_nav_drawer">Close menu</string>
     <string name="add_feed_item">Add feed</string>
@@ -44,14 +44,14 @@
     <string name="read_later">Reading later</string>
     <string name="show_read_articles">Show read</string>
     <string name="filter">Filter</string>
-    <string name="unread">Mark as non-read</string>
+    <string name="unread">Mark as unread</string>
     <string name="read">Mark as read</string>
     <string name="select_all">Select all</string>
     <string name="account_url">Account URL</string>
     <string name="account_name">Account name</string>
     <string name="login">Username</string>
     <string name="password">Password</string>
-    <string name="password_helper">This is your FreshRSS API password (Configuration → Profile)</string>
+    <string name="password_helper">Your FreshRSS API password from Configuration → Profile</string>
     <string name="account_settings">Account settings</string>
     <string name="add_account">Add account</string>
     <string name="no_feed">No feed</string>
@@ -71,10 +71,10 @@
     <string name="folder_already_exists">The folder already exists</string>
     <string name="folder_bad_format">The new folder has an incorrect format</string>
     <string name="folder_doesnt_exist">The folder doesn\'t exist on the server</string>
-    <string name="credentials">Login details</string>
+    <string name="credentials">Username and password</string>
     <string name="filter_newest">Newest first</string>
     <string name="filter_oldest">Oldest first</string>
-    <string name="login_failed">Could not log in. Ensure your username and password is correct.</string>
+    <string name="login_failed">Could not log in. Did you supply the correct username and password?</string>
     <string name="new_account">New account</string>
     <string name="app_url" translatable="false">https://github.com/readrops/Readrops</string>
     <string name="number_items_to_parse">Max items per feed</string>
