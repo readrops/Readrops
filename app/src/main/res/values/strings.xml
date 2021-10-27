@@ -31,7 +31,7 @@
     <string name="folder">Folder</string>
     <string name="no_folder">No folder</string>
     <string name="cancel">Cancel</string>
-    <string name="delete_feed">Delete feed ?</string>
+    <string name="delete_feed">Delete feed?</string>
     <string name="load">Load</string>
     <string name="updating_feed">Updating feed, %1$s…</string>
     <string name="results">Results</string>
@@ -102,7 +102,7 @@
     <string name="processing_file_failed">Could not process the file</string>
     <string name="opml_import">OPML import</string>
     <string name="opml_export">OPML export</string>
-    <string name="external_storage_opml_export">Grant access to storage to export subscriptions</string>
+    <string name="external_storage_opml_export">Grant storage access to export subscriptions</string>
     <string name="try_again">Try again</string>
     <string name="permissions">Permissions</string>
     <string name="or">Or</string>
@@ -114,7 +114,7 @@
     <string name="dark">Dark</string>
     <string name="opml_export_description">Export feeds and folders</string>
     <string name="new_feed">New feed</string>
-    <string name="download_image_permission">Grant access to storage to download the image</string>
+    <string name="download_image_permission">Grant storage access to download the image</string>
     <string name="auto_synchro">Syncing</string>
     <string name="manual">Manual</string>
     <string name="min_30">30 mins</string>
@@ -130,7 +130,7 @@
     <string name="notifications">Notifications</string>
     <string name="enable_all_feeds">Turn on all feeds notifications</string>
     <string name="auto_synchro_disabled">Auto-syncing off</string>
-    <string name="enable_auto_synchro_text">Turn on antomatic syncing to show notifications.\nOpen the settings?</string>
+    <string name="enable_auto_synchro_text">Open the settings to turn on auto-syncing to show notifications?</string>
     <string name="open">Open</string>
     <string name="back">Back</string>
     <string name="show_caption">Show caption</string>
