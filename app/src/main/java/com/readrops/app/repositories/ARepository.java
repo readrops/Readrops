@@ -1,5 +1,7 @@
 package com.readrops.app.repositories;
 
+import static com.readrops.app.utils.ReadropsKeys.FEEDS;
+
 import android.content.Context;
 import android.content.Intent;
 
@@ -29,10 +31,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import io.reactivex.Completable;
-import io.reactivex.Observable;
 import io.reactivex.Single;
-
-import static com.readrops.app.utils.ReadropsKeys.FEEDS;
 
 public abstract class ARepository {
 
@@ -57,7 +56,7 @@ public abstract class ARepository {
 
     public abstract Completable login(Account account, boolean insert);
 
-    public abstract Observable<Feed> sync(List<Feed> feeds);
+    public abstract Completable sync(@Nullable List<Feed> feeds, @Nullable FeedUpdate update);
 
     public abstract Single<List<FeedInsertionResult>> addFeeds(List<ParsingResult> results);
 

@@ -54,7 +54,7 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
 
                 val repository = get<ARepository>(parameters = { parametersOf(it) })
 
-                disposable = repository.sync(null)
+                disposable = repository.sync(null, null)
                         .doOnError { throwable ->
                             result = Result.failure()
                             Log.e(TAG, throwable.message!!, throwable)

@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import io.reactivex.Completable;
-import io.reactivex.Observable;
 import io.reactivex.Single;
 import okhttp3.OkHttpClient;
 
@@ -74,9 +73,9 @@ public class NextNewsRepository extends ARepository {
     }
 
     @Override
-    public Observable<Feed> sync(List<Feed> feeds) {
+    public Completable sync(@Nullable List<Feed> feeds, @Nullable FeedUpdate update) {
         setCredentials(account);
-        return Observable.create(emitter -> {
+        return Completable.create(emitter -> {
             try {
                 long lastModified = LocalDateTime.now().toDateTime().getMillis();
                 SyncType syncType;

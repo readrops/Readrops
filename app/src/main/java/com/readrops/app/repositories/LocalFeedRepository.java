@@ -2,6 +2,8 @@ package com.readrops.app.repositories;
 
 import android.accounts.NetworkErrorException;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -30,7 +32,6 @@ import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Completable;
-import io.reactivex.Observable;
 import io.reactivex.Single;
 import kotlin.Pair;
 import okhttp3.Headers;
@@ -54,8 +55,8 @@ public class LocalFeedRepository extends ARepository {
     }
 
     @Override
-    public Observable<Feed> sync(@Nullable List<Feed> feeds) {
-        return Observable.create(emitter -> {
+    public Completable sync(@Nullable List<Feed> feeds, FeedUpdate update) {
+        return Completable.create(emitter -> {
             List<Feed> feedList;
 
             if (feeds == null || feeds.isEmpty()) {
@@ -65,7 +66,8 @@ public class LocalFeedRepository extends ARepository {
             }
 
             for (Feed feed : feedList) {
-                emitter.onNext(feed);
+                Handler mainHandler = new Handler(Looper.getMainLooper());
+                mainHandler.post(() -> update.onNext(feed));
 
                 try {
                     Headers.Builder headers = new Headers.Builder();

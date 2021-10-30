@@ -75,7 +75,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import io.reactivex.Observer;
+import io.reactivex.CompletableObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableSingleObserver;
@@ -622,10 +622,20 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
     private void sync(@Nullable List<Feed> feeds) {
-        viewModel.sync(feeds)
+        viewModel.sync(feeds, feed -> {
+            if (viewModel.isAccountLocal() && feedNb > 0) {
+                binding.syncProgressTextView.setText(getString(R.string.updating_feed, feed.getName()));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    binding.syncProgressBar.setProgress((feedCount * 100) / feedNb, true);
+                } else
+                    binding.syncProgressBar.setProgress((feedCount * 100) / feedNb);
+            }
+
+            feedCount++;
+        })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Feed>() {
+                .subscribe(new CompletableObserver() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
                         syncDisposable = d;
@@ -634,30 +644,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                             binding.syncProgressLayout.setVisibility(View.VISIBLE);
                             binding.syncProgressBar.setProgress(0);
                         }
-                    }
-
-                    @Override
-                    public void onNext(@NonNull Feed feed) {
-                        if (viewModel.isAccountLocal() && feedNb > 0) {
-                            binding.syncProgressTextView.setText(getString(R.string.updating_feed, feed.getName()));
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                binding.syncProgressBar.setProgress((feedCount * 100) / feedNb, true);
-                            } else
-                                binding.syncProgressBar.setProgress((feedCount * 100) / feedNb);
-                        }
-
-                        feedCount++;
-                    }
-
-                    @Override
-                    public void onError(@NonNull Throwable e) {
-                        e.printStackTrace();
-                        binding.swipeRefreshLayout.setRefreshing(false);
-                        binding.syncProgressLayout.setVisibility(View.GONE);
-
-                        Utils.showSnackbar(binding.mainRoot, e.getMessage());
-                        drawerManager.enableAccountSelection();
-                        updating = false;
                     }
 
                     @Override
@@ -680,6 +666,16 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
                         drawerManager.enableAccountSelection();
                         updateDrawerFeeds(); // update drawer after syncing feeds
+                        updating = false;
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        binding.swipeRefreshLayout.setRefreshing(false);
+                        binding.syncProgressLayout.setVisibility(View.GONE);
+
+                        Utils.showSnackbar(binding.mainRoot, e.getMessage());
+                        drawerManager.enableAccountSelection();
                         updating = false;
                     }
                 });

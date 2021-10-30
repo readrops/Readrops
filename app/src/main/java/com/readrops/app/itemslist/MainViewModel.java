@@ -9,10 +9,9 @@ import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
 import com.readrops.app.repositories.ARepository;
+import com.readrops.app.repositories.FeedUpdate;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.db.Database;
-import com.readrops.db.queries.ItemsQueryBuilder;
-import com.readrops.db.queries.QueryFilters;
 import com.readrops.db.RoomFactoryWrapper;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
@@ -21,17 +20,19 @@ import com.readrops.db.entities.account.Account;
 import com.readrops.db.filters.FilterType;
 import com.readrops.db.filters.ListSortType;
 import com.readrops.db.pojo.ItemWithFeed;
+import com.readrops.db.queries.ItemsQueryBuilder;
+import com.readrops.db.queries.QueryFilters;
 
 import org.koin.core.parameter.ParametersHolderKt;
 import org.koin.java.KoinJavaComponent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Completable;
-import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -123,9 +124,17 @@ public class MainViewModel extends ViewModel {
         return itemsWithFeed;
     }
 
-    public Observable<Feed> sync(List<Feed> feeds) {
+    public Completable sync(List<Feed> feeds, FeedUpdate update) {
         itemsWithFeed.removeSource(lastFetch);
-        return repository.sync(feeds);
+
+        // get current viewed feed
+        if (feeds == null && queryFilters.getFilterType() == FilterType.FEED_FILTER) {
+            return Single.<Feed>create(emitter -> emitter.onSuccess(database.feedDao()
+                    .getFeedById(queryFilters.getFilterFeedId())))
+                    .flatMapCompletable(feed -> repository.sync(Collections.singletonList(feed), update));
+        }
+
+        return repository.sync(feeds, update);
     }
 
     public Single<Integer> getFeedCount() {

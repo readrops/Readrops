@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import io.reactivex.Completable;
-import io.reactivex.Observable;
 import io.reactivex.Single;
 
 public class FreshRSSRepository extends ARepository {
@@ -79,7 +78,7 @@ public class FreshRSSRepository extends ARepository {
     }
 
     @Override
-    public Observable<Feed> sync(List<Feed> feeds) {
+    public Completable sync(@Nullable List<Feed> feeds, @Nullable FeedUpdate update) {
         FreshRSSSyncData syncData = new FreshRSSSyncData();
         SyncType syncType;
 
@@ -119,7 +118,7 @@ public class FreshRSSRepository extends ARepository {
 
             emitter.onSuccess(syncData);
         }).flatMap(syncData1 -> dataSource.sync(syncType, syncData1, account.getWriteToken()))
-                .flatMapObservable(syncResult -> {
+                .flatMapCompletable(syncResult -> {
                     logger.addSplit("server queries");
 
                     insertFolders(syncResult.getFolders());
@@ -145,7 +144,7 @@ public class FreshRSSRepository extends ARepository {
 
                     this.syncResult = syncResult;
 
-                    return Observable.empty();
+                    return Completable.complete();
                 });
     }
 
