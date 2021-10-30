@@ -15,7 +15,6 @@
             android:id="@+id/notif_permission_account_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/md_white_1000"
             android:padding="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -10,6 +10,7 @@ import static com.readrops.app.utils.ReadropsKeys.SETTINGS;
 import static com.readrops.app.utils.ReadropsKeys.SYNCING;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -760,10 +761,12 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     private void startAboutActivity() {
         Libs.ActivityStyle activityStyle;
-        if (SharedPreferencesManager.readString(SharedPreferencesManager.SharedPrefKey.DARK_THEME).equals(getString(R.string.theme_value_light))) {
-            activityStyle = Libs.ActivityStyle.LIGHT_DARK_TOOLBAR;
-        } else {
+        int uiMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+
+        if (uiMode == Configuration.UI_MODE_NIGHT_YES) {
             activityStyle = Libs.ActivityStyle.DARK;
+        } else {
+            activityStyle = Libs.ActivityStyle.LIGHT_DARK_TOOLBAR;
         }
 
         new LibsBuilder()
