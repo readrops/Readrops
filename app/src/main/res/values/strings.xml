@@ -144,4 +144,7 @@
     <string name="theme_value_light" translatable="false">light</string>
     <string name="theme_value_dark" translatable="false">dark</string>
     <string name="theme_value_system" translatable="false">system</string>
+    <string name="hide">Hide</string>
+    <string name="show">Show</string>
+    <string name="show_hide_feeds">Show or hide feeds without new items</string>
 </resources>

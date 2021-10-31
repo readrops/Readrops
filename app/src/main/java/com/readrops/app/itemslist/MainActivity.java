@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     public static final int MANAGE_ACCOUNT_REQUEST = 2;
     public static final int ITEM_REQUEST = 3;
     public static final int ADD_ACCOUNT_REQUEST = 4;
+    public static final int SETTINGS_REQUEST = 5;
 
     private ActivityMainBinding binding;
     private MainItemListAdapter adapter;
@@ -294,7 +295,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     Intent intent = new Intent(getApplication(), SettingsActivity.class);
                     intent.putExtra(SETTINGS,
                             SettingsActivity.SettingsKey.SETTINGS.ordinal());
-                    startActivity(intent);
+                    startActivityForResult(intent, SETTINGS_REQUEST);
                     break;
             }
         } else if (drawerItem instanceof SecondaryDrawerItem) {
@@ -591,7 +592,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 sync(feeds);
             }
 
-        } else if (requestCode == MANAGE_ACCOUNT_REQUEST) {
+        } else if (requestCode == MANAGE_ACCOUNT_REQUEST || requestCode == SETTINGS_REQUEST) {
             updateDrawerFeeds();
 
         } else if (requestCode == ADD_ACCOUNT_REQUEST && resultCode == RESULT_OK && data != null) {

@@ -1,5 +1,7 @@
 package com.readrops.app.itemslist;
 
+import static com.readrops.app.utils.Utils.drawableWithColor;
+
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -31,6 +33,7 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.readrops.app.R;
+import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.customviews.CustomExpandableBadgeDrawerItem;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
@@ -42,8 +45,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static com.readrops.app.utils.Utils.drawableWithColor;
 
 public class DrawerManager {
 
@@ -162,6 +163,8 @@ public class DrawerManager {
         addDefaultPlaces();
 
         Map<SecondaryDrawerItem, Feed> feedsWithoutFolder = new HashMap<>();
+        boolean showFeedsWithNoUnreadItems = Boolean.parseBoolean(SharedPreferencesManager
+                .readString(SharedPreferencesManager.SharedPrefKey.HIDE_SHOW_FEEDS));
 
         for (Map.Entry<Folder, List<Feed>> entry : folderListMap.entrySet()) {
             Folder folder = entry.getKey();
@@ -178,12 +181,26 @@ public class DrawerManager {
                     expandableUnreadCount += feed.getUnreadCount();
 
                     SecondaryDrawerItem secondaryDrawerItem = createSecondaryItem(feed);
-                    secondaryDrawerItems.add(secondaryDrawerItem);
+
+                    if (!showFeedsWithNoUnreadItems) {
+                        if (feed.getUnreadCount() > 0) {
+                            secondaryDrawerItems.add(secondaryDrawerItem);
+                        }
+                    } else {
+                        secondaryDrawerItems.add(secondaryDrawerItem);
+                    }
 
                     loadItemIcon(secondaryDrawerItem, feed);
                 }
 
-                if (!secondaryDrawerItems.isEmpty()) {
+                boolean showItem;
+                if (!showFeedsWithNoUnreadItems) {
+                    showItem = expandableUnreadCount > 0;
+                } else {
+                    showItem = true;
+                }
+
+                if (!secondaryDrawerItems.isEmpty() && showItem) {
                     badgeDrawerItem.withSubItems(secondaryDrawerItems);
                     badgeDrawerItem.withBadge(String.valueOf(expandableUnreadCount));
                     drawer.addItem(badgeDrawerItem);

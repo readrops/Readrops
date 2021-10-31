@@ -138,5 +138,8 @@
     <string name="changelog">Journal des modifications</string>
     <string name="app_description">App distribuée sous la licence GPLv3</string>
     <string name="system">Thème du système</string>
+    <string name="hide">Cacher</string>
+    <string name="show">Afficher</string>
+    <string name="show_hide_feeds">Afficher ou cacher les flux sans nouveaux items</string>
 
 </resources>

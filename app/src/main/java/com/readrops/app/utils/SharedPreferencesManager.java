@@ -57,7 +57,8 @@ public final class SharedPreferencesManager {
         ITEMS_TO_PARSE_MAX_NB("items_to_parse_max_nb", "20"),
         OPEN_ITEMS_IN("open_items_in", "0"),
         DARK_THEME("dark_theme", "false"),
-        AUTO_SYNCHRO("auto_synchro", "0");
+        AUTO_SYNCHRO("auto_synchro", "0"),
+        HIDE_SHOW_FEEDS("show_hide_feeds", "true");
 
         @NonNull
         private String key;
