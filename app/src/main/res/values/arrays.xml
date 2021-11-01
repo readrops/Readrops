@@ -76,14 +76,4 @@
         <item>24</item>
     </string-array>
 
-
-    <string-array name="show_hide_read_feeds">
-        <item>@string/hide</item>
-        <item>@string/show</item>
-    </string-array>
-
-    <string-array name="show_hide_read_feeds_values">
-        <item>false</item>
-        <item>true</item>
-    </string-array>
 </resources>

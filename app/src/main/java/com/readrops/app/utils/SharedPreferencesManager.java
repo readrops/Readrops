@@ -58,7 +58,7 @@ public final class SharedPreferencesManager {
         OPEN_ITEMS_IN("open_items_in", "0"),
         DARK_THEME("dark_theme", "false"),
         AUTO_SYNCHRO("auto_synchro", "0"),
-        HIDE_SHOW_FEEDS("show_hide_feeds", "true"),
+        HIDE_FEEDS("hide_feeds", false),
         MARK_ITEMS_READ_ON_SCROLL("mark_items_read", false);
 
         @NonNull

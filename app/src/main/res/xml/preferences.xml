@@ -36,12 +36,10 @@
             android:key="auto_synchro"
             android:title="@string/auto_synchro" />
 
-        <ListPreference
-            android:defaultValue="true"
-            android:entries="@array/show_hide_read_feeds"
-            android:entryValues="@array/show_hide_read_feeds_values"
-            android:key="show_hide_feeds"
-            android:title="@string/show_hide_feeds" />
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="hide_feeds"
+            android:title="@string/hide_feeds" />
 
         <SwitchPreferenceCompat
             android:defaultValue="false"

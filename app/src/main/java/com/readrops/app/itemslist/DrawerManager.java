@@ -163,8 +163,8 @@ public class DrawerManager {
         addDefaultPlaces();
 
         Map<SecondaryDrawerItem, Feed> feedsWithoutFolder = new HashMap<>();
-        boolean showFeedsWithNoUnreadItems = Boolean.parseBoolean(SharedPreferencesManager
-                .readString(SharedPreferencesManager.SharedPrefKey.HIDE_SHOW_FEEDS));
+        boolean hideFeeds = SharedPreferencesManager
+                .readBoolean(SharedPreferencesManager.SharedPrefKey.HIDE_FEEDS);
 
         for (Map.Entry<Folder, List<Feed>> entry : folderListMap.entrySet()) {
             Folder folder = entry.getKey();
@@ -182,7 +182,7 @@ public class DrawerManager {
 
                     SecondaryDrawerItem secondaryDrawerItem = createSecondaryItem(feed);
 
-                    if (!showFeedsWithNoUnreadItems) {
+                    if (hideFeeds) {
                         if (feed.getUnreadCount() > 0) {
                             secondaryDrawerItems.add(secondaryDrawerItem);
                         }
@@ -194,7 +194,7 @@ public class DrawerManager {
                 }
 
                 boolean showItem;
-                if (!showFeedsWithNoUnreadItems) {
+                if (hideFeeds) {
                     showItem = expandableUnreadCount > 0;
                 } else {
                     showItem = true;
