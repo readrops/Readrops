@@ -147,4 +147,5 @@
     <string name="hide">Hide</string>
     <string name="show">Show</string>
     <string name="show_hide_feeds">Show or hide feeds without new items</string>
+    <string name="mark_items_read">Mark items read on scroll</string>
 </resources>

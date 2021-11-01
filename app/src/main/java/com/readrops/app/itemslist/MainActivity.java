@@ -444,6 +444,23 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 } else {
                     binding.addFeedFab.show();
                 }
+
+                int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+                if (firstVisibleItemPosition - 2 >= 0) {
+                    Item item = adapter.getItemWithFeed(firstVisibleItemPosition - 2).getItem();
+
+                    // Might be better to have a global variable updated when going back from settings
+                    if (!item.isRead() && SharedPreferencesManager.readBoolean(SharedPreferencesManager
+                            .SharedPrefKey.MARK_ITEMS_READ_ON_SCROLL)) {
+                        item.setRead(!item.isRead());
+
+                        viewModel.setItemReadState(item)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .doOnError(throwable -> Utils.showSnackbar(binding.mainRoot, throwable.getMessage()))
+                                .subscribe();
+                    }
+                }
             }
         });
     }
