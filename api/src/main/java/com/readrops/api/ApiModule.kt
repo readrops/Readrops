@@ -3,6 +3,8 @@ package com.readrops.api
 import com.chimerapps.niddler.interceptor.okhttp.NiddlerOkHttpInterceptor
 import com.readrops.api.localfeed.LocalRSSDataSource
 import com.readrops.api.services.Credentials
+import com.readrops.api.services.fever.FeverDataSource
+import com.readrops.api.services.fever.FeverService
 import com.readrops.api.services.freshrss.FreshRSSDataSource
 import com.readrops.api.services.freshrss.FreshRSSService
 import com.readrops.api.services.freshrss.adapters.*
@@ -87,4 +89,18 @@ val apiModule = module {
     }
 
     //endregion nextcloud news
+
+    //region Fever
+
+    factory { params -> FeverDataSource(get(parameters = { params })) }
+
+    factory { (credentials: Credentials) ->
+        Retrofit.Builder()
+                .baseUrl(credentials.url)
+                .client(get())
+                .build()
+                .create(FeverService::class.java)
+    }
+
+    //endregion Fever
 }

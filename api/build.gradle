@@ -76,4 +76,8 @@ dependencies {
 
     debugApi 'com.chimerapps.niddler:niddler:1.5.5'
     releaseApi 'com.chimerapps.niddler:niddler-noop:1.5.5'
+
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.1"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-rx2:1.5.1"
 }

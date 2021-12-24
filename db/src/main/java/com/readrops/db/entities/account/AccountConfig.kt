@@ -35,5 +35,13 @@ data class AccountConfig(
                 isNoFolderCase = true,
                 useSeparateState = true,
         )
+
+        @JvmField
+        val FEVER = AccountConfig(
+                isFeedUrlEditable = false,
+                isFolderCreation = false,
+                isNoFolderCase = true,
+                useSeparateState = true,
+        )
     }
 }

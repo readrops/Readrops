@@ -1,5 +1,10 @@
 package com.readrops.app.account;
 
+import static com.readrops.app.utils.OPMLHelper.OPEN_OPML_FILE_REQUEST;
+import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
+import static com.readrops.app.utils.ReadropsKeys.ACCOUNT_TYPE;
+import static com.readrops.app.utils.ReadropsKeys.FROM_MAIN_ACTIVITY;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,13 +20,15 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.readrops.app.utils.OPMLHelper;
 import com.readrops.app.R;
 import com.readrops.app.databinding.ActivityAccountTypeListBinding;
 import com.readrops.app.itemslist.MainActivity;
+import com.readrops.app.utils.OPMLHelper;
 import com.readrops.app.utils.Utils;
 import com.readrops.db.entities.account.Account;
 import com.readrops.db.entities.account.AccountType;
+
+import org.koin.android.compat.ViewModelCompat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,13 +37,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
-
-import static com.readrops.app.utils.OPMLHelper.OPEN_OPML_FILE_REQUEST;
-import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
-import static com.readrops.app.utils.ReadropsKeys.ACCOUNT_TYPE;
-import static com.readrops.app.utils.ReadropsKeys.FROM_MAIN_ACTIVITY;
-
-import org.koin.android.compat.ViewModelCompat;
 
 public class AccountTypeListActivity extends AppCompatActivity {
 
@@ -112,6 +112,7 @@ public class AccountTypeListActivity extends AppCompatActivity {
         accountTypes.add(AccountType.LOCAL);
         accountTypes.add(AccountType.NEXTCLOUD_NEWS);
         accountTypes.add(AccountType.FRESHRSS);
+        accountTypes.add(AccountType.FEVER);
 
         return accountTypes;
     }

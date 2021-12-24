@@ -1,6 +1,8 @@
 package com.readrops.api.utils
 
 import org.jsoup.Jsoup
+import java.math.BigInteger
+import java.security.MessageDigest
 import java.util.regex.Pattern
 
 object ApiUtils {
@@ -39,5 +41,12 @@ object ApiUtils {
      */
     fun cleanText(text: String?): String {
         return Jsoup.parse(text).text().trim()
+    }
+
+    fun md5hash(value: String): String {
+        val bytes = MessageDigest.getInstance("MD5")
+                .digest(value.toByteArray())
+
+        return BigInteger(1, bytes).toString(16)
     }
 }

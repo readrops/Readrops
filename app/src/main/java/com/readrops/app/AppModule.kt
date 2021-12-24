@@ -10,6 +10,7 @@ import com.readrops.app.feedsfolders.ManageFeedsFoldersViewModel
 import com.readrops.app.item.ItemViewModel
 import com.readrops.app.itemslist.MainViewModel
 import com.readrops.app.notifications.NotificationPermissionViewModel
+import com.readrops.app.repositories.FeverRepository
 import com.readrops.app.repositories.FreshRSSRepository
 import com.readrops.app.repositories.LocalFeedRepository
 import com.readrops.app.repositories.NextNewsRepository
@@ -31,6 +32,8 @@ val appModule = module {
                     get(), androidContext(), account)
             AccountType.FRESHRSS -> FreshRSSRepository(get(parameters = { parametersOf(Credentials.toCredentials(account)) }),
                     get(), androidContext(), account)
+            AccountType.FEVER -> FeverRepository(get(parameters = { parametersOf(Credentials.toCredentials(account)) }),
+                    get(), get(), account)
             else -> throw IllegalArgumentException("Account type not supported")
         }
     }
