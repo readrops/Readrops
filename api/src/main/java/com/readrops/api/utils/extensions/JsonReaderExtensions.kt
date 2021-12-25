@@ -24,3 +24,5 @@ fun JsonReader.skipToEnd() {
         skipField()
     }
 }
+
+fun Int.toBoolean(): Boolean = this == 1
