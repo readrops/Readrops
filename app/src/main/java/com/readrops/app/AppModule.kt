@@ -17,6 +17,7 @@ import com.readrops.app.repositories.NextNewsRepository
 import com.readrops.app.utils.GlideApp
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
+import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -33,7 +34,7 @@ val appModule = module {
             AccountType.FRESHRSS -> FreshRSSRepository(get(parameters = { parametersOf(Credentials.toCredentials(account)) }),
                     get(), androidContext(), account)
             AccountType.FEVER -> FeverRepository(get(parameters = { parametersOf(Credentials.toCredentials(account)) }),
-                    get(), get(), account)
+                Dispatchers.IO, get(), get(), account)
             else -> throw IllegalArgumentException("Account type not supported")
         }
     }
