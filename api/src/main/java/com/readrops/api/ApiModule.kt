@@ -5,6 +5,7 @@ import com.readrops.api.localfeed.LocalRSSDataSource
 import com.readrops.api.services.Credentials
 import com.readrops.api.services.fever.FeverDataSource
 import com.readrops.api.services.fever.FeverService
+import com.readrops.api.services.fever.adapters.*
 import com.readrops.api.services.freshrss.FreshRSSDataSource
 import com.readrops.api.services.freshrss.FreshRSSService
 import com.readrops.api.services.freshrss.adapters.*
@@ -98,8 +99,20 @@ val apiModule = module {
         Retrofit.Builder()
                 .baseUrl(credentials.url)
                 .client(get())
+                .addConverterFactory(MoshiConverterFactory.create(get(named("feverMoshi"))))
                 .build()
                 .create(FeverService::class.java)
+    }
+
+    single(named("feverMoshi")) {
+        Moshi.Builder()
+                .add(FeverFoldersAdapter())
+                .add(FeverFeedsAdapter())
+                .add(FeverItemsAdapter())
+                .add(FeverFaviconsAdapter())
+                .add(Boolean::class.java, FeverAPIAdapter())
+                .add(FeverItemsIdsAdapter())
+                .build()
     }
 
     //endregion Fever

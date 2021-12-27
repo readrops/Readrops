@@ -1,5 +1,6 @@
 package com.readrops.api.services.fever
 
+import com.readrops.api.services.fever.adapters.Favicon
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
@@ -15,27 +16,20 @@ interface FeverService {
     suspend fun login(@Body body: MultipartBody): ResponseBody
 
     @POST("?feeds")
-    suspend fun getFeeds(): List<Feed>
+    suspend fun getFeeds(@Body body: MultipartBody): List<Feed>
 
-    @get:POST("?groups")
-    val folders: List<Folder>
+    @POST("?groups")
+    suspend fun getFolders(@Body body: MultipartBody): List<Folder>
 
-    @get:GET("?favicons")
-    val favicons: Unit
+    @POST("?favicons")
+    suspend fun getFavicons(@Body body: MultipartBody): List<Favicon>
 
     @POST("?items")
-    suspend fun items(): List<Item>
+    suspend fun getItems(@Body body: MultipartBody): List<Item>
 
     @POST("?unread_item_ids")
-    suspend fun unreadItemsIds(): List<String>
+    suspend fun getUnreadItemsIds(@Body body: MultipartBody): List<String>
 
     @POST("?saved_item_ids")
-    suspend fun starredItemsIds()
-
-    @get:GET("?api")
-    val api: Unit
-
-    companion object {
-        const val END_POINT = ""
-    }
+    suspend fun getStarredItemsIds(@Body body: MultipartBody): List<String>
 }

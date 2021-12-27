@@ -1,8 +1,8 @@
 package com.readrops.api.services.fever
 
+import com.readrops.api.services.SyncResult
 import com.readrops.api.services.fever.adapters.FeverAPIAdapter
 import com.readrops.api.utils.ApiUtils
-import com.readrops.db.entities.Feed
 import com.squareup.moshi.Moshi
 import okhttp3.MultipartBody
 
@@ -26,5 +26,13 @@ class FeverDataSource(private val service: FeverService) {
         adapter.fromJson(response.source())!!
     }
 
-    suspend fun getFeeds(): List<Feed> = service.getFeeds()
+    suspend fun sync(body: MultipartBody): SyncResult {
+        return SyncResult(
+                feeds = service.getFeeds(body),
+                folders = service.getFolders(body),
+                items = service.getItems(body),
+                unreadIds = service.getUnreadItemsIds(body),
+                starredIds = service.getStarredItemsIds(body),
+        )
+    }
 }
