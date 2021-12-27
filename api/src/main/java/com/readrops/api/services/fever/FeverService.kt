@@ -1,6 +1,7 @@
 package com.readrops.api.services.fever
 
 import com.readrops.api.services.fever.adapters.Favicon
+import com.readrops.api.services.fever.adapters.FeverFeeds
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
@@ -16,7 +17,7 @@ interface FeverService {
     suspend fun login(@Body body: MultipartBody): ResponseBody
 
     @POST("?feeds")
-    suspend fun getFeeds(@Body body: MultipartBody): List<Feed>
+    suspend fun getFeeds(@Body body: MultipartBody): FeverFeeds
 
     @POST("?groups")
     suspend fun getFolders(@Body body: MultipartBody): List<Folder>

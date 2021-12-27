@@ -3,13 +3,16 @@ package com.readrops.app.repositories
 import android.content.Context
 import com.readrops.api.services.SyncType
 import com.readrops.api.services.fever.FeverDataSource
+import com.readrops.api.services.fever.adapters.FeverFeeds
 import com.readrops.api.utils.ApiUtils
 import com.readrops.app.addfeed.FeedInsertionResult
 import com.readrops.app.addfeed.ParsingResult
+import com.readrops.app.utils.Utils
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
+import com.readrops.db.entities.ItemState
 import com.readrops.db.entities.account.Account
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -19,11 +22,11 @@ import kotlinx.coroutines.rx2.rxCompletable
 import okhttp3.MultipartBody
 
 class FeverRepository(
-    private val feverDataSource: FeverDataSource,
-    private val dispatcher: CoroutineDispatcher,
-    database: Database,
-    context: Context,
-    account: Account?,
+        private val feverDataSource: FeverDataSource,
+        private val dispatcher: CoroutineDispatcher,
+        database: Database,
+        context: Context,
+        account: Account?,
 ) : ARepository(database, context, account) {
 
     override fun login(account: Account, insert: Boolean): Completable {
@@ -33,8 +36,8 @@ class FeverRepository(
                 account.displayedName = account.accountType!!.name
 
                 database.accountDao().insert(account)
-                    .doOnSuccess { account.id = it.toInt() }
-                    .await()
+                        .doOnSuccess { account.id = it.toInt() }
+                        .await()
             } catch (e: Exception) {
                 error(e.message!!)
             }
@@ -60,7 +63,10 @@ class FeverRepository(
                 val syncResult = feverDataSource.sync(requestBody)
 
                 insertFolders(syncResult.folders)
-                insertFeeds(syncResult.feeds)
+                insertFeeds(syncResult.feverFeeds)
+
+                //insertItems(syncResult.items)
+                //insertItemsIds(syncResult.unreadIds!!, syncResult.starredIds!!.toMutableList())
             } catch (e: Exception) {
                 error(e.message!!)
             }
@@ -76,7 +82,13 @@ class FeverRepository(
         database.folderDao().foldersUpsert(folders, account)
     }
 
-    private fun insertFeeds(feeds: List<Feed>) {
+    private fun insertFeeds(feverFeeds: FeverFeeds) = with(feverFeeds) {
+        for (feed in feeds) {
+            for ((folderId, feedsIds) in feedsGroups) {
+                if (feedsIds.contains(feed.remoteId!!.toInt())) feed.remoteFolderId = folderId.toString()
+            }
+        }
+
         feeds.forEach { it.accountId = account.id }
         database.feedDao().feedsUpsert(feeds, account)
     }

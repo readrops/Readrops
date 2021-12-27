@@ -7,24 +7,28 @@ import com.readrops.api.utils.extensions.nextNullableString
 import com.readrops.api.utils.extensions.skipField
 import com.readrops.api.utils.extensions.skipToEnd
 import com.readrops.db.entities.Feed
-import com.squareup.moshi.FromJson
-import com.squareup.moshi.JsonReader
-import com.squareup.moshi.ToJson
+import com.squareup.moshi.*
 
-class FeverFeedsAdapter {
+data class FeverFeeds(
+        val feeds: List<Feed>,
+        val feedsGroups: Map<Int, List<Int>>
+)
 
-    @ToJson
-    fun toJson(feeds: List<Feed>) = ""
+class FeverFeedsAdapter : JsonAdapter<FeverFeeds>() {
+
+    override fun toJson(writer: JsonWriter, value: FeverFeeds?) {
+        // not useful here
+    }
 
     @SuppressLint("CheckResult")
-    @FromJson
-    fun fromJson(reader: JsonReader): List<Feed> = with(reader) {
+    override fun fromJson(reader: JsonReader): FeverFeeds = with(reader) {
         return try {
             val feeds = arrayListOf<Feed>()
+            val feedsGroups = mutableMapOf<Int, List<Int>>()
 
             beginObject()
 
-            // skip basic fields (api_version, auth, last_refreshed...)
+            // skip based fields (api_version, auth, last_refreshed...)
             repeat(3) {
                 skipField()
             }
@@ -38,7 +42,7 @@ class FeverFeedsAdapter {
                 val feed = Feed()
                 while (hasNext()) {
                     with(feed) {
-                        when(selectName(NAMES)) {
+                        when (selectName(NAMES)) {
                             0 -> remoteId = nextInt().toString()
                             1 -> name = nextNonEmptyString()
                             2 -> url = nextNonEmptyString()
@@ -53,10 +57,31 @@ class FeverFeedsAdapter {
             }
 
             endArray()
-            skipToEnd()
+
+            nextName()
+            beginArray()
+
+            while (hasNext()) {
+                beginObject()
+
+                var folderId: Int? = null
+                val feedsIds = mutableListOf<Int>()
+                while (hasNext()) {
+                    when (selectName(JsonReader.Options.of("group_id", "feed_ids"))) {
+                        0 -> folderId = nextInt()
+                        1 -> feedsIds += nextNonEmptyString().split(",").map { it.toInt() }
+                        else -> skipValue()
+                    }
+                }
+
+                folderId?.let { feedsGroups[it] = feedsIds }
+                endObject()
+            }
+
+            endArray()
             endObject()
 
-            feeds
+            FeverFeeds(feeds, feedsGroups)
         } catch (e: Exception) {
             throw ParseException(e.message)
         }

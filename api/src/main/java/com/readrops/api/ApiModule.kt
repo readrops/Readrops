@@ -107,7 +107,7 @@ val apiModule = module {
     single(named("feverMoshi")) {
         Moshi.Builder()
                 .add(FeverFoldersAdapter())
-                .add(FeverFeedsAdapter())
+                .add(FeverFeeds::class.java, FeverFeedsAdapter())
                 .add(FeverItemsAdapter())
                 .add(FeverFaviconsAdapter())
                 .add(Boolean::class.java, FeverAPIAdapter())
