@@ -16,13 +16,12 @@ class FeverItemsIdsAdapter {
     @FromJson
     fun fromJson(reader: JsonReader): List<String> = with(reader) {
         return try {
-
             beginObject()
             repeat(3) {
                 skipField()
             }
 
-            nextName() // unread_items_ids field
+            nextName() // (unread|saved)_item_ids field
             val ids = nextString().split(",")
 
             endObject()

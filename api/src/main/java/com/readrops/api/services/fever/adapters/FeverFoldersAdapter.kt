@@ -49,6 +49,7 @@ class FeverFoldersAdapter {
 
             endArray()
             skipToEnd()
+            endObject()
 
             folders
         } catch (e: Exception) {

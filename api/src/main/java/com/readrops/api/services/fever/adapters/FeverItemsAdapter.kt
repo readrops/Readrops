@@ -57,6 +57,7 @@ class FeverItemsAdapter {
             }
 
             endArray()
+            endObject()
 
             items
         } catch (e: Exception) {

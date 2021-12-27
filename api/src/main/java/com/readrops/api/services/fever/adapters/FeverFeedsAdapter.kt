@@ -54,6 +54,7 @@ class FeverFeedsAdapter {
 
             endArray()
             skipToEnd()
+            endObject()
 
             feeds
         } catch (e: Exception) {

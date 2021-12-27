@@ -57,6 +57,7 @@ class FeverFaviconsAdapter {
             }
 
             endArray()
+            endObject()
 
             favicons
         } catch (e: Exception) {
