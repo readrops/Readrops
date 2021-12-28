@@ -12,4 +12,5 @@ data class FeverSyncResult(
         val unreadIds: List<String>,
         val starredIds: List<String>,
         val favicons: List<Favicon>,
+        val sinceId: Long = 0,
 )

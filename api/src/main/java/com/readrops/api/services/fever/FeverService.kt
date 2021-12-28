@@ -2,14 +2,13 @@ package com.readrops.api.services.fever
 
 import com.readrops.api.services.fever.adapters.Favicon
 import com.readrops.api.services.fever.adapters.FeverFeeds
-import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.http.Body
-import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface FeverService {
 
@@ -26,7 +25,8 @@ interface FeverService {
     suspend fun getFavicons(@Body body: MultipartBody): List<Favicon>
 
     @POST("?items")
-    suspend fun getItems(@Body body: MultipartBody): List<Item>
+    suspend fun getItems(@Body body: MultipartBody, @Query("max_id") maxId: String?,
+                         @Query("since_id") sinceId: String?): List<Item>
 
     @POST("?unread_item_ids")
     suspend fun getUnreadItemsIds(@Body body: MultipartBody): List<String>

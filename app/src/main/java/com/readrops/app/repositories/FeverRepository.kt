@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.readrops.api.services.SyncType
 import com.readrops.api.services.fever.FeverDataSource
+import com.readrops.api.services.fever.FeverSyncData
 import com.readrops.api.services.fever.adapters.FeverFeeds
 import com.readrops.api.utils.ApiUtils
 import com.readrops.app.addfeed.FeedInsertionResult
@@ -62,13 +63,17 @@ class FeverRepository(
                         .addFormDataPart("api_key", credentials)
                         .build()
 
-                val syncResult = feverDataSource.sync(requestBody)
+                val syncResult = feverDataSource.sync(syncType,
+                        FeverSyncData(account.lastModified.toString()), requestBody)
 
                 insertFolders(syncResult.folders)
                 insertFeeds(syncResult.feverFeeds)
 
                 insertItems(syncResult.items)
                 insertItemsIds(syncResult.unreadIds, syncResult.starredIds.toMutableList())
+
+                // We store the id to use for the next synchronisation even if it's not a timestamp
+                database.accountDao().updateLastModified(account.id, syncResult.sinceId)
             } catch (e: Exception) {
                 Log.e(TAG, "sync: ${e.message}")
                 error(e.message!!)
