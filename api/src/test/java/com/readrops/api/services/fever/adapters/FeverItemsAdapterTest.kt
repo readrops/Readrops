@@ -8,6 +8,7 @@ import okio.Buffer
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 class FeverItemsAdapterTest {
 
@@ -27,7 +28,8 @@ class FeverItemsAdapterTest {
             assertEquals(author, "Alkarex")
             assertEquals(link, "https://github.com/FreshRSS/FreshRSS/releases/tag/1.9.0")
             assertNotNull(content)
-            assertEquals(isRead, true)
+            assertTrue(isStarred)
+            assertTrue(isRead)
             assertNotNull(pubDate)
             assertEquals(remoteId, "1546007484154894")
             assertEquals(feedRemoteId, "2")

@@ -1,6 +1,7 @@
 package com.readrops.app.repositories
 
 import android.content.Context
+import android.util.Log
 import com.readrops.api.services.SyncType
 import com.readrops.api.services.fever.FeverDataSource
 import com.readrops.api.services.fever.adapters.FeverFeeds
@@ -39,6 +40,7 @@ class FeverRepository(
                         .doOnSuccess { account.id = it.toInt() }
                         .await()
             } catch (e: Exception) {
+                Log.e(TAG, "login: ${e.message}")
                 error(e.message!!)
             }
         }
@@ -65,9 +67,10 @@ class FeverRepository(
                 insertFolders(syncResult.folders)
                 insertFeeds(syncResult.feverFeeds)
 
-                //insertItems(syncResult.items)
-                //insertItemsIds(syncResult.unreadIds!!, syncResult.starredIds!!.toMutableList())
+                insertItems(syncResult.items)
+                insertItemsIds(syncResult.unreadIds, syncResult.starredIds.toMutableList())
             } catch (e: Exception) {
+                Log.e(TAG, "sync: ${e.message}")
                 error(e.message!!)
             }
         }
@@ -94,10 +97,60 @@ class FeverRepository(
     }
 
     private fun insertItems(items: List<Item>) {
+        val itemsToInsert = arrayListOf<Item>()
+        val itemsFeedsIds = mutableMapOf<String, Int>()
 
+        for (item in items) {
+            var feedId: Int?
+            if (itemsFeedsIds.containsKey(item.feedRemoteId)) {
+                feedId = itemsFeedsIds[item.feedRemoteId]
+            } else {
+                feedId = database.feedDao().getFeedIdByRemoteId(item.feedRemoteId!!, account.id)
+                itemsFeedsIds[item.feedRemoteId!!] = feedId
+            }
+
+            item.feedId = feedId!!
+            item.text?.let { item.readTime = Utils.readTimeFromString(it) }
+
+            itemsToInsert += item
+        }
+
+        if (itemsToInsert.isNotEmpty()) {
+            itemsToInsert.sortWith(Item::compareTo)
+            database.itemDao().insert(itemsToInsert)
+        }
     }
 
-    private fun insertItemsIds(unreadIds: List<String>, starredIds: List<String>) {
+    private fun insertItemsIds(unreadIds: List<String>, starredIds: MutableList<String>) {
+        database.itemStateDao().deleteItemsStates(account.id)
 
+        database.itemStateDao().insertItemStates(unreadIds.map { unreadId ->
+            val starred = starredIds.any { starredId -> starredId == unreadId }
+            if (starred) starredIds.remove(unreadId)
+
+            ItemState(
+                    id = 0,
+                    read = false,
+                    starred = starred,
+                    remoteId = unreadId,
+                    accountId = account.id,
+            )
+        })
+
+        if (starredIds.isNotEmpty()) {
+            database.itemStateDao().insertItemStates(starredIds.map { starredId ->
+                ItemState(
+                        id = 0,
+                        read = true, // if this id wasn't in the unread ids list, it is considered a read
+                        starred = true,
+                        remoteId = starredId,
+                        accountId = account.id,
+                )
+            })
+        }
+    }
+
+    companion object {
+        val TAG: String = FeverRepository::class.java.simpleName
     }
 }

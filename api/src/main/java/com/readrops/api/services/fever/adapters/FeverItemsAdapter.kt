@@ -40,13 +40,14 @@ class FeverItemsAdapter {
                     with(item) {
                         when (selectName(NAMES)) {
                             0 -> remoteId = nextNonEmptyString()
-                            1 -> feedRemoteId = nextInt().toString()
+                            1 -> feedRemoteId = nextNonEmptyString()
                             2 -> title = nextNonEmptyString()
                             3 -> author = nextNullableString()
                             4 -> content = nextNullableString()
                             5 -> link = nextNullableString()
                             6 -> isRead = nextInt().toBoolean()
-                            7 -> pubDate = LocalDateTime(nextLong() * 1000L)
+                            7 -> isStarred = nextInt().toBoolean()
+                            8 -> pubDate = LocalDateTime(nextLong() * 1000L)
                             else -> skipValue()
                         }
                     }
@@ -68,7 +69,7 @@ class FeverItemsAdapter {
     companion object {
         val NAMES: JsonReader.Options = JsonReader.Options.of(
             "id", "feed_id", "title", "author", "html", "url",
-            "is_read", "created_on_time"
+            "is_read", "is_saved", "created_on_time"
         )
     }
 }
