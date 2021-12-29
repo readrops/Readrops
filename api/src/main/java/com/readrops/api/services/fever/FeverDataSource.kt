@@ -24,7 +24,13 @@ class FeverDataSource(private val service: FeverService) {
                 .build()
                 .adapter(Boolean::class.java)
 
-        adapter.fromJson(response.source())!!
+        val authenticated = adapter.fromJson(response.source())!!
+
+        // Error handling is shit, but it will stay like that until the UI
+        // and the other data sources/repositories are rewritten in Kotlin
+        if (!authenticated) {
+            throw LoginException("Login failed. Please check your credentials")
+        }
     }
 
     suspend fun sync(syncType: SyncType, syncData: FeverSyncData, body: MultipartBody): FeverSyncResult {
