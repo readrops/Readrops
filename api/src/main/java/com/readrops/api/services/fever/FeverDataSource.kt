@@ -2,22 +2,15 @@ package com.readrops.api.services.fever
 
 import com.readrops.api.services.SyncType
 import com.readrops.api.services.fever.adapters.FeverAPIAdapter
-import com.readrops.api.utils.ApiUtils
+import com.readrops.api.utils.exceptions.LoginException
 import com.readrops.db.entities.Item
 import com.squareup.moshi.Moshi
 import okhttp3.MultipartBody
 
 class FeverDataSource(private val service: FeverService) {
 
-    suspend fun login(login: String, password: String) {
-        val credentials = ApiUtils.md5hash("$login:$password")
-
-        val requestBody = MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("api_key", credentials)
-                .build()
-
-        val response = service.login(requestBody)
+    suspend fun login(body: MultipartBody) {
+        val response = service.login(body)
 
         val adapter = Moshi.Builder()
                 .add(Boolean::class.java, FeverAPIAdapter())

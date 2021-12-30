@@ -15,7 +15,7 @@ class FeverAPIAdapterTest {
 
     @Test
     fun authenticatedTest() {
-        val stream = TestUtils.loadResource("services/fever/authentication.json")
+        val stream = TestUtils.loadResource("services/fever/successful_auth.json")
 
         val value = adapter.fromJson(Buffer().readFrom(stream))!!
         assertEquals(value, true)

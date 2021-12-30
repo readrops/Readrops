@@ -31,55 +31,46 @@ class FeverRepository(
         account: Account?,
 ) : ARepository(database, context, account) {
 
-    override fun login(account: Account, insert: Boolean): Completable {
-        return rxCompletable(context = dispatcher) {
-            try {
-                feverDataSource.login(account.login!!, account.password!!)
-                account.displayedName = account.accountType!!.name
+    override fun login(account: Account, insert: Boolean): Completable =
+            rxCompletable(context = dispatcher) {
+                try {
+                    feverDataSource.login(getFeverRequestBody())
+                    account.displayedName = account.accountType!!.name
 
-                database.accountDao().insert(account)
-                        .doOnSuccess { account.id = it.toInt() }
-                        .await()
-            } catch (e: Exception) {
-                Log.e(TAG, "login: ${e.message}")
-                error(e.message!!)
-            }
-        }
-    }
-
-    override fun sync(feeds: List<Feed>?, update: FeedUpdate?): Completable {
-        return rxCompletable(context = dispatcher) {
-            try {
-                val syncType = if (account.lastModified != 0L) {
-                    SyncType.CLASSIC_SYNC
-                } else {
-                    SyncType.INITIAL_SYNC
+                    database.accountDao().insert(account)
+                            .doOnSuccess { account.id = it.toInt() }
+                            .await()
+                } catch (e: Exception) {
+                    Log.e(TAG, "login: ${e.message}")
+                    error(e.message!!)
                 }
-
-                val credentials = ApiUtils.md5hash("${account.login}:${account.password}")
-
-                val requestBody = MultipartBody.Builder()
-                        .setType(MultipartBody.FORM)
-                        .addFormDataPart("api_key", credentials)
-                        .build()
-
-                val syncResult = feverDataSource.sync(syncType,
-                        FeverSyncData(account.lastModified.toString()), requestBody)
-
-                insertFolders(syncResult.folders)
-                insertFeeds(syncResult.feverFeeds)
-
-                insertItems(syncResult.items)
-                insertItemsIds(syncResult.unreadIds, syncResult.starredIds.toMutableList())
-
-                // We store the id to use for the next synchronisation even if it's not a timestamp
-                database.accountDao().updateLastModified(account.id, syncResult.sinceId)
-            } catch (e: Exception) {
-                Log.e(TAG, "sync: ${e.message}")
-                error(e.message!!)
             }
-        }
-    }
+
+    override fun sync(feeds: List<Feed>?, update: FeedUpdate?): Completable =
+            rxCompletable(context = dispatcher) {
+                try {
+                    val syncType = if (account.lastModified != 0L) {
+                        SyncType.CLASSIC_SYNC
+                    } else {
+                        SyncType.INITIAL_SYNC
+                    }
+
+                    val syncResult = feverDataSource.sync(syncType,
+                            FeverSyncData(account.lastModified.toString()), getFeverRequestBody())
+
+                    insertFolders(syncResult.folders)
+                    insertFeeds(syncResult.feverFeeds)
+
+                    insertItems(syncResult.items)
+                    insertItemsIds(syncResult.unreadIds, syncResult.starredIds.toMutableList())
+
+                    // We store the id to use for the next synchronisation even if it's not a timestamp
+                    database.accountDao().updateLastModified(account.id, syncResult.sinceId)
+                } catch (e: Exception) {
+                    Log.e(TAG, "sync: ${e.message}")
+                    error(e.message!!)
+                }
+            }
 
     override fun addFeeds(results: List<ParsingResult>?): Single<List<FeedInsertionResult>> {
         TODO("Not yet implemented")
@@ -153,6 +144,14 @@ class FeverRepository(
                 )
             })
         }
+    }
+
+    private fun getFeverRequestBody(): MultipartBody {
+        val credentials = ApiUtils.md5hash("${account.login}:${account.password}")
+        return MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("api_key", credentials)
+                .build()
     }
 
     companion object {
