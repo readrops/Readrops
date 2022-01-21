@@ -65,22 +65,22 @@ public abstract class ARepository {
 
         for (Map.Entry<Folder, List<Feed>> entry : foldersAndFeeds.entrySet()) {
             Folder folder = entry.getKey();
-            folder.setAccountId(account.getId());
+            List<Feed> feeds = entry.getValue();
 
-            Completable completable = Single.<Integer>create(emitter -> {
-                Folder dbFolder = database.folderDao().getFolderByName(folder.getName(), account.getId());
+            Completable completable = Single.<List<ParsingResult>>create(emitter -> {
+                if (folder != null) {
+                    folder.setAccountId(account.getId());
+                    Folder dbFolder = database.folderDao().getFolderByName(folder.getName(), account.getId());
 
-                if (dbFolder != null)
-                    emitter.onSuccess(dbFolder.getId());
-                else
-                    emitter.onSuccess((int) database.folderDao().compatInsert(folder));
-            }).flatMap(folderId -> {
-                List<Feed> feeds = entry.getValue();
-                for (Feed feed : feeds) {
-                    feed.setFolderId(folderId);
+                    int folderId;
+                    if (dbFolder != null) folderId = dbFolder.getId();
+                    else folderId = (int) database.folderDao().compatInsert(folder);
+                    for (Feed feed : feeds) {
+                        feed.setFolderId(folderId);
+                    }
                 }
-
-                List<ParsingResult> parsingResults = ParsingResult.toParsingResults(feeds);
+                emitter.onSuccess(ParsingResult.toParsingResults(feeds));
+            }).flatMap(parsingResults -> {
                 return addFeeds(parsingResults);
             }).flatMapCompletable(feedInsertionResults -> Completable.complete());
 

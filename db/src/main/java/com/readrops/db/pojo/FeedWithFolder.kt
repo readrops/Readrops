@@ -9,5 +9,5 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class FeedWithFolder(
         @Embedded(prefix = "feed_") val feed: Feed,
-        @Embedded(prefix = "folder_") val folder: Folder,
+        @Embedded(prefix = "folder_") val folder: Folder?,
 ) : Parcelable
