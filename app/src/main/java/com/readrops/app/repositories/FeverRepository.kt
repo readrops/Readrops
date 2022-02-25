@@ -5,6 +5,7 @@ import android.util.Log
 import com.readrops.api.services.SyncType
 import com.readrops.api.services.fever.FeverDataSource
 import com.readrops.api.services.fever.FeverSyncData
+import com.readrops.api.services.fever.ItemAction
 import com.readrops.api.services.fever.adapters.FeverFeeds
 import com.readrops.api.utils.ApiUtils
 import com.readrops.app.addfeed.FeedInsertionResult
@@ -72,8 +73,76 @@ class FeverRepository(
                 }
             }
 
-    override fun addFeeds(results: List<ParsingResult>?): Single<List<FeedInsertionResult>> {
-        TODO("Not yet implemented")
+    // Not supported by Fever API
+    override fun addFeeds(results: List<ParsingResult>?): Single<List<FeedInsertionResult>> = Single.just(listOf())
+
+    // Not supported by Fever API
+    override fun updateFeed(feed: Feed?): Completable = Completable.complete()
+
+    // Not supported by Fever API
+    override fun deleteFeed(feed: Feed?): Completable = Completable.complete()
+
+    // Not supported by Fever API
+    override fun addFolder(folder: Folder?): Single<Long> = Single.just(0)
+
+    // Not supported by Fever API
+    override fun updateFolder(folder: Folder?): Completable = Completable.complete()
+
+    // Not supported by Fever API
+    override fun deleteFolder(folder: Folder?): Completable = Completable.complete()
+
+    override fun setItemReadState(item: Item): Completable {
+        val action = if (item.isRead) ItemAction.ReadStateAction.ReadAction else ItemAction.ReadStateAction.UnreadAction
+        return setItemState(item, action)
+    }
+
+    override fun setItemStarState(item: Item): Completable {
+        val action = if (item.isStarred) ItemAction.StarStateAction.StarAction else ItemAction.StarStateAction.UnstarAction
+        return setItemState(item, action)
+    }
+
+    private fun setItemState(item: Item, action: ItemAction): Completable = rxCompletable(context = dispatcher) {
+        try {
+            feverDataSource.setItemState(getFeverRequestBody(), action.value, item.remoteId!!)
+            val itemState = ItemState(
+                    read = item.isRead,
+                    starred = item.isStarred,
+                    remoteId = item.remoteId!!,
+                    accountId = account.id,
+            )
+
+            val completable = if (action is ItemAction.ReadStateAction) {
+                database.itemStateDao().upsertItemReadState(itemState)
+            } else {
+                database.itemStateDao().upsertItemStarState(itemState)
+            }
+
+            completable.await()
+        } catch (e: Exception) {
+            val completable = if (action is ItemAction.ReadStateAction) {
+                super.setItemReadState(item)
+            } else {
+                super.setItemStarState(item)
+            }
+
+            completable.await()
+            Log.e(TAG, "setItemStarState: ${e.message}")
+            error(e.message!!)
+        }
+    }
+
+    private suspend fun sendPreviousItemStateChanges() {
+        val stateChanges = database.itemStateChangesDao().getItemStateChanges(account.id)
+
+        for (stateChange in stateChanges) {
+            val action = if (stateChange.readChange) {
+                if (stateChange.read) ItemAction.ReadStateAction.ReadAction else ItemAction.ReadStateAction.UnreadAction
+            } else { // star change
+                if (stateChange.starred) ItemAction.StarStateAction.StarAction else ItemAction.StarStateAction.UnstarAction
+            }
+
+            feverDataSource.setItemState(getFeverRequestBody(), action.value, stateChange.remoteId)
+        }
     }
 
     private fun insertFolders(folders: List<Folder>) {

@@ -33,4 +33,9 @@ interface FeverService {
 
     @POST("?saved_item_ids")
     suspend fun getStarredItemsIds(@Body body: MultipartBody): List<String>
+
+    @POST("mark=item")
+    suspend fun updateItemState(@Body body: MultipartBody, @Query("as") action: String,
+                                @Query("id") id: String)
+
 }

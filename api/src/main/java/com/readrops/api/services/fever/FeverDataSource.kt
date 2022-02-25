@@ -74,8 +74,23 @@ class FeverDataSource(private val service: FeverService) {
         }
     }
 
+    suspend fun setItemState(body: MultipartBody, action: String, id: String) =
+            service.updateItemState(body, action, id)
+
     companion object {
         private const val MAX_ITEMS_IDS = 5000
         private const val INITIAL_SYNC_ITEMS_REQUESTS_COUNT = 10
+    }
+}
+
+sealed class ItemAction(val value: String) {
+    sealed class ReadStateAction(value: String) : ItemAction(value) {
+        object ReadAction : ReadStateAction("read")
+        object UnreadAction : ReadStateAction("unread")
+    }
+
+    sealed class StarStateAction(value: String) : ItemAction(value) {
+        object StarAction : StarStateAction("saved")
+        object UnstarAction : StarStateAction("unsaved")
     }
 }
