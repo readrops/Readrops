@@ -26,9 +26,11 @@ interface NextNewsService {
     fun getNewItems(@Query("lastModified") lastModified: Long, @Query("type") type: Int): Call<List<Item>>
 
     @PUT("items/{stateType}/multiple")
+    @JvmSuppressWildcards
     fun setReadState(@Path("stateType") stateType: String, @Body itemIdsMap: Map<String, List<String>>): Call<ResponseBody>
 
     @PUT("items/{starType}/multiple")
+    @JvmSuppressWildcards
     fun setStarState(@Path("starType") starType: String?, @Body body: Map<String?, List<Map<String, String>>>): Call<ResponseBody>
 
     @POST("feeds")

@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import kotlin.jvm.JvmSuppressWildcards;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import retrofit2.Response;
