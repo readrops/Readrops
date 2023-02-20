@@ -12,9 +12,6 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    lintOptions {
-        abortOnError false
-    }
 
     sourceSets {
         androidTest.assets.srcDirs += files("$projectDir/androidTest/assets".toString())
@@ -39,6 +36,10 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    lint {
+        abortOnError false
+    }
+    namespace 'com.readrops.api'
 }
 
 dependencies {

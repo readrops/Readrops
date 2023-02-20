@@ -28,9 +28,6 @@ android {
         androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
     }
 
-    lintOptions {
-        abortOnError false
-    }
 
     buildTypes {
         release {
@@ -52,6 +49,10 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    lint {
+        abortOnError false
+    }
+    namespace 'com.readrops.db'
 }
 
 // Needed for kapt starting with kotlin plugin 1.5

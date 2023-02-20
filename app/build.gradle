@@ -18,9 +18,6 @@ android {
     testOptions {
         unitTests.returnDefaultValues = true
     }
-    lintOptions {
-        abortOnError false
-    }
     buildTypes {
         release {
             minifyEnabled true
@@ -52,6 +49,10 @@ android {
         viewBinding true
         buildConfig true
     }
+    lint {
+        abortOnError false
+    }
+    namespace 'com.readrops.app'
 }
 
 dependencies {
