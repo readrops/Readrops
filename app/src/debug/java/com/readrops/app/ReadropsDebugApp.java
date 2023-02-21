@@ -24,7 +24,7 @@ public class ReadropsDebugApp extends ReadropsApp implements Configuration.Provi
         super.onCreate();
         SoLoader.init(this, false);
 
-        initFlipper();
+        //initFlipper();
     }
 
     private void initFlipper() {

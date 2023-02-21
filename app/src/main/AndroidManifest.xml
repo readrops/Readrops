@@ -60,12 +60,8 @@
             android:name=".itemslist.MainActivity"
             android:label="@string/articles"
             android:launchMode="singleTask"
-            android:theme="@style/SplashTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:theme="@style/SplashTheme"
+            android:exported="true">
         </activity>
         <activity
             android:name=".item.ItemActivity"
@@ -74,13 +70,25 @@
         <activity
             android:name=".addfeed.AddFeedActivity"
             android:label="@string/add_feed_title"
-            android:parentActivityName=".itemslist.MainActivity">
+            android:parentActivityName=".itemslist.MainActivity"
+            android:exported="true">
             <intent-filter android:label="@string/new_feed">
                 <action android:name="android.intent.action.SEND" />
-
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
+
+        <activity
+            android:name=".BaseActivity"
+            android:label="@string/articles"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
     </application>

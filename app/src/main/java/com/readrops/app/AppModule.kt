@@ -1,8 +1,6 @@
 package com.readrops.app
 
 import androidx.preference.PreferenceManager
-import com.chimerapps.niddler.core.AndroidNiddler
-import com.chimerapps.niddler.core.Niddler
 import com.readrops.api.services.Credentials
 import com.readrops.app.account.AccountViewModel
 import com.readrops.app.addfeed.AddFeedsViewModel
@@ -63,7 +61,7 @@ val appModule = module {
 
     single { PreferenceManager.getDefaultSharedPreferences(androidContext()) }
 
-    single<Niddler> {
+   /* single<Niddler> {
         val niddler = AndroidNiddler.Builder()
                 .setNiddlerInformation(AndroidNiddler.fromApplication(get()))
                 .setPort(0)
@@ -73,5 +71,5 @@ val appModule = module {
         niddler.attachToApplication(get())
 
         niddler.apply { start() }
-    }
+    }*/
 }
