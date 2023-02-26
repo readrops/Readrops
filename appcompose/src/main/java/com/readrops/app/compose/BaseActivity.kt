@@ -1,4 +1,4 @@
-package com.readrops.app
+package com.readrops.app.compose
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import cafe.adriel.voyager.navigator.CurrentScreen
 import cafe.adriel.voyager.navigator.Navigator
-import com.readrops.app.compose.ReadropsTheme
 import com.readrops.app.compose.account.AccountScreen
 import com.readrops.app.compose.feeds.FeedsScreen
 import com.readrops.app.compose.more.MoreScreen

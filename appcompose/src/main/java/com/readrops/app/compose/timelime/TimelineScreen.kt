@@ -13,6 +13,4 @@ class TimelineScreen : AndroidScreen() {
             TimelineItem()
         }
     }
-
-
 }
