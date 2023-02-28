@@ -18,7 +18,7 @@ import com.readrops.app.compose.feeds.FeedsScreen
 import com.readrops.app.compose.more.MoreScreen
 import com.readrops.app.compose.timelime.TimelineScreen
 
-class BaseActivity : ComponentActivity() {
+class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {

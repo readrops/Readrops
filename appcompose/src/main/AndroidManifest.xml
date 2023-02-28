@@ -9,7 +9,7 @@
         android:theme="@style/Theme.Readrops">
 
         <activity
-            android:name=".BaseActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:label="Articles">
             <intent-filter>
