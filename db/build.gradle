@@ -78,6 +78,7 @@ dependencies {
 
     def room_version = "2.3.0"
     api "androidx.room:room-runtime:$room_version"
+    api "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-rxjava2:$room_version"
     androidTestImplementation "androidx.room:room-testing:$room_version"
@@ -93,4 +94,7 @@ dependencies {
     api "io.insert-koin:koin-core:$rootProject.ext.koin_version"
     api "io.insert-koin:koin-android:$rootProject.ext.koin_version"
     api "io.insert-koin:koin-android-compat:$rootProject.ext.koin_version"
+
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
 }
