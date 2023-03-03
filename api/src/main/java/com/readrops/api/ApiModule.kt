@@ -1,6 +1,5 @@
 package com.readrops.api
 
-import com.chimerapps.niddler.interceptor.okhttp.NiddlerOkHttpInterceptor
 import com.readrops.api.localfeed.LocalRSSDataSource
 import com.readrops.api.services.Credentials
 import com.readrops.api.services.freshrss.FreshRSSDataSource
@@ -30,7 +29,7 @@ val apiModule = module {
                 .callTimeout(1, TimeUnit.MINUTES)
                 .readTimeout(1, TimeUnit.HOURS)
                 .addInterceptor(get<AuthInterceptor>())
-                .addInterceptor(NiddlerOkHttpInterceptor(get(), "niddler"))
+                //.addInterceptor(NiddlerOkHttpInterceptor(get(), "niddler"))
                 .build()
     }
 
