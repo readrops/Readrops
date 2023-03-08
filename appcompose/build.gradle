@@ -76,8 +76,18 @@ dependencies {
     implementation "cafe.adriel.voyager:voyager-bottom-sheet-navigator:$voyager"
     implementation "cafe.adriel.voyager:voyager-tab-navigator:$voyager"
     implementation "cafe.adriel.voyager:voyager-androidx:$voyager"
-    //implementation "cafe.adriel.voyager:voyager-koin:$voyager"
+    implementation "cafe.adriel.voyager:voyager-koin:$voyager"
 
     debugImplementation "androidx.compose.ui:ui-tooling:1.3.3"
     implementation "androidx.compose.ui:ui-tooling-preview:1.3.3"
+
+    def lifecycle_version = "2.5.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version"
+
+    /*def koin_version = "3.3.3"
+    implementation "io.insert-koin:koin-core:$koin_version"
+    implementation "io.insert-koin:koin-android:$koin_version"
+    implementation "io.insert-koin:koin-androidx-compose:3.4.2"*/
 }
