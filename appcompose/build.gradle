@@ -94,4 +94,5 @@ dependencies {
     androidTestImplementation "io.insert-koin:koin-test-junit4:$rootProject.ext.koin_version"
     androidTestImplementation "io.insert-koin:koin-test:$rootProject.ext.koin_version"
 
+    androidTestImplementation 'com.squareup.okhttp3:mockwebserver:4.9.0'
 }

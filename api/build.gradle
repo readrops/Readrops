@@ -59,7 +59,7 @@ dependencies {
     implementation 'com.gitlab.mvysny.konsume-xml:konsume-xml:1.0'
     implementation 'org.redundent:kotlin-xml-builder:1.7.3'
 
-    implementation 'com.squareup.okhttp3:okhttp:4.9.1'
+    api 'com.squareup.okhttp3:okhttp:4.9.1'
 
     implementation('com.squareup.retrofit2:retrofit:2.9.0') {
         exclude group: 'com.squareup.okhttp3', module: 'okhttp3'
