@@ -48,8 +48,15 @@ class LocalRSSRepository(
     override suspend fun synchronize(): SyncResult = throw NotImplementedError("This method can't be called here")
 
 
-    override suspend fun insertNewFeeds() {
-        /*TODO("Not yet implemented")*/
+    override suspend fun insertNewFeeds(urls: List<String>) {
+        for (url in urls) {
+            try {
+                val result = dataSource.queryRSSResource(url, null)!!
+                insertFeed(result.first)
+            } catch (e: Exception) {
+                throw e
+            }
+        }
     }
 
     private suspend fun insertNewItems(items: List<Item>, feed: Feed) {
@@ -77,8 +84,8 @@ class LocalRSSRepository(
     }
 
     private suspend fun insertFeed(feed: Feed): Feed {
-        if (database.newFeedDao().feedExists(feed.url!!, account.id)) {
-            throw IllegalStateException("Feed already exists for account ${account.accountName}")
+        require(!database.newFeedDao().feedExists(feed.url!!, account.id)) {
+            "Feed already exists for account ${account.accountName}"
         }
 
         return feed.apply {

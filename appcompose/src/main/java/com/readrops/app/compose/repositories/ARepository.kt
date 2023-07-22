@@ -38,7 +38,7 @@ abstract class ARepository(
      */
     abstract suspend fun synchronize(): SyncResult
 
-    abstract suspend fun insertNewFeeds()
+    abstract suspend fun insertNewFeeds(urls: List<String>)
 }
 
 abstract class BaseRepository(
