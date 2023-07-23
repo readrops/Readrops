@@ -71,6 +71,8 @@ dependencies {
     implementation 'androidx.activity:activity-compose:1.7.2'
     implementation 'androidx.compose.material3:material3'
 
+    implementation "com.google.accompanist:accompanist-swiperefresh:0.30.1"
+
     def voyager = "1.0.0-rc03"
     implementation "cafe.adriel.voyager:voyager-navigator:$voyager"
     implementation "cafe.adriel.voyager:voyager-bottom-sheet-navigator:$voyager"

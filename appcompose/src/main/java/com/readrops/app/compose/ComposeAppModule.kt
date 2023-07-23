@@ -11,7 +11,7 @@ import org.koin.dsl.module
 
 val composeAppModule = module {
 
-    viewModel { TimelineViewModel(get()) }
+    viewModel { TimelineViewModel(get(), get()) }
 
     viewModel { FeedsViewModel(get()) }
 
