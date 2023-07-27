@@ -11,6 +11,7 @@ import com.readrops.api.services.nextcloudnews.adapters.NextNewsFeedsAdapter
 import com.readrops.api.services.nextcloudnews.adapters.NextNewsFoldersAdapter
 import com.readrops.api.services.nextcloudnews.adapters.NextNewsItemsAdapter
 import com.readrops.api.utils.AuthInterceptor
+import com.readrops.api.utils.ErrorInterceptor
 import com.readrops.db.entities.Item
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
@@ -29,11 +30,14 @@ val apiModule = module {
                 .callTimeout(1, TimeUnit.MINUTES)
                 .readTimeout(1, TimeUnit.HOURS)
                 .addInterceptor(get<AuthInterceptor>())
+                .addInterceptor(get<ErrorInterceptor>())
                 //.addInterceptor(NiddlerOkHttpInterceptor(get(), "niddler"))
                 .build()
     }
 
     single { AuthInterceptor() }
+
+    single { ErrorInterceptor() }
 
     single { LocalRSSDataSource(get()) }
 
