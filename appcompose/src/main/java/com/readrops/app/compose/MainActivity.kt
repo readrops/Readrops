@@ -14,7 +14,7 @@ import androidx.compose.ui.res.painterResource
 import cafe.adriel.voyager.navigator.CurrentScreen
 import cafe.adriel.voyager.navigator.Navigator
 import com.readrops.app.compose.account.AccountScreen
-import com.readrops.app.compose.feeds.FeedsScreen
+import com.readrops.app.compose.feeds.FeedScreen
 import com.readrops.app.compose.more.MoreScreen
 import com.readrops.app.compose.timelime.TimelineScreen
 
@@ -44,7 +44,7 @@ class MainActivity : ComponentActivity() {
 
                                 NavigationBarItem(
                                     selected = false,
-                                    onClick = { navigator.push(FeedsScreen()) },
+                                    onClick = { navigator.push(FeedScreen()) },
                                     icon = {
                                         Icon(
                                             painter = painterResource(R.drawable.ic_rss_feed_grey),

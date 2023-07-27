@@ -1,6 +1,6 @@
 package com.readrops.app.compose
 
-import com.readrops.app.compose.feeds.FeedsViewModel
+import com.readrops.app.compose.feeds.FeedViewModel
 import com.readrops.app.compose.repositories.BaseRepository
 import com.readrops.app.compose.repositories.LocalRSSRepository
 import com.readrops.app.compose.timelime.TimelineViewModel
@@ -13,7 +13,7 @@ val composeAppModule = module {
 
     viewModel { TimelineViewModel(get(), get()) }
 
-    viewModel { FeedsViewModel(get()) }
+    viewModel { FeedViewModel(get(), get()) }
 
     // repositories
 
