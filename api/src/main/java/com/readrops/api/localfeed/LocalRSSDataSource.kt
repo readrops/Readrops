@@ -7,6 +7,7 @@ import com.gitlab.mvysny.konsumexml.konsumeXml
 import com.readrops.api.localfeed.json.JSONFeedAdapter
 import com.readrops.api.utils.ApiUtils
 import com.readrops.api.utils.AuthInterceptor
+import com.readrops.api.utils.exceptions.HttpException
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.exceptions.UnknownFormatException
 import com.readrops.db.entities.Feed
@@ -32,7 +33,7 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) : KoinComponent {
      * @param headers request headers
      * @return a Feed object with its items
      */
-    @Throws(ParseException::class, UnknownFormatException::class, NetworkErrorException::class, IOException::class)
+    @Throws(ParseException::class, UnknownFormatException::class, HttpException::class, IOException::class)
     @WorkerThread
     fun queryRSSResource(url: String, headers: Headers?): Pair<Feed, List<Item>>? {
         get<AuthInterceptor>().credentials = null
@@ -46,7 +47,7 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) : KoinComponent {
                 pair
             }
             response.code == HttpURLConnection.HTTP_NOT_MODIFIED -> null
-            else -> throw NetworkErrorException("$url returned ${response.code} code : ${response.message}")
+            else -> throw HttpException(response)
         }
     }
 
