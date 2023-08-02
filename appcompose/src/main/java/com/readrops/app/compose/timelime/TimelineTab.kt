@@ -1,6 +1,5 @@
 package com.readrops.app.compose.timelime
 
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,13 +14,28 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import cafe.adriel.voyager.androidx.AndroidScreen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.Navigator
+import cafe.adriel.voyager.navigator.currentOrThrow
+import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
+import cafe.adriel.voyager.navigator.tab.Tab
+import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.readrops.app.compose.item.ItemScreen
 import org.koin.androidx.compose.getViewModel
 
 
-class TimelineScreen : AndroidScreen() {
+object TimelineTab : Tab {
+
+    override val options: TabOptions
+        @Composable
+        get() {
+            return TabOptions(
+                    index = 1u,
+                    title = "Timeline",
+            )
+        }
 
     @Composable
     override fun Content() {
@@ -30,6 +44,8 @@ class TimelineScreen : AndroidScreen() {
         val isRefreshing by viewModel.isRefreshing.collectAsState()
 
         val swipeToRefreshState = rememberSwipeRefreshState(isRefreshing)
+
+        val navigator = LocalNavigator.currentOrThrow
 
         SwipeRefresh(
             state = swipeToRefreshState,
@@ -44,9 +60,11 @@ class TimelineScreen : AndroidScreen() {
                     if (items.isNotEmpty()) {
                         LazyColumn {
                             items(
-                                    items = (state as TimelineState.LoadedState).items
+                                    items = items
                             ) {
-                                TimelineItem()
+                                TimelineItem(
+                                        onClick = { navigator.push(ItemScreen()) }
+                                )
                             }
                         }
                     } else {
@@ -67,7 +85,8 @@ fun NoItemPlaceholder() {
     Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                    .fillMaxSize()
                     .verticalScroll(scrollState)
     ) {
         Text(

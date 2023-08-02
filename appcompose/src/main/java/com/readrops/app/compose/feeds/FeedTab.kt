@@ -18,10 +18,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.androidx.AndroidScreen
+import cafe.adriel.voyager.navigator.tab.Tab
+import cafe.adriel.voyager.navigator.tab.TabOptions
 import org.koin.androidx.compose.getViewModel
 
-class FeedScreen : AndroidScreen() {
+object FeedTab : Tab {
+
+    override val options: TabOptions
+        @Composable
+        get() = TabOptions(
+                index = 2u,
+                title = "Feeds"
+        )
 
     @Composable
     override fun Content() {
