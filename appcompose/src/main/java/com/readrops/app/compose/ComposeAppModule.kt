@@ -1,5 +1,6 @@
 package com.readrops.app.compose
 
+import com.readrops.app.compose.account.AccountViewModel
 import com.readrops.app.compose.feeds.FeedViewModel
 import com.readrops.app.compose.repositories.BaseRepository
 import com.readrops.app.compose.repositories.LocalRSSRepository
@@ -14,6 +15,8 @@ val composeAppModule = module {
     viewModel { TimelineViewModel(get(), get()) }
 
     viewModel { FeedViewModel(get(), get()) }
+
+    viewModel { AccountViewModel(get()) }
 
     // repositories
 

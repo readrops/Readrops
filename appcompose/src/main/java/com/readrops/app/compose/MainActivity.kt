@@ -17,11 +17,14 @@ import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.tab.TabNavigator
 import cafe.adriel.voyager.transitions.FadeTransition
 import cafe.adriel.voyager.transitions.SlideTransition
+import com.readrops.app.compose.account.AccountSelectionScreen
 import com.readrops.app.compose.account.AccountTab
+import com.readrops.app.compose.account.AccountViewModel
 import com.readrops.app.compose.feeds.FeedTab
 import com.readrops.app.compose.home.HomeScreen
 import com.readrops.app.compose.more.MoreTab
 import com.readrops.app.compose.timelime.TimelineTab
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class MainActivity : ComponentActivity() {
 
@@ -29,10 +32,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val viewModel = getViewModel<AccountViewModel>()
+        val accountExists = viewModel.accountExists()
+
         setContent {
             ReadropsTheme {
                 Navigator(
-                        screen = HomeScreen()
+                        screen = if (accountExists) HomeScreen() else AccountSelectionScreen()
                 ) { navigator ->
                     FadeTransition(navigator)
                 }

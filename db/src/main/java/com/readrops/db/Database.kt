@@ -4,6 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.readrops.db.dao.*
+import com.readrops.db.dao.newdao.NewAccountDao
 import com.readrops.db.dao.newdao.NewFeedDao
 import com.readrops.db.dao.newdao.NewItemDao
 import com.readrops.db.entities.*
@@ -32,4 +33,6 @@ abstract class Database : RoomDatabase() {
     abstract fun newFeedDao(): NewFeedDao
 
     abstract fun newItemDao(): NewItemDao
+
+    abstract fun newAccountDao(): NewAccountDao
 }
