@@ -15,7 +15,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import cafe.adriel.voyager.androidx.AndroidScreen
-import cafe.adriel.voyager.navigator.CurrentScreen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.CurrentTab
@@ -40,7 +39,7 @@ class HomeScreen : AndroidScreen() {
                         bottomBar = {
                             BottomAppBar {
                                 NavigationBarItem(
-                                        selected = false,
+                                        selected = tabNavigator.current.key == TimelineTab.key,
                                         onClick = { tabNavigator.current = TimelineTab },
                                         icon = {
                                             Icon(
@@ -52,7 +51,7 @@ class HomeScreen : AndroidScreen() {
                                 )
 
                                 NavigationBarItem(
-                                        selected = false,
+                                        selected = tabNavigator.current.key == FeedTab.key,
                                         onClick = { tabNavigator.current = FeedTab },
                                         icon = {
                                             Icon(
@@ -64,7 +63,7 @@ class HomeScreen : AndroidScreen() {
                                 )
 
                                 NavigationBarItem(
-                                        selected = false,
+                                        selected = tabNavigator.current.key == AccountTab.key,
                                         onClick = { tabNavigator.current = AccountTab },
                                         icon = {
                                             Icon(
@@ -76,7 +75,7 @@ class HomeScreen : AndroidScreen() {
                                 )
 
                                 NavigationBarItem(
-                                        selected = false,
+                                        selected = tabNavigator.current.key == MoreTab.key,
                                         onClick = { tabNavigator.current = MoreTab },
                                         icon = {
                                             Icon(
