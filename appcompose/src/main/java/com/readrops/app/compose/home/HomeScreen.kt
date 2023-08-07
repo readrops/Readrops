@@ -1,5 +1,6 @@
 package com.readrops.app.compose.home
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -93,6 +94,11 @@ class HomeScreen : AndroidScreen() {
                     ) {
                         CurrentTab()
                     }
+
+                    BackHandler(
+                            enabled = tabNavigator.current != TimelineTab,
+                            onBack = { tabNavigator.current = TimelineTab }
+                    )
                 }
             }
 
