@@ -7,8 +7,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,6 +35,7 @@ object FeedTab : Tab {
                 title = "Feeds"
         )
 
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
         val viewModel = getViewModel<FeedViewModel>()
@@ -40,55 +45,62 @@ object FeedTab : Tab {
 
         if (showDialog) {
             AddFeedDialog(
-                onDismiss = { showDialog = false },
-                onValidate = {
-                    showDialog = false
-                    viewModel.insertFeed(it)
-                }
+                    onDismiss = { showDialog = false },
+                    onValidate = {
+                        showDialog = false
+                        viewModel.insertFeed(it)
+                    }
             )
         }
 
-        Box(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            when (state) {
-                is FeedsState.LoadedState -> {
-                    val feeds = (state as FeedsState.LoadedState).feeds
+        Scaffold(
+                topBar = {
+                    TopAppBar(title = { Text(text = "Feeds") })
+                }
+        ) { paddingValues ->
+            Box(
+                    modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues)
+            ) {
+                when (state) {
+                    is FeedsState.LoadedState -> {
+                        val feeds = (state as FeedsState.LoadedState).feeds
 
-                    if (feeds.isNotEmpty()) {
-                        LazyColumn {
-                            items(
-                                    items = feeds
-                            ) { feed ->
-                                FeedItem(
-                                        feed = feed,
-                                )
+                        if (feeds.isNotEmpty()) {
+                            LazyColumn {
+                                items(
+                                        items = feeds
+                                ) { feed ->
+                                    FeedItem(
+                                            feed = feed,
+                                    )
+                                }
                             }
                         }
                     }
+
+                    is FeedsState.ErrorState -> {
+
+                    }
+
+                    else -> {
+
+                    }
                 }
-                is FeedsState.ErrorState -> {
 
+                FloatingActionButton(
+                        modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(16.dp),
+                        onClick = { showDialog = true }
+                ) {
+                    Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = null
+                    )
                 }
-                else -> {
-
-                }
-            }
-
-
-
-            FloatingActionButton(
-                modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(16.dp),
-                onClick = { showDialog = true }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = null
-                )
             }
         }
-
     }
 }
