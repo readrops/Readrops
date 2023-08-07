@@ -1,5 +1,6 @@
 package com.readrops.app.compose
 
+import com.readrops.app.compose.account.AccountViewModel
 import com.readrops.app.compose.account.selection.AccountSelectionViewModel
 import com.readrops.app.compose.feeds.FeedViewModel
 import com.readrops.app.compose.repositories.BaseRepository
@@ -16,6 +17,8 @@ val composeAppModule = module {
     viewModel { FeedViewModel(get()) }
 
     viewModel { AccountSelectionViewModel(get()) }
+
+    viewModel { AccountViewModel(get()) }
 
     // repositories
 

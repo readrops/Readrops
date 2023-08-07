@@ -12,5 +12,8 @@ interface NewAccountDao : NewBaseDao<Account> {
     suspend fun selectAccountCount(): Int
 
     @Query("Select * From Account Where current_account = 1")
-    fun selectCurrentAccount(): Flow<Account>
+    fun selectCurrentAccount(): Flow<Account?>
+
+    @Query("Delete From Account")
+    suspend fun deleteAllAccounts()
 }

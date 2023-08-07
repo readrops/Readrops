@@ -2,10 +2,14 @@ package com.readrops.app.compose.repositories
 
 import com.readrops.api.localfeed.LocalRSSDataSource
 import com.readrops.api.services.SyncResult
+import com.readrops.api.utils.ApiUtils
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.Headers
 import org.jsoup.Jsoup
 
 class LocalRSSRepository(
@@ -29,8 +33,18 @@ class LocalRSSRepository(
         } else selectedFeeds
 
         for (feed in feeds) {
+            onUpdate(feed)
+
+            val headers = Headers.Builder()
+            if (feed.etag != null) {
+                headers[ApiUtils.IF_NONE_MATCH_HEADER] = feed.etag!!
+            }
+            if (feed.lastModified != null) {
+                headers[ApiUtils.IF_MODIFIED_HEADER] = feed.lastModified!!
+            }
+
             try {
-                val pair = dataSource.queryRSSResource(feed.url!!, null)
+                val pair = dataSource.queryRSSResource(feed.url!!, headers.build())
 
                 pair?.let {
                     insertNewItems(it.second, feed)
@@ -48,7 +62,7 @@ class LocalRSSRepository(
     override suspend fun synchronize(): SyncResult = throw NotImplementedError("This method can't be called here")
 
 
-    override suspend fun insertNewFeeds(urls: List<String>) {
+    override suspend fun insertNewFeeds(urls: List<String>) = withContext(Dispatchers.IO) {
         for (url in urls) {
             try {
                 val result = dataSource.queryRSSResource(url, null)!!
