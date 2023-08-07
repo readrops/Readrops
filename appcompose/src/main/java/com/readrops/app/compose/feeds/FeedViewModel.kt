@@ -2,6 +2,7 @@ package com.readrops.app.compose.feeds
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.readrops.app.compose.base.TabViewModel
 import com.readrops.app.compose.repositories.BaseRepository
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
@@ -13,8 +14,7 @@ import kotlinx.coroutines.launch
 
 class FeedViewModel(
         private val database: Database,
-        private val repository: BaseRepository,
-) : ViewModel() {
+) : TabViewModel(database) {
 
     private val _feedsState = MutableStateFlow<FeedsState>(FeedsState.InitialState)
     val feedsState = _feedsState.asStateFlow()
@@ -29,8 +29,12 @@ class FeedViewModel(
 
     fun insertFeed(url: String) {
         viewModelScope.launch(context = Dispatchers.IO) {
-            repository.insertNewFeeds(listOf(url))
+            repository?.insertNewFeeds(listOf(url))
         }
+    }
+
+    override fun invalidate() {
+
     }
 }
 

@@ -1,24 +1,26 @@
 package com.readrops.app.compose
 
-import com.readrops.app.compose.account.AccountViewModel
+import com.readrops.app.compose.account.selection.AccountSelectionViewModel
 import com.readrops.app.compose.feeds.FeedViewModel
 import com.readrops.app.compose.repositories.BaseRepository
 import com.readrops.app.compose.repositories.LocalRSSRepository
 import com.readrops.app.compose.timelime.TimelineViewModel
 import com.readrops.db.entities.account.Account
-import com.readrops.db.entities.account.AccountType
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val composeAppModule = module {
 
-    viewModel { TimelineViewModel(get(), get()) }
+    viewModel { TimelineViewModel(get()) }
 
-    viewModel { FeedViewModel(get(), get()) }
+    viewModel { FeedViewModel(get()) }
 
-    viewModel { AccountViewModel(get()) }
+    viewModel { AccountSelectionViewModel(get()) }
 
     // repositories
 
-    single<BaseRepository> { LocalRSSRepository(get(), get(), Account(id = 1, isCurrentAccount = true, accountType = AccountType.LOCAL)) }
+    factory<BaseRepository> { (account: Account) ->
+        LocalRSSRepository(get(), get(), account)
+    }
+
 }
