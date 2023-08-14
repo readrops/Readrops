@@ -23,7 +23,7 @@ jobs:
       - name: Android Emulator Runner
         uses: ReactiveCircus/android-emulator-runner@v2.28.0
         with:
-          api-level: 33
+          api-level: 29
           script: ./gradlew clean build connectedCheck jacocoFullReport
       - uses: codecov/codecov-action@v2.1.0
         with:
