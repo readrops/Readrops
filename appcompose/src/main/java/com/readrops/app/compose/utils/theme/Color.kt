@@ -1,4 +1,4 @@
-package com.readrops.app.compose
+package com.readrops.app.compose.utils.theme
 
 import androidx.compose.ui.graphics.Color
 

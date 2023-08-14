@@ -1,4 +1,4 @@
-package com.readrops.app.compose.utils
+package com.readrops.app.compose.utils.theme
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size

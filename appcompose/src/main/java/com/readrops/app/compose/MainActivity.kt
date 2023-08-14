@@ -10,6 +10,7 @@ import cafe.adriel.voyager.transitions.FadeTransition
 import com.readrops.app.compose.account.selection.AccountSelectionScreen
 import com.readrops.app.compose.account.selection.AccountSelectionViewModel
 import com.readrops.app.compose.home.HomeScreen
+import com.readrops.app.compose.utils.theme.ReadropsTheme
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class MainActivity : ComponentActivity() {
