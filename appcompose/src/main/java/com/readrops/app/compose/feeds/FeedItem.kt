@@ -9,9 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import coil.request.ImageRequest
 import com.readrops.db.entities.Feed
-import com.skydoves.landscapist.coil.CoilImage
 
 @Composable
 fun FeedItem(feed: Feed) {
@@ -22,11 +20,11 @@ fun FeedItem(feed: Feed) {
                     .fillMaxWidth()
                     .padding(8.dp)
     ) {
-        CoilImage(imageRequest = {
+        /*CoilImage(imageRequest = {
             ImageRequest.Builder(context)
                     .data(feed.url)
                     .build()
-        })
+        })*/
 
         Text(
                 text = feed.name!!,

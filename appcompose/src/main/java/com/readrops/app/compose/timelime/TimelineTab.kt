@@ -34,8 +34,8 @@ object TimelineTab : Tab {
         @Composable
         get() {
             return TabOptions(
-                    index = 1u,
-                    title = "Timeline",
+                index = 1u,
+                title = "Timeline",
             )
         }
 
@@ -51,30 +51,35 @@ object TimelineTab : Tab {
         val navigator = LocalNavigator.currentOrThrow
 
         Scaffold(
-                topBar = {
-                    TopAppBar(
-                            title = { Text(text = "Timeline") }
-                    )
-                }
+            topBar = {
+                TopAppBar(
+                    title = { Text(text = "Timeline") }
+                )
+            }
         ) { paddingValues ->
             SwipeRefresh(
-                    state = swipeToRefreshState,
-                    onRefresh = {
-                        viewModel.refreshTimeline()
-                    },
-                    modifier = Modifier.padding(paddingValues)
+                state = swipeToRefreshState,
+                onRefresh = {
+                    viewModel.refreshTimeline()
+                },
+                modifier = Modifier.padding(paddingValues)
             ) {
                 when (state) {
-                    is TimelineState.LoadedState -> {
-                        val items = (state as TimelineState.LoadedState).items
+                    is TimelineState.Loaded -> {
+                        val items = (state as TimelineState.Loaded).items
 
                         if (items.isNotEmpty()) {
                             LazyColumn {
                                 items(
-                                        items = items
-                                ) {
+                                    items = items,
+                                    key = { it.item.id },
+                                ) { itemWithFeed ->
                                     TimelineItem(
-                                            onClick = { navigator.push(ItemScreen()) }
+                                        itemWithFeed = itemWithFeed,
+                                        onClick = { navigator.push(ItemScreen()) },
+                                        onFavorite = {},
+                                        onReadLater = {},
+                                        onShare = {},
                                     )
                                 }
                             }
@@ -99,15 +104,15 @@ fun NoItemPlaceholder() {
     val scrollState = rememberScrollState()
 
     Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(scrollState)
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState)
     ) {
         Text(
-                text = "No item",
-                style = MaterialTheme.typography.displayMedium
+            text = "No item",
+            style = MaterialTheme.typography.displayMedium
         )
     }
 }

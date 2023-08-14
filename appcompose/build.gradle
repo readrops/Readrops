@@ -103,5 +103,6 @@ dependencies {
 
     androidTestImplementation 'com.squareup.okhttp3:mockwebserver:4.9.0'
 
-    implementation "com.github.skydoves:landscapist-coil:2.2.2"
+    implementation "io.coil-kt:coil:2.4.0"
+    implementation "io.coil-kt:coil-compose:2.4.0"
 }
