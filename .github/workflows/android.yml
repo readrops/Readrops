@@ -21,9 +21,9 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
       - name: Android Emulator Runner
-        uses: ReactiveCircus/android-emulator-runner@v2.20.0
+        uses: ReactiveCircus/android-emulator-runner@v2.28
         with:
-          api-level: 29
+          api-level: 33
           script: ./gradlew clean build connectedCheck jacocoFullReport
       - uses: codecov/codecov-action@v2.1.0
         with:
