@@ -6,14 +6,18 @@ import com.readrops.db.Database
 import com.readrops.db.pojo.ItemWithFeed
 import com.readrops.db.queries.ItemsQueryBuilder
 import com.readrops.db.queries.QueryFilters
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
 
 class TimelineViewModel(
-        private val database: Database,
+    private val database: Database,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : TabViewModel(database) {
 
     private val _timelineState = MutableStateFlow<TimelineState>(TimelineState.Loading)
@@ -23,30 +27,28 @@ class TimelineViewModel(
     val isRefreshing = _isRefreshing.asStateFlow()
 
     init {
-        viewModelScope.launch(context = Dispatchers.IO) {
-            val query = ItemsQueryBuilder.buildItemsQuery(QueryFilters(accountId = 1))
+        viewModelScope.launch(dispatcher) {
+            accountEvent.consumeAsFlow().collectLatest { account ->
+                val query = ItemsQueryBuilder.buildItemsQuery(QueryFilters(accountId = account.id))
 
-            database.newItemDao().selectAll(query)
+                database.newItemDao().selectAll(query)
                     .catch { _timelineState.value = TimelineState.Error(Exception(it)) }
                     .collect {
                         _timelineState.value = TimelineState.Loaded(it)
                     }
+            }
         }
     }
 
     fun refreshTimeline() {
         _isRefreshing.value = true
-        viewModelScope.launch(context = Dispatchers.IO) {
+        viewModelScope.launch(dispatcher) {
             repository?.synchronize(null) {
 
             }
 
             _isRefreshing.value = false
         }
-    }
-
-    override fun invalidate() {
-
     }
 }
 

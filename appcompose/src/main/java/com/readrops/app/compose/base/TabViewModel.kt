@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.readrops.app.compose.repositories.BaseRepository
 import com.readrops.db.Database
 import com.readrops.db.entities.account.Account
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
@@ -15,7 +16,7 @@ import org.koin.core.parameter.parametersOf
  * Custom ViewModel for Tab screens handling account change
  */
 abstract class TabViewModel(
-        private val database: Database,
+    private val database: Database,
 ) : ViewModel(), KoinComponent {
 
     /**
@@ -25,24 +26,21 @@ abstract class TabViewModel(
 
     protected var currentAccount: Account? = null
 
-    /**
-     * This method is called when the repository has been rebuilt from the new current account
-     */
-    abstract fun invalidate()
+    protected val accountEvent = Channel<Account>()
 
     init {
         viewModelScope.launch {
             database.newAccountDao()
-                    .selectCurrentAccount()
-                    .distinctUntilChanged()
-                    .collect { account ->
-                        if (account != null) {
-                            currentAccount = account
-                            repository = get(parameters = { parametersOf(account) })
+                .selectCurrentAccount()
+                .distinctUntilChanged()
+                .collect { account ->
+                    if (account != null) {
+                        currentAccount = account
+                        repository = get(parameters = { parametersOf(account) })
 
-                            invalidate()
-                        }
+                        accountEvent.send(account)
                     }
+                }
         }
     }
 

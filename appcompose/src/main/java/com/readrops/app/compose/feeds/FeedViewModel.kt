@@ -1,9 +1,7 @@
 package com.readrops.app.compose.feeds
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.readrops.app.compose.base.TabViewModel
-import com.readrops.app.compose.repositories.BaseRepository
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import kotlinx.coroutines.Dispatchers
@@ -31,10 +29,6 @@ class FeedViewModel(
         viewModelScope.launch(context = Dispatchers.IO) {
             repository?.insertNewFeeds(listOf(url))
         }
-    }
-
-    override fun invalidate() {
-
     }
 }
 
