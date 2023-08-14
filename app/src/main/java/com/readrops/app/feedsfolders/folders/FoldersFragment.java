@@ -1,6 +1,8 @@
 package com.readrops.app.feedsfolders.folders;
 
 
+import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
+
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -23,13 +25,11 @@ import com.readrops.app.utils.Utils;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.account.Account;
 
+import org.koin.android.compat.SharedViewModelCompat;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
-
-import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
-
-import org.koin.android.compat.SharedViewModelCompat;
 
 public class FoldersFragment extends Fragment {
 
@@ -65,7 +65,7 @@ public class FoldersFragment extends Fragment {
             account.setPassword(SharedPreferencesManager.readString(account.getPasswordKey()));
 
         adapter = new FoldersAdapter(this::openFolderOptionsDialog);
-        viewModel = SharedViewModelCompat.getSharedViewModel(this, ManageFeedsFoldersViewModel.class);
+        viewModel = SharedViewModelCompat.sharedViewModel(this, ManageFeedsFoldersViewModel.class).getValue();
 
         viewModel.setAccount(account);
         viewModel.getFeedCountByAccount()

@@ -1,6 +1,5 @@
 package com.readrops.app.repositories;
 
-import android.accounts.NetworkErrorException;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
@@ -114,7 +113,7 @@ public class LocalFeedRepository extends ARepository {
                 } catch (UnknownFormatException e) {
                     Log.d(TAG, "addFeeds: " + e.getMessage());
                     insertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.FORMAT_ERROR);
-                } catch (NetworkErrorException | IOException e) {
+                } catch (IOException e) {
                     Log.d(TAG, "addFeeds: " + e.getMessage());
                     insertionResult.setInsertionError(FeedInsertionResult.FeedInsertionError.NETWORK_ERROR);
                 } catch (Exception e) {

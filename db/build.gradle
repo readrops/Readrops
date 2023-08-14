@@ -94,6 +94,7 @@ dependencies {
     api "io.insert-koin:koin-core:$rootProject.ext.koin_version"
     api "io.insert-koin:koin-android:$rootProject.ext.koin_version"
     api "io.insert-koin:koin-androidx-compose:3.4.2"
+    api "io.insert-koin:koin-android-compat:$rootProject.ext.koin_version"
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
