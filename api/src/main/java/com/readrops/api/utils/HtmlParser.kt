@@ -14,6 +14,19 @@ data class ParsingResult(
 
 object HtmlParser {
 
+    suspend fun getFaviconLink(url: String, client: OkHttpClient): String? {
+        val document = getHTMLHeadFromUrl(url, client)
+        val elements = document.select("link")
+
+        for (element in elements) {
+            if (element.attributes()["rel"].lowercase().contains("icon")) {
+                return element.absUrl("href")
+            }
+        }
+
+        return null
+    }
+
     suspend fun getFeedLink(url: String, client: OkHttpClient): List<ParsingResult> {
         val results = mutableListOf<ParsingResult>()
 
@@ -62,7 +75,7 @@ object HtmlParser {
                 }
 
                 if (!stringBuilder.contains("<head>") || !stringBuilder.contains("</head>"))
-                    throw Exception("Failed to get HTML head")
+                    throw FormatException("Failed to get HTML head")
 
                 body.close()
                 return Jsoup.parse(stringBuilder.toString(), url)
