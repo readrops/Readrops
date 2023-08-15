@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.readrops.api.apiModule
 import com.readrops.api.utils.ApiUtils
-import com.readrops.app.compose.utils.FeedColors
+import com.readrops.app.compose.util.FeedColors
 import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer

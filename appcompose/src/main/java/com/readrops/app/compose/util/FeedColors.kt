@@ -1,4 +1,4 @@
-package com.readrops.app.compose.utils
+package com.readrops.app.compose.util
 
 import android.content.Context
 import android.graphics.drawable.BitmapDrawable

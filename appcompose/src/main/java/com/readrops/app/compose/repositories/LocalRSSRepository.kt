@@ -4,7 +4,7 @@ import com.readrops.api.localfeed.LocalRSSDataSource
 import com.readrops.api.services.SyncResult
 import com.readrops.api.utils.ApiUtils
 import com.readrops.api.utils.HtmlParser
-import com.readrops.app.compose.utils.FeedColors
+import com.readrops.app.compose.util.FeedColors
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Item

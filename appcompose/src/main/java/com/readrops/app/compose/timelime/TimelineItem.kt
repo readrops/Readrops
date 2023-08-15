@@ -30,9 +30,9 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.readrops.api.utils.DateUtils
 import com.readrops.app.compose.R
-import com.readrops.app.compose.utils.theme.ShortSpacer
-import com.readrops.app.compose.utils.theme.VeryShortSpacer
-import com.readrops.app.compose.utils.theme.spacing
+import com.readrops.app.compose.util.theme.ShortSpacer
+import com.readrops.app.compose.util.theme.VeryShortSpacer
+import com.readrops.app.compose.util.theme.spacing
 import com.readrops.db.pojo.ItemWithFeed
 
 @Composable

@@ -1,4 +1,4 @@
-package com.readrops.app.compose.utils.theme
+package com.readrops.app.compose.util.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
