@@ -72,6 +72,7 @@ dependencies {
     implementation composeBom
     androidTestImplementation composeBom
 
+    implementation 'androidx.palette:palette-ktx:1.0.0'
     implementation 'androidx.activity:activity-compose:1.7.2'
     implementation 'androidx.compose.material3:material3'
 
