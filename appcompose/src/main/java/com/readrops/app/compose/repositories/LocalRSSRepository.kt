@@ -3,6 +3,8 @@ package com.readrops.app.compose.repositories
 import com.readrops.api.localfeed.LocalRSSDataSource
 import com.readrops.api.services.SyncResult
 import com.readrops.api.utils.ApiUtils
+import com.readrops.api.utils.HtmlParser
+import com.readrops.app.compose.utils.FeedColors
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Item
@@ -11,12 +13,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Headers
 import org.jsoup.Jsoup
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
 class LocalRSSRepository(
     private val dataSource: LocalRSSDataSource,
     database: Database,
     account: Account
-) : BaseRepository(database, account) {
+) : BaseRepository(database, account), KoinComponent {
 
     override suspend fun login() { /* useless here */
     }
@@ -107,6 +111,10 @@ class LocalRSSRepository(
             // we need empty headers to query the feed just after, without any 304 result
             etag = null
             lastModified = null
+
+            iconUrl = HtmlParser.getFaviconLink(siteUrl!!, get()).also { feedUrl ->
+                feedUrl?.let { backgroundColor = FeedColors.getFeedColor(it) }
+            }
 
             id = database.newFeedDao().insert(this).toInt()
         }
