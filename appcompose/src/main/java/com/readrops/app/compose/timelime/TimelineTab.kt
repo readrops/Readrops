@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -25,6 +27,7 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.readrops.app.compose.item.ItemScreen
+import com.readrops.app.compose.util.theme.spacing
 import org.koin.androidx.compose.getViewModel
 
 
@@ -46,6 +49,7 @@ object TimelineTab : Tab {
         val state by viewModel.timelineState.collectAsState()
         val isRefreshing by viewModel.isRefreshing.collectAsState()
 
+        val scrollState = rememberLazyListState()
         val swipeToRefreshState = rememberSwipeRefreshState(isRefreshing)
 
         val navigator = LocalNavigator.currentOrThrow
@@ -65,14 +69,32 @@ object TimelineTab : Tab {
                 modifier = Modifier.padding(paddingValues)
             ) {
                 when (state) {
+                    is TimelineState.Loading -> {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
+
+                    is TimelineState.Error -> {
+
+                    }
+
                     is TimelineState.Loaded -> {
                         val items = (state as TimelineState.Loaded).items
 
                         if (items.isNotEmpty()) {
-                            LazyColumn {
+                            LazyColumn(
+                                state = scrollState,
+                                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.shortSpacing)
+                            ) {
                                 items(
                                     items = items,
                                     key = { it.item.id },
+                                    contentType = { "item_with_feed" }
                                 ) { itemWithFeed ->
                                     TimelineItem(
                                         itemWithFeed = itemWithFeed,
@@ -86,10 +108,6 @@ object TimelineTab : Tab {
                         } else {
                             NoItemPlaceholder()
                         }
-                    }
-
-                    else -> {
-                        NoItemPlaceholder()
                     }
                 }
             }

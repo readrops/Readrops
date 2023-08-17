@@ -5,6 +5,7 @@ import com.readrops.api.services.SyncResult
 import com.readrops.api.utils.ApiUtils
 import com.readrops.api.utils.HtmlParser
 import com.readrops.app.compose.util.FeedColors
+import com.readrops.app.compose.util.Utils
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Item
@@ -63,7 +64,8 @@ class LocalRSSRepository(
         return Pair(syncResult, ErrorResult(errors))
     }
 
-    override suspend fun synchronize(): SyncResult = throw NotImplementedError("This method can't be called here")
+    override suspend fun synchronize(): SyncResult =
+        throw NotImplementedError("This method can't be called here")
 
 
     override suspend fun insertNewFeeds(urls: List<String>) = withContext(Dispatchers.IO) {
@@ -88,9 +90,9 @@ class LocalRSSRepository(
                 }
 
                 if (item.content != null) {
-                    item.readTime = 0.0
+                    item.readTime = Utils.readTimeFromString(item.content!!)
                 } else if (item.description != null) {
-                    item.readTime = 0.0
+                    item.readTime = Utils.readTimeFromString(item.cleanDescription!!)
                 }
 
                 item.feedId = feed.id
