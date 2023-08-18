@@ -9,8 +9,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -20,12 +25,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.readrops.app.compose.R
 import com.readrops.app.compose.item.ItemScreen
 import com.readrops.app.compose.util.theme.spacing
 import org.koin.androidx.compose.getViewModel
@@ -57,9 +64,40 @@ object TimelineTab : Tab {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(text = "Timeline") }
+                    title = { Text(text = "Timeline") },
+                    navigationIcon = {
+                        IconButton(onClick = { }) {
+                            Icon(
+                                imageVector = Icons.Default.Menu,
+                                contentDescription = null
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_filter_list),
+                                contentDescription = null
+                            )
+                        }
+
+                        IconButton(onClick = { }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_sync),
+                                contentDescription = null
+                            )
+                        }
+                    }
                 )
-            }
+            },
+            floatingActionButton = {
+                FloatingActionButton(onClick = { }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_done_all),
+                        contentDescription = null
+                    )
+                }
+            },
         ) { paddingValues ->
             SwipeRefresh(
                 state = swipeToRefreshState,
