@@ -81,7 +81,15 @@ object TimelineTab : Tab {
         ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
-                TimelineDrawer(viewModel = viewModel)
+                TimelineDrawer(
+                    viewModel = viewModel,
+                    onClickDefaultItem = {
+                        viewModel.updateDrawerDefaultItem(it)
+                        scope.launch {
+                            drawerState.close()
+                        }
+                    }
+                )
             }
         ) {
             Scaffold(

@@ -13,27 +13,45 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.readrops.app.compose.R
 import com.readrops.app.compose.util.theme.spacing
 
+enum class DrawerDefaultItemsSelection {
+    ARTICLES,
+    NEW,
+    FAVORITES,
+    READ_LATER
+}
+
 @Composable
 fun TimelineDrawer(
     viewModel: TimelineViewModel,
+    onClickDefaultItem: (DrawerDefaultItemsSelection) -> Unit,
 ) {
+    val state by viewModel.drawerState.collectAsState()
+
     ModalDrawerSheet {
         Spacer(modifier = Modifier.size(MaterialTheme.spacing.drawerSpacing))
 
-        DrawerDefaultItems()
+        DrawerDefaultItems(
+            selectedItem = state.selection,
+            onClick = { onClickDefaultItem(it) }
+        )
 
         DrawerDivider()
     }
 }
 
 @Composable
-fun DrawerDefaultItems() {
+fun DrawerDefaultItems(
+    selectedItem: DrawerDefaultItemsSelection,
+    onClick: (DrawerDefaultItemsSelection) -> Unit,
+) {
     NavigationDrawerItem(
         label = { Text("Articles") },
         icon = {
@@ -42,8 +60,8 @@ fun DrawerDefaultItems() {
                 contentDescription = null
             )
         },
-        selected = true,
-        onClick = { },
+        selected = selectedItem == DrawerDefaultItemsSelection.ARTICLES,
+        onClick = { onClick(DrawerDefaultItemsSelection.ARTICLES) },
         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
     )
 
@@ -55,8 +73,8 @@ fun DrawerDefaultItems() {
                 contentDescription = null
             )
         },
-        selected = false,
-        onClick = { },
+        selected = selectedItem == DrawerDefaultItemsSelection.NEW,
+        onClick = { onClick(DrawerDefaultItemsSelection.NEW) },
         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
     )
 
@@ -68,8 +86,8 @@ fun DrawerDefaultItems() {
                 contentDescription = null
             )
         },
-        selected = false,
-        onClick = { },
+        selected = selectedItem == DrawerDefaultItemsSelection.FAVORITES,
+        onClick = { onClick(DrawerDefaultItemsSelection.FAVORITES) },
         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
     )
 
@@ -81,8 +99,8 @@ fun DrawerDefaultItems() {
                 contentDescription = null
             )
         },
-        selected = false,
-        onClick = { },
+        selected = selectedItem == DrawerDefaultItemsSelection.READ_LATER,
+        onClick = { onClick(DrawerDefaultItemsSelection.READ_LATER) },
         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
     )
 }
