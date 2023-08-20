@@ -25,9 +25,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -41,7 +41,6 @@ import com.readrops.app.compose.R
 import com.readrops.app.compose.item.ItemScreen
 import com.readrops.app.compose.timelime.drawer.TimelineDrawer
 import com.readrops.app.compose.util.theme.spacing
-import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
 
@@ -60,42 +59,54 @@ object TimelineTab : Tab {
     @Composable
     override fun Content() {
         val viewModel = getViewModel<TimelineViewModel>()
+
         val state by viewModel.timelineState.collectAsState()
+        val drawerState by viewModel.drawerState.collectAsState()
         val isRefreshing by viewModel.isRefreshing.collectAsState()
 
         val navigator = LocalNavigator.currentOrThrow
 
         val scrollState = rememberLazyListState()
         val swipeState = rememberSwipeRefreshState(isRefreshing)
-        val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-        val scope = rememberCoroutineScope()
-
-        BackHandler(
-            enabled = drawerState.isOpen,
-            onBack = {
-                scope.launch {
-                    drawerState.close()
+        val drawerUIState = rememberDrawerState(
+            initialValue = DrawerValue.Closed,
+            confirmStateChange = {
+                if (it == DrawerValue.Closed) {
+                    viewModel.closeDrawer()
+                } else {
+                    viewModel.openDrawer()
                 }
+
+                true
             }
         )
 
-        val closeDrawer = { scope.launch { drawerState.close() } }
+        BackHandler(
+            enabled = drawerState.isOpen,
+            onBack = { viewModel.closeDrawer() }
+        )
+
+        LaunchedEffect(drawerState.isOpen) {
+            if (drawerState.isOpen) {
+                drawerUIState.open()
+            } else {
+                drawerUIState.close()
+            }
+        }
+
         ModalNavigationDrawer(
-            drawerState = drawerState,
+            drawerState = drawerUIState,
             drawerContent = {
                 TimelineDrawer(
-                    viewModel = viewModel,
+                    state = drawerState,
                     onClickDefaultItem = {
                         viewModel.updateDrawerDefaultItem(it)
-                        closeDrawer()
                     },
                     onFolderClick = {
                         viewModel.updateDrawerFolderSelection(it)
-                        closeDrawer()
                     },
                     onFeedClick = {
                         viewModel.updateDrawerFeedSelection(it)
-                        closeDrawer()
                     }
                 )
             }
@@ -106,11 +117,7 @@ object TimelineTab : Tab {
                         title = { Text(text = "Articles") },
                         navigationIcon = {
                             IconButton(
-                                onClick = {
-                                    scope.launch {
-                                        drawerState.open()
-                                    }
-                                }
+                                onClick = { viewModel.openDrawer() }
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Menu,
@@ -146,9 +153,7 @@ object TimelineTab : Tab {
             ) { paddingValues ->
                 SwipeRefresh(
                     state = swipeState,
-                    onRefresh = {
-                        viewModel.refreshTimeline()
-                    },
+                    onRefresh = { viewModel.refreshTimeline() },
                     modifier = Modifier.padding(paddingValues)
                 ) {
                     when (state) {

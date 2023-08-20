@@ -17,15 +17,13 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.readrops.app.compose.R
-import com.readrops.app.compose.timelime.TimelineViewModel
+import com.readrops.app.compose.timelime.DrawerState
 import com.readrops.app.compose.util.theme.spacing
 
 enum class DrawerDefaultItemsSelection {
@@ -37,12 +35,11 @@ enum class DrawerDefaultItemsSelection {
 
 @Composable
 fun TimelineDrawer(
-    viewModel: TimelineViewModel,
+    state: DrawerState,
     onClickDefaultItem: (DrawerDefaultItemsSelection) -> Unit,
     onFolderClick: (Int) -> Unit,
     onFeedClick: (Int) -> Unit,
 ) {
-    val state by viewModel.drawerState.collectAsState()
     val scrollState = rememberScrollState()
 
     ModalDrawerSheet(

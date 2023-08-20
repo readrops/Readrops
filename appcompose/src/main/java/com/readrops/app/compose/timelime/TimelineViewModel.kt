@@ -75,9 +75,18 @@ class TimelineViewModel(
         }
     }
 
+    fun openDrawer() {
+        _drawerState.update { it.copy(isOpen = true) }
+    }
+
+    fun closeDrawer() {
+        _drawerState.update { it.copy(isOpen = false) }
+    }
+
     fun updateDrawerDefaultItem(selection: DrawerDefaultItemsSelection) {
         _drawerState.update {
             it.copy(
+                isOpen = false,
                 selection = selection,
                 selectedFolderId = 0,
                 selectedFeedId = 0,
@@ -86,11 +95,23 @@ class TimelineViewModel(
     }
 
     fun updateDrawerFolderSelection(folderId: Int) {
-        _drawerState.update { it.copy(selectedFolderId = folderId, selectedFeedId = 0) }
+        _drawerState.update {
+            it.copy(
+                isOpen = false,
+                selectedFolderId = folderId,
+                selectedFeedId = 0
+            )
+        }
     }
 
     fun updateDrawerFeedSelection(feedId: Int) {
-        _drawerState.update { it.copy(selectedFeedId = feedId, selectedFolderId = 0) }
+        _drawerState.update {
+            it.copy(
+                isOpen = false,
+                selectedFeedId = feedId,
+                selectedFolderId = 0
+            )
+        }
     }
 }
 
@@ -106,6 +127,7 @@ sealed class TimelineState {
 
 @Immutable
 data class DrawerState(
+    val isOpen: Boolean = false,
     val selection: DrawerDefaultItemsSelection = DrawerDefaultItemsSelection.ARTICLES,
     val selectedFolderId: Int = 0,
     val selectedFeedId: Int = 0,
