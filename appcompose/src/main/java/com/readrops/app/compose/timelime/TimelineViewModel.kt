@@ -3,6 +3,8 @@ package com.readrops.app.compose.timelime
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
 import com.readrops.app.compose.base.TabViewModel
+import com.readrops.app.compose.repositories.GetFoldersWithFeeds
+import com.readrops.app.compose.timelime.drawer.DrawerDefaultItemsSelection
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
@@ -11,6 +13,8 @@ import com.readrops.db.queries.ItemsQueryBuilder
 import com.readrops.db.queries.QueryFilters
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
@@ -21,6 +25,7 @@ import kotlinx.coroutines.launch
 
 class TimelineViewModel(
     private val database: Database,
+    private val getFoldersWithFeeds: GetFoldersWithFeeds,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : TabViewModel(database) {
 
@@ -38,11 +43,23 @@ class TimelineViewModel(
             accountEvent.consumeAsFlow().collectLatest { account ->
                 val query = ItemsQueryBuilder.buildItemsQuery(QueryFilters(accountId = account.id))
 
-                database.newItemDao().selectAll(query)
-                    .catch { _timelineState.value = TimelineState.Error(Exception(it)) }
-                    .collect {
-                        _timelineState.value = TimelineState.Loaded(it)
+                val items = async {
+                    database.newItemDao().selectAll(query)
+                        .catch { _timelineState.value = TimelineState.Error(Exception(it)) }
+                        .collect {
+                            _timelineState.value = TimelineState.Loaded(it)
+                        }
+                }
+
+                val drawer = async {
+                    _drawerState.update {
+                        it.copy(
+                            foldersAndFeeds = getFoldersWithFeeds.get(account.id)
+                        )
                     }
+                }
+
+                awaitAll(items, drawer)
             }
         }
     }
@@ -59,7 +76,21 @@ class TimelineViewModel(
     }
 
     fun updateDrawerDefaultItem(selection: DrawerDefaultItemsSelection) {
-        _drawerState.update { it.copy(selection = selection) }
+        _drawerState.update {
+            it.copy(
+                selection = selection,
+                selectedFolderId = 0,
+                selectedFeedId = 0,
+            )
+        }
+    }
+
+    fun updateDrawerFolderSelection(folderId: Int) {
+        _drawerState.update { it.copy(selectedFolderId = folderId, selectedFeedId = 0) }
+    }
+
+    fun updateDrawerFeedSelection(feedId: Int) {
+        _drawerState.update { it.copy(selectedFeedId = feedId, selectedFolderId = 0) }
     }
 }
 
@@ -76,8 +107,8 @@ sealed class TimelineState {
 @Immutable
 data class DrawerState(
     val selection: DrawerDefaultItemsSelection = DrawerDefaultItemsSelection.ARTICLES,
-    val folderSelection: Int = 0,
-    val feedSelection: Int = 0,
+    val selectedFolderId: Int = 0,
+    val selectedFeedId: Int = 0,
     val foldersAndFeeds: Map<Folder?, List<Feed>> = emptyMap()
 )
 

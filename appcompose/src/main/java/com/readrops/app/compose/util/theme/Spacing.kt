@@ -40,3 +40,6 @@ fun LargeSpacer() = Spacer(Modifier.size(MaterialTheme.spacing.largeSpacing))
 
 @Composable
 fun VeryLargeSpacer() = Spacer(Modifier.size(MaterialTheme.spacing.veryLargeSpacing))
+
+@Composable
+fun DrawerSpacing() = Spacer(Modifier.size(MaterialTheme.spacing.drawerSpacing))

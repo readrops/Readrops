@@ -39,6 +39,7 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.readrops.app.compose.R
 import com.readrops.app.compose.item.ItemScreen
+import com.readrops.app.compose.timelime.drawer.TimelineDrawer
 import com.readrops.app.compose.util.theme.spacing
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
@@ -78,6 +79,7 @@ object TimelineTab : Tab {
             }
         )
 
+        val closeDrawer = { scope.launch { drawerState.close() } }
         ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
@@ -85,9 +87,15 @@ object TimelineTab : Tab {
                     viewModel = viewModel,
                     onClickDefaultItem = {
                         viewModel.updateDrawerDefaultItem(it)
-                        scope.launch {
-                            drawerState.close()
-                        }
+                        closeDrawer()
+                    },
+                    onFolderClick = {
+                        viewModel.updateDrawerFolderSelection(it)
+                        closeDrawer()
+                    },
+                    onFeedClick = {
+                        viewModel.updateDrawerFeedSelection(it)
+                        closeDrawer()
                     }
                 )
             }
