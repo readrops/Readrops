@@ -1,5 +1,6 @@
 package com.readrops.app.compose.timelime
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -64,9 +65,18 @@ object TimelineTab : Tab {
         val navigator = LocalNavigator.currentOrThrow
 
         val scrollState = rememberLazyListState()
-        val swipeToRefreshState = rememberSwipeRefreshState(isRefreshing)
+        val swipeState = rememberSwipeRefreshState(isRefreshing)
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         val scope = rememberCoroutineScope()
+
+        BackHandler(
+            enabled = drawerState.isOpen,
+            onBack = {
+                scope.launch {
+                    drawerState.close()
+                }
+            }
+        )
 
         ModalNavigationDrawer(
             drawerState = drawerState,
@@ -119,7 +129,7 @@ object TimelineTab : Tab {
                 },
             ) { paddingValues ->
                 SwipeRefresh(
-                    state = swipeToRefreshState,
+                    state = swipeState,
                     onRefresh = {
                         viewModel.refreshTimeline()
                     },
