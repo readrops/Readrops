@@ -19,4 +19,10 @@ abstract class NewFeedDao : NewBaseDao<Feed> {
 
     @Query("Select case When :feedUrl In (Select url from Feed Where account_id = :accountId) Then 1 else 0 end")
     abstract suspend fun feedExists(feedUrl: String, accountId: Int): Boolean
+
+    @Query("Select * From Feed Where folder_id = :folderId")
+    abstract suspend fun selectFeedsByFolder(folderId: Int): List<Feed>
+
+    @Query("Select * From Feed Where account_id = :accountId And folder_id Is Null")
+    abstract suspend fun selectFeedsAlone(accountId: Int): List<Feed>
 }
