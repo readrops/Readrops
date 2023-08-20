@@ -26,11 +26,11 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
@@ -60,9 +60,9 @@ object TimelineTab : Tab {
     override fun Content() {
         val viewModel = getViewModel<TimelineViewModel>()
 
-        val state by viewModel.timelineState.collectAsState()
-        val drawerState by viewModel.drawerState.collectAsState()
-        val isRefreshing by viewModel.isRefreshing.collectAsState()
+        val state by viewModel.timelineState.collectAsStateWithLifecycle()
+        val drawerState by viewModel.drawerState.collectAsStateWithLifecycle()
+        val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
 
         val navigator = LocalNavigator.currentOrThrow
 

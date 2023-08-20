@@ -11,10 +11,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
@@ -27,8 +27,8 @@ object AccountTab : Tab {
     override val options: TabOptions
         @Composable
         get() = TabOptions(
-                index = 3u,
-                title = "Account"
+            index = 3u,
+            title = "Account"
         )
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -36,24 +36,24 @@ object AccountTab : Tab {
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
         val viewModel = getViewModel<AccountViewModel>()
-        val closeHome by viewModel.closeHome.collectAsState()
+        val closeHome by viewModel.closeHome.collectAsStateWithLifecycle()
 
         if (closeHome) {
             navigator.replaceAll(AccountSelectionScreen())
         }
 
         Scaffold(
-                topBar = {
-                    TopAppBar(title = { Text(text = "Account") })
-                }
+            topBar = {
+                TopAppBar(title = { Text(text = "Account") })
+            }
         ) { paddingValues ->
             Column(
-                    modifier = Modifier.padding(paddingValues)
+                modifier = Modifier.padding(paddingValues)
             ) {
                 Row {
                     Button(onClick = { viewModel.deleteAccount() }) {
                         Text(
-                                text = "Delete"
+                            text = "Delete"
                         )
                     }
 
@@ -61,7 +61,7 @@ object AccountTab : Tab {
 
                     Button(onClick = { navigator.push(AccountSelectionScreen()) }) {
                         Text(
-                                text = "New"
+                            text = "New"
                         )
                     }
                 }

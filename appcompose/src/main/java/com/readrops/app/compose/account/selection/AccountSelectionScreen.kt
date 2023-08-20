@@ -10,12 +10,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.androidx.AndroidScreen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
@@ -30,7 +30,7 @@ class AccountSelectionScreen : AndroidScreen() {
     @Composable
     override fun Content() {
         val viewModel = getViewModel<AccountSelectionViewModel>()
-        val navState by viewModel.navState.collectAsState()
+        val navState by viewModel.navState.collectAsStateWithLifecycle()
         val navigator = LocalNavigator.currentOrThrow
 
         Column(
