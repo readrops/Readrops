@@ -42,10 +42,12 @@ fun TimelineItem(
     onClick: () -> Unit,
     onFavorite: () -> Unit,
     onReadLater: () -> Unit,
-    onShare: () -> Unit
+    onShare: () -> Unit,
+    modifier: Modifier = Modifier,
+    compactLayout: Boolean = false,
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .padding(horizontal = MaterialTheme.spacing.shortSpacing)
             .clickable { onClick() }
     ) {
@@ -148,7 +150,7 @@ fun TimelineItem(
 
             ShortSpacer()
 
-            if (itemWithFeed.item.cleanDescription != null) {
+            if (itemWithFeed.item.cleanDescription != null && !compactLayout) {
                 Text(
                     text = itemWithFeed.item.cleanDescription!!,
                     style = MaterialTheme.typography.bodyMedium,
@@ -160,7 +162,7 @@ fun TimelineItem(
                 ShortSpacer()
             }
 
-            if (itemWithFeed.item.imageLink != null) {
+            if (itemWithFeed.item.hasImage && !compactLayout) {
                 AsyncImage(
                     model = itemWithFeed.item.imageLink,
                     contentDescription = itemWithFeed.item.title!!,
