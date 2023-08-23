@@ -23,20 +23,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.readrops.app.compose.R
-import com.readrops.app.compose.timelime.DrawerState
+import com.readrops.app.compose.timelime.TimelineState
 import com.readrops.app.compose.util.theme.spacing
-
-enum class DrawerDefaultItemsSelection {
-    ARTICLES,
-    NEW,
-    FAVORITES,
-    READ_LATER
-}
+import com.readrops.db.filters.FilterType
 
 @Composable
 fun TimelineDrawer(
-    state: DrawerState,
-    onClickDefaultItem: (DrawerDefaultItemsSelection) -> Unit,
+    state: TimelineState,
+    onClickDefaultItem: (FilterType) -> Unit,
     onFolderClick: (Int) -> Unit,
     onFeedClick: (Int) -> Unit,
 ) {
@@ -50,7 +44,7 @@ fun TimelineDrawer(
         Spacer(modifier = Modifier.size(MaterialTheme.spacing.drawerSpacing))
 
         DrawerDefaultItems(
-            selectedItem = state.selection,
+            selectedItem = state.filters.filterType,
             onClick = { onClickDefaultItem(it) }
         )
 
@@ -78,10 +72,10 @@ fun TimelineDrawer(
                         badge = {
                             Text(folderEntry.value.sumOf { it.unreadCount }.toString())
                         },
-                        selected = state.selectedFolderId == folder.id,
+                        selected = state.filters.filterFolderId == folder.id,
                         onClick = { onFolderClick(folder.id) },
                         feeds = folderEntry.value,
-                        selectedFeed = state.selectedFeedId,
+                        selectedFeed = state.filters.filterFeedId,
                         onFeedClick = { onFeedClick(it) },
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
@@ -106,7 +100,7 @@ fun TimelineDrawer(
                                 )
                             },
                             badge = { Text(feed.unreadCount.toString()) },
-                            selected = feed.id == state.selectedFeedId,
+                            selected = feed.id == state.filters.filterFeedId,
                             onClick = { onFeedClick(feed.id) },
                             modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                         )
@@ -119,8 +113,8 @@ fun TimelineDrawer(
 
 @Composable
 fun DrawerDefaultItems(
-    selectedItem: DrawerDefaultItemsSelection,
-    onClick: (DrawerDefaultItemsSelection) -> Unit,
+    selectedItem: FilterType,
+    onClick: (FilterType) -> Unit,
 ) {
     NavigationDrawerItem(
         label = { Text("Articles") },
@@ -130,8 +124,8 @@ fun DrawerDefaultItems(
                 contentDescription = null
             )
         },
-        selected = selectedItem == DrawerDefaultItemsSelection.ARTICLES,
-        onClick = { onClick(DrawerDefaultItemsSelection.ARTICLES) },
+        selected = selectedItem == FilterType.NO_FILTER,
+        onClick = { onClick(FilterType.NO_FILTER) },
         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
     )
 
@@ -143,8 +137,8 @@ fun DrawerDefaultItems(
                 contentDescription = null
             )
         },
-        selected = selectedItem == DrawerDefaultItemsSelection.NEW,
-        onClick = { onClick(DrawerDefaultItemsSelection.NEW) },
+        selected = selectedItem == FilterType.NEW,
+        onClick = { onClick(FilterType.NEW) },
         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
     )
 
@@ -156,8 +150,8 @@ fun DrawerDefaultItems(
                 contentDescription = null
             )
         },
-        selected = selectedItem == DrawerDefaultItemsSelection.FAVORITES,
-        onClick = { onClick(DrawerDefaultItemsSelection.FAVORITES) },
+        selected = selectedItem == FilterType.STARS_FILTER,
+        onClick = { onClick(FilterType.STARS_FILTER) },
         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
     )
 
@@ -169,8 +163,8 @@ fun DrawerDefaultItems(
                 contentDescription = null
             )
         },
-        selected = selectedItem == DrawerDefaultItemsSelection.READ_LATER,
-        onClick = { onClick(DrawerDefaultItemsSelection.READ_LATER) },
+        selected = selectedItem == FilterType.READ_IT_LATER_FILTER,
+        onClick = { onClick(FilterType.READ_IT_LATER_FILTER) },
         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
     )
 }

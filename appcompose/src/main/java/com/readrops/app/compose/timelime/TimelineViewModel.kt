@@ -2,23 +2,26 @@ package com.readrops.app.compose.timelime
 
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.readrops.app.compose.base.TabViewModel
 import com.readrops.app.compose.repositories.GetFoldersWithFeeds
-import com.readrops.app.compose.timelime.drawer.DrawerDefaultItemsSelection
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
+import com.readrops.db.filters.FilterType
 import com.readrops.db.pojo.ItemWithFeed
 import com.readrops.db.queries.ItemsQueryBuilder
 import com.readrops.db.queries.QueryFilters
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -29,108 +32,128 @@ class TimelineViewModel(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : TabViewModel(database) {
 
-    private val _timelineState = MutableStateFlow<TimelineState>(TimelineState.Loading)
+    private val _timelineState = MutableStateFlow(TimelineState())
     val timelineState = _timelineState.asStateFlow()
 
-    private var _isRefreshing = MutableStateFlow(false)
-    val isRefreshing = _isRefreshing.asStateFlow()
-
-    private val _drawerState = MutableStateFlow(DrawerState())
-    val drawerState = _drawerState.asStateFlow()
+    private val filters = MutableStateFlow(_timelineState.value.filters)
 
     init {
         viewModelScope.launch(dispatcher) {
-            accountEvent.consumeAsFlow().collectLatest { account ->
-                val query = ItemsQueryBuilder.buildItemsQuery(QueryFilters(accountId = account.id))
+            combine(
+                accountEvent.consumeAsFlow(),
+                filters
+            ) { account, filters ->
+                Pair(account, filters)
+            }.collectLatest { (account, filters) ->
+                val query = ItemsQueryBuilder.buildItemsQuery(filters.copy(accountId = account.id))
 
-                val items = async {
-                    database.newItemDao().selectAll(query)
-                        .catch { _timelineState.value = TimelineState.Error(Exception(it)) }
-                        .collect {
-                            _timelineState.value = TimelineState.Loaded(it)
-                        }
-                }
-
-                val drawer = async {
-                    _drawerState.update {
-                        it.copy(
-                            foldersAndFeeds = getFoldersWithFeeds.get(account.id)
+                _timelineState.update {
+                    it.copy(
+                        foldersAndFeeds = getFoldersWithFeeds.get(account.id),
+                        items = ItemState.Loaded(
+                            items = Pager(
+                                config = PagingConfig(
+                                    pageSize = 100,
+                                    prefetchDistance = 150
+                                ),
+                                pagingSourceFactory = {
+                                    database.newItemDao().selectAll(query)
+                                },
+                            ).flow
+                                .cachedIn(viewModelScope)
                         )
-                    }
+                    )
                 }
-
-                awaitAll(items, drawer)
             }
         }
     }
 
     fun refreshTimeline() {
-        _isRefreshing.value = true
+        _timelineState.update { it.copy(isRefreshing = true) }
         viewModelScope.launch(dispatcher) {
             repository?.synchronize(null) {
 
             }
 
-            _isRefreshing.value = false
+            _timelineState.update { it.copy(isRefreshing = false) }
         }
     }
 
     fun openDrawer() {
-        _drawerState.update { it.copy(isOpen = true) }
+        _timelineState.update { it.copy(isDrawerOpen = true) }
     }
 
     fun closeDrawer() {
-        _drawerState.update { it.copy(isOpen = false) }
+        _timelineState.update { it.copy(isDrawerOpen = false) }
     }
 
-    fun updateDrawerDefaultItem(selection: DrawerDefaultItemsSelection) {
-        _drawerState.update {
+    fun updateDrawerDefaultItem(selection: FilterType) {
+        _timelineState.update {
             it.copy(
-                isOpen = false,
-                selection = selection,
-                selectedFolderId = 0,
-                selectedFeedId = 0,
+                filters = updateFilters {
+                    it.filters.copy(
+                        filterType = selection
+                    )
+                },
+                isDrawerOpen = false
             )
         }
     }
 
     fun updateDrawerFolderSelection(folderId: Int) {
-        _drawerState.update {
+        _timelineState.update {
             it.copy(
-                isOpen = false,
-                selectedFolderId = folderId,
-                selectedFeedId = 0
+                filters = updateFilters {
+                    it.filters.copy(
+                        filterType = FilterType.FOLDER_FILER,
+                        filterFolderId = folderId,
+                        filterFeedId = 0
+                    )
+                },
+                isDrawerOpen = false
             )
         }
     }
 
     fun updateDrawerFeedSelection(feedId: Int) {
-        _drawerState.update {
+        _timelineState.update {
             it.copy(
-                isOpen = false,
-                selectedFeedId = feedId,
-                selectedFolderId = 0
+                filters = updateFilters {
+                    it.filters.copy(
+                        filterType = FilterType.FEED_FILTER,
+                        filterFeedId = feedId,
+                        filterFolderId = 0
+                    )
+                },
+                isDrawerOpen = false
             )
         }
     }
-}
 
-sealed class TimelineState {
-    object Loading : TimelineState()
+    private fun updateFilters(block: () -> QueryFilters): QueryFilters {
+        val filter = block()
+        filters.update { filter }
 
-    @Immutable
-    data class Error(val exception: Exception) : TimelineState()
-
-    @Immutable
-    data class Loaded(val items: List<ItemWithFeed>) : TimelineState()
+        return filter
+    }
 }
 
 @Immutable
-data class DrawerState(
-    val isOpen: Boolean = false,
-    val selection: DrawerDefaultItemsSelection = DrawerDefaultItemsSelection.ARTICLES,
-    val selectedFolderId: Int = 0,
-    val selectedFeedId: Int = 0,
-    val foldersAndFeeds: Map<Folder?, List<Feed>> = emptyMap()
+data class TimelineState(
+    val isRefreshing: Boolean = false,
+    val isDrawerOpen: Boolean = false,
+    val filters: QueryFilters = QueryFilters(),
+    val foldersAndFeeds: Map<Folder?, List<Feed>> = emptyMap(),
+    val items: ItemState = ItemState.Loading
 )
 
+sealed class ItemState {
+    @Immutable
+    object Loading : ItemState()
+
+    @Immutable
+    data class Error(val exception: Exception) : ItemState()
+
+    @Immutable
+    data class Loaded(val items: Flow<PagingData<ItemWithFeed>>) : ItemState()
+}

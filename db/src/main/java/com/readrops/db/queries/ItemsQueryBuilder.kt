@@ -81,11 +81,11 @@ object ItemsQueryBuilder {
 
 }
 
-class QueryFilters(
-        var showReadItems: Boolean = true,
-        var filterFeedId: Int = 0,
-        var filterFolderId: Int = 0,
-        var accountId: Int = 0,
-        var filterType: FilterType = FilterType.NO_FILTER,
-        var sortType: ListSortType = ListSortType.NEWEST_TO_OLDEST,
+data class QueryFilters(
+    var showReadItems: Boolean = true,
+    var filterFeedId: Int = 0,
+    var filterFolderId: Int = 0,
+    var accountId: Int = 0,
+    var filterType: FilterType = FilterType.NO_FILTER,
+    var sortType: ListSortType = ListSortType.NEWEST_TO_OLDEST,
 )

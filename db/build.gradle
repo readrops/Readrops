@@ -82,6 +82,7 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-rxjava2:$room_version"
     androidTestImplementation "androidx.room:room-testing:$room_version"
+    implementation "androidx.room:room-paging:$room_version"
 
     implementation 'com.github.MatrixDev.Roomigrant:RoomigrantLib:0.3.4'
     kapt 'com.github.MatrixDev.Roomigrant:RoomigrantCompiler:0.3.4'
@@ -98,4 +99,7 @@ dependencies {
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
+
+    api "androidx.paging:paging-runtime:3.1.1"
+    api "androidx.paging:paging-compose:1.0.0-alpha18"
 }

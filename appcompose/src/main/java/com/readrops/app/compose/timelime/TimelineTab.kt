@@ -3,10 +3,10 @@ package com.readrops.app.compose.timelime
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.compose.collectAsLazyPagingItems
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
@@ -48,27 +49,22 @@ object TimelineTab : Tab {
 
     override val options: TabOptions
         @Composable
-        get() {
-            return TabOptions(
-                index = 1u,
-                title = "Timeline",
-            )
-        }
+        get() = TabOptions(
+            index = 1u,
+            title = "Timeline",
+        )
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
         val viewModel = getViewModel<TimelineViewModel>()
-
         val state by viewModel.timelineState.collectAsStateWithLifecycle()
-        val drawerState by viewModel.drawerState.collectAsStateWithLifecycle()
-        val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
 
         val navigator = LocalNavigator.currentOrThrow
 
         val scrollState = rememberLazyListState()
-        val swipeState = rememberSwipeRefreshState(isRefreshing)
-        val drawerUIState = rememberDrawerState(
+        val swipeState = rememberSwipeRefreshState(state.isRefreshing)
+        val drawerState = rememberDrawerState(
             initialValue = DrawerValue.Closed,
             confirmStateChange = {
                 if (it == DrawerValue.Closed) {
@@ -82,23 +78,23 @@ object TimelineTab : Tab {
         )
 
         BackHandler(
-            enabled = drawerState.isOpen,
+            enabled = state.isDrawerOpen,
             onBack = { viewModel.closeDrawer() }
         )
 
-        LaunchedEffect(drawerState.isOpen) {
-            if (drawerState.isOpen) {
-                drawerUIState.open()
+        LaunchedEffect(state.isDrawerOpen) {
+            if (state.isDrawerOpen) {
+                drawerState.open()
             } else {
-                drawerUIState.close()
+                drawerState.close()
             }
         }
 
         ModalNavigationDrawer(
-            drawerState = drawerUIState,
+            drawerState = drawerState,
             drawerContent = {
                 TimelineDrawer(
-                    state = drawerState,
+                    state = state,
                     onClickDefaultItem = {
                         viewModel.updateDrawerDefaultItem(it)
                     },
@@ -156,8 +152,8 @@ object TimelineTab : Tab {
                     onRefresh = { viewModel.refreshTimeline() },
                     modifier = Modifier.padding(paddingValues)
                 ) {
-                    when (state) {
-                        is TimelineState.Loading -> {
+                    when (val itemState = state.items) {
+                        is ItemState.Loading -> {
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.Center,
@@ -167,34 +163,28 @@ object TimelineTab : Tab {
                             }
                         }
 
-                        is TimelineState.Error -> {
+                        is ItemState.Error -> TODO()
+                        is ItemState.Loaded -> {
+                            val items = itemState.items.collectAsLazyPagingItems()
 
-                        }
-
-                        is TimelineState.Loaded -> {
-                            val items = (state as TimelineState.Loaded).items
-
-                            if (items.isNotEmpty()) {
-                                LazyColumn(
-                                    state = scrollState,
-                                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.shortSpacing)
-                                ) {
-                                    items(
-                                        items = items,
-                                        key = { it.item.id },
-                                        contentType = { "item_with_feed" }
-                                    ) { itemWithFeed ->
-                                        TimelineItem(
-                                            itemWithFeed = itemWithFeed,
-                                            onClick = { navigator.push(ItemScreen()) },
-                                            onFavorite = {},
-                                            onReadLater = {},
-                                            onShare = {},
-                                        )
-                                    }
+                            LazyColumn(
+                                state = scrollState,
+                                contentPadding = PaddingValues(vertical = MaterialTheme.spacing.shortSpacing),
+                                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.shortSpacing)
+                            ) {
+                                items(
+                                    count = items.itemCount,
+                                    key = { items[it]!!.item.id },
+                                    contentType = { "item_with_feed" }
+                                ) { itemCount ->
+                                    TimelineItem(
+                                        itemWithFeed = items[itemCount]!!,
+                                        onClick = { navigator.push(ItemScreen()) },
+                                        onFavorite = {},
+                                        onReadLater = {},
+                                        onShare = {},
+                                    )
                                 }
-                            } else {
-                                NoItemPlaceholder()
                             }
                         }
                     }
