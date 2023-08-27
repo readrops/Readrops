@@ -7,7 +7,7 @@ import com.readrops.db.filters.ListSortType
 
 object ItemsQueryBuilder {
 
-    private val COLUMNS = arrayOf("Item.id", "Item.remoteId", "title", "clean_description", "image_link", "pub_date",
+    private val COLUMNS = arrayOf("Item.id", "Item.remoteId", "title", "clean_description", "image_link", "pub_date", "link",
             "read_it_later", "Feed.name", "text_color", "background_color", "icon_url", "read_time",
             "Feed.id as feedId", "Feed.account_id", "Folder.id as folder_id", "Folder.name as folder_name")
 

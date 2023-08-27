@@ -4,6 +4,7 @@ import com.readrops.api.services.SyncResult
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
+import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
 
 data class ErrorResult(
@@ -53,4 +54,12 @@ abstract class BaseRepository(
     open suspend fun addFolder(folder: Folder) {}
 
     open suspend fun deleteFolder(folder: Folder) {}
+
+    open suspend fun setItemReadState(item: Item) {
+        database.newItemDao().updateReadState(item.id, item.isRead)
+    }
+
+    open suspend fun setItemStarState(item: Item) {
+        database.newItemDao().updateStarState(item.id, item.isStarred)
+    }
 }

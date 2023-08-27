@@ -100,6 +100,6 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
 
-    api "androidx.paging:paging-runtime:3.1.1"
-    api "androidx.paging:paging-compose:1.0.0-alpha18"
+    api "androidx.paging:paging-runtime-ktx:3.2.0"
+    api "androidx.paging:paging-compose:3.2.0"
 }

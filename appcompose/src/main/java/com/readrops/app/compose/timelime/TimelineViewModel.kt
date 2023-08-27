@@ -1,5 +1,7 @@
 package com.readrops.app.compose.timelime
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
@@ -11,6 +13,7 @@ import com.readrops.app.compose.repositories.GetFoldersWithFeeds
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
+import com.readrops.db.entities.Item
 import com.readrops.db.filters.FilterType
 import com.readrops.db.pojo.ItemWithFeed
 import com.readrops.db.queries.ItemsQueryBuilder
@@ -143,6 +146,36 @@ class TimelineViewModel(
         filters.update { filter }
 
         return filter
+    }
+
+    fun setItemRead(item: Item) {
+        item.isRead = true
+        updateItemReadState(item)
+    }
+
+    private fun updateItemReadState(item: Item) {
+        viewModelScope.launch(dispatcher) {
+            repository?.setItemReadState(item)
+        }
+    }
+
+    fun updateStarState(item: Item) {
+        viewModelScope.launch(dispatcher) {
+            with(item) {
+                isStarred = isStarred.not()
+                repository?.setItemStarState(this)
+            }
+        }
+    }
+
+    fun shareItem(item: Item, context: Context) {
+        Intent().apply {
+            action = Intent.ACTION_SEND
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, item.link)
+        }.also {
+            context.startActivity(Intent.createChooser(it, null))
+        }
     }
 }
 

@@ -29,6 +29,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -61,6 +62,7 @@ object TimelineTab : Tab {
         val state by viewModel.timelineState.collectAsStateWithLifecycle()
 
         val navigator = LocalNavigator.currentOrThrow
+        val context = LocalContext.current
 
         val scrollState = rememberLazyListState()
         val swipeState = rememberSwipeRefreshState(state.isRefreshing)
@@ -177,12 +179,19 @@ object TimelineTab : Tab {
                                     key = { items[it]!!.item.id },
                                     contentType = { "item_with_feed" }
                                 ) { itemCount ->
+                                    val itemWithFeed = items[itemCount]!!
+
                                     TimelineItem(
-                                        itemWithFeed = items[itemCount]!!,
-                                        onClick = { navigator.push(ItemScreen()) },
-                                        onFavorite = {},
+                                        itemWithFeed = itemWithFeed,
+                                        onClick = {
+                                            viewModel.setItemRead(itemWithFeed.item)
+                                            navigator.push(ItemScreen())
+                                        },
+                                        onFavorite = { viewModel.updateStarState(itemWithFeed.item) },
                                         onReadLater = {},
-                                        onShare = {},
+                                        onShare = {
+                                            viewModel.shareItem(itemWithFeed.item, context)
+                                        },
                                     )
                                 }
                             }

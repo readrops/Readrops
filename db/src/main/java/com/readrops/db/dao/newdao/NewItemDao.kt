@@ -17,7 +17,9 @@ abstract class NewItemDao : NewBaseDao<Item> {
     @RawQuery(observedEntities = [Item::class, Feed::class, Folder::class, ItemState::class])
     abstract fun selectAll(query: SupportSQLiteQuery): PagingSource<Int, ItemWithFeed>
 
-    @Query("Select count(*) From Item Where feed_id = :feedId And read = 0")
-    abstract fun selectUnreadCount(feedId: Int): Int
+    @Query("Update Item Set read = :read Where id = :itemId")
+    abstract suspend fun updateReadState(itemId: Int, read: Boolean)
 
+    @Query("Update Item Set starred = :starred Where id = :itemId")
+    abstract suspend fun updateStarState(itemId: Int, starred: Boolean)
 }

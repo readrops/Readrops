@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Card
@@ -20,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -49,6 +51,7 @@ fun TimelineItem(
     Card(
         modifier = modifier
             .padding(horizontal = MaterialTheme.spacing.shortSpacing)
+            .alpha(if (itemWithFeed.item.isRead) 0.6f else 1f)
             .clickable { onClick() }
     ) {
         Column(
@@ -180,7 +183,7 @@ fun TimelineItem(
                     .padding(MaterialTheme.spacing.shortSpacing)
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.FavoriteBorder,
+                    imageVector = if (itemWithFeed.item.isStarred) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                     contentDescription = null,
                     modifier = Modifier.clickable { onFavorite() }
                 )
