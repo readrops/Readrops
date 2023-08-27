@@ -49,7 +49,6 @@ class TimelineViewModel(
 
                 _timelineState.update {
                     it.copy(
-                        foldersAndFeeds = getFoldersWithFeeds.get(account.id),
                         items = ItemState.Loaded(
                             items = Pager(
                                 config = PagingConfig(
@@ -64,6 +63,15 @@ class TimelineViewModel(
                         )
                     )
                 }
+
+                getFoldersWithFeeds.get(account.id)
+                    .collect { foldersAndFeeds ->
+                        _timelineState.update {
+                            it.copy(
+                                foldersAndFeeds = foldersAndFeeds
+                            )
+                        }
+                    }
             }
         }
     }

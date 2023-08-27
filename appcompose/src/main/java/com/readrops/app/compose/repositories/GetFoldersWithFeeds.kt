@@ -3,35 +3,43 @@ package com.readrops.app.compose.repositories
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 
 class GetFoldersWithFeeds(
     private val database: Database,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
 
-    suspend fun get(accountId: Int): Map<Folder?, List<Feed>> = withContext(dispatcher) {
-        val foldersWithFeeds = mutableMapOf<Folder?, List<Feed>>()
-        val folders = database.newFolderDao().selectFoldersByAccount(accountId)
-
-        for (folder in folders) {
-            val feeds = database.newFeedDao().selectFeedsByFolder(folder.id)
-
-            for (feed in feeds) {
-                feed.unreadCount = database.newItemDao().selectUnreadCount(feed.id)
+    fun get(accountId: Int): Flow<Map<Folder?, List<Feed>>> {
+        return combine(
+            flow = database.newFolderDao()
+                .selectFoldersAndFeeds(accountId),
+            flow2 = database.newFeedDao()
+                .selectFeedsWithoutFolder(accountId)
+        ) { folders, feedsWithoutFolder ->
+            val foldersWithFeeds = folders.groupBy(
+                keySelector = { Folder(id = it.folderId, name = it.folderName) },
+                valueTransform = {
+                    Feed(
+                        id = it.feedId,
+                        name = it.feedName,
+                        iconUrl = it.feedIcon,
+                        unreadCount = it.unreadCount
+                    )
+                }
+            ).mapValues { listEntry ->
+                if (listEntry.value.any { it.id == 0 }) {
+                    listOf()
+                } else {
+                    listEntry.value
+                }
             }
 
-            foldersWithFeeds[folder] = feeds
+            foldersWithFeeds + mapOf(
+                Pair(
+                    null,
+                    feedsWithoutFolder.map { it.feed.apply { unreadCount = it.unreadCount } })
+            )
         }
-
-        val feedsAlone = database.newFeedDao().selectFeedsAlone(accountId)
-        for (feed in feedsAlone) {
-            feed.unreadCount = database.newItemDao().selectUnreadCount(feed.id)
-        }
-
-        foldersWithFeeds[null] = feedsAlone
-        foldersWithFeeds.toSortedMap(nullsLast())
     }
 }
