@@ -1,15 +1,12 @@
 package com.readrops.app.compose.timelime
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CircularProgressIndicator
@@ -27,11 +24,12 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
@@ -42,6 +40,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.readrops.app.compose.R
 import com.readrops.app.compose.item.ItemScreen
 import com.readrops.app.compose.timelime.drawer.TimelineDrawer
+import com.readrops.app.compose.util.components.CenteredColumn
 import com.readrops.app.compose.util.theme.spacing
 import org.koin.androidx.compose.getViewModel
 
@@ -60,11 +59,14 @@ object TimelineTab : Tab {
     override fun Content() {
         val viewModel = getViewModel<TimelineViewModel>()
         val state by viewModel.timelineState.collectAsStateWithLifecycle()
+        val items = state.itemState.collectAsLazyPagingItems()
 
         val navigator = LocalNavigator.currentOrThrow
         val context = LocalContext.current
 
         val scrollState = rememberLazyListState()
+
+        // Use the depreciated refresh swipe as the material 3 one isn't available yet
         val swipeState = rememberSwipeRefreshState(state.isRefreshing)
         val drawerState = rememberDrawerState(
             initialValue = DrawerValue.Closed,
@@ -131,7 +133,9 @@ object TimelineTab : Tab {
                                 )
                             }
 
-                            IconButton(onClick = { }) {
+                            IconButton(
+                                onClick = { viewModel.refreshTimeline() }
+                            ) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_sync),
                                     contentDescription = null
@@ -154,21 +158,16 @@ object TimelineTab : Tab {
                     onRefresh = { viewModel.refreshTimeline() },
                     modifier = Modifier.padding(paddingValues)
                 ) {
-                    when (val itemState = state.items) {
-                        is ItemState.Loading -> {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center,
-                                modifier = Modifier.fillMaxSize()
-                            ) {
+                    when {
+                        items.isLoading() -> {
+                            Log.d("TAG", "loading")
+                            CenteredColumn {
                                 CircularProgressIndicator()
                             }
                         }
 
-                        is ItemState.Error -> TODO()
-                        is ItemState.Loaded -> {
-                            val items = itemState.items.collectAsLazyPagingItems()
-
+                        items.isError() -> Text(text = "error")
+                        else -> {
                             LazyColumn(
                                 state = scrollState,
                                 contentPadding = PaddingValues(vertical = MaterialTheme.spacing.shortSpacing),
@@ -176,7 +175,7 @@ object TimelineTab : Tab {
                             ) {
                                 items(
                                     count = items.itemCount,
-                                    key = { items[it]!!.item.id },
+                                    //key = { items[it]!! },
                                     contentType = { "item_with_feed" }
                                 ) { itemCount ->
                                     val itemWithFeed = items[itemCount]!!
@@ -192,6 +191,7 @@ object TimelineTab : Tab {
                                         onShare = {
                                             viewModel.shareItem(itemWithFeed.item, context)
                                         },
+                                        compactLayout = true
                                     )
                                 }
                             }
@@ -203,20 +203,11 @@ object TimelineTab : Tab {
     }
 }
 
-@Composable
-fun NoItemPlaceholder() {
-    val scrollState = rememberScrollState()
 
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)
-    ) {
-        Text(
-            text = "No item",
-            style = MaterialTheme.typography.displayMedium
-        )
-    }
+fun <T : Any> LazyPagingItems<T>.isLoading(): Boolean {
+    return loadState.append is LoadState.Loading //|| loadState.refresh is LoadState.Loading
+}
+
+fun <T : Any> LazyPagingItems<T>.isError(): Boolean {
+    return loadState.append is LoadState.Error //|| loadState.refresh is LoadState.Error
 }

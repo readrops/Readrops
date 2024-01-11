@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -46,24 +47,23 @@ class TimelineViewModel(
                 accountEvent.consumeAsFlow(),
                 filters
             ) { account, filters ->
+                filters.accountId = account.id
                 Pair(account, filters)
             }.collectLatest { (account, filters) ->
-                val query = ItemsQueryBuilder.buildItemsQuery(filters.copy(accountId = account.id))
+                val query = ItemsQueryBuilder.buildItemsQuery(filters)
 
                 _timelineState.update {
                     it.copy(
-                        items = ItemState.Loaded(
-                            items = Pager(
-                                config = PagingConfig(
-                                    pageSize = 100,
-                                    prefetchDistance = 150
-                                ),
-                                pagingSourceFactory = {
-                                    database.newItemDao().selectAll(query)
-                                },
-                            ).flow
-                                .cachedIn(viewModelScope)
-                        )
+                        itemState = Pager(
+                            config = PagingConfig(
+                                pageSize = 10,
+                                prefetchDistance = 10
+                            ),
+                            pagingSourceFactory = {
+                                database.newItemDao().selectAll(query)
+                            },
+                        ).flow
+                            .cachedIn(viewModelScope)
                     )
                 }
 
@@ -86,7 +86,12 @@ class TimelineViewModel(
 
             }
 
-            _timelineState.update { it.copy(isRefreshing = false) }
+            _timelineState.update {
+                it.copy(
+                    isRefreshing = false,
+                    endSynchronizing = true
+                )
+            }
         }
     }
 
@@ -183,18 +188,8 @@ class TimelineViewModel(
 data class TimelineState(
     val isRefreshing: Boolean = false,
     val isDrawerOpen: Boolean = false,
+    val endSynchronizing: Boolean = false,
     val filters: QueryFilters = QueryFilters(),
     val foldersAndFeeds: Map<Folder?, List<Feed>> = emptyMap(),
-    val items: ItemState = ItemState.Loading
+    val itemState: Flow<PagingData<ItemWithFeed>> = emptyFlow()
 )
-
-sealed class ItemState {
-    @Immutable
-    object Loading : ItemState()
-
-    @Immutable
-    data class Error(val exception: Exception) : ItemState()
-
-    @Immutable
-    data class Loaded(val items: Flow<PagingData<ItemWithFeed>>) : ItemState()
-}

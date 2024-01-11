@@ -97,9 +97,9 @@ dependencies {
     api "io.insert-koin:koin-androidx-compose:3.4.2"
     api "io.insert-koin:koin-android-compat:$rootProject.ext.koin_version"
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
 
-    api "androidx.paging:paging-runtime-ktx:3.2.0"
-    api "androidx.paging:paging-compose:3.2.0"
+    api "androidx.paging:paging-runtime-ktx:3.2.1"
+    api "androidx.paging:paging-compose:3.2.1"
 }
