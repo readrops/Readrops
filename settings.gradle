@@ -1,1 +1,2 @@
 include ':app', ':api', ':db'
+include ':appcompose'

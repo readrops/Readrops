@@ -1,5 +1,7 @@
 package com.readrops.app.feedsfolders.feeds;
 
+import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
@@ -20,16 +22,14 @@ import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.account.Account;
 import com.readrops.db.pojo.FeedWithFolder;
 
+import org.koin.android.compat.SharedViewModelCompat;
+
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-
-import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
-
-import org.koin.android.compat.SharedViewModelCompat;
 
 public class EditFeedDialogFragment extends DialogFragment implements AdapterView.OnItemSelectedListener {
 
@@ -60,7 +60,7 @@ public class EditFeedDialogFragment extends DialogFragment implements AdapterVie
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        viewModel = SharedViewModelCompat.getSharedViewModel(this, ManageFeedsFoldersViewModel.class);
+        viewModel = SharedViewModelCompat.sharedViewModel(this, ManageFeedsFoldersViewModel.class).getValue();
 
         feedWithFolder = getArguments().getParcelable("feedWithFolder");
         account = getArguments().getParcelable(ACCOUNT);

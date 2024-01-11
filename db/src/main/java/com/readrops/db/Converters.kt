@@ -4,7 +4,7 @@ import androidx.room.TypeConverter
 import com.readrops.db.entities.account.AccountType
 import org.joda.time.LocalDateTime
 
-object Converters {
+class Converters {
 
     @TypeConverter
     fun fromTimeStamp(value: Long): LocalDateTime {

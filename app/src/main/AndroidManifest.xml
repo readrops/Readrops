@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.readrops.app">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -61,7 +60,8 @@
             android:name=".itemslist.MainActivity"
             android:label="@string/articles"
             android:launchMode="singleTask"
-            android:theme="@style/SplashTheme">
+            android:theme="@style/SplashTheme"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -75,15 +75,16 @@
         <activity
             android:name=".addfeed.AddFeedActivity"
             android:label="@string/add_feed_title"
-            android:parentActivityName=".itemslist.MainActivity">
+            android:parentActivityName=".itemslist.MainActivity"
+            android:exported="true">
             <intent-filter android:label="@string/new_feed">
                 <action android:name="android.intent.action.SEND" />
-
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

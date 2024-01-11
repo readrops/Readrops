@@ -12,9 +12,6 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    lintOptions {
-        abortOnError false
-    }
 
     sourceSets {
         androidTest.assets.srcDirs += files("$projectDir/androidTest/assets".toString())
@@ -33,12 +30,16 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
     }
+    lint {
+        abortOnError false
+    }
+    namespace 'com.readrops.api'
 }
 
 dependencies {
@@ -58,7 +59,7 @@ dependencies {
     implementation 'com.gitlab.mvysny.konsume-xml:konsume-xml:1.0'
     implementation 'org.redundent:kotlin-xml-builder:1.7.3'
 
-    implementation 'com.squareup.okhttp3:okhttp:4.9.1'
+    api 'com.squareup.okhttp3:okhttp:4.9.1'
 
     implementation('com.squareup.retrofit2:retrofit:2.9.0') {
         exclude group: 'com.squareup.okhttp3', module: 'okhttp3'

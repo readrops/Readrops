@@ -5,5 +5,6 @@ enum class FilterType {
     FOLDER_FILER,
     READ_IT_LATER_FILTER,
     STARS_FILTER,
-    NO_FILTER
+    NO_FILTER,
+    NEW
 }

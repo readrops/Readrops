@@ -18,7 +18,7 @@ import io.reactivex.Completable
 interface ItemDao : BaseDao<Item> {
 
     @RawQuery(observedEntities = [Item::class, Folder::class, Feed::class, ItemState::class])
-    fun selectAll(query: SupportSQLiteQuery): DataSource.Factory<Int?, ItemWithFeed>
+    fun selectAll(query: SupportSQLiteQuery): DataSource.Factory<Int, ItemWithFeed>
 
     @Query("Select * From Item Where id = :itemId")
     fun select(itemId: Int): Item
