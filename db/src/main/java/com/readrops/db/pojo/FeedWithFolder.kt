@@ -18,6 +18,7 @@ data class FolderWithFeed(
     val feedId: Int = 0,
     val feedName: String? = null,
     val feedIcon: String? = null,
+    val feedUrl: String? = null,
     val unreadCount: Int = 0
 )
 

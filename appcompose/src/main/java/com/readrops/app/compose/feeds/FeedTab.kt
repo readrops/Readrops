@@ -1,5 +1,6 @@
 package com.readrops.app.compose.feeds
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -25,10 +26,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
+import com.readrops.app.compose.R
+import com.readrops.app.compose.util.components.Placeholder
 import com.readrops.db.entities.Feed
 import org.koin.androidx.compose.getViewModel
 
@@ -58,7 +62,9 @@ object FeedTab : Tab {
             FeedModalBottomSheet(
                 feed = selectedFeed!!,
                 onDismissRequest = { showBottomSheet = false },
-                onOpen = { uriHandler.openUri(selectedFeed!!.siteUrl!!) },
+                onOpen = {
+                    Log.d("TAG", "Content: ")
+                    uriHandler.openUri(selectedFeed!!.siteUrl!!) },
                 onModify = { },
                 onDelete = {},
             )
@@ -100,26 +106,34 @@ object FeedTab : Tab {
             ) {
                 when (state) {
                     is FeedsState.LoadedState -> {
-                        val feeds = (state as FeedsState.LoadedState).feeds
+                        val foldersAndFeeds = (state as FeedsState.LoadedState).foldersAndFeeds
 
-                        if (feeds.isNotEmpty()) {
+                        if (foldersAndFeeds.isNotEmpty()) {
                             LazyColumn {
                                 items(
-                                    items = feeds
-                                ) { feed ->
-                                    FeedItem(
-                                        feed = feed,
-                                        onClick = {
-                                            selectedFeed = feed
-                                            showBottomSheet = true
-                                        },
-                                        onLongClick = {
-                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                            uriHandler.openUri(feed.siteUrl!!)
-                                        }
-                                    )
+                                    items = foldersAndFeeds.toList()
+                                ) { folderWithFeeds ->
+                                    if (folderWithFeeds.first != null) {
+                                        FolderExpandableItem(
+                                            folder = folderWithFeeds.first!!,
+                                            feeds = folderWithFeeds.second,
+                                            onFeedClick = { feed ->
+                                                selectedFeed = feed
+                                                showBottomSheet = true
+                                            },
+                                            onFeedLongClick = { feed ->
+                                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                uriHandler.openUri(feed.siteUrl!!)
+                                            }
+                                        )
+                                    }
                                 }
                             }
+                        } else {
+                            Placeholder(
+                                text = "No feed",
+                                painter = painterResource(R.drawable.ic_rss_feed_grey)
+                            )
                         }
                     }
 
