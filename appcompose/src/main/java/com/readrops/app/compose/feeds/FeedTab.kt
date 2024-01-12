@@ -1,6 +1,5 @@
 package com.readrops.app.compose.feeds
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -34,6 +33,7 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.readrops.app.compose.R
 import com.readrops.app.compose.util.components.Placeholder
 import com.readrops.db.entities.Feed
+import com.readrops.db.entities.Folder
 import org.koin.androidx.compose.getViewModel
 
 object FeedTab : Tab {
@@ -56,16 +56,17 @@ object FeedTab : Tab {
         var showDialog by remember { mutableStateOf(false) }
 
         var selectedFeed by remember { mutableStateOf<Feed?>(null) }
+        var selectedFolder by remember { mutableStateOf<Folder?>(null) }
         var showBottomSheet by remember { mutableStateOf(false) }
 
         if (showBottomSheet) {
             FeedModalBottomSheet(
                 feed = selectedFeed!!,
+                folder = selectedFolder,
                 onDismissRequest = { showBottomSheet = false },
-                onOpen = {
-                    Log.d("TAG", "Content: ")
-                    uriHandler.openUri(selectedFeed!!.siteUrl!!) },
+                onOpen = { uriHandler.openUri(selectedFeed!!.siteUrl!!) },
                 onModify = { },
+                onUpdateColor = {},
                 onDelete = {},
             )
         }
@@ -119,6 +120,7 @@ object FeedTab : Tab {
                                             feeds = folderWithFeeds.second,
                                             onFeedClick = { feed ->
                                                 selectedFeed = feed
+                                                selectedFolder = folderWithFeeds.first
                                                 showBottomSheet = true
                                             },
                                             onFeedLongClick = { feed ->

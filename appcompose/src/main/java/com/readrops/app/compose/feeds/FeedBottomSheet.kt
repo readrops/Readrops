@@ -22,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.readrops.app.compose.R
 import com.readrops.app.compose.util.theme.LargeSpacer
@@ -30,14 +29,17 @@ import com.readrops.app.compose.util.theme.MediumSpacer
 import com.readrops.app.compose.util.theme.VeryShortSpacer
 import com.readrops.app.compose.util.theme.spacing
 import com.readrops.db.entities.Feed
+import com.readrops.db.entities.Folder
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FeedModalBottomSheet(
     feed: Feed,
+    folder: Folder?,
     onDismissRequest: () -> Unit,
     onOpen: () -> Unit,
     onModify: () -> Unit,
+    onUpdateColor: () -> Unit,
     onDelete: () -> Unit,
 ) {
     ModalBottomSheet(
@@ -48,13 +50,13 @@ fun FeedModalBottomSheet(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(
-                    horizontal = 24.dp
+                    horizontal = MaterialTheme.spacing.largeSpacing
                 )
             ) {
                 AsyncImage(
                     model = feed.iconUrl,
                     contentDescription = feed.name!!,
-                    modifier = Modifier.size(48.dp)
+                    modifier = Modifier.size(MaterialTheme.spacing.veryLargeSpacing)
                 )
 
                 MediumSpacer()
@@ -65,12 +67,14 @@ fun FeedModalBottomSheet(
                         style = MaterialTheme.typography.headlineSmall,
                     )
 
-                    VeryShortSpacer()
+                    if (folder != null) {
+                        VeryShortSpacer()
 
-                    Text(
-                        text = "folder name if it exists",
-                        style = MaterialTheme.typography.labelSmall
-                    )
+                        Text(
+                            text = folder.name!!,
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    }
                 }
             }
 
@@ -78,7 +82,7 @@ fun FeedModalBottomSheet(
 
             Divider(
                 modifier = Modifier.padding(
-                    horizontal = MaterialTheme.spacing.shortSpacing
+                    horizontal = MaterialTheme.spacing.mediumSpacing
                 )
             )
 
@@ -94,6 +98,12 @@ fun FeedModalBottomSheet(
                 text = "Modify",
                 icon = Icons.Default.Create,
                 onClick = onModify
+            )
+
+            BottomSheetOption(
+                text = "Update color",
+                icon = ImageVector.vectorResource(R.drawable.ic_color),
+                onClick = onUpdateColor
             )
 
             BottomSheetOption(
@@ -120,8 +130,8 @@ fun BottomSheetOption(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    horizontal = 16.dp,
-                    vertical = 8.dp
+                    horizontal = MaterialTheme.spacing.mediumSpacing,
+                    vertical = MaterialTheme.spacing.shortSpacing
                 )
 
         ) {
