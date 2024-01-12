@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextOverflow
 import coil.compose.AsyncImage
 import com.readrops.app.compose.R
 import com.readrops.app.compose.util.theme.LargeSpacer
@@ -65,6 +66,8 @@ fun FeedModalBottomSheet(
                     Text(
                         text = feed.name!!,
                         style = MaterialTheme.typography.headlineSmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
 
                     if (folder != null) {
@@ -72,7 +75,7 @@ fun FeedModalBottomSheet(
 
                         Text(
                             text = folder.name!!,
-                            style = MaterialTheme.typography.labelSmall
+                            style = MaterialTheme.typography.labelLarge
                         )
                     }
                 }
@@ -127,6 +130,7 @@ fun BottomSheetOption(
         modifier = Modifier.clickable { onClick() }
     ) {
         Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(

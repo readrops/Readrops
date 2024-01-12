@@ -12,9 +12,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.style.TextOverflow
 import coil.compose.AsyncImage
 import com.readrops.app.compose.util.theme.ShortSpacer
+import com.readrops.app.compose.util.theme.spacing
 import com.readrops.app.compose.util.toDp
 import com.readrops.db.entities.Feed
 
@@ -35,7 +36,7 @@ fun FeedItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(MaterialTheme.spacing.shortSpacing)
         ) {
             AsyncImage(
                 model = feed.iconUrl,
@@ -47,7 +48,9 @@ fun FeedItem(
 
             Text(
                 text = feed.name!!,
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }

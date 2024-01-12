@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import com.readrops.app.compose.R
 import com.readrops.app.compose.util.theme.MediumSpacer
 import com.readrops.app.compose.util.theme.spacing
@@ -67,6 +68,7 @@ fun FolderExpandableItem(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.weight(1f)
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_folder_grey),
@@ -77,7 +79,9 @@ fun FolderExpandableItem(
 
                     Text(
                         text = folder.name!!,
-                        style = MaterialTheme.typography.headlineSmall
+                        style = MaterialTheme.typography.headlineSmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
 
@@ -86,7 +90,7 @@ fun FolderExpandableItem(
                         imageVector = Icons.Default.ArrowDropDown,
                         contentDescription = null,
                         modifier = Modifier
-                            .rotate(rotationState),
+                            .rotate(rotationState)
                     )
                 }
             }
