@@ -15,7 +15,7 @@ val composeAppModule = module {
 
     viewModel { TimelineViewModel(get(), get()) }
 
-    viewModel { FeedViewModel(get(), get()) }
+    viewModel { FeedViewModel(get(), get(), get()) }
 
     viewModel { AccountSelectionViewModel(get()) }
 

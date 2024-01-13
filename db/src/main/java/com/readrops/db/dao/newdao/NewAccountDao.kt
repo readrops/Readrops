@@ -8,6 +8,9 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface NewAccountDao : NewBaseDao<Account> {
 
+    @Query("Select * From Account")
+    fun selectAllAccounts(): Flow<List<Account>>
+
     @Query("Select Count(*) From Account")
     suspend fun selectAccountCount(): Int
 

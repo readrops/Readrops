@@ -73,11 +73,11 @@ object FeedTab : Tab {
 
         if (showDialog) {
             AddFeedDialog(
-                onDismiss = { showDialog = false },
-                onValidate = {
+                viewModel = viewModel,
+                onDismiss = {
                     showDialog = false
-                    viewModel.insertFeed(it)
-                }
+                    viewModel.resetAddFeedDialogState()
+                },
             )
         }
 

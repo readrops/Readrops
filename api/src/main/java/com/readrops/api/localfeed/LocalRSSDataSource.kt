@@ -1,6 +1,5 @@
 package com.readrops.api.localfeed
 
-import android.accounts.NetworkErrorException
 import androidx.annotation.WorkerThread
 import com.gitlab.mvysny.konsumexml.Konsumer
 import com.gitlab.mvysny.konsumexml.konsumeXml
@@ -22,7 +21,6 @@ import okio.Buffer
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import java.io.IOException
-import java.lang.Exception
 import java.net.HttpURLConnection
 
 class LocalRSSDataSource(private val httpClient: OkHttpClient) : KoinComponent {
@@ -75,7 +73,8 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) : KoinComponent {
                         val rootKonsumer = nextElement(LocalRSSHelper.RSS_ROOT_NAMES)
                         rootKonsumer?.let { type = LocalRSSHelper.guessRSSType(rootKonsumer) }
                     } catch (e: Exception) {
-                        throw UnknownFormatException(e.message)
+                        close()
+                        return false
                     }
 
                 }
