@@ -114,20 +114,35 @@ object FeedTab : Tab {
                                 items(
                                     items = foldersAndFeeds.toList()
                                 ) { folderWithFeeds ->
+
+                                    fun onFeedClick(feed: Feed) {
+                                        selectedFeed = feed
+                                        selectedFolder = folderWithFeeds.first
+                                        showBottomSheet = true
+                                    }
+
+                                    fun onFeedLongClick(feed: Feed) {
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        uriHandler.openUri(feed.siteUrl!!)
+                                    }
+
                                     if (folderWithFeeds.first != null) {
                                         FolderExpandableItem(
                                             folder = folderWithFeeds.first!!,
                                             feeds = folderWithFeeds.second,
-                                            onFeedClick = { feed ->
-                                                selectedFeed = feed
-                                                selectedFolder = folderWithFeeds.first
-                                                showBottomSheet = true
-                                            },
-                                            onFeedLongClick = { feed ->
-                                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                                uriHandler.openUri(feed.siteUrl!!)
-                                            }
+                                            onFeedClick = { feed -> onFeedClick(feed) },
+                                            onFeedLongClick = { feed -> onFeedLongClick(feed) }
                                         )
+                                    } else {
+                                        val feeds = folderWithFeeds.second
+
+                                        for (feed in feeds) {
+                                            FeedItem(
+                                                feed = feed,
+                                                onClick = { onFeedClick(feed) },
+                                                onLongClick = { onFeedLongClick(feed) },
+                                            )
+                                        }
                                     }
                                 }
                             }
