@@ -1,4 +1,4 @@
-package com.readrops.app.compose.feeds
+package com.readrops.app.compose.feeds.dialogs
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

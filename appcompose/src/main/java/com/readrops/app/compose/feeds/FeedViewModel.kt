@@ -8,7 +8,6 @@ import com.readrops.app.compose.base.TabViewModel
 import com.readrops.app.compose.repositories.GetFoldersWithFeeds
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
-import com.readrops.db.entities.Folder
 import com.readrops.db.entities.account.Account
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -67,10 +66,13 @@ class FeedViewModel(
 
     fun closeDialog() = _feedState.update { it.copy(dialog = null) }
 
-    fun openAddFeedDialog() = _feedState.update { it.copy(dialog = DialogState.AddFeed) }
+    fun openDialog(state: DialogState) = _feedState.update { it.copy(dialog = state) }
 
-    fun openFeedSheet(feed: Feed, folder: Folder?) =
-        _feedState.update { it.copy(dialog = DialogState.FeedSheet(feed, folder)) }
+    fun deleteFeed(feed: Feed) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository?.deleteFeed(feed)
+        }
+    }
 
     fun setAddFeedDialogURL(url: String) {
         _addFeedDialogState.update {

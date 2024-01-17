@@ -11,8 +11,11 @@ data class FeedState(
 
 sealed interface DialogState {
     object AddFeed : DialogState
+    object AddFolder : DialogState
     class DeleteFeed(val feed: Feed) : DialogState
+    class DeleteFolder(val folder: Folder) : DialogState
     class UpdateFeed(val feed: Feed) : DialogState
+    class UpdateFolder(val folder: Folder) : DialogState
     class FeedSheet(val feed: Feed, val folder: Folder?) : DialogState
 }
 

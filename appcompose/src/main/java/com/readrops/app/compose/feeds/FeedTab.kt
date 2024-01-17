@@ -28,6 +28,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.readrops.app.compose.R
+import com.readrops.app.compose.feeds.dialogs.AddFeedDialog
+import com.readrops.app.compose.feeds.dialogs.DeleteFeedDialog
+import com.readrops.app.compose.feeds.dialogs.FeedModalBottomSheet
 import com.readrops.app.compose.util.components.Placeholder
 import com.readrops.db.entities.Feed
 import org.koin.androidx.compose.getViewModel
@@ -60,19 +63,37 @@ object FeedTab : Tab {
                     },
                 )
             }
-            is DialogState.DeleteFeed -> {}
+
+            is DialogState.DeleteFeed -> {
+                DeleteFeedDialog(
+                    feed = dialog.feed,
+                    onDismiss = { viewModel.closeDialog() },
+                    onDelete = {
+                        viewModel.deleteFeed(dialog.feed)
+                        viewModel.closeDialog()
+                    }
+                )
+            }
+
             is DialogState.FeedSheet -> {
                 FeedModalBottomSheet(
                     feed = dialog.feed,
                     folder = dialog.folder,
                     onDismissRequest = { viewModel.closeDialog() },
-                    onOpen = { uriHandler.openUri(dialog.feed.siteUrl!!) },
+                    onOpen = {
+                        uriHandler.openUri(dialog.feed.siteUrl!!)
+                        viewModel.closeDialog()
+                    },
                     onModify = { },
                     onUpdateColor = {},
-                    onDelete = {},
+                    onDelete = { viewModel.openDialog(DialogState.DeleteFeed(dialog.feed)) },
                 )
             }
+
             is DialogState.UpdateFeed -> {}
+            DialogState.AddFolder -> {}
+            is DialogState.DeleteFolder -> {}
+            is DialogState.UpdateFolder -> {}
             null -> {}
         }
 
@@ -102,7 +123,8 @@ object FeedTab : Tab {
             ) {
                 when (state.foldersAndFeeds) {
                     is FolderAndFeedsState.LoadedState -> {
-                        val foldersAndFeeds = (state.foldersAndFeeds as FolderAndFeedsState.LoadedState).values
+                        val foldersAndFeeds =
+                            (state.foldersAndFeeds as FolderAndFeedsState.LoadedState).values
 
                         if (foldersAndFeeds.isNotEmpty()) {
                             LazyColumn {
@@ -119,7 +141,14 @@ object FeedTab : Tab {
                                         FolderExpandableItem(
                                             folder = folderWithFeeds.first!!,
                                             feeds = folderWithFeeds.second,
-                                            onFeedClick = { feed -> viewModel.openFeedSheet(feed, folderWithFeeds.first) },
+                                            onFeedClick = { feed ->
+                                                viewModel.openDialog(
+                                                    DialogState.FeedSheet(
+                                                        feed,
+                                                        folderWithFeeds.first
+                                                    )
+                                                )
+                                            },
                                             onFeedLongClick = { feed -> onFeedLongClick(feed) }
                                         )
                                     } else {
@@ -128,7 +157,11 @@ object FeedTab : Tab {
                                         for (feed in feeds) {
                                             FeedItem(
                                                 feed = feed,
-                                                onClick = { viewModel.openFeedSheet(feed, null) },
+                                                onClick = {
+                                                    viewModel.openDialog(
+                                                        DialogState.FeedSheet(feed, null)
+                                                    )
+                                                },
                                                 onLongClick = { onFeedLongClick(feed) },
                                             )
                                         }
@@ -156,7 +189,7 @@ object FeedTab : Tab {
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(16.dp),
-                    onClick = { viewModel.openAddFeedDialog() }
+                    onClick = { viewModel.openDialog(DialogState.AddFeed) }
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
