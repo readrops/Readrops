@@ -17,9 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -33,7 +30,6 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.readrops.app.compose.R
 import com.readrops.app.compose.util.components.Placeholder
 import com.readrops.db.entities.Feed
-import com.readrops.db.entities.Folder
 import org.koin.androidx.compose.getViewModel
 
 object FeedTab : Tab {
@@ -53,32 +49,31 @@ object FeedTab : Tab {
         val viewModel = getViewModel<FeedViewModel>()
 
         val state by viewModel.feedsState.collectAsStateWithLifecycle()
-        var showDialog by remember { mutableStateOf(false) }
 
-        var selectedFeed by remember { mutableStateOf<Feed?>(null) }
-        var selectedFolder by remember { mutableStateOf<Folder?>(null) }
-        var showBottomSheet by remember { mutableStateOf(false) }
-
-        if (showBottomSheet) {
-            FeedModalBottomSheet(
-                feed = selectedFeed!!,
-                folder = selectedFolder,
-                onDismissRequest = { showBottomSheet = false },
-                onOpen = { uriHandler.openUri(selectedFeed!!.siteUrl!!) },
-                onModify = { },
-                onUpdateColor = {},
-                onDelete = {},
-            )
-        }
-
-        if (showDialog) {
-            AddFeedDialog(
-                viewModel = viewModel,
-                onDismiss = {
-                    showDialog = false
-                    viewModel.resetAddFeedDialogState()
-                },
-            )
+        when (val dialog = state.dialog) {
+            is DialogState.AddFeed -> {
+                AddFeedDialog(
+                    viewModel = viewModel,
+                    onDismiss = {
+                        viewModel.closeDialog()
+                        viewModel.resetAddFeedDialogState()
+                    },
+                )
+            }
+            is DialogState.DeleteFeed -> {}
+            is DialogState.FeedSheet -> {
+                FeedModalBottomSheet(
+                    feed = dialog.feed,
+                    folder = dialog.folder,
+                    onDismissRequest = { viewModel.closeDialog() },
+                    onOpen = { uriHandler.openUri(dialog.feed.siteUrl!!) },
+                    onModify = { },
+                    onUpdateColor = {},
+                    onDelete = {},
+                )
+            }
+            is DialogState.UpdateFeed -> {}
+            null -> {}
         }
 
         Scaffold(
@@ -105,21 +100,15 @@ object FeedTab : Tab {
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                when (state) {
-                    is FeedsState.LoadedState -> {
-                        val foldersAndFeeds = (state as FeedsState.LoadedState).foldersAndFeeds
+                when (state.foldersAndFeeds) {
+                    is FolderAndFeedsState.LoadedState -> {
+                        val foldersAndFeeds = (state.foldersAndFeeds as FolderAndFeedsState.LoadedState).values
 
                         if (foldersAndFeeds.isNotEmpty()) {
                             LazyColumn {
                                 items(
                                     items = foldersAndFeeds.toList()
                                 ) { folderWithFeeds ->
-
-                                    fun onFeedClick(feed: Feed) {
-                                        selectedFeed = feed
-                                        selectedFolder = folderWithFeeds.first
-                                        showBottomSheet = true
-                                    }
 
                                     fun onFeedLongClick(feed: Feed) {
                                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -130,7 +119,7 @@ object FeedTab : Tab {
                                         FolderExpandableItem(
                                             folder = folderWithFeeds.first!!,
                                             feeds = folderWithFeeds.second,
-                                            onFeedClick = { feed -> onFeedClick(feed) },
+                                            onFeedClick = { feed -> viewModel.openFeedSheet(feed, folderWithFeeds.first) },
                                             onFeedLongClick = { feed -> onFeedLongClick(feed) }
                                         )
                                     } else {
@@ -139,7 +128,7 @@ object FeedTab : Tab {
                                         for (feed in feeds) {
                                             FeedItem(
                                                 feed = feed,
-                                                onClick = { onFeedClick(feed) },
+                                                onClick = { viewModel.openFeedSheet(feed, null) },
                                                 onLongClick = { onFeedLongClick(feed) },
                                             )
                                         }
@@ -154,7 +143,7 @@ object FeedTab : Tab {
                         }
                     }
 
-                    is FeedsState.ErrorState -> {
+                    is FolderAndFeedsState.ErrorState -> {
 
                     }
 
@@ -167,7 +156,7 @@ object FeedTab : Tab {
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(16.dp),
-                    onClick = { showDialog = true }
+                    onClick = { viewModel.openAddFeedDialog() }
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,

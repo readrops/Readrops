@@ -27,8 +27,8 @@ class FeedViewModel(
     private val localRSSDataSource: LocalRSSDataSource,
 ) : TabViewModel(database), KoinComponent {
 
-    private val _feedsState = MutableStateFlow<FeedsState>(FeedsState.InitialState)
-    val feedsState = _feedsState.asStateFlow()
+    private val _feedState = MutableStateFlow(FeedState())
+    val feedsState = _feedState.asStateFlow()
 
     private val _addFeedDialogState = MutableStateFlow(AddFeedDialogState())
     val addFeedDialogState = _addFeedDialogState.asStateFlow()
@@ -39,8 +39,16 @@ class FeedViewModel(
                 .flatMapConcat { account ->
                     getFoldersWithFeeds.get(account.id)
                 }
-                .catch { _feedsState.value = FeedsState.ErrorState(Exception(it)) }
-                .collect { _feedsState.value = FeedsState.LoadedState(it) }
+                .catch { throwable ->
+                    _feedState.update {
+                        it.copy(foldersAndFeeds = FolderAndFeedsState.ErrorState(Exception(throwable)))
+                    }
+                }
+                .collect { foldersAndFeeds ->
+                    _feedState.update {
+                        it.copy(foldersAndFeeds = FolderAndFeedsState.LoadedState(foldersAndFeeds))
+                    }
+                }
         }
 
         viewModelScope.launch(context = Dispatchers.IO) {
@@ -56,6 +64,13 @@ class FeedViewModel(
                 }
         }
     }
+
+    fun closeDialog() = _feedState.update { it.copy(dialog = null) }
+
+    fun openAddFeedDialog() = _feedState.update { it.copy(dialog = DialogState.AddFeed) }
+
+    fun openFeedSheet(feed: Feed, folder: Folder?) =
+        _feedState.update { it.copy(dialog = DialogState.FeedSheet(feed, folder)) }
 
     fun setAddFeedDialogURL(url: String) {
         _addFeedDialogState.update {
@@ -135,37 +150,3 @@ class FeedViewModel(
     }
 }
 
-sealed class FeedsState {
-    object InitialState : FeedsState()
-    data class ErrorState(val exception: Exception) : FeedsState()
-    data class LoadedState(val foldersAndFeeds: Map<Folder?, List<Feed>>) : FeedsState()
-}
-
-
-data class AddFeedDialogState(
-    val url: String = "",
-    val selectedAccount: Account = Account(accountName = ""),
-    val accounts: List<Account> = listOf(),
-    val error: AddFeedError? = null,
-    val closeDialog: Boolean = false,
-) {
-    fun isError() = error != null
-
-    val errorText: String
-        get() = when (error) {
-            is AddFeedError.EmptyUrl -> "Field can't be empty"
-            AddFeedError.BadUrl -> "Input is not a valid URL"
-            AddFeedError.NoConnection -> ""
-            AddFeedError.NoRSSFeed -> "No RSS feed found"
-            AddFeedError.UnreachableUrl -> ""
-            else -> ""
-        }
-
-    sealed class AddFeedError {
-        object EmptyUrl : AddFeedError()
-        object BadUrl : AddFeedError()
-        object UnreachableUrl : AddFeedError()
-        object NoRSSFeed : AddFeedError()
-        object NoConnection : AddFeedError()
-    }
-}
