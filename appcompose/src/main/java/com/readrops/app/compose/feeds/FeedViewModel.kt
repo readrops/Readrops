@@ -8,12 +8,12 @@ import com.readrops.app.compose.base.TabViewModel
 import com.readrops.app.compose.repositories.GetFoldersWithFeeds
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
+import com.readrops.db.entities.Folder
 import com.readrops.db.entities.account.Account
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -32,9 +32,12 @@ class FeedViewModel(
     private val _addFeedDialogState = MutableStateFlow(AddFeedDialogState())
     val addFeedDialogState = _addFeedDialogState.asStateFlow()
 
+    private val _updateFeedDialogState = MutableStateFlow(UpdateFeedDialogState())
+    val updateFeedDialogState = _updateFeedDialogState.asStateFlow()
+
     init {
         viewModelScope.launch(context = Dispatchers.IO) {
-            accountEvent.consumeAsFlow()
+            accountEvent
                 .flatMapConcat { account ->
                     getFoldersWithFeeds.get(account.id)
                 }
@@ -62,17 +65,47 @@ class FeedViewModel(
                     }
                 }
         }
+
+        viewModelScope.launch(context = Dispatchers.IO) {
+            accountEvent
+                .flatMapConcat { account ->
+                    database.newFolderDao()
+                        .selectFolders(account.id)
+                }
+                .collect { folders ->
+                    _updateFeedDialogState.update {
+                        it.copy(
+                            folders = folders,
+                            accountType = currentAccount!!.accountType
+                        )
+                    }
+                }
+        }
     }
 
     fun closeDialog() = _feedState.update { it.copy(dialog = null) }
 
-    fun openDialog(state: DialogState) = _feedState.update { it.copy(dialog = state) }
+    fun openDialog(state: DialogState) {
+        if (state is DialogState.UpdateFeed) {
+            _updateFeedDialogState.update {
+                it.copy(
+                    feedName = state.feed.name!!,
+                    feedUrl = state.feed.url!!,
+                    selectedFolder = state.folder
+                )
+            }
+        }
+
+        _feedState.update { it.copy(dialog = state) }
+    }
 
     fun deleteFeed(feed: Feed) {
         viewModelScope.launch(Dispatchers.IO) {
             repository?.deleteFeed(feed)
         }
     }
+
+    // Add feed
 
     fun setAddFeedDialogURL(url: String) {
         _addFeedDialogState.update {
@@ -94,47 +127,41 @@ class FeedViewModel(
     fun addFeedDialogValidate() {
         val url = _addFeedDialogState.value.url
 
-        if (url.isEmpty()) {
-            _addFeedDialogState.update {
-                it.copy(
-                    error = AddFeedDialogState.AddFeedError.EmptyUrl
-                )
-            }
-
-            return
-        } else if (!Patterns.WEB_URL.matcher(url).matches()) {
-            _addFeedDialogState.update {
-                it.copy(
-                    error = AddFeedDialogState.AddFeedError.BadUrl
-                )
-            }
-
-            return
-        }
-
-        viewModelScope.launch(Dispatchers.IO) {
-            if (localRSSDataSource.isUrlRSSResource(url)) {
-                // TODO add support for all account types
-                repository?.insertNewFeeds(listOf(url))
-
+        when {
+            url.isEmpty() -> {
                 _addFeedDialogState.update {
-                    it.copy(closeDialog = true)
+                    it.copy(error = AddFeedDialogState.AddFeedError.EmptyUrl)
                 }
-            } else {
-                val rssUrls = HtmlParser.getFeedLink(url, get())
 
-                if (rssUrls.isEmpty()) {
-                    _addFeedDialogState.update {
-                        it.copy(
-                            error = AddFeedDialogState.AddFeedError.NoRSSFeed
-                        )
-                    }
-                } else {
+                return
+            }
+
+            !Patterns.WEB_URL.matcher(url).matches() -> {
+                _addFeedDialogState.update {
+                    it.copy(error = AddFeedDialogState.AddFeedError.BadUrl)
+                }
+
+                return
+            }
+
+            else -> viewModelScope.launch(Dispatchers.IO) {
+                if (localRSSDataSource.isUrlRSSResource(url)) {
                     // TODO add support for all account types
-                    repository?.insertNewFeeds(rssUrls.map { it.url })
+                    repository?.insertNewFeeds(listOf(url))
 
-                    _addFeedDialogState.update {
-                        it.copy(closeDialog = true)
+                    closeDialog()
+                } else {
+                    val rssUrls = HtmlParser.getFeedLink(url, get())
+
+                    if (rssUrls.isEmpty()) {
+                        _addFeedDialogState.update {
+                            it.copy(error = AddFeedDialogState.AddFeedError.NoRSSFeed)
+                        }
+                    } else {
+                        // TODO add support for all account types
+                        repository?.insertNewFeeds(rssUrls.map { it.url })
+
+                        closeDialog()
                     }
                 }
             }
@@ -146,9 +173,82 @@ class FeedViewModel(
             it.copy(
                 url = "",
                 error = null,
-                closeDialog = false
             )
         }
     }
+
+    // add feed
+
+    // update feed
+
+    fun setAccountDropDownState(isExpanded: Boolean) {
+        _updateFeedDialogState.update {
+            it.copy(isAccountDropDownExpanded = isExpanded)
+        }
+    }
+
+    fun setSelectedFolder(folder: Folder) {
+        _updateFeedDialogState.update {
+            it.copy(selectedFolder = folder)
+        }
+    }
+
+    fun setUpdateFeedDialogStateFeedName(feedName: String) {
+        _updateFeedDialogState.update {
+            it.copy(
+                feedName = feedName,
+                feedNameError = null,
+            )
+        }
+    }
+
+    fun setUpdateFeedDialogFeedUrl(feedUrl: String) {
+        _updateFeedDialogState.update {
+            it.copy(
+                feedUrl = feedUrl,
+                feedUrlError = null,
+            )
+        }
+    }
+
+    fun updateFeedDialogValidate() {
+        val feedName = _updateFeedDialogState.value.feedName
+        val feedUrl = _updateFeedDialogState.value.feedUrl
+
+        when {
+            feedName.isEmpty() -> {
+                _updateFeedDialogState.update {
+                    it.copy(feedNameError = UpdateFeedDialogState.Error.EmptyField)
+                }
+                return
+            }
+
+            feedUrl.isEmpty() -> {
+                _updateFeedDialogState.update {
+                    it.copy(feedUrlError = UpdateFeedDialogState.Error.EmptyField)
+                }
+                return
+            }
+
+            !Patterns.WEB_URL.matcher(feedUrl).matches() -> {
+                _updateFeedDialogState.update {
+                    it.copy(feedUrlError = UpdateFeedDialogState.Error.BadUrl)
+                }
+                return
+            }
+
+            else -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    // TODO add logig to update feed
+                    //repository?.updateFeed()
+                    closeDialog()
+                }
+            }
+        }
+
+    }
+
+
+    // update feed
 }
 

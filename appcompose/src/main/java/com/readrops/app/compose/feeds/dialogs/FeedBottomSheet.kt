@@ -39,7 +39,7 @@ fun FeedModalBottomSheet(
     folder: Folder?,
     onDismissRequest: () -> Unit,
     onOpen: () -> Unit,
-    onModify: () -> Unit,
+    onUpdate: () -> Unit,
     onUpdateColor: () -> Unit,
     onDelete: () -> Unit,
 ) {
@@ -98,9 +98,9 @@ fun FeedModalBottomSheet(
             )
 
             BottomSheetOption(
-                text = "Modify",
+                text = "Update",
                 icon = Icons.Default.Create,
-                onClick = onModify
+                onClick = onUpdate
             )
 
             BottomSheetOption(

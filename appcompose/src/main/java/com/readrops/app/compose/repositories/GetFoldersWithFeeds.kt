@@ -24,7 +24,8 @@ class GetFoldersWithFeeds(
                         id = it.feedId,
                         name = it.feedName,
                         iconUrl = it.feedIcon,
-                        siteUrl = it.feedUrl,
+                        url = it.feedUrl,
+                        siteUrl = it.feedSiteUrl,
                         unreadCount = it.unreadCount
                     )
                 }

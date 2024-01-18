@@ -25,7 +25,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -44,7 +43,7 @@ class TimelineViewModel(
     init {
         viewModelScope.launch(dispatcher) {
             combine(
-                accountEvent.consumeAsFlow(),
+                accountEvent,
                 filters
             ) { account, filters ->
                 filters.accountId = account.id

@@ -7,24 +7,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -35,24 +29,22 @@ import com.readrops.app.compose.R
 import com.readrops.app.compose.feeds.FeedViewModel
 import com.readrops.app.compose.util.theme.LargeSpacer
 import com.readrops.app.compose.util.theme.MediumSpacer
-import com.readrops.app.compose.util.theme.ShortSpacer
 import com.readrops.app.compose.util.theme.spacing
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddFeedDialog(
+fun UpdateFeedDialog(
     viewModel: FeedViewModel,
-    onDismiss: () -> Unit,
+    onDismissRequest: () -> Unit
 ) {
-    val state by viewModel.addFeedDialogState.collectAsStateWithLifecycle()
-
-    var isExpanded by remember { mutableStateOf(false) }
+    val state by viewModel.updateFeedDialogState.collectAsStateWithLifecycle()
 
     Dialog(
-        onDismissRequest = onDismiss
+        onDismissRequest = onDismissRequest
     ) {
         Card(
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(16.dp)
         ) {
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -71,61 +63,66 @@ fun AddFeedDialog(
                 MediumSpacer()
 
                 Text(
-                    text = "Add new feed",
+                    text = "Update feed",
                     style = MaterialTheme.typography.headlineSmall
                 )
 
                 MediumSpacer()
 
                 OutlinedTextField(
-                    value = state.url,
-                    label = {
-                        Text(text = "URL")
-                    },
-                    onValueChange = { viewModel.setAddFeedDialogURL(it) },
+                    value = state.feedName,
+                    onValueChange = { viewModel.setUpdateFeedDialogStateFeedName(it) },
+                    label = { Text(text = "Feed name") },
                     singleLine = true,
-                    trailingIcon = {
-                        if (state.url.isNotEmpty()) {
-                            IconButton(
-                                onClick = { viewModel.setAddFeedDialogURL("") }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Clear,
-                                    contentDescription = null
-                                )
-                            }
+                    isError = state.isFeedNameError,
+                    supportingText = {
+                        if (state.isFeedNameError) {
+                            Text(
+                                text = state.errorText(state.feedNameError)
+                            )
                         }
-                    },
-                    isError = state.isError,
-                    supportingText = { Text(state.errorText) }
+                    }
                 )
 
-                ShortSpacer()
+                MediumSpacer()
+
+                OutlinedTextField(
+                    value = state.feedUrl,
+                    onValueChange = { viewModel.setUpdateFeedDialogFeedUrl(it) },
+                    label = { Text(text = "Feed URL") },
+                    singleLine = true,
+                    readOnly = state.isFeedUrlReadOnly,
+                    isError = state.isFeedUrlError,
+                    supportingText = {
+                        if (state.isFeedUrlError) {
+                            Text(
+                                text = state.errorText(state.feedUrlError)
+                            )
+                        }
+                    }
+                )
+
+                MediumSpacer()
 
                 ExposedDropdownMenuBox(
-                    expanded = isExpanded,
-                    onExpandedChange = { isExpanded = isExpanded.not() }
+                    expanded = state.isAccountDropDownExpanded,
+                    onExpandedChange = { viewModel.setAccountDropDownState(state.isAccountDropDownExpanded.not()) }
                 ) {
                     ExposedDropdownMenu(
-                        expanded = isExpanded,
-                        onDismissRequest = { isExpanded = false }
+                        expanded = state.isAccountDropDownExpanded,
+                        onDismissRequest = { viewModel.setAccountDropDownState(false) }
                     ) {
-                        for (account in state.accounts) {
+                        for (folder in state.folders) {
                             DropdownMenuItem(
-                                text = { Text(text = account.accountName!!) },
+                                text = { Text(text = folder.name!!) },
                                 onClick = {
-                                    isExpanded = false
-                                    viewModel.setAddFeedDialogSelectedAccount(account)
+                                    viewModel.setSelectedFolder(folder)
+                                    viewModel.setAccountDropDownState(false)
                                 },
                                 leadingIcon = {
                                     Icon(
-                                        painter = painterResource(
-                                            id = if (state.selectedAccount.isLocal){
-                                                R.drawable.ic_rss_feed_grey}
-                                            else
-                                                state.selectedAccount.accountType!!.iconRes
-                                        ),
-                                        contentDescription = null
+                                        painterResource(id = R.drawable.ic_folder_grey),
+                                        contentDescription = null,
                                     )
                                 }
                             )
@@ -133,22 +130,19 @@ fun AddFeedDialog(
                     }
 
                     OutlinedTextField(
-                        value = state.selectedAccount.accountName!!,
+                        value = state.selectedFolder?.name.orEmpty(),
                         readOnly = true,
                         onValueChange = {},
                         trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = state.isAccountDropDownExpanded)
                         },
                         leadingIcon = {
-                            Icon(
-                                painter = painterResource(
-                                    id = if (state.selectedAccount.isLocal){
-                                        R.drawable.ic_rss_feed_grey}
-                                    else
-                                        state.selectedAccount.accountType!!.iconRes
-                                ),
-                                contentDescription = null
-                            )
+                            if (state.selectedFolder != null) {
+                                Icon(
+                                    painterResource(id = R.drawable.ic_folder_grey),
+                                    contentDescription = null,
+                                )
+                            }
                         },
                         modifier = Modifier.menuAnchor()
                     )
@@ -157,7 +151,7 @@ fun AddFeedDialog(
                 LargeSpacer()
 
                 TextButton(
-                    onClick = { viewModel.addFeedDialogValidate() },
+                    onClick = { viewModel.updateFeedDialogValidate() },
                 ) {
                     Text(text = "Validate")
                 }

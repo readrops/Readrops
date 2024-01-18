@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.readrops.app.compose.repositories.BaseRepository
 import com.readrops.db.Database
 import com.readrops.db.entities.account.Account
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
@@ -26,7 +26,7 @@ abstract class TabViewModel(
 
     protected var currentAccount: Account? = null
 
-    protected val accountEvent = Channel<Account>()
+    protected val accountEvent = MutableSharedFlow<Account>()
 
     init {
         viewModelScope.launch {
@@ -38,7 +38,7 @@ abstract class TabViewModel(
                         currentAccount = account
                         repository = get(parameters = { parametersOf(account) })
 
-                        accountEvent.send(account)
+                        accountEvent.emit(account)
                     }
                 }
         }

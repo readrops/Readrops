@@ -31,6 +31,7 @@ import com.readrops.app.compose.R
 import com.readrops.app.compose.feeds.dialogs.AddFeedDialog
 import com.readrops.app.compose.feeds.dialogs.DeleteFeedDialog
 import com.readrops.app.compose.feeds.dialogs.FeedModalBottomSheet
+import com.readrops.app.compose.feeds.dialogs.UpdateFeedDialog
 import com.readrops.app.compose.util.components.Placeholder
 import com.readrops.db.entities.Feed
 import org.koin.androidx.compose.getViewModel
@@ -84,13 +85,19 @@ object FeedTab : Tab {
                         uriHandler.openUri(dialog.feed.siteUrl!!)
                         viewModel.closeDialog()
                     },
-                    onModify = { },
+                    onUpdate = { viewModel.openDialog(DialogState.UpdateFeed(dialog.feed, dialog.folder)) },
                     onUpdateColor = {},
                     onDelete = { viewModel.openDialog(DialogState.DeleteFeed(dialog.feed)) },
                 )
             }
 
-            is DialogState.UpdateFeed -> {}
+            is DialogState.UpdateFeed -> {
+                UpdateFeedDialog(
+                    viewModel = viewModel,
+                    onDismissRequest = { viewModel.closeDialog() }
+                )
+            }
+
             DialogState.AddFolder -> {}
             is DialogState.DeleteFolder -> {}
             is DialogState.UpdateFolder -> {}
