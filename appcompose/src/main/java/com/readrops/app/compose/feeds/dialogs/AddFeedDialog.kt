@@ -97,7 +97,7 @@ fun AddFeedDialog(
                         }
                     },
                     isError = state.isError,
-                    supportingText = { Text(state.errorText) }
+                    supportingText = { Text(state.error?.errorText().orEmpty()) }
                 )
 
                 ShortSpacer()

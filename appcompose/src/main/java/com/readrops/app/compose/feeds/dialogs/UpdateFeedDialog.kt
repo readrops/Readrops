@@ -78,7 +78,7 @@ fun UpdateFeedDialog(
                     supportingText = {
                         if (state.isFeedNameError) {
                             Text(
-                                text = state.errorText(state.feedNameError)
+                                text = state.feedNameError?.errorText().orEmpty()
                             )
                         }
                     }
@@ -96,7 +96,7 @@ fun UpdateFeedDialog(
                     supportingText = {
                         if (state.isFeedUrlError) {
                             Text(
-                                text = state.errorText(state.feedUrlError)
+                                text = state.feedUrlError?.errorText().orEmpty()
                             )
                         }
                     }

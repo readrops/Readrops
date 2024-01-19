@@ -1,5 +1,6 @@
 package com.readrops.app.compose.feeds
 
+import com.readrops.app.compose.util.components.TextFieldError
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.account.Account
@@ -30,66 +31,34 @@ data class AddFeedDialogState(
     val url: String = "",
     val selectedAccount: Account = Account(accountName = ""),
     val accounts: List<Account> = listOf(),
-    val error: AddFeedError? = null,
+    val error: TextFieldError? = null,
 ) {
     val isError: Boolean get() = error != null
-
-    val errorText: String
-        get() = when (error) {
-            is AddFeedError.EmptyUrl -> "Field can't be empty"
-            AddFeedError.BadUrl -> "Input is not a valid URL"
-            AddFeedError.NoConnection -> ""
-            AddFeedError.NoRSSFeed -> "No RSS feed found"
-            AddFeedError.UnreachableUrl -> ""
-            else -> ""
-        }
-
-    sealed class AddFeedError {
-        object EmptyUrl : AddFeedError()
-        object BadUrl : AddFeedError()
-        object UnreachableUrl : AddFeedError()
-        object NoRSSFeed : AddFeedError()
-        object NoConnection : AddFeedError()
-    }
 }
 
 data class UpdateFeedDialogState(
     val feedName: String = "",
-    val feedNameError: Error? = null,
+    val feedNameError: TextFieldError? = null,
     val feedUrl: String = "",
-    val feedUrlError: Error? = null,
+    val feedUrlError: TextFieldError? = null,
     val accountType: AccountType? = null,
     val selectedFolder: Folder? = null,
     val folders: List<Folder> = listOf(),
     val isAccountDropDownExpanded: Boolean = false,
 ) {
-
-    sealed class Error {
-        object EmptyField : Error()
-        object BadUrl : Error()
-        object NoRSSUrl : Error()
-    }
-
     val isFeedNameError
         get() = feedNameError != null
 
     val isFeedUrlError
         get() = feedUrlError != null
 
-    fun errorText(error: Error?): String = when (error) {
-        Error.BadUrl -> "Input is not a valid URL"
-        Error.EmptyField -> "Field can't be empty"
-        Error.NoRSSUrl -> "The provided URL is not a valid RSS feed"
-        else -> ""
-    }
-
     val isFeedUrlReadOnly: Boolean
         get() = accountType != null && !accountType.accountConfig!!.isFeedUrlEditable
-
 }
 
 data class AddFolderState(
     val name: String = "",
-    val isEmpty: Boolean = false,
-    val errorText: String = "Field can't be empty"
-)
+    val nameError: TextFieldError? = null,
+) {
+    val isError = nameError != null
+}

@@ -6,6 +6,7 @@ import com.readrops.api.localfeed.LocalRSSDataSource
 import com.readrops.api.utils.HtmlParser
 import com.readrops.app.compose.base.TabViewModel
 import com.readrops.app.compose.repositories.GetFoldersWithFeeds
+import com.readrops.app.compose.util.components.TextFieldError
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
@@ -133,7 +134,7 @@ class FeedViewModel(
         when {
             url.isEmpty() -> {
                 _addFeedDialogState.update {
-                    it.copy(error = AddFeedDialogState.AddFeedError.EmptyUrl)
+                    it.copy(error = TextFieldError.EmptyField)
                 }
 
                 return
@@ -141,7 +142,7 @@ class FeedViewModel(
 
             !Patterns.WEB_URL.matcher(url).matches() -> {
                 _addFeedDialogState.update {
-                    it.copy(error = AddFeedDialogState.AddFeedError.BadUrl)
+                    it.copy(error = TextFieldError.BadUrl)
                 }
 
                 return
@@ -158,7 +159,7 @@ class FeedViewModel(
 
                     if (rssUrls.isEmpty()) {
                         _addFeedDialogState.update {
-                            it.copy(error = AddFeedDialogState.AddFeedError.NoRSSFeed)
+                            it.copy(error = TextFieldError.NoRSSFeed)
                         }
                     } else {
                         // TODO add support for all account types
@@ -221,21 +222,21 @@ class FeedViewModel(
         when {
             feedName.isEmpty() -> {
                 _updateFeedDialogState.update {
-                    it.copy(feedNameError = UpdateFeedDialogState.Error.EmptyField)
+                    it.copy(feedNameError = TextFieldError.EmptyField)
                 }
                 return
             }
 
             feedUrl.isEmpty() -> {
                 _updateFeedDialogState.update {
-                    it.copy(feedUrlError = UpdateFeedDialogState.Error.EmptyField)
+                    it.copy(feedUrlError = TextFieldError.EmptyField)
                 }
                 return
             }
 
             !Patterns.WEB_URL.matcher(feedUrl).matches() -> {
                 _updateFeedDialogState.update {
-                    it.copy(feedUrlError = UpdateFeedDialogState.Error.BadUrl)
+                    it.copy(feedUrlError = TextFieldError.BadUrl)
                 }
                 return
             }
@@ -257,7 +258,7 @@ class FeedViewModel(
     fun setFolderName(name: String) = _addFolderState.update {
         it.copy(
             name = name,
-            isEmpty = false
+            nameError = null,
         )
     }
 
@@ -266,7 +267,7 @@ class FeedViewModel(
 
         if (name.isEmpty()) {
             _addFolderState.update {
-                it.copy(isEmpty = true)
+                it.copy(nameError = TextFieldError.EmptyField)
             }
 
             return
@@ -284,7 +285,7 @@ class FeedViewModel(
         _addFolderState.update {
             it.copy(
                 name = "",
-                isEmpty = false
+                nameError = null,
             )
         }
     }

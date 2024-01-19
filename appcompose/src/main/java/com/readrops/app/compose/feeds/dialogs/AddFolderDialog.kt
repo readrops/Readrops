@@ -46,12 +46,8 @@ fun AddFolderDialog(
                     }
                 }
             },
-            isError = state.isEmpty,
-            supportingText = {
-                if (state.isEmpty) {
-                    Text(text = state.errorText)
-                }
-            }
+            isError = state.isError,
+            supportingText = { Text(text = state.nameError?.errorText().orEmpty()) }
         )
     }
 }
