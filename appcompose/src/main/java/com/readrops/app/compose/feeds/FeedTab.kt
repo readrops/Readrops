@@ -1,8 +1,10 @@
 package com.readrops.app.compose.feeds
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -12,12 +14,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -29,10 +31,12 @@ import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.readrops.app.compose.R
 import com.readrops.app.compose.feeds.dialogs.AddFeedDialog
+import com.readrops.app.compose.feeds.dialogs.AddFolderDialog
 import com.readrops.app.compose.feeds.dialogs.DeleteFeedDialog
 import com.readrops.app.compose.feeds.dialogs.FeedModalBottomSheet
 import com.readrops.app.compose.feeds.dialogs.UpdateFeedDialog
 import com.readrops.app.compose.util.components.Placeholder
+import com.readrops.app.compose.util.theme.spacing
 import com.readrops.db.entities.Feed
 import org.koin.androidx.compose.getViewModel
 
@@ -85,7 +89,14 @@ object FeedTab : Tab {
                         uriHandler.openUri(dialog.feed.siteUrl!!)
                         viewModel.closeDialog()
                     },
-                    onUpdate = { viewModel.openDialog(DialogState.UpdateFeed(dialog.feed, dialog.folder)) },
+                    onUpdate = {
+                        viewModel.openDialog(
+                            DialogState.UpdateFeed(
+                                dialog.feed,
+                                dialog.folder
+                            )
+                        )
+                    },
                     onUpdateColor = {},
                     onDelete = { viewModel.openDialog(DialogState.DeleteFeed(dialog.feed)) },
                 )
@@ -98,7 +109,17 @@ object FeedTab : Tab {
                 )
             }
 
-            DialogState.AddFolder -> {}
+            DialogState.AddFolder -> {
+                AddFolderDialog(
+                    viewModel = viewModel,
+                    onDismiss = {
+                        viewModel.closeDialog()
+                        viewModel.resetAddFolderState()
+                    }
+
+                )
+            }
+
             is DialogState.DeleteFolder -> {}
             is DialogState.UpdateFolder -> {}
             null -> {}
@@ -122,6 +143,34 @@ object FeedTab : Tab {
                     }
                 )
             },
+            floatingActionButton = {
+                Column {
+                    FloatingActionButton(
+                        modifier = Modifier
+                            .padding(
+                                end = 0.dp,
+                                bottom = MaterialTheme.spacing.mediumSpacing
+                            )
+                            .size(40.dp),
+                        onClick = { viewModel.openDialog(DialogState.AddFolder) }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_new_folder),
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+
+                    FloatingActionButton(
+                        onClick = { viewModel.openDialog(DialogState.AddFeed) }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = null
+                        )
+                    }
+                }
+            }
         ) { paddingValues ->
             Box(
                 modifier = Modifier
@@ -190,18 +239,6 @@ object FeedTab : Tab {
                     else -> {
 
                     }
-                }
-
-                FloatingActionButton(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(16.dp),
-                    onClick = { viewModel.openDialog(DialogState.AddFeed) }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = null
-                    )
                 }
             }
         }

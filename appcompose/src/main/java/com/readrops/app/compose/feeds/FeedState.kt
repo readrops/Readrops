@@ -87,3 +87,9 @@ data class UpdateFeedDialogState(
         get() = accountType != null && !accountType.accountConfig!!.isFeedUrlEditable
 
 }
+
+data class AddFolderState(
+    val name: String = "",
+    val isEmpty: Boolean = false,
+    val errorText: String = "Field can't be empty"
+)

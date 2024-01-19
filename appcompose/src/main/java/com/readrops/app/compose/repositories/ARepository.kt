@@ -47,13 +47,13 @@ abstract class BaseRepository(
     account: Account,
 ) : ARepository(database, account) {
 
-    open suspend fun updateFeed(feed: Feed) {}
+    open suspend fun updateFeed(feed: Feed) = database.newFeedDao().updateFeedFields(feed.id, feed.name!!, feed.url!!, feed.folderId!!)
 
-    open suspend fun deleteFeed(feed: Feed) {}
+    open suspend fun deleteFeed(feed: Feed) = database.newFeedDao().delete(feed)
 
-    open suspend fun addFolder(folder: Folder) {}
+    open suspend fun addFolder(folder: Folder) = database.newFolderDao().insert(folder)
 
-    open suspend fun deleteFolder(folder: Folder) {}
+    open suspend fun deleteFolder(folder: Folder) = database.newFolderDao().delete(folder)
 
     open suspend fun setItemReadState(item: Item) {
         database.newItemDao().updateReadState(item.id, item.isRead)

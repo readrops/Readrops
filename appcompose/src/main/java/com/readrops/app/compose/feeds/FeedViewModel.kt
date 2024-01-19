@@ -35,6 +35,9 @@ class FeedViewModel(
     private val _updateFeedDialogState = MutableStateFlow(UpdateFeedDialogState())
     val updateFeedDialogState = _updateFeedDialogState.asStateFlow()
 
+    private val _addFolderState = MutableStateFlow(AddFolderState())
+    val addFolderState = _addFolderState.asStateFlow()
+
     init {
         viewModelScope.launch(context = Dispatchers.IO) {
             accountEvent
@@ -245,10 +248,47 @@ class FeedViewModel(
                 }
             }
         }
-
     }
 
-
     // update feed
+
+    // add folder
+
+    fun setFolderName(name: String) = _addFolderState.update {
+        it.copy(
+            name = name,
+            isEmpty = false
+        )
+    }
+
+    fun addFolderValidate() {
+        val name = _addFolderState.value.name
+
+        if (name.isEmpty()) {
+            _addFolderState.update {
+                it.copy(isEmpty = true)
+            }
+
+            return
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            repository?.addFolder(Folder(name = name, accountId = currentAccount?.id!!))
+
+            closeDialog()
+            resetAddFolderState()
+        }
+    }
+
+    fun resetAddFolderState() {
+        _addFolderState.update {
+            it.copy(
+                name = "",
+                isEmpty = false
+            )
+        }
+    }
+
+    // add folder
 }
 
