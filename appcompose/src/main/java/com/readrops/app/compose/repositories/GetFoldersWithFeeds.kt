@@ -18,7 +18,7 @@ class GetFoldersWithFeeds(
                 .selectFeedsWithoutFolder(accountId)
         ) { folders, feedsWithoutFolder ->
             val foldersWithFeeds = folders.groupBy(
-                keySelector = { Folder(id = it.folderId, name = it.folderName) },
+                keySelector = { Folder(id = it.folderId, name = it.folderName, accountId = it.accountId) },
                 valueTransform = {
                     Feed(
                         id = it.feedId,

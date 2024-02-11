@@ -20,7 +20,8 @@ data class FolderWithFeed(
     val feedIcon: String? = null,
     val feedUrl: String? = null,
     val feedSiteUrl: String? = null,
-    val unreadCount: Int = 0
+    val unreadCount: Int = 0,
+    val accountId: Int = 0
 )
 
 data class FeedWithCount(

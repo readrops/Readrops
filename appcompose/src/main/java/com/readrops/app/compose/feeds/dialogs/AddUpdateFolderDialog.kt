@@ -15,27 +15,29 @@ import com.readrops.app.compose.feeds.FeedViewModel
 import com.readrops.app.compose.util.components.BaseDialog
 
 @Composable
-fun AddFolderDialog(
+fun AddUpdateFolderDialog(
+    updateFolder: Boolean = false,
     viewModel: FeedViewModel,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onValidate: () -> Unit
 ) {
     val state by viewModel.addFolderState.collectAsStateWithLifecycle()
 
     BaseDialog(
-        title = "Add Folder",
-        icon = painterResource(id = R.drawable.ic_new_folder),
-        onDismiss = { onDismiss() },
-        onValidate = { viewModel.addFolderValidate() }
+        title = if (updateFolder) "Update Folder" else "Add Folder",
+        icon = painterResource(id = if (updateFolder) R.drawable.ic_folder_grey else R.drawable.ic_new_folder),
+        onDismiss = onDismiss,
+        onValidate = onValidate
     ) {
         OutlinedTextField(
-            value = state.name,
+            value = state.name.orEmpty(),
             label = {
                 Text(text = "URL")
             },
             onValueChange = { viewModel.setFolderName(it) },
             singleLine = true,
             trailingIcon = {
-                if (state.name.isNotEmpty()) {
+                if (!state.name.isNullOrEmpty()) {
                     IconButton(
                         onClick = { viewModel.setFolderName("") }
                     ) {

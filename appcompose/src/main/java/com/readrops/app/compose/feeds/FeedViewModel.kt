@@ -36,7 +36,7 @@ class FeedViewModel(
     private val _updateFeedDialogState = MutableStateFlow(UpdateFeedDialogState())
     val updateFeedDialogState = _updateFeedDialogState.asStateFlow()
 
-    private val _addFolderState = MutableStateFlow(AddFolderState())
+    private val _addFolderState = MutableStateFlow(AddUpdateFolderState())
     val addFolderState = _addFolderState.asStateFlow()
 
     init {
@@ -100,12 +100,26 @@ class FeedViewModel(
             }
         }
 
+        if (state is DialogState.UpdateFolder) {
+            _addFolderState.update {
+                it.copy(
+                    folder = state.folder
+                )
+            }
+        }
+
         _feedState.update { it.copy(dialog = state) }
     }
 
     fun deleteFeed(feed: Feed) {
         viewModelScope.launch(Dispatchers.IO) {
             repository?.deleteFeed(feed)
+        }
+    }
+
+    fun deleteFolder(folder: Folder) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository?.deleteFolder(folder)
         }
     }
 
@@ -257,13 +271,43 @@ class FeedViewModel(
 
     fun setFolderName(name: String) = _addFolderState.update {
         it.copy(
-            name = name,
+            folder = it.folder.copy(name = name),
             nameError = null,
         )
     }
 
     fun addFolderValidate() {
-        val name = _addFolderState.value.name
+        val name = _addFolderState.value.name.orEmpty()
+
+        if (name.isEmpty()) {
+            _addFolderState.update { it.copy(nameError = TextFieldError.EmptyField) }
+
+            return
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            repository?.addFolder(_addFolderState.value.folder.apply { accountId = currentAccount!!.id })
+
+            closeDialog()
+            resetAddFolderState()
+        }
+    }
+
+    fun resetAddFolderState() {
+        _addFolderState.update {
+            it.copy(
+                folder = Folder(),
+                nameError = null,
+            )
+        }
+    }
+
+    // add folder
+
+    // update folder
+
+    fun updateFolderValidate() {
+        val name = _addFolderState.value.name.orEmpty()
 
         if (name.isEmpty()) {
             _addFolderState.update {
@@ -274,22 +318,13 @@ class FeedViewModel(
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            repository?.addFolder(Folder(name = name, accountId = currentAccount?.id!!))
+            repository?.updateFolder(_addFolderState.value.folder)
 
             closeDialog()
             resetAddFolderState()
         }
     }
 
-    fun resetAddFolderState() {
-        _addFolderState.update {
-            it.copy(
-                name = "",
-                nameError = null,
-            )
-        }
-    }
-
-    // add folder
+    // update folder
 }
 

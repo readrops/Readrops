@@ -53,6 +53,8 @@ abstract class BaseRepository(
 
     open suspend fun addFolder(folder: Folder) = database.newFolderDao().insert(folder)
 
+    open suspend fun updateFolder(folder: Folder) = database.newFolderDao().update(folder)
+
     open suspend fun deleteFolder(folder: Folder) = database.newFolderDao().delete(folder)
 
     open suspend fun setItemReadState(item: Item) {

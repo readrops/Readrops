@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -21,6 +22,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
@@ -31,7 +33,7 @@ import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.readrops.app.compose.R
 import com.readrops.app.compose.feeds.dialogs.AddFeedDialog
-import com.readrops.app.compose.feeds.dialogs.AddFolderDialog
+import com.readrops.app.compose.feeds.dialogs.AddUpdateFolderDialog
 import com.readrops.app.compose.feeds.dialogs.DeleteFeedDialog
 import com.readrops.app.compose.feeds.dialogs.FeedModalBottomSheet
 import com.readrops.app.compose.feeds.dialogs.UpdateFeedDialog
@@ -110,27 +112,54 @@ object FeedTab : Tab {
             }
 
             DialogState.AddFolder -> {
-                AddFolderDialog(
+                AddUpdateFolderDialog(
                     viewModel = viewModel,
                     onDismiss = {
                         viewModel.closeDialog()
                         viewModel.resetAddFolderState()
+                    },
+                    onValidate = {
+                        viewModel.addFolderValidate()
                     }
+                )
+            }
 
+            is DialogState.DeleteFolder -> {
+                TwoChoicesDialog(
+                    title = "Delete folder",
+                    text = "Do you want to delete folder ${dialog.folder.name}?",
+                    icon = rememberVectorPainter(image = Icons.Default.Delete),
+                    confirmText = "Delete",
+                    dismissText = "Cancel",
+                    onDismiss = { viewModel.closeDialog() },
+                    onConfirm = {
+                        viewModel.deleteFolder(dialog.folder)
+                        viewModel.closeDialog()
+                    }
                 )
             }
 
             is DialogState.DeleteFolder -> {}
-            is DialogState.UpdateFolder -> {}
+                AddUpdateFolderDialog(
+                    updateFolder = true,
+                    viewModel = viewModel,
+                    onDismiss = {
+                        viewModel.closeDialog()
+                        viewModel.resetAddFolderState()
+                    },
+                    onValidate = {
+                        viewModel.updateFolderValidate()
+                    }
+                )
+            }
+
             null -> {}
         }
 
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = {
-                        Text(text = "Feeds")
-                    },
+                    title = { Text(text = "Feeds") },
                     actions = {
                         IconButton(
                             onClick = {}
@@ -187,25 +216,33 @@ object FeedTab : Tab {
                                 items(
                                     items = foldersAndFeeds.toList()
                                 ) { folderWithFeeds ->
-
                                     fun onFeedLongClick(feed: Feed) {
                                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                         uriHandler.openUri(feed.siteUrl!!)
                                     }
 
                                     if (folderWithFeeds.first != null) {
+                                        val folder = folderWithFeeds.first!!
+
                                         FolderExpandableItem(
-                                            folder = folderWithFeeds.first!!,
+                                            folder = folder,
                                             feeds = folderWithFeeds.second,
                                             onFeedClick = { feed ->
                                                 viewModel.openDialog(
-                                                    DialogState.FeedSheet(
-                                                        feed,
-                                                        folderWithFeeds.first
-                                                    )
+                                                    DialogState.FeedSheet(feed, folder)
                                                 )
                                             },
-                                            onFeedLongClick = { feed -> onFeedLongClick(feed) }
+                                            onFeedLongClick = { feed -> onFeedLongClick(feed) },
+                                            onUpdateFolder = {
+                                                viewModel.openDialog(
+                                                    DialogState.UpdateFolder(folder)
+                                                )
+                                            },
+                                            onDeleteFolder = {
+                                                viewModel.openDialog(
+                                                    DialogState.DeleteFolder(folder)
+                                                )
+                                            }
                                         )
                                     } else {
                                         val feeds = folderWithFeeds.second
