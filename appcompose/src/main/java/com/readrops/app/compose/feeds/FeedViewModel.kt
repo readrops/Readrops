@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
+import java.net.UnknownHostException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class FeedViewModel(
@@ -161,23 +162,30 @@ class FeedViewModel(
             }
 
             else -> viewModelScope.launch(Dispatchers.IO) {
-                if (localRSSDataSource.isUrlRSSResource(url)) {
-                    // TODO add support for all account types
-                    repository?.insertNewFeeds(listOf(url))
-
-                    closeDialog()
-                } else {
-                    val rssUrls = HtmlParser.getFeedLink(url, get())
-
-                    if (rssUrls.isEmpty()) {
-                        _addFeedDialogState.update {
-                            it.copy(error = TextFieldError.NoRSSFeed)
-                        }
-                    } else {
+                try {
+                    if (localRSSDataSource.isUrlRSSResource(url)) {
                         // TODO add support for all account types
-                        repository?.insertNewFeeds(rssUrls.map { it.url })
+                        repository?.insertNewFeeds(listOf(url))
 
                         closeDialog()
+                    } else {
+                        val rssUrls = HtmlParser.getFeedLink(url, get())
+
+                        if (rssUrls.isEmpty()) {
+                            _addFeedDialogState.update {
+                                it.copy(error = TextFieldError.NoRSSFeed)
+                            }
+                        } else {
+                            // TODO add support for all account types
+                            repository?.insertNewFeeds(rssUrls.map { it.url })
+
+                            closeDialog()
+                        }
+                    }
+                } catch (e: Exception) {
+                    when (e) {
+                        is UnknownHostException -> _addFeedDialogState.update { it.copy(error = TextFieldError.UnreachableUrl) }
+                        else -> _addFeedDialogState.update { it.copy(error = TextFieldError.NoRSSFeed) }
                     }
                 }
             }
@@ -304,4 +312,3 @@ class FeedViewModel(
 
     // add/update folder
 }
-
