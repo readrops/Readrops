@@ -34,10 +34,10 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.readrops.app.compose.R
 import com.readrops.app.compose.feeds.dialogs.AddFeedDialog
 import com.readrops.app.compose.feeds.dialogs.AddUpdateFolderDialog
-import com.readrops.app.compose.feeds.dialogs.DeleteFeedDialog
 import com.readrops.app.compose.feeds.dialogs.FeedModalBottomSheet
 import com.readrops.app.compose.feeds.dialogs.UpdateFeedDialog
 import com.readrops.app.compose.util.components.Placeholder
+import com.readrops.app.compose.util.components.TwoChoicesDialog
 import com.readrops.app.compose.util.theme.spacing
 import com.readrops.db.entities.Feed
 import org.koin.androidx.compose.getViewModel
@@ -72,10 +72,14 @@ object FeedTab : Tab {
             }
 
             is DialogState.DeleteFeed -> {
-                DeleteFeedDialog(
-                    feed = dialog.feed,
+                TwoChoicesDialog(
+                    title = "Delete feed",
+                    text = "Do you want to delete feed ${dialog.feed.name}?",
+                    icon = rememberVectorPainter(image = Icons.Default.Delete),
+                    confirmText = "Delete",
+                    dismissText = "Cancel",
                     onDismiss = { viewModel.closeDialog() },
-                    onDelete = {
+                    onConfirm = {
                         viewModel.deleteFeed(dialog.feed)
                         viewModel.closeDialog()
                     }
@@ -139,7 +143,7 @@ object FeedTab : Tab {
                 )
             }
 
-            is DialogState.DeleteFolder -> {}
+            is DialogState.UpdateFolder -> {
                 AddUpdateFolderDialog(
                     updateFolder = true,
                     viewModel = viewModel,
