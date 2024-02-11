@@ -56,7 +56,7 @@ data class UpdateFeedDialogState(
         get() = accountType != null && !accountType.accountConfig!!.isFeedUrlEditable
 }
 
-data class AddUpdateFolderState(
+data class FolderState(
     val folder: Folder = Folder(),
     val nameError: TextFieldError? = null,
 ) {

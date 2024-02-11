@@ -15,13 +15,13 @@ import com.readrops.app.compose.feeds.FeedViewModel
 import com.readrops.app.compose.util.components.BaseDialog
 
 @Composable
-fun AddUpdateFolderDialog(
+fun FolderDialog(
     updateFolder: Boolean = false,
     viewModel: FeedViewModel,
     onDismiss: () -> Unit,
     onValidate: () -> Unit
 ) {
-    val state by viewModel.addFolderState.collectAsStateWithLifecycle()
+    val state by viewModel.folderState.collectAsStateWithLifecycle()
 
     BaseDialog(
         title = if (updateFolder) "Update Folder" else "Add Folder",

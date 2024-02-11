@@ -33,8 +33,8 @@ import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.readrops.app.compose.R
 import com.readrops.app.compose.feeds.dialogs.AddFeedDialog
-import com.readrops.app.compose.feeds.dialogs.AddUpdateFolderDialog
 import com.readrops.app.compose.feeds.dialogs.FeedModalBottomSheet
+import com.readrops.app.compose.feeds.dialogs.FolderDialog
 import com.readrops.app.compose.feeds.dialogs.UpdateFeedDialog
 import com.readrops.app.compose.util.components.Placeholder
 import com.readrops.app.compose.util.components.TwoChoicesDialog
@@ -116,14 +116,14 @@ object FeedTab : Tab {
             }
 
             DialogState.AddFolder -> {
-                AddUpdateFolderDialog(
+                FolderDialog(
                     viewModel = viewModel,
                     onDismiss = {
                         viewModel.closeDialog()
-                        viewModel.resetAddFolderState()
+                        viewModel.resetFolderState()
                     },
                     onValidate = {
-                        viewModel.addFolderValidate()
+                        viewModel.folderValidate()
                     }
                 )
             }
@@ -144,15 +144,15 @@ object FeedTab : Tab {
             }
 
             is DialogState.UpdateFolder -> {
-                AddUpdateFolderDialog(
+                FolderDialog(
                     updateFolder = true,
                     viewModel = viewModel,
                     onDismiss = {
                         viewModel.closeDialog()
-                        viewModel.resetAddFolderState()
+                        viewModel.resetFolderState()
                     },
                     onValidate = {
-                        viewModel.updateFolderValidate()
+                        viewModel.folderValidate(updateFolder = true)
                     }
                 )
             }

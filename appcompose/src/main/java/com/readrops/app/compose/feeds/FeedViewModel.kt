@@ -12,6 +12,7 @@ import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.account.Account
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
@@ -21,6 +22,7 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class FeedViewModel(
     database: Database,
     private val getFoldersWithFeeds: GetFoldersWithFeeds,
@@ -36,8 +38,8 @@ class FeedViewModel(
     private val _updateFeedDialogState = MutableStateFlow(UpdateFeedDialogState())
     val updateFeedDialogState = _updateFeedDialogState.asStateFlow()
 
-    private val _addFolderState = MutableStateFlow(AddUpdateFolderState())
-    val addFolderState = _addFolderState.asStateFlow()
+    private val _folderState = MutableStateFlow(FolderState())
+    val folderState = _folderState.asStateFlow()
 
     init {
         viewModelScope.launch(context = Dispatchers.IO) {
@@ -101,7 +103,7 @@ class FeedViewModel(
         }
 
         if (state is DialogState.UpdateFolder) {
-            _addFolderState.update {
+            _folderState.update {
                 it.copy(
                     folder = state.folder
                 )
@@ -135,11 +137,7 @@ class FeedViewModel(
     }
 
     fun setAddFeedDialogSelectedAccount(account: Account) {
-        _addFeedDialogState.update {
-            it.copy(
-                selectedAccount = account
-            )
-        }
+        _addFeedDialogState.update { it.copy(selectedAccount = account) }
     }
 
     fun addFeedDialogValidate() {
@@ -267,64 +265,43 @@ class FeedViewModel(
 
     // update feed
 
-    // add folder
+    // add/update folder
 
-    fun setFolderName(name: String) = _addFolderState.update {
+    fun setFolderName(name: String) = _folderState.update {
         it.copy(
             folder = it.folder.copy(name = name),
             nameError = null,
         )
     }
 
-    fun addFolderValidate() {
-        val name = _addFolderState.value.name.orEmpty()
+    fun resetFolderState() = _folderState.update {
+        it.copy(
+            folder = Folder(),
+            nameError = null,
+        )
+    }
+
+    fun folderValidate(updateFolder: Boolean = false) {
+        val name = _folderState.value.name.orEmpty()
 
         if (name.isEmpty()) {
-            _addFolderState.update { it.copy(nameError = TextFieldError.EmptyField) }
+            _folderState.update { it.copy(nameError = TextFieldError.EmptyField) }
 
             return
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            repository?.addFolder(_addFolderState.value.folder.apply { accountId = currentAccount!!.id })
-
-            closeDialog()
-            resetAddFolderState()
-        }
-    }
-
-    fun resetAddFolderState() {
-        _addFolderState.update {
-            it.copy(
-                folder = Folder(),
-                nameError = null,
-            )
-        }
-    }
-
-    // add folder
-
-    // update folder
-
-    fun updateFolderValidate() {
-        val name = _addFolderState.value.name.orEmpty()
-
-        if (name.isEmpty()) {
-            _addFolderState.update {
-                it.copy(nameError = TextFieldError.EmptyField)
+            if (updateFolder) {
+                repository?.updateFolder(_folderState.value.folder)
+            } else {
+                repository?.addFolder(_folderState.value.folder.apply { accountId = currentAccount!!.id })
             }
 
-            return
-        }
-
-        viewModelScope.launch(Dispatchers.IO) {
-            repository?.updateFolder(_addFolderState.value.folder)
-
             closeDialog()
-            resetAddFolderState()
+            resetFolderState()
         }
     }
 
-    // update folder
+    // add/update folder
 }
 
