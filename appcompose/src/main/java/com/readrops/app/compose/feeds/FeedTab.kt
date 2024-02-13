@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -166,10 +165,13 @@ object FeedTab : Tab {
                     title = { Text(text = "Feeds") },
                     actions = {
                         IconButton(
-                            onClick = {}
+                            onClick = { viewModel.setFolderExpandState(state.areFoldersExpanded.not()) }
                         ) {
                             Icon(
-                                imageVector = Icons.Default.MoreVert,
+                                painter = painterResource(id = if (state.areFoldersExpanded)
+                                    R.drawable.ic_unfold_less
+                                else
+                                    R.drawable.ic_unfold_more),
                                 contentDescription = null
                             )
                         }
@@ -231,6 +233,7 @@ object FeedTab : Tab {
                                         FolderExpandableItem(
                                             folder = folder,
                                             feeds = folderWithFeeds.second,
+                                            isExpanded = state.areFoldersExpanded,
                                             onFeedClick = { feed ->
                                                 viewModel.openDialog(
                                                     DialogState.FeedSheet(feed, folder)

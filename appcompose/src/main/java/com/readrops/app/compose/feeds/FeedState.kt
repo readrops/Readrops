@@ -9,6 +9,7 @@ import com.readrops.db.entities.account.AccountType
 data class FeedState(
     val foldersAndFeeds: FolderAndFeedsState = FolderAndFeedsState.InitialState,
     val dialog: DialogState? = null,
+    val areFoldersExpanded: Boolean = false
 )
 
 sealed interface DialogState {

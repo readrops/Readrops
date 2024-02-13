@@ -19,6 +19,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,13 +38,18 @@ import com.readrops.db.entities.Folder
 fun FolderExpandableItem(
     folder: Folder,
     feeds: List<Feed>,
+    isExpanded: Boolean = false,
     onFeedClick: (Feed) -> Unit,
     onFeedLongClick: (Feed) -> Unit,
     onUpdateFolder: () -> Unit,
     onDeleteFolder: () -> Unit
 ) {
-    var isExpanded by remember { mutableStateOf(false) }
+    var isFolderExpanded by remember { mutableStateOf(false) }
     var isDropDownMenuExpanded by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isExpanded) {
+        isFolderExpanded = isExpanded
+    }
 
     Column(
         modifier = Modifier
@@ -56,7 +62,7 @@ fun FolderExpandableItem(
     ) {
         Column(
             modifier = Modifier
-                .clickable { isExpanded = isExpanded.not() }
+                .clickable { isFolderExpanded = isFolderExpanded.not() }
                 .padding(
                     horizontal = MaterialTheme.spacing.shortSpacing,
                     vertical = MaterialTheme.spacing.veryShortSpacing,
@@ -121,7 +127,7 @@ fun FolderExpandableItem(
         }
 
         Column {
-            if (isExpanded) {
+            if (isFolderExpanded) {
                 for (feed in feeds) {
                     FeedItem(
                         feed = feed,

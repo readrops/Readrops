@@ -90,6 +90,9 @@ class FeedViewModel(
         }
     }
 
+    fun setFolderExpandState(isExpanded: Boolean) =
+        _feedState.update { it.copy(areFoldersExpanded = isExpanded) }
+
     fun closeDialog() = _feedState.update { it.copy(dialog = null) }
 
     fun openDialog(state: DialogState) {
@@ -302,7 +305,9 @@ class FeedViewModel(
             if (updateFolder) {
                 repository?.updateFolder(_folderState.value.folder)
             } else {
-                repository?.addFolder(_folderState.value.folder.apply { accountId = currentAccount!!.id })
+                repository?.addFolder(_folderState.value.folder.apply {
+                    accountId = currentAccount!!.id
+                })
             }
 
             closeDialog()
