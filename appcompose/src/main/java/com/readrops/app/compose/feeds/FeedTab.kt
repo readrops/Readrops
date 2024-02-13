@@ -35,6 +35,8 @@ import com.readrops.app.compose.feeds.dialogs.AddFeedDialog
 import com.readrops.app.compose.feeds.dialogs.FeedModalBottomSheet
 import com.readrops.app.compose.feeds.dialogs.FolderDialog
 import com.readrops.app.compose.feeds.dialogs.UpdateFeedDialog
+import com.readrops.app.compose.util.components.CenteredProgressIndicator
+import com.readrops.app.compose.util.components.ErrorMessage
 import com.readrops.app.compose.util.components.Placeholder
 import com.readrops.app.compose.util.components.TwoChoicesDialog
 import com.readrops.app.compose.util.theme.spacing
@@ -276,12 +278,13 @@ object FeedTab : Tab {
                         }
                     }
 
-                    is FolderAndFeedsState.ErrorState -> {
-
+                    is FolderAndFeedsState.InitialState -> {
+                        CenteredProgressIndicator()
                     }
 
-                    else -> {
-
+                    is FolderAndFeedsState.ErrorState -> {
+                        val exception = (state.foldersAndFeeds as FolderAndFeedsState.ErrorState).exception
+                        ErrorMessage(exception = exception)
                     }
                 }
             }
