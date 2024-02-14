@@ -27,6 +27,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.navigator.tab.Tab
@@ -50,7 +51,7 @@ object FeedTab : Tab {
         @Composable
         get() = TabOptions(
             index = 2u,
-            title = "Feeds"
+            title = stringResource(R.string.feeds)
         )
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -75,11 +76,11 @@ object FeedTab : Tab {
 
             is DialogState.DeleteFeed -> {
                 TwoChoicesDialog(
-                    title = "Delete feed",
+                    title = stringResource(R.string.delete_feed),
                     text = "Do you want to delete feed ${dialog.feed.name}?",
                     icon = rememberVectorPainter(image = Icons.Default.Delete),
-                    confirmText = "Delete",
-                    dismissText = "Cancel",
+                    confirmText = stringResource(R.string.delete),
+                    dismissText = stringResource(R.string.cancel),
                     onDismiss = { viewModel.closeDialog() },
                     onConfirm = {
                         viewModel.deleteFeed(dialog.feed)
@@ -132,11 +133,11 @@ object FeedTab : Tab {
 
             is DialogState.DeleteFolder -> {
                 TwoChoicesDialog(
-                    title = "Delete folder",
+                    title = stringResource(R.string.delete_folder),
                     text = "Do you want to delete folder ${dialog.folder.name}?",
                     icon = rememberVectorPainter(image = Icons.Default.Delete),
-                    confirmText = "Delete",
-                    dismissText = "Cancel",
+                    confirmText = stringResource(R.string.delete),
+                    dismissText = stringResource(R.string.cancel),
                     onDismiss = { viewModel.closeDialog() },
                     onConfirm = {
                         viewModel.deleteFolder(dialog.folder)
@@ -165,7 +166,7 @@ object FeedTab : Tab {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(text = "Feeds") },
+                    title = { Text(text = stringResource(R.string.feeds)) },
                     actions = {
                         IconButton(
                             onClick = { viewModel.setFolderExpandState(state.areFoldersExpanded.not()) }
@@ -272,7 +273,7 @@ object FeedTab : Tab {
                             }
                         } else {
                             Placeholder(
-                                text = "No feed",
+                                text = stringResource(R.string.no_feed),
                                 painter = painterResource(R.drawable.ic_rss_feed_grey)
                             )
                         }

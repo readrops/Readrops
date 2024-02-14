@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.readrops.app.compose.R
 import com.readrops.app.compose.feeds.FeedViewModel
@@ -24,7 +25,7 @@ fun FolderDialog(
     val state by viewModel.folderState.collectAsStateWithLifecycle()
 
     BaseDialog(
-        title = if (updateFolder) "Update Folder" else "Add Folder",
+        title = stringResource(id = if (updateFolder) R.string.edit_folder else R.string.add_folder),
         icon = painterResource(id = if (updateFolder) R.drawable.ic_folder_grey else R.drawable.ic_new_folder),
         onDismiss = onDismiss,
         onValidate = onValidate

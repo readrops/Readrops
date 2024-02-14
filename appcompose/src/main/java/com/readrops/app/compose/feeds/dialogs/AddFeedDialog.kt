@@ -28,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -71,7 +72,7 @@ fun AddFeedDialog(
                 MediumSpacer()
 
                 Text(
-                    text = "Add new feed",
+                    text = stringResource(R.string.add_feed_item),
                     style = MaterialTheme.typography.headlineSmall
                 )
 
@@ -159,7 +160,7 @@ fun AddFeedDialog(
                 TextButton(
                     onClick = { viewModel.addFeedDialogValidate() },
                 ) {
-                    Text(text = "Validate")
+                    Text(text = stringResource(R.string.validate))
                 }
             }
         }

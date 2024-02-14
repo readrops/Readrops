@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import coil.compose.AsyncImage
@@ -92,7 +93,7 @@ fun FeedModalBottomSheet(
             MediumSpacer()
 
             BottomSheetOption(
-                text = "Open",
+                text = stringResource(R.string.open),
                 icon = ImageVector.vectorResource(id = R.drawable.ic_open_in_browser),
                 onClick = onOpen
             )
@@ -110,7 +111,7 @@ fun FeedModalBottomSheet(
             )
 
             BottomSheetOption(
-                text = "Delete",
+                text = stringResource(R.string.delete),
                 icon = Icons.Default.Delete,
                 onClick = onDelete
             )

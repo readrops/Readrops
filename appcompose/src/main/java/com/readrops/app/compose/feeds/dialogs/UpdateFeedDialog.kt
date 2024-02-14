@@ -22,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -63,7 +64,7 @@ fun UpdateFeedDialog(
                 MediumSpacer()
 
                 Text(
-                    text = "Update feed",
+                    text = stringResource(R.string.edit_feed),
                     style = MaterialTheme.typography.headlineSmall
                 )
 
@@ -72,7 +73,7 @@ fun UpdateFeedDialog(
                 OutlinedTextField(
                     value = state.feedName,
                     onValueChange = { viewModel.setUpdateFeedDialogStateFeedName(it) },
-                    label = { Text(text = "Feed name") },
+                    label = { Text(text = stringResource(R.string.feed_name)) },
                     singleLine = true,
                     isError = state.isFeedNameError,
                     supportingText = {
@@ -89,7 +90,7 @@ fun UpdateFeedDialog(
                 OutlinedTextField(
                     value = state.feedUrl,
                     onValueChange = { viewModel.setUpdateFeedDialogFeedUrl(it) },
-                    label = { Text(text = "Feed URL") },
+                    label = { Text(text = stringResource(R.string.feed_url)) },
                     singleLine = true,
                     readOnly = state.isFeedUrlReadOnly,
                     isError = state.isFeedUrlError,
@@ -153,7 +154,7 @@ fun UpdateFeedDialog(
                 TextButton(
                     onClick = { viewModel.updateFeedDialogValidate() },
                 ) {
-                    Text(text = "Validate")
+                    Text(text = stringResource(R.string.validate))
                 }
             }
         }
