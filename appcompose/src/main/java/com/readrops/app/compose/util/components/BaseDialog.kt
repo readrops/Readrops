@@ -34,7 +34,7 @@ fun BaseDialog(
         onDismissRequest = onDismiss
     ) {
         Card(
-            shape = RoundedCornerShape(16.dp)
+            shape = RoundedCornerShape(24.dp)
         ) {
             Column(
                 verticalArrangement = Arrangement.Center,

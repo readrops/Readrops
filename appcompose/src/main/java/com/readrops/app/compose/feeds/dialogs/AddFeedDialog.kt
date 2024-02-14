@@ -53,7 +53,7 @@ fun AddFeedDialog(
         onDismissRequest = onDismiss
     ) {
         Card(
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(24.dp),
         ) {
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -121,9 +121,9 @@ fun AddFeedDialog(
                                 leadingIcon = {
                                     Icon(
                                         painter = painterResource(
-                                            id = if (state.selectedAccount.isLocal){
-                                                R.drawable.ic_rss_feed_grey}
-                                            else
+                                            id = if (state.selectedAccount.isLocal) {
+                                                R.drawable.ic_rss_feed_grey
+                                            } else
                                                 state.selectedAccount.accountType!!.iconRes
                                         ),
                                         contentDescription = null
@@ -143,9 +143,9 @@ fun AddFeedDialog(
                         leadingIcon = {
                             Icon(
                                 painter = painterResource(
-                                    id = if (state.selectedAccount.isLocal){
-                                        R.drawable.ic_rss_feed_grey}
-                                    else
+                                    id = if (state.selectedAccount.isLocal) {
+                                        R.drawable.ic_rss_feed_grey
+                                    } else
                                         state.selectedAccount.accountType!!.iconRes
                                 ),
                                 contentDescription = null

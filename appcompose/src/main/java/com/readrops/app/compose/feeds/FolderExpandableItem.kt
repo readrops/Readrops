@@ -65,8 +65,9 @@ fun FolderExpandableItem(
             modifier = Modifier
                 .clickable { isFolderExpanded = isFolderExpanded.not() }
                 .padding(
-                    horizontal = MaterialTheme.spacing.shortSpacing,
-                    vertical = MaterialTheme.spacing.veryShortSpacing,
+                    start = MaterialTheme.spacing.mediumSpacing,
+                    top = MaterialTheme.spacing.veryShortSpacing,
+                    bottom = MaterialTheme.spacing.veryShortSpacing
                 )
         ) {
             Row(
@@ -105,7 +106,7 @@ fun FolderExpandableItem(
 
                     DropdownMenu(
                         expanded = isDropDownMenuExpanded,
-                        onDismissRequest = { isDropDownMenuExpanded = false }
+                        onDismissRequest = { isDropDownMenuExpanded = false },
                     ) {
                         DropdownMenuItem(
                             text = { Text(text = "Update") },

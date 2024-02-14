@@ -36,7 +36,10 @@ fun FeedItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(MaterialTheme.spacing.shortSpacing)
+                .padding(
+                    horizontal = MaterialTheme.spacing.mediumSpacing,
+                    vertical = MaterialTheme.spacing.shortSpacing
+                )
         ) {
             AsyncImage(
                 model = feed.iconUrl,
