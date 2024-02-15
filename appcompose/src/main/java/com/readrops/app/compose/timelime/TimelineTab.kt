@@ -27,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -114,7 +115,7 @@ object TimelineTab : Tab {
             Scaffold(
                 topBar = {
                     TopAppBar(
-                        title = { Text(text = "Articles") },
+                        title = { Text(text = stringResource(R.string.articles)) },
                         navigationIcon = {
                             IconButton(
                                 onClick = { viewModel.openDrawer() }
