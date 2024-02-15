@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -117,7 +118,7 @@ fun DrawerDefaultItems(
     onClick: (FilterType) -> Unit,
 ) {
     NavigationDrawerItem(
-        label = { Text("Articles") },
+        label = { Text(text = stringResource(R.string.articles)) },
         icon = {
             Icon(
                 painter = painterResource(id = R.drawable.ic_timeline),
@@ -143,7 +144,7 @@ fun DrawerDefaultItems(
     )
 
     NavigationDrawerItem(
-        label = { Text("Favorites") },
+        label = { Text(text = stringResource(R.string.favorites)) },
         icon = {
             Icon(
                 imageVector = Icons.Filled.Star,
@@ -156,7 +157,7 @@ fun DrawerDefaultItems(
     )
 
     NavigationDrawerItem(
-        label = { Text("To read later") },
+        label = { Text(text = stringResource(R.string.read_later)) },
         icon = {
             Icon(
                 painter = painterResource(id = R.drawable.ic_read_later),
