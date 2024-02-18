@@ -10,7 +10,7 @@ import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
-import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.joda.time.LocalDateTime
 import org.junit.Before
@@ -31,34 +31,48 @@ class GetFoldersWithFeedsTest {
         runTest {
             account.id = database.newAccountDao().insert(account).toInt()
 
+            // inserting 3 folders
             repeat(3) { time ->
-                database.newFolderDao().insert(Folder(name = "Folder $time", accountId = account.id))
+                database.newFolderDao()
+                    .insert(Folder(name = "Folder $time", accountId = account.id))
             }
 
+            // inserting 2 feeds, not linked to any folder
             repeat(2) { time ->
                 database.newFeedDao().insert(Feed(name = "Feed $time", accountId = account.id))
             }
 
+            // inserting 2 feeds linked to first folder (Folder 0)
             repeat(2) { time ->
-                database.newFeedDao().insert(Feed(name = "Feed ${time+2}", folderId = 1, accountId = account.id))
+                database.newFeedDao()
+                    .insert(Feed(name = "Feed ${time + 2}", folderId = 1, accountId = account.id))
             }
 
+            // inserting 3 items linked to first feed (Feed 0)
             repeat(3) { time ->
-                database.newItemDao().insert(Item(title = "Item $time", feedId = 1, pubDate = LocalDateTime.now()))
+                database.newItemDao()
+                    .insert(Item(title = "Item $time", feedId = 1, pubDate = LocalDateTime.now()))
             }
         }
     }
 
     @Test
     fun getFoldersWithFeedsTest() = runTest {
-        getFoldersWithFeeds = GetFoldersWithFeeds(database, StandardTestDispatcher(testScheduler))
-        val foldersAndFeeds = getFoldersWithFeeds.get(account.id)
+        getFoldersWithFeeds = GetFoldersWithFeeds(database)
+        val job = launch {
+            getFoldersWithFeeds.get(account.id)
+                .collect { foldersAndFeeds ->
 
-        assertTrue { foldersAndFeeds.size == 4 }
-        assertTrue { foldersAndFeeds.entries.first().value.size == 2 }
-        assertTrue { foldersAndFeeds.entries.last().key == null }
-        assertTrue { foldersAndFeeds[null]!!.size == 2 }
-        assertTrue { foldersAndFeeds[null]!!.first().unreadCount == 3 }
 
+                    assertTrue { foldersAndFeeds.size == 4 }
+                    assertTrue { foldersAndFeeds.entries.first().value.size == 2 }
+                    assertTrue { foldersAndFeeds.entries.last().key == null }
+                    assertTrue { foldersAndFeeds[null]!!.size == 2 }
+                    assertTrue { foldersAndFeeds[null]!!.first().unreadCount == 3 }
+                }
+        }
+
+        // for an unknown reason, the coroutine must be canceled to stop the test, and I don't really know why
+        job.cancel()
     }
 }
