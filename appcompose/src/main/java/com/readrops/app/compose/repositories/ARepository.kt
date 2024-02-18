@@ -47,7 +47,7 @@ abstract class BaseRepository(
     account: Account,
 ) : ARepository(database, account) {
 
-    open suspend fun updateFeed(feed: Feed) = database.newFeedDao().updateFeedFields(feed.id, feed.name!!, feed.url!!, feed.folderId!!)
+    open suspend fun updateFeed(feed: Feed) = database.newFeedDao().updateFeedFields(feed.id, feed.name!!, feed.url!!, feed.folderId)
 
     open suspend fun deleteFeed(feed: Feed) = database.newFeedDao().delete(feed)
 

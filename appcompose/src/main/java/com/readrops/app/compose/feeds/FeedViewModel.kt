@@ -99,6 +99,7 @@ class FeedViewModel(
         if (state is DialogState.UpdateFeed) {
             _updateFeedDialogState.update {
                 it.copy(
+                    feedId = state.feed.id,
                     feedName = state.feed.name!!,
                     feedUrl = state.feed.url!!,
                     selectedFolder = state.folder
@@ -266,8 +267,17 @@ class FeedViewModel(
 
             else -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    // TODO add logig to update feed
-                    //repository?.updateFeed()
+                    with(_updateFeedDialogState.value) {
+                        repository?.updateFeed(
+                            Feed(
+                                id = feedId,
+                                name = feedName,
+                                url = feedUrl,
+                                folderId = selectedFolder?.id
+                            )
+                        )
+                    }
+
                     closeDialog()
                 }
             }

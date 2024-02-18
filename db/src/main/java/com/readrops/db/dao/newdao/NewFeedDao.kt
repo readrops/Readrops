@@ -26,6 +26,6 @@ abstract class NewFeedDao : NewBaseDao<Feed> {
     abstract fun selectFeedsWithoutFolder(accountId: Int): Flow<List<FeedWithCount>>
 
     @Query("Update Feed set name = :feedName, url = :feedUrl, folder_id = :folderId Where id = :feedId")
-    abstract fun updateFeedFields(feedId: Int, feedName: String, feedUrl: String, folderId: Int)
+    abstract fun updateFeedFields(feedId: Int, feedName: String, feedUrl: String, folderId: Int?)
 
 }

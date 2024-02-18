@@ -38,6 +38,7 @@ data class AddFeedDialogState(
 }
 
 data class UpdateFeedDialogState(
+    val feedId: Int = 0,
     val feedName: String = "",
     val feedNameError: TextFieldError? = null,
     val feedUrl: String = "",
