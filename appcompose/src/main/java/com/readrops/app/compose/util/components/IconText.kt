@@ -1,8 +1,11 @@
 package com.readrops.app.compose.util.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
@@ -25,6 +28,7 @@ fun IconText(
     text: String,
     style: TextStyle,
     modifier: Modifier = Modifier,
+    color: Color = LocalContentColor.current,
     tint: Color = LocalContentColor.current,
     padding: Dp = MaterialTheme.spacing.veryShortSpacing,
     onClick: (() -> Unit)? = null,
@@ -45,6 +49,42 @@ fun IconText(
         Text(
             text = text,
             style = style,
+            color = color,
         )
+    }
+}
+
+@Composable
+fun SelectableIconText(
+    icon: Painter,
+    text: String,
+    style: TextStyle,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    color: Color = LocalContentColor.current,
+    tint: Color = LocalContentColor.current,
+    padding: Dp = MaterialTheme.spacing.veryShortSpacing,
+) {
+    Box(
+        modifier = modifier.clickable { onClick() }
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = MaterialTheme.spacing.mediumSpacing,
+                    vertical = MaterialTheme.spacing.mediumSpacing
+                )
+        ) {
+            IconText(
+                icon = icon,
+                text = text,
+                style = style,
+                padding = padding,
+                tint = tint,
+                color = color
+            )
+        }
     }
 }
