@@ -49,9 +49,9 @@ class GetFoldersWithFeeds(
                         null,
                         feedsWithoutFolder.map { it.feed.apply { unreadCount = it.unreadCount } })
                 )
+            } else {
+                foldersWithFeeds
             }
-
-            foldersWithFeeds
         }
     }
 }
