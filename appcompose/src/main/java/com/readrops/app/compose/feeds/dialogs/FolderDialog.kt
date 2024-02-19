@@ -6,6 +6,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.painterResource
@@ -14,6 +15,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.readrops.app.compose.R
 import com.readrops.app.compose.feeds.FeedViewModel
 import com.readrops.app.compose.util.components.BaseDialog
+import com.readrops.app.compose.util.theme.LargeSpacer
 
 @Composable
 fun FolderDialog(
@@ -27,8 +29,7 @@ fun FolderDialog(
     BaseDialog(
         title = stringResource(id = if (updateFolder) R.string.edit_folder else R.string.add_folder),
         icon = painterResource(id = if (updateFolder) R.drawable.ic_folder_grey else R.drawable.ic_new_folder),
-        onDismiss = onDismiss,
-        onValidate = onValidate
+        onDismiss = onDismiss
     ) {
         OutlinedTextField(
             value = state.name.orEmpty(),
@@ -52,5 +53,13 @@ fun FolderDialog(
             isError = state.isError,
             supportingText = { Text(text = state.nameError?.errorText().orEmpty()) }
         )
+
+        LargeSpacer()
+
+        TextButton(
+            onClick = { onValidate() },
+        ) {
+            Text(text = stringResource(R.string.validate))
+        }
     }
 }

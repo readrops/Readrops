@@ -11,14 +11,12 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.readrops.app.compose.util.theme.LargeSpacer
 import com.readrops.app.compose.util.theme.MediumSpacer
 import com.readrops.app.compose.util.theme.spacing
 
@@ -27,7 +25,6 @@ fun BaseDialog(
     title: String,
     icon: Painter,
     onDismiss: () -> Unit,
-    onValidate: () -> Unit,
     content: @Composable () -> Unit
 ) {
     Dialog(
@@ -60,14 +57,6 @@ fun BaseDialog(
                 MediumSpacer()
 
                 content()
-
-                LargeSpacer()
-
-                TextButton(
-                    onClick = { onValidate() },
-                ) {
-                    Text(text = "Validate")
-                }
             }
         }
     }

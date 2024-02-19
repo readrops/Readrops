@@ -56,6 +56,8 @@ data class UpdateFeedDialogState(
 
     val isFeedUrlReadOnly: Boolean
         get() = accountType != null && !accountType.accountConfig!!.isFeedUrlEditable
+
+    val hasFolders = folders.isNotEmpty()
 }
 
 data class FolderState(
