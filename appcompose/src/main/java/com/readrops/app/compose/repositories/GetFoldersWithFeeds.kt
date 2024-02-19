@@ -18,7 +18,13 @@ class GetFoldersWithFeeds(
                 .selectFeedsWithoutFolder(accountId)
         ) { folders, feedsWithoutFolder ->
             val foldersWithFeeds = folders.groupBy(
-                keySelector = { Folder(id = it.folderId, name = it.folderName, accountId = it.accountId) },
+                keySelector = {
+                    Folder(
+                        id = it.folderId,
+                        name = it.folderName,
+                        accountId = it.accountId
+                    ) as Folder?
+                },
                 valueTransform = {
                     Feed(
                         id = it.feedId,
@@ -37,11 +43,15 @@ class GetFoldersWithFeeds(
                 }
             }
 
-            foldersWithFeeds + mapOf(
-                Pair(
-                    null,
-                    feedsWithoutFolder.map { it.feed.apply { unreadCount = it.unreadCount } })
-            )
+            if (feedsWithoutFolder.isNotEmpty()) {
+                foldersWithFeeds + mapOf(
+                    Pair(
+                        null,
+                        feedsWithoutFolder.map { it.feed.apply { unreadCount = it.unreadCount } })
+                )
+            }
+
+            foldersWithFeeds
         }
     }
 }

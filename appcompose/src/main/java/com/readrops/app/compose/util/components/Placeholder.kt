@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import com.readrops.app.compose.util.theme.ShortSpacer
 import com.readrops.app.compose.util.toDp
 
 
@@ -39,9 +40,11 @@ fun Placeholder(
             modifier = Modifier.size(MaterialTheme.typography.displayMedium.toDp() * 1.5f)
         )
 
+        ShortSpacer()
+
         Text(
             text = text,
-            style = MaterialTheme.typography.displayMedium
+            style = MaterialTheme.typography.displaySmall
         )
     }
 }
