@@ -1,5 +1,6 @@
 package com.readrops.app.compose.util.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -23,28 +24,22 @@ import com.readrops.app.compose.util.theme.spacing
 import com.readrops.app.compose.util.toDp
 
 @Composable
-fun IconText(
-    icon: Painter,
+fun BaseText(
     text: String,
     style: TextStyle,
     modifier: Modifier = Modifier,
     color: Color = LocalContentColor.current,
-    tint: Color = LocalContentColor.current,
-    padding: Dp = MaterialTheme.spacing.veryShortSpacing,
+    spacing: Dp = MaterialTheme.spacing.veryShortSpacing,
     onClick: (() -> Unit)? = null,
+    leftContent: @Composable () -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = if (onClick != null) modifier.clickable { onClick() } else modifier,
     ) {
-        Icon(
-            painter = icon,
-            tint = tint,
-            contentDescription = null,
-            modifier = Modifier.size(style.toDp()),
-        )
+        leftContent()
 
-        Spacer(Modifier.width(padding))
+        Spacer(Modifier.width(spacing))
 
         Text(
             text = text,
@@ -55,6 +50,63 @@ fun IconText(
 }
 
 @Composable
+fun IconText(
+    icon: Painter,
+    text: String,
+    style: TextStyle,
+    modifier: Modifier = Modifier,
+    color: Color = LocalContentColor.current,
+    tint: Color = LocalContentColor.current,
+    spacing: Dp = MaterialTheme.spacing.veryShortSpacing,
+    onClick: (() -> Unit)? = null,
+) {
+    BaseText(
+        text = text,
+        style = style,
+        color = color,
+        spacing = spacing,
+        modifier = modifier,
+        onClick = onClick
+    ) {
+        Icon(
+            painter = icon,
+            tint = tint,
+            contentDescription = null,
+            modifier = Modifier.size(style.toDp()),
+        )
+    }
+}
+
+@Composable
+fun ImageText(
+    image: Painter,
+    text: String,
+    style: TextStyle,
+    modifier: Modifier = Modifier,
+    color: Color = LocalContentColor.current,
+    spacing: Dp = MaterialTheme.spacing.veryShortSpacing,
+    imageSize: Dp = style.toDp(),
+    onClick: (() -> Unit)? = null
+) {
+    BaseText(
+        text = text,
+        style = style,
+        color = color,
+        spacing = spacing,
+        modifier = modifier,
+        onClick = onClick
+    ) {
+        Image(
+            painter = image,
+            contentDescription = null,
+            modifier = Modifier.size(imageSize),
+        )
+    }
+}
+
+
+
+@Composable
 fun SelectableIconText(
     icon: Painter,
     text: String,
@@ -63,27 +115,59 @@ fun SelectableIconText(
     modifier: Modifier = Modifier,
     color: Color = LocalContentColor.current,
     tint: Color = LocalContentColor.current,
-    padding: Dp = MaterialTheme.spacing.veryShortSpacing,
+    spacing: Dp = MaterialTheme.spacing.veryShortSpacing,
+    padding: Dp = MaterialTheme.spacing.shortSpacing
 ) {
     Box(
-        modifier = modifier.clickable { onClick() }
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(padding)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = MaterialTheme.spacing.mediumSpacing,
-                    vertical = MaterialTheme.spacing.mediumSpacing
-                )
+        BaseText(
+            text = text,
+            style = style,
+            color = color,
+            spacing = spacing
         ) {
-            IconText(
-                icon = icon,
-                text = text,
-                style = style,
-                padding = padding,
+            Icon(
+                painter = icon,
                 tint = tint,
-                color = color
+                contentDescription = null,
+                modifier = Modifier.size(style.toDp()),
+            )
+        }
+    }
+}
+
+@Composable
+fun SelectableImageText(
+    image: Painter,
+    text: String,
+    style: TextStyle,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    color: Color = LocalContentColor.current,
+    spacing: Dp = MaterialTheme.spacing.veryShortSpacing,
+    padding: Dp = MaterialTheme.spacing.shortSpacing,
+    imageSize: Dp = style.toDp()
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(padding)
+    ) {
+        BaseText(
+            text = text,
+            style = style,
+            color = color,
+            spacing = spacing
+        ) {
+            Image(
+                painter = image,
+                contentDescription = null,
+                modifier = Modifier.size(imageSize),
             )
         }
     }

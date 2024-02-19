@@ -33,6 +33,8 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.readrops.app.compose.R
+import com.readrops.app.compose.account.credentials.AccountCredentialsScreen
+import com.readrops.app.compose.account.selection.AccountSelectionDialog
 import com.readrops.app.compose.account.selection.AccountSelectionScreen
 import com.readrops.app.compose.util.components.SelectableIconText
 import com.readrops.app.compose.util.components.TwoChoicesDialog
@@ -80,7 +82,13 @@ object AccountTab : Tab {
             }
 
             DialogState.NewAccount -> {
-
+                AccountSelectionDialog(
+                    onDismiss = { viewModel.closeDialog() },
+                    onValidate = { accountType ->
+                        viewModel.closeDialog()
+                        navigator.push(AccountCredentialsScreen(accountType, state.account))
+                    }
+                )
             }
 
             else -> {}
@@ -104,7 +112,7 @@ object AccountTab : Tab {
             },
             floatingActionButton = {
                 FloatingActionButton(
-                    onClick = {}
+                    onClick = { viewModel.openDialog(DialogState.NewAccount) }
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_add_account),
@@ -142,6 +150,7 @@ object AccountTab : Tab {
                     icon = painterResource(id = R.drawable.ic_add_account),
                     text = stringResource(R.string.credentials),
                     style = MaterialTheme.typography.titleMedium,
+                    spacing = MaterialTheme.spacing.mediumSpacing,
                     padding = MaterialTheme.spacing.mediumSpacing,
                     onClick = { }
                 )
@@ -150,6 +159,7 @@ object AccountTab : Tab {
                     icon = painterResource(id = R.drawable.ic_notifications),
                     text = stringResource(R.string.notifications),
                     style = MaterialTheme.typography.titleMedium,
+                    spacing = MaterialTheme.spacing.mediumSpacing,
                     padding = MaterialTheme.spacing.mediumSpacing,
                     onClick = { }
                 )
@@ -158,6 +168,7 @@ object AccountTab : Tab {
                     icon = rememberVectorPainter(image = Icons.Default.AccountCircle),
                     text = stringResource(R.string.delete_account),
                     style = MaterialTheme.typography.titleMedium,
+                    spacing = MaterialTheme.spacing.mediumSpacing,
                     padding = MaterialTheme.spacing.mediumSpacing,
                     color = MaterialTheme.colorScheme.error,
                     tint = MaterialTheme.colorScheme.error,

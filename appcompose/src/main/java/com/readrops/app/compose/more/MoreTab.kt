@@ -66,7 +66,7 @@ object MoreTab : Tab {
                 icon = painterResource(id = R.drawable.ic_settings),
                 text = stringResource(R.string.settings),
                 style = MaterialTheme.typography.titleMedium,
-                padding = MaterialTheme.spacing.mediumSpacing,
+                spacing = MaterialTheme.spacing.mediumSpacing,
                 onClick = { }
             )
 
@@ -74,7 +74,7 @@ object MoreTab : Tab {
                 icon = painterResource(id = R.drawable.ic_settings),
                 text = "Backup",
                 style = MaterialTheme.typography.titleMedium,
-                padding = MaterialTheme.spacing.mediumSpacing,
+                spacing = MaterialTheme.spacing.mediumSpacing,
                 onClick = { }
             )
 
@@ -82,7 +82,7 @@ object MoreTab : Tab {
                 icon = painterResource(id = R.drawable.ic_settings),
                 text = "Open-source libraries",
                 style = MaterialTheme.typography.titleMedium,
-                padding = MaterialTheme.spacing.mediumSpacing,
+                spacing = MaterialTheme.spacing.mediumSpacing,
                 onClick = { }
             )
         }
