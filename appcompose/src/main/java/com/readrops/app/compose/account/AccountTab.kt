@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -34,6 +35,7 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.readrops.app.compose.R
 import com.readrops.app.compose.account.selection.AccountSelectionScreen
 import com.readrops.app.compose.util.components.SelectableIconText
+import com.readrops.app.compose.util.components.TwoChoicesDialog
 import com.readrops.app.compose.util.theme.LargeSpacer
 import com.readrops.app.compose.util.theme.MediumSpacer
 import com.readrops.app.compose.util.theme.spacing
@@ -59,6 +61,29 @@ object AccountTab : Tab {
 
         if (closeHome) {
             navigator.replaceAll(AccountSelectionScreen())
+        }
+
+        when (state.dialog) {
+            DialogState.DeleteAccount -> {
+                TwoChoicesDialog(
+                    title = stringResource(R.string.delete_account),
+                    text = stringResource(R.string.delete_account_question),
+                    icon = rememberVectorPainter(image = Icons.Default.Delete),
+                    confirmText = stringResource(R.string.delete),
+                    dismissText = stringResource(R.string.cancel),
+                    onDismiss = { viewModel.closeDialog() },
+                    onConfirm = {
+                        viewModel.closeDialog()
+                        viewModel.deleteAccount()
+                    }
+                )
+            }
+
+            DialogState.NewAccount -> {
+
+            }
+
+            else -> {}
         }
 
         Scaffold(
@@ -136,7 +161,7 @@ object AccountTab : Tab {
                     padding = MaterialTheme.spacing.mediumSpacing,
                     color = MaterialTheme.colorScheme.error,
                     tint = MaterialTheme.colorScheme.error,
-                    onClick = { /*viewModel.deleteAccount()*/ }
+                    onClick = { viewModel.openDialog(DialogState.DeleteAccount) }
                 )
             }
         }

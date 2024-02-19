@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 class AccountViewModel(
     private val database: Database
-) : TabViewModel(database)  {
+) : TabViewModel(database) {
 
     private val _closeHome = MutableStateFlow(false)
     val closeHome = _closeHome.asStateFlow()
@@ -33,11 +33,14 @@ class AccountViewModel(
         }
     }
 
+    fun openDialog(dialog: DialogState) = _accountState.update { it.copy(dialog = dialog) }
+
+    fun closeDialog() = _accountState.update { it.copy(dialog = null) }
 
     fun deleteAccount() {
         viewModelScope.launch(Dispatchers.IO) {
             database.newAccountDao()
-                    .deleteAllAccounts()
+                .delete(currentAccount!!)
 
             _closeHome.update { true }
         }
@@ -46,5 +49,10 @@ class AccountViewModel(
 
 data class AccountState(
     val account: Account = Account(accountName = "account", accountType = AccountType.LOCAL),
-    val dialog: Unit = Unit,
+    val dialog: DialogState? = null,
 )
+
+sealed interface DialogState {
+    object DeleteAccount : DialogState
+    object NewAccount : DialogState
+}
