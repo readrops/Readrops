@@ -43,6 +43,7 @@ import com.readrops.app.compose.item.ItemScreen
 import com.readrops.app.compose.timelime.drawer.TimelineDrawer
 import com.readrops.app.compose.util.components.CenteredColumn
 import com.readrops.app.compose.util.theme.spacing
+import com.readrops.db.filters.FilterType
 import org.koin.androidx.compose.getViewModel
 
 
@@ -115,7 +116,18 @@ object TimelineTab : Tab {
             Scaffold(
                 topBar = {
                     TopAppBar(
-                        title = { Text(text = stringResource(R.string.articles)) },
+                        title = {
+                            Text(
+                                text = when (state.filters.filterType) {
+                                    FilterType.FEED_FILTER -> state.filterFeedName
+                                    FilterType.FOLDER_FILER -> state.filterFolderName
+                                    FilterType.READ_IT_LATER_FILTER -> stringResource(R.string.read_later)
+                                    FilterType.STARS_FILTER -> stringResource(R.string.favorites)
+                                    FilterType.NO_FILTER -> stringResource(R.string.articles)
+                                    FilterType.NEW -> stringResource(R.string.new_articles)
+                                }
+                            )
+                        },
                         navigationIcon = {
                             IconButton(
                                 onClick = { viewModel.openDrawer() }

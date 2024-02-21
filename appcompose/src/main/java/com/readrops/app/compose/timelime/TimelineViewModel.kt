@@ -115,31 +115,33 @@ class TimelineViewModel(
         }
     }
 
-    fun updateDrawerFolderSelection(folderId: Int) {
+    fun updateDrawerFolderSelection(folder: Folder) {
         _timelineState.update {
             it.copy(
                 filters = updateFilters {
                     it.filters.copy(
                         filterType = FilterType.FOLDER_FILER,
-                        filterFolderId = folderId,
+                        filterFolderId = folder.id,
                         filterFeedId = 0
                     )
                 },
+                filterFolderName = folder.name!!,
                 isDrawerOpen = false
             )
         }
     }
 
-    fun updateDrawerFeedSelection(feedId: Int) {
+    fun updateDrawerFeedSelection(feed: Feed) {
         _timelineState.update {
             it.copy(
                 filters = updateFilters {
                     it.filters.copy(
                         filterType = FilterType.FEED_FILTER,
-                        filterFeedId = feedId,
+                        filterFeedId = feed.id,
                         filterFolderId = 0
                     )
                 },
+                filterFeedName = feed.name!!,
                 isDrawerOpen = false
             )
         }
@@ -189,6 +191,8 @@ data class TimelineState(
     val isDrawerOpen: Boolean = false,
     val endSynchronizing: Boolean = false,
     val filters: QueryFilters = QueryFilters(),
+    val filterFeedName: String = "",
+    val filterFolderName: String = "",
     val foldersAndFeeds: Map<Folder?, List<Feed>> = emptyMap(),
     val itemState: Flow<PagingData<ItemWithFeed>> = emptyFlow()
 )

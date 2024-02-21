@@ -146,4 +146,5 @@
     <string name="theme_value_system" translatable="false">system</string>
     <string name="hide_feeds">Hide feeds without new items</string>
     <string name="mark_items_read">Mark items read on scroll</string>
+    <string name="new_articles">New articles</string>
 </resources>

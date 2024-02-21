@@ -46,7 +46,7 @@ fun DrawerFolderItem(
     onClick: () -> Unit,
     feeds: List<Feed>,
     selectedFeed: Int,
-    onFeedClick: (Int) -> Unit,
+    onFeedClick: (Feed) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = NavigationDrawerItemDefaults.colors()
@@ -131,7 +131,7 @@ fun DrawerFolderItem(
                     },
                     badge = { Text(feed.unreadCount.toString()) },
                     selected = feed.id == selectedFeed,
-                    onClick = { onFeedClick(feed.id) },
+                    onClick = { onFeedClick(feed) },
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                 )
             }

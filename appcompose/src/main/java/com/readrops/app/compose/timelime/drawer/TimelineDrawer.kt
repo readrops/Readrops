@@ -26,14 +26,16 @@ import coil.compose.AsyncImage
 import com.readrops.app.compose.R
 import com.readrops.app.compose.timelime.TimelineState
 import com.readrops.app.compose.util.theme.spacing
+import com.readrops.db.entities.Feed
+import com.readrops.db.entities.Folder
 import com.readrops.db.filters.FilterType
 
 @Composable
 fun TimelineDrawer(
     state: TimelineState,
     onClickDefaultItem: (FilterType) -> Unit,
-    onFolderClick: (Int) -> Unit,
-    onFeedClick: (Int) -> Unit,
+    onFolderClick: (Folder) -> Unit,
+    onFeedClick: (Feed) -> Unit,
 ) {
     val scrollState = rememberScrollState()
 
@@ -74,7 +76,7 @@ fun TimelineDrawer(
                             Text(folderEntry.value.sumOf { it.unreadCount }.toString())
                         },
                         selected = state.filters.filterFolderId == folder.id,
-                        onClick = { onFolderClick(folder.id) },
+                        onClick = { onFolderClick(folder) },
                         feeds = folderEntry.value,
                         selectedFeed = state.filters.filterFeedId,
                         onFeedClick = { onFeedClick(it) },
@@ -102,7 +104,7 @@ fun TimelineDrawer(
                             },
                             badge = { Text(feed.unreadCount.toString()) },
                             selected = feed.id == state.filters.filterFeedId,
-                            onClick = { onFeedClick(feed.id) },
+                            onClick = { onFeedClick(feed) },
                             modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                         )
                     }
