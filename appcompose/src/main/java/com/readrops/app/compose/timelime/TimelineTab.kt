@@ -42,6 +42,7 @@ import com.readrops.app.compose.R
 import com.readrops.app.compose.item.ItemScreen
 import com.readrops.app.compose.timelime.drawer.TimelineDrawer
 import com.readrops.app.compose.util.components.CenteredColumn
+import com.readrops.app.compose.util.components.TwoChoicesDialog
 import com.readrops.app.compose.util.theme.spacing
 import com.readrops.db.filters.FilterType
 import org.koin.androidx.compose.getViewModel
@@ -94,6 +95,21 @@ object TimelineTab : Tab {
             } else {
                 drawerState.close()
             }
+        }
+
+        if (state.confirmDialog) {
+            TwoChoicesDialog(
+                title = "Mark all items as read",
+                text = "Do you really want to mark all items as read?",
+                icon = painterResource(id = R.drawable.ic_rss_feed_grey),
+                confirmText = "Validate",
+                dismissText = "Cancel",
+                onDismiss = { viewModel.closeConfirmDialog() },
+                onConfirm = {
+                    viewModel.closeConfirmDialog()
+                    viewModel.setAllItemsRead()
+                }
+            )
         }
 
         ModalNavigationDrawer(
@@ -158,7 +174,15 @@ object TimelineTab : Tab {
                     )
                 },
                 floatingActionButton = {
-                    FloatingActionButton(onClick = { }) {
+                    FloatingActionButton(
+                        onClick = {
+                            if (state.filters.filterType == FilterType.NO_FILTER) {
+                                viewModel.openConfirmDialog()
+                            } else {
+                                viewModel.setAllItemsRead()
+                            }
+                        }
+                    ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_done_all),
                             contentDescription = null

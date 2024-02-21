@@ -64,4 +64,20 @@ abstract class BaseRepository(
     open suspend fun setItemStarState(item: Item) {
         database.newItemDao().updateStarState(item.id, item.isStarred)
     }
+
+    open suspend fun setAllItemsRead(accountId: Int) {
+        database.newItemDao().setAllItemsRead(accountId)
+    }
+
+    open suspend fun setAllStarredItemsRead(accountId: Int) {
+        database.newItemDao().setAllStarredItemsRead(accountId)
+    }
+
+    open suspend fun setAllItemsReadByFeed(feedId: Int, accountId: Int) {
+        database.newItemDao().setAllItemsReadByFeed(feedId, accountId)
+    }
+
+    open suspend fun setAllItemsReadByFolder(folderId: Int, accountId: Int) {
+        database.newItemDao().setAllItemsReadByFolder(folderId, accountId)
+    }
 }

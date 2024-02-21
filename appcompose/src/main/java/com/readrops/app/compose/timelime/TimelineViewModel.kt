@@ -183,6 +183,39 @@ class TimelineViewModel(
             context.startActivity(Intent.createChooser(it, null))
         }
     }
+
+    fun setAllItemsRead() {
+        viewModelScope.launch(dispatcher) {
+            when (_timelineState.value.filters.filterType) {
+                FilterType.FEED_FILTER ->
+                    repository?.setAllItemsReadByFeed(
+                        _timelineState.value.filters.filterFeedId,
+                        currentAccount!!.id
+                    )
+
+                FilterType.FOLDER_FILER -> repository?.setAllItemsReadByFolder(
+                    _timelineState.value.filters.filterFolderId,
+                    currentAccount!!.id
+                )
+                FilterType.READ_IT_LATER_FILTER -> TODO()
+                FilterType.STARS_FILTER -> repository?.setAllStarredItemsRead(currentAccount!!.id)
+                FilterType.NO_FILTER -> repository?.setAllItemsRead(currentAccount!!.id)
+                FilterType.NEW -> TODO()
+            }
+        }
+    }
+
+    fun openConfirmDialog() {
+        _timelineState.value = _timelineState.value.copy(
+            confirmDialog = true
+        )
+    }
+
+    fun closeConfirmDialog() {
+        _timelineState.value = _timelineState.value.copy(
+            confirmDialog = false
+        )
+    }
 }
 
 @Immutable
@@ -194,5 +227,6 @@ data class TimelineState(
     val filterFeedName: String = "",
     val filterFolderName: String = "",
     val foldersAndFeeds: Map<Folder?, List<Feed>> = emptyMap(),
-    val itemState: Flow<PagingData<ItemWithFeed>> = emptyFlow()
+    val itemState: Flow<PagingData<ItemWithFeed>> = emptyFlow(),
+    val confirmDialog: Boolean = false
 )
