@@ -1,6 +1,12 @@
 package com.readrops.app.settings;
 
 
+import static android.app.Activity.RESULT_OK;
+import static com.readrops.app.utils.OPMLHelper.OPEN_OPML_FILE_REQUEST;
+import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
+import static com.readrops.app.utils.ReadropsKeys.ACCOUNT_ID;
+import static com.readrops.app.utils.ReadropsKeys.EDIT_ACCOUNT;
+
 import android.Manifest;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -21,7 +27,6 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.readrops.app.utils.OPMLHelper;
 import com.readrops.api.opml.OPMLParser;
 import com.readrops.app.R;
 import com.readrops.app.ReadropsApp;
@@ -30,6 +35,7 @@ import com.readrops.app.account.AddAccountActivity;
 import com.readrops.app.feedsfolders.ManageFeedsFoldersActivity;
 import com.readrops.app.notifications.NotificationPermissionActivity;
 import com.readrops.app.utils.FileUtils;
+import com.readrops.app.utils.OPMLHelper;
 import com.readrops.app.utils.PermissionManager;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
@@ -37,6 +43,8 @@ import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.account.Account;
 import com.readrops.db.entities.account.AccountType;
+
+import org.koin.android.compat.ViewModelCompat;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -46,14 +54,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.schedulers.Schedulers;
 import kotlin.Unit;
-
-import static android.app.Activity.RESULT_OK;
-import static com.readrops.app.utils.OPMLHelper.OPEN_OPML_FILE_REQUEST;
-import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
-import static com.readrops.app.utils.ReadropsKeys.ACCOUNT_ID;
-import static com.readrops.app.utils.ReadropsKeys.EDIT_ACCOUNT;
-
-import org.koin.android.compat.ViewModelCompat;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -274,11 +274,18 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setDataAndType(Uri.parse(absolutePath), "text/plain");
 
+        int intentFlag;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            intentFlag = PendingIntent.FLAG_IMMUTABLE;
+        } else {
+            intentFlag = PendingIntent.FLAG_IMMUTABLE;
+        }
+
         Notification notification = new NotificationCompat.Builder(getContext(), ReadropsApp.OPML_EXPORT_CHANNEL_ID)
                 .setContentTitle(getString(R.string.opml_export))
                 .setContentText(name)
                 .setSmallIcon(R.drawable.ic_notif)
-                .setContentIntent(PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
+                .setContentIntent(PendingIntent.getActivity(getContext(), 0, intent, intentFlag))
                 .setAutoCancel(true)
                 .build();
 

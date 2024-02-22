@@ -1,6 +1,8 @@
 package com.readrops.app.feedsfolders.feeds;
 
 
+import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
+
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,20 +17,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.readrops.app.R;
 import com.readrops.app.databinding.FragmentFeedsBinding;
+import com.readrops.app.feedsfolders.ManageFeedsFoldersViewModel;
 import com.readrops.app.utils.SharedPreferencesManager;
 import com.readrops.app.utils.Utils;
-import com.readrops.app.feedsfolders.ManageFeedsFoldersViewModel;
 import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.account.Account;
 import com.readrops.db.pojo.FeedWithFolder;
 
+import org.koin.android.compat.SharedViewModelCompat;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.schedulers.Schedulers;
-
-import static com.readrops.app.utils.ReadropsKeys.ACCOUNT;
-
-import org.koin.android.compat.SharedViewModelCompat;
 
 
 public class FeedsFragment extends Fragment {
@@ -64,7 +64,7 @@ public class FeedsFragment extends Fragment {
         if (account.getPassword() == null)
             account.setPassword(SharedPreferencesManager.readString(account.getPasswordKey()));
 
-        viewModel = SharedViewModelCompat.getSharedViewModel(this, ManageFeedsFoldersViewModel.class);
+        viewModel = SharedViewModelCompat.sharedViewModel(this, ManageFeedsFoldersViewModel.class).getValue();
         viewModel.setAccount(account);
 
         viewModel.getFeedsWithFolder().observe(this, feedWithFolders -> {

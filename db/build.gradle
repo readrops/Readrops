@@ -28,9 +28,6 @@ android {
         androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
     }
 
-    lintOptions {
-        abortOnError false
-    }
 
     buildTypes {
         release {
@@ -46,12 +43,16 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
     }
+    lint {
+        abortOnError false
+    }
+    namespace 'com.readrops.db'
 }
 
 // Needed for kapt starting with kotlin plugin 1.5
@@ -75,11 +76,13 @@ dependencies {
     androidTestImplementation 'androidx.test:rules:1.4.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
-    def room_version = "2.3.0"
+    def room_version = "2.4.3"
     api "androidx.room:room-runtime:$room_version"
+    api "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-rxjava2:$room_version"
     androidTestImplementation "androidx.room:room-testing:$room_version"
+    implementation "androidx.room:room-paging:$room_version"
 
     implementation 'com.github.MatrixDev.Roomigrant:RoomigrantLib:0.3.4'
     kapt 'com.github.MatrixDev.Roomigrant:RoomigrantCompiler:0.3.4'
@@ -91,5 +94,12 @@ dependencies {
 
     api "io.insert-koin:koin-core:$rootProject.ext.koin_version"
     api "io.insert-koin:koin-android:$rootProject.ext.koin_version"
+    api "io.insert-koin:koin-androidx-compose:3.4.2"
     api "io.insert-koin:koin-android-compat:$rootProject.ext.koin_version"
+
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
+
+    api "androidx.paging:paging-runtime-ktx:3.2.1"
+    api "androidx.paging:paging-compose:3.2.1"
 }

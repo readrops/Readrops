@@ -7,7 +7,7 @@ import com.readrops.db.filters.ListSortType
 
 object ItemsQueryBuilder {
 
-    private val COLUMNS = arrayOf("Item.id", "Item.remoteId", "title", "clean_description", "image_link", "pub_date",
+    private val COLUMNS = arrayOf("Item.id", "Item.remoteId", "title", "clean_description", "image_link", "pub_date", "link",
             "read_it_later", "Feed.name", "text_color", "background_color", "icon_url", "read_time",
             "Feed.id as feedId", "Feed.account_id", "Folder.id as folder_id", "Folder.name as folder_name")
 
@@ -81,11 +81,11 @@ object ItemsQueryBuilder {
 
 }
 
-class QueryFilters(
-        var showReadItems: Boolean = true,
-        var filterFeedId: Int = 0,
-        var filterFolderId: Int = 0,
-        var accountId: Int = 0,
-        var filterType: FilterType = FilterType.NO_FILTER,
-        var sortType: ListSortType = ListSortType.NEWEST_TO_OLDEST,
+data class QueryFilters(
+    var showReadItems: Boolean = true,
+    var filterFeedId: Int = 0,
+    var filterFolderId: Int = 0,
+    var accountId: Int = 0,
+    var filterType: FilterType = FilterType.NO_FILTER,
+    var sortType: ListSortType = ListSortType.NEWEST_TO_OLDEST,
 )

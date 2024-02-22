@@ -1,14 +1,14 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.5.30'
+    ext.kotlin_version = '1.8.0'
 
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.2'
+        classpath 'com.android.tools.build:gradle:8.1.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jacoco:org.jacoco.core:0.8.7"
     }
@@ -30,15 +30,15 @@ allprojects {
 }
 
 ext {
-    compileSdkVersion = 30
+    compileSdkVersion = 34
     minSdkVersion = 21
-    targetSdkVersion = 30
-    buildToolsVersion = "30.0.3"
+    targetSdkVersion = 34
+    buildToolsVersion = "34.0.0"
 
-    koin_version = "3.1.2"
+    koin_version = "3.3.3"
 }
 
-task clean(type: Delete) {
+tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }
 
@@ -47,7 +47,7 @@ jacoco {
 }
 
 
-task jacocoFullReport(type: JacocoReport) {
+tasks.register('jacocoFullReport', JacocoReport) {
     group = 'Reporting'
     description = "Generate Jacoco coverage reports for the debug build"
 

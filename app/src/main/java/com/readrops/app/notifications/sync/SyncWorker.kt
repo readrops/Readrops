@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -95,13 +96,19 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
                 }
             }
 
+            val intentFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                PendingIntent.FLAG_IMMUTABLE
+            } else {
+                PendingIntent.FLAG_IMMUTABLE
+            }
+
             val notificationBuilder = NotificationCompat.Builder(applicationContext, ReadropsApp.SYNC_CHANNEL_ID)
                     .setContentTitle(notifContent.title)
                     .setContentText(notifContent.content)
                     .setStyle(NotificationCompat.BigTextStyle().bigText(notifContent.content))
                     .setSmallIcon(R.drawable.ic_notif)
                     .setContentIntent(PendingIntent.getActivity(applicationContext, 0,
-                            intent, PendingIntent.FLAG_UPDATE_CURRENT))
+                            intent, intentFlag))
                     .setAutoCancel(true)
 
             notifContent.item?.let {
@@ -126,8 +133,14 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
             putExtra(ReadropsKeys.ITEM_ID, item.id)
         }
 
+        val intentFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PendingIntent.FLAG_IMMUTABLE
+        } else {
+            PendingIntent.FLAG_IMMUTABLE
+        }
+
         return NotificationCompat.Action.Builder(R.drawable.ic_read_later, applicationContext.getString(R.string.read_later),
-                PendingIntent.getBroadcast(applicationContext, 0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                PendingIntent.getBroadcast(applicationContext, 0, broadcastIntent, intentFlag))
                 .setAllowGeneratedReplies(false)
                 .build()
     }
@@ -137,10 +150,19 @@ class SyncWorker(context: Context, parameters: WorkerParameters) : Worker(contex
             putExtra(ReadropsKeys.ITEM_ID, item.id)
         }
 
-        return NotificationCompat.Action.Builder(R.drawable.ic_read, applicationContext.getString(R.string.read),
-                PendingIntent.getBroadcast(applicationContext, 0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            NotificationCompat.Action.Builder(R.drawable.ic_read, applicationContext.getString(R.string.read),
+                PendingIntent.getBroadcast(applicationContext, 0, broadcastIntent, PendingIntent.FLAG_IMMUTABLE))
                 .setAllowGeneratedReplies(false)
                 .build()
+        } else {
+            NotificationCompat.Action.Builder(R.drawable.ic_read, applicationContext.getString(R.string.read),
+                PendingIntent.getBroadcast(applicationContext, 0, broadcastIntent, PendingIntent.FLAG_IMMUTABLE))
+                .setAllowGeneratedReplies(false)
+                .build()
+        }
+
+
     }
 
     class MarkReadReceiver : BroadcastReceiver(), KoinComponent {
