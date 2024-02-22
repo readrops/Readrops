@@ -73,6 +73,7 @@
     <string name="filter_oldest">Du plus ancien au plus récent</string>
     <string name="login_failed">La connexion a échoué. Veuillez vérifier vos identifiants</string>
     <string name="new_account">Nouveau compte</string>
+    <string name="new_articles">Nouveaux articles</string>
     <string name="app_licence">Appli distribuée sous la licence GPLv3</string>
     <string name="number_items_to_parse">Nombre maximum d\'articles par flux</string>
     <string name="unlimited">Illimité</string>
@@ -140,5 +141,6 @@
     <string name="system">Thème du système</string>
     <string name="hide_feeds">Cacher les flux sans nouveaux items</string>
     <string name="mark_items_read">Marquer les items comme lus pendant le défilement</string>
+    <string name="filters">Filtres</string>
 
 </resources>

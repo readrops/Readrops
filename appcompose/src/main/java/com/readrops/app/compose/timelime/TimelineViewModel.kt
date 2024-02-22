@@ -15,6 +15,7 @@ import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
 import com.readrops.db.filters.FilterType
+import com.readrops.db.filters.ListSortType
 import com.readrops.db.pojo.ItemWithFeed
 import com.readrops.db.queries.ItemsQueryBuilder
 import com.readrops.db.queries.QueryFilters
@@ -197,6 +198,7 @@ class TimelineViewModel(
                     _timelineState.value.filters.filterFolderId,
                     currentAccount!!.id
                 )
+
                 FilterType.READ_IT_LATER_FILTER -> TODO()
                 FilterType.STARS_FILTER -> repository?.setAllStarredItemsRead(currentAccount!!.id)
                 FilterType.NO_FILTER -> repository?.setAllItemsRead(currentAccount!!.id)
@@ -205,16 +207,32 @@ class TimelineViewModel(
         }
     }
 
-    fun openConfirmDialog() {
-        _timelineState.value = _timelineState.value.copy(
-            confirmDialog = true
-        )
+    fun openDialog(dialog: DialogState) = _timelineState.update { it.copy(dialog = dialog) }
+
+    fun closeDialog() = _timelineState.update { it.copy(dialog = null) }
+
+    fun setShowReadItemsState(showReadItems: Boolean) {
+        _timelineState.update {
+            it.copy(
+                filters = updateFilters {
+                    it.filters.copy(
+                        showReadItems = showReadItems
+                    )
+                }
+            )
+        }
     }
 
-    fun closeConfirmDialog() {
-        _timelineState.value = _timelineState.value.copy(
-            confirmDialog = false
-        )
+    fun setSortTypeState(sortType: ListSortType) {
+        _timelineState.update {
+            it.copy(
+                filters = updateFilters {
+                    it.filters.copy(
+                        sortType = sortType
+                    )
+                }
+            )
+        }
     }
 }
 
@@ -228,5 +246,10 @@ data class TimelineState(
     val filterFolderName: String = "",
     val foldersAndFeeds: Map<Folder?, List<Feed>> = emptyMap(),
     val itemState: Flow<PagingData<ItemWithFeed>> = emptyFlow(),
-    val confirmDialog: Boolean = false
+    val dialog: DialogState? = null
 )
+
+sealed interface DialogState {
+    object ConfirmDialog : DialogState
+    object FilterSheet : DialogState
+}

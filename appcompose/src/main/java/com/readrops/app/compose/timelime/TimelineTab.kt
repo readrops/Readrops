@@ -97,19 +97,33 @@ object TimelineTab : Tab {
             }
         }
 
-        if (state.confirmDialog) {
-            TwoChoicesDialog(
-                title = "Mark all items as read",
-                text = "Do you really want to mark all items as read?",
-                icon = painterResource(id = R.drawable.ic_rss_feed_grey),
-                confirmText = "Validate",
-                dismissText = "Cancel",
-                onDismiss = { viewModel.closeConfirmDialog() },
-                onConfirm = {
-                    viewModel.closeConfirmDialog()
-                    viewModel.setAllItemsRead()
-                }
-            )
+        when (state.dialog) {
+            DialogState.ConfirmDialog -> {
+                TwoChoicesDialog(
+                    title = "Mark all items as read",
+                    text = "Do you really want to mark all items as read?",
+                    icon = painterResource(id = R.drawable.ic_rss_feed_grey),
+                    confirmText = "Validate",
+                    dismissText = "Cancel",
+                    onDismiss = { viewModel.closeDialog() },
+                    onConfirm = {
+                        viewModel.closeDialog()
+                        viewModel.setAllItemsRead()
+                    }
+                )
+            }
+
+            DialogState.FilterSheet -> {
+                FilterBottomSheet(
+                    viewModel = viewModel,
+                    filters = state.filters,
+                    onDismiss = {
+                        viewModel.closeDialog()
+                    }
+                )
+            }
+
+            null -> {}
         }
 
         ModalNavigationDrawer(
@@ -155,7 +169,9 @@ object TimelineTab : Tab {
                             }
                         },
                         actions = {
-                            IconButton(onClick = { }) {
+                            IconButton(
+                                onClick = { viewModel.openDialog(DialogState.FilterSheet) }
+                            ) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_filter_list),
                                     contentDescription = null
@@ -177,7 +193,7 @@ object TimelineTab : Tab {
                     FloatingActionButton(
                         onClick = {
                             if (state.filters.filterType == FilterType.NO_FILTER) {
-                                viewModel.openConfirmDialog()
+                                viewModel.openDialog(DialogState.ConfirmDialog)
                             } else {
                                 viewModel.setAllItemsRead()
                             }
