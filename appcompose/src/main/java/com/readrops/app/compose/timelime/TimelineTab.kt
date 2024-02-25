@@ -151,7 +151,6 @@ object TimelineTab : Tab {
                                 text = when (state.filters.filterType) {
                                     FilterType.FEED_FILTER -> state.filterFeedName
                                     FilterType.FOLDER_FILER -> state.filterFolderName
-                                    FilterType.READ_IT_LATER_FILTER -> stringResource(R.string.read_later)
                                     FilterType.STARS_FILTER -> stringResource(R.string.favorites)
                                     FilterType.NO_FILTER -> stringResource(R.string.articles)
                                     FilterType.NEW -> stringResource(R.string.new_articles)
@@ -240,7 +239,6 @@ object TimelineTab : Tab {
                                             navigator.push(ItemScreen())
                                         },
                                         onFavorite = { viewModel.updateStarState(itemWithFeed.item) },
-                                        onReadLater = {},
                                         onShare = {
                                             viewModel.shareItem(itemWithFeed.item, context)
                                         },

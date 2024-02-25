@@ -199,7 +199,6 @@ class TimelineViewModel(
                     currentAccount!!.id
                 )
 
-                FilterType.READ_IT_LATER_FILTER -> TODO()
                 FilterType.STARS_FILTER -> repository?.setAllStarredItemsRead(currentAccount!!.id)
                 FilterType.NO_FILTER -> repository?.setAllItemsRead(currentAccount!!.id)
                 FilterType.NEW -> TODO()

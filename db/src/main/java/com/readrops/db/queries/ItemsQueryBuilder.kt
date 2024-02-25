@@ -65,7 +65,6 @@ object ItemsQueryBuilder {
         when (queryFilters.filterType) {
             FilterType.FEED_FILTER -> append("feed_id = ${queryFilters.filterFeedId} And read_it_later = 0")
             FilterType.FOLDER_FILER -> append("folder_id = ${queryFilters.filterFolderId} And read_it_later = 0")
-            FilterType.READ_IT_LATER_FILTER -> append("read_it_later = 1")
             FilterType.STARS_FILTER -> {
                 if (separateState) {
                     append("ItemState.starred = 1 And read_it_later = 0")

@@ -43,7 +43,6 @@ fun TimelineItem(
     itemWithFeed: ItemWithFeed,
     onClick: () -> Unit,
     onFavorite: () -> Unit,
-    onReadLater: () -> Unit,
     onShare: () -> Unit,
     modifier: Modifier = Modifier,
     compactLayout: Boolean = false,
@@ -186,12 +185,6 @@ fun TimelineItem(
                     imageVector = if (itemWithFeed.item.isStarred) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                     contentDescription = null,
                     modifier = Modifier.clickable { onFavorite() }
-                )
-
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_read_later),
-                    contentDescription = null,
-                    modifier = Modifier.clickable { onReadLater() }
                 )
 
                 Icon(

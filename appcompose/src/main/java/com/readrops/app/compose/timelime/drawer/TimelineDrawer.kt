@@ -157,19 +157,6 @@ fun DrawerDefaultItems(
         onClick = { onClick(FilterType.STARS_FILTER) },
         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
     )
-
-    NavigationDrawerItem(
-        label = { Text(text = stringResource(R.string.read_later)) },
-        icon = {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_read_later),
-                contentDescription = null
-            )
-        },
-        selected = selectedItem == FilterType.READ_IT_LATER_FILTER,
-        onClick = { onClick(FilterType.READ_IT_LATER_FILTER) },
-        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-    )
 }
 
 @Composable
