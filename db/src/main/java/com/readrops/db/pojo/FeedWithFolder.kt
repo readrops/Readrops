@@ -25,6 +25,11 @@ data class FolderWithFeed(
 )
 
 data class FeedWithCount(
-    @Embedded val feed: Feed,
-    val unreadCount: Int
+    val feedId: Int = 0,
+    val feedName: String? = null,
+    val feedIcon: String? = null,
+    val feedUrl: String? = null,
+    val feedSiteUrl: String? = null,
+    val unreadCount: Int = 0,
+    val accountId: Int = 0
 )

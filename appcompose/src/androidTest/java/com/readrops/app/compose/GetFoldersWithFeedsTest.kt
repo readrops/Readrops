@@ -10,7 +10,7 @@ import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.joda.time.LocalDateTime
 import org.junit.Before
@@ -48,10 +48,23 @@ class GetFoldersWithFeedsTest {
                     .insert(Feed(name = "Feed ${time + 2}", folderId = 1, accountId = account.id))
             }
 
-            // inserting 3 items linked to first feed (Feed 0)
+            // inserting 3 unread items linked to first feed (Feed 0)
             repeat(3) { time ->
                 database.newItemDao()
                     .insert(Item(title = "Item $time", feedId = 1, pubDate = LocalDateTime.now()))
+            }
+
+            // insert 3 read items items linked to second feed (feed 1)
+           repeat(3) { time ->
+                database.newItemDao()
+                    .insert(
+                        Item(
+                            title = "Item ${time + 3}",
+                            feedId = 3,
+                            isRead = true,
+                            pubDate = LocalDateTime.now()
+                        )
+                    )
             }
         }
     }
@@ -59,20 +72,12 @@ class GetFoldersWithFeedsTest {
     @Test
     fun getFoldersWithFeedsTest() = runTest {
         getFoldersWithFeeds = GetFoldersWithFeeds(database)
-        val job = launch {
-            getFoldersWithFeeds.get(account.id)
-                .collect { foldersAndFeeds ->
+        val foldersAndFeeds = getFoldersWithFeeds.get(account.id).first()
 
-
-                    assertTrue { foldersAndFeeds.size == 4 }
-                    assertTrue { foldersAndFeeds.entries.first().value.size == 2 }
-                    assertTrue { foldersAndFeeds.entries.last().key == null }
-                    assertTrue { foldersAndFeeds[null]!!.size == 2 }
-                    assertTrue { foldersAndFeeds[null]!!.first().unreadCount == 3 }
-                }
-        }
-
-        // for an unknown reason, the coroutine must be canceled to stop the test, and I don't really know why
-        job.cancel()
+        assertTrue { foldersAndFeeds.size == 4 }
+        assertTrue { foldersAndFeeds.entries.first().value.size == 2 }
+        assertTrue { foldersAndFeeds.entries.last().key == null }
+        assertTrue { foldersAndFeeds[null]!!.size == 2 }
+        assertTrue { foldersAndFeeds[null]!!.first().unreadCount == 3 }
     }
 }

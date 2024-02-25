@@ -47,7 +47,16 @@ class GetFoldersWithFeeds(
                 foldersWithFeeds + mapOf(
                     Pair(
                         null,
-                        feedsWithoutFolder.map { it.feed.apply { unreadCount = it.unreadCount } })
+                        feedsWithoutFolder.map { feedWithoutFolder ->
+                            Feed(
+                                id = feedWithoutFolder.feedId,
+                                name = feedWithoutFolder.feedName,
+                                iconUrl = feedWithoutFolder.feedIcon,
+                                url = feedWithoutFolder.feedUrl,
+                                siteUrl = feedWithoutFolder.feedSiteUrl,
+                                unreadCount = feedWithoutFolder.unreadCount
+                            )
+                        })
                 )
             } else {
                 foldersWithFeeds
