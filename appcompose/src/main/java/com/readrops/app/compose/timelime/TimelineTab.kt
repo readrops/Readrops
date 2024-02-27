@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -154,7 +155,9 @@ object TimelineTab : Tab {
                                     FilterType.STARS_FILTER -> stringResource(R.string.favorites)
                                     FilterType.NO_FILTER -> stringResource(R.string.articles)
                                     FilterType.NEW -> stringResource(R.string.new_articles)
-                                }
+                                },
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         },
                         navigationIcon = {
