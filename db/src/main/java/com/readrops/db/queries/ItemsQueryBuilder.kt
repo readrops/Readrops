@@ -72,6 +72,7 @@ object ItemsQueryBuilder {
                     append("starred = 1 And read_it_later = 0")
                 }
             }
+            FilterType.NEW -> append("DateTime(Round(pub_date / 1000), 'unixepoch') Between DateTime(DateTime(\"now\"), \"-24 hour\") And DateTime(\"now\") ")
             else -> append("read_it_later = 0")
         }
 
