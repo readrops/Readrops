@@ -61,16 +61,6 @@ class ItemsQueryBuilderTest {
     }
 
     @Test
-    fun readLaterFilterCaseTest() {
-        val queryFilters = QueryFilters(accountId = 1, filterType = FilterType.READ_IT_LATER_FILTER)
-
-        val query = ItemsQueryBuilder.buildItemsQuery(queryFilters)
-        database.query(query)
-
-        assertTrue(query.sql.contains("read_it_later = 1"))
-    }
-
-    @Test
     fun starsFilterCaseTest() {
         val queryFilters = QueryFilters(accountId = 1, filterType = FilterType.STARS_FILTER)
 

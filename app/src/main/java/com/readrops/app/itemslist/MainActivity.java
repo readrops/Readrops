@@ -279,7 +279,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     setTitle(R.string.articles);
                     break;
                 case DrawerManager.READ_LATER_ID:
-                    viewModel.setFilterType(FilterType.READ_IT_LATER_FILTER);
+                    //viewModel.setFilterType(FilterType.READ_IT_LATER_FILTER);
                     viewModel.invalidate();
                     setTitle(R.string.read_later);
                     break;
