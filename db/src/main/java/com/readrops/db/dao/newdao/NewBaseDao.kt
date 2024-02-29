@@ -10,17 +10,17 @@ interface NewBaseDao<T> {
     suspend fun insert(entity: T): Long
 
     @Insert
-    suspend fun insert(entities: List<T>?): List<Long>
+    suspend fun insert(entities: List<T>): List<Long>
 
     @Update
     suspend fun update(entity: T)
 
     @Update
-    suspend fun update(entities: List<T>?)
+    suspend fun update(entities: List<T>)
 
     @Delete
     suspend fun delete(entity: T)
 
     @Delete
-    suspend fun delete(entities: List<T>?)
+    suspend fun delete(entities: List<T>)
 }
