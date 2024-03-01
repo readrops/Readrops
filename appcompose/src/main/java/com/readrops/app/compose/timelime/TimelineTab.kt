@@ -3,6 +3,7 @@ package com.readrops.app.compose.timelime
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,11 +21,15 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -37,8 +42,6 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.readrops.app.compose.R
 import com.readrops.app.compose.item.ItemScreen
 import com.readrops.app.compose.timelime.drawer.TimelineDrawer
@@ -69,9 +72,24 @@ object TimelineTab : Tab {
         val context = LocalContext.current
 
         val scrollState = rememberLazyListState()
+        val swipeState = rememberPullToRefreshState()
 
-        // Use the depreciated refresh swipe as the material 3 one isn't available yet
-        val swipeState = rememberSwipeRefreshState(state.isRefreshing)
+        LaunchedEffect(state.isRefreshing) {
+            if (state.isRefreshing) {
+                swipeState.startRefresh()
+            } else {
+                swipeState.endRefresh()
+            }
+        }
+
+        // Material3 pull to refresh doesn't have a onRefresh callback,
+        // so we need to listen to the internal state change to trigger the refresh
+        LaunchedEffect(swipeState.isRefreshing) {
+            if (swipeState.isRefreshing) {
+                viewModel.refreshTimeline()
+            }
+        }
+
         val drawerState = rememberDrawerState(
             initialValue = DrawerValue.Closed,
             confirmStateChange = {
@@ -208,10 +226,10 @@ object TimelineTab : Tab {
                     }
                 },
             ) { paddingValues ->
-                SwipeRefresh(
-                    state = swipeState,
-                    onRefresh = { viewModel.refreshTimeline() },
-                    modifier = Modifier.padding(paddingValues)
+                Box(
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .nestedScroll(swipeState.nestedScrollConnection)
                 ) {
                     when {
                         items.isLoading() -> {
@@ -251,6 +269,11 @@ object TimelineTab : Tab {
                             }
                         }
                     }
+
+                    PullToRefreshContainer(
+                        state = swipeState,
+                        modifier = Modifier.align(Alignment.TopCenter)
+                    )
                 }
             }
         }
