@@ -8,10 +8,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.androidx.AndroidScreen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.readrops.app.compose.home.HomeScreen
+import com.readrops.app.compose.util.components.AndroidScreen
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
 
