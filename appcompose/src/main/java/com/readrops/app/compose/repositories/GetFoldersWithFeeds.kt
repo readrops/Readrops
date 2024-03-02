@@ -3,6 +3,8 @@ package com.readrops.app.compose.repositories
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
+import com.readrops.db.filters.FilterType
+import com.readrops.db.queries.FoldersAndFeedsQueriesBuilder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 
@@ -10,12 +12,17 @@ class GetFoldersWithFeeds(
     private val database: Database,
 ) {
 
-    fun get(accountId: Int): Flow<Map<Folder?, List<Feed>>> {
+    fun get(accountId: Int, filterType: FilterType): Flow<Map<Folder?, List<Feed>>> {
+        val foldersAndFeedsQuery =
+            FoldersAndFeedsQueriesBuilder.buildFoldersAndFeedsQuery(accountId, filterType)
+        val feedsWithoutFolderQuery =
+            FoldersAndFeedsQueriesBuilder.buildFeedsWithoutFolderQuery(accountId, filterType)
+
         return combine(
             flow = database.newFolderDao()
-                .selectFoldersAndFeeds(accountId),
+                .selectFoldersAndFeeds(foldersAndFeedsQuery),
             flow2 = database.newFeedDao()
-                .selectFeedsWithoutFolder(accountId)
+                .selectFeedsWithoutFolder(feedsWithoutFolderQuery)
         ) { folders, feedsWithoutFolder ->
             val foldersWithFeeds = folders.groupBy(
                 keySelector = {

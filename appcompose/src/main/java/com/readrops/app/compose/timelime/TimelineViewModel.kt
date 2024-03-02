@@ -67,7 +67,7 @@ class TimelineViewModel(
                     )
                 }
 
-                getFoldersWithFeeds.get(account.id)
+                getFoldersWithFeeds.get(account.id, filters.filterType)
                     .collect { foldersAndFeeds ->
                         _timelineState.update {
                             it.copy(

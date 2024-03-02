@@ -2,7 +2,10 @@ package com.readrops.db.dao.newdao
 
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.RawQuery
+import androidx.sqlite.db.SupportSQLiteQuery
 import com.readrops.db.entities.Feed
+import com.readrops.db.entities.Item
 import com.readrops.db.pojo.FeedWithCount
 import kotlinx.coroutines.flow.Flow
 
@@ -21,12 +24,8 @@ abstract class NewFeedDao : NewBaseDao<Feed> {
     @Query("Select case When :feedUrl In (Select url from Feed Where account_id = :accountId) Then 1 else 0 end")
     abstract suspend fun feedExists(feedUrl: String, accountId: Int): Boolean
 
-    @Query("With main As (Select Feed.id as feedId, Feed.name as feedName, Feed.icon_url as feedIcon, " +
-            "Feed.url as feedUrl, Feed.siteUrl as feedSiteUrl, Feed.account_id as accountId, Item.read as itemRead " +
-            "From Feed Left Join Item On Feed.id = Item.feed_id Where Feed.folder_id is Null And Feed.account_id = :accountId)" +
-            "Select feedId, feedName, feedIcon, feedUrl, feedSiteUrl, accountId, " +
-            "(Select count(*) From main Where (itemRead = 0)) as unreadCount From main Group by feedId Order By feedName")
-    abstract fun selectFeedsWithoutFolder(accountId: Int): Flow<List<FeedWithCount>>
+    @RawQuery(observedEntities = [Feed::class, Item::class])
+    abstract fun selectFeedsWithoutFolder(query: SupportSQLiteQuery): Flow<List<FeedWithCount>>
 
     @Query("Update Feed set name = :feedName, url = :feedUrl, folder_id = :folderId Where id = :feedId")
     abstract fun updateFeedFields(feedId: Int, feedName: String, feedUrl: String, folderId: Int?)

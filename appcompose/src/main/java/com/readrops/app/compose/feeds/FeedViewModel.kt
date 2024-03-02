@@ -11,6 +11,7 @@ import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.account.Account
+import com.readrops.db.filters.FilterType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,7 +47,7 @@ class FeedViewModel(
         viewModelScope.launch(context = Dispatchers.IO) {
             accountEvent
                 .flatMapConcat { account ->
-                    getFoldersWithFeeds.get(account.id)
+                    getFoldersWithFeeds.get(account.id, FilterType.NO_FILTER)
                 }
                 .catch { throwable ->
                     _feedState.update {
