@@ -3,12 +3,12 @@ package com.readrops.app.compose.timelime
 import android.content.Context
 import android.content.Intent
 import androidx.compose.runtime.Immutable
-import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.readrops.app.compose.base.TabViewModel
+import cafe.adriel.voyager.core.model.screenModelScope
+import com.readrops.app.compose.base.TabScreenModel
 import com.readrops.app.compose.repositories.GetFoldersWithFeeds
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
@@ -30,11 +30,11 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class TimelineViewModel(
+class TimelineScreenModel(
     private val database: Database,
     private val getFoldersWithFeeds: GetFoldersWithFeeds,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : TabViewModel(database) {
+) : TabScreenModel(database) {
 
     private val _timelineState = MutableStateFlow(TimelineState())
     val timelineState = _timelineState.asStateFlow()
@@ -42,7 +42,7 @@ class TimelineViewModel(
     private val filters = MutableStateFlow(_timelineState.value.filters)
 
     init {
-        viewModelScope.launch(dispatcher) {
+        screenModelScope.launch(dispatcher) {
             combine(
                 accountEvent,
                 filters
@@ -63,7 +63,7 @@ class TimelineViewModel(
                                 database.newItemDao().selectAll(query)
                             },
                         ).flow
-                            .cachedIn(viewModelScope)
+                            .cachedIn(screenModelScope)
                     )
                 }
 
@@ -81,7 +81,7 @@ class TimelineViewModel(
 
     fun refreshTimeline() {
         _timelineState.update { it.copy(isRefreshing = true) }
-        viewModelScope.launch(dispatcher) {
+        screenModelScope.launch(dispatcher) {
             repository?.synchronize(null) {
 
             }
@@ -161,13 +161,13 @@ class TimelineViewModel(
     }
 
     private fun updateItemReadState(item: Item) {
-        viewModelScope.launch(dispatcher) {
+        screenModelScope.launch(dispatcher) {
             repository?.setItemReadState(item)
         }
     }
 
     fun updateStarState(item: Item) {
-        viewModelScope.launch(dispatcher) {
+        screenModelScope.launch(dispatcher) {
             with(item) {
                 isStarred = isStarred.not()
                 repository?.setItemStarState(this)
@@ -186,7 +186,7 @@ class TimelineViewModel(
     }
 
     fun setAllItemsRead() {
-        viewModelScope.launch(dispatcher) {
+        screenModelScope.launch(dispatcher) {
             when (_timelineState.value.filters.filterType) {
                 FilterType.FEED_FILTER ->
                     repository?.setAllItemsReadByFeed(
@@ -233,6 +233,8 @@ class TimelineViewModel(
             )
         }
     }
+
+
 }
 
 @Immutable

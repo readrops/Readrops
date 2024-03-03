@@ -1,7 +1,7 @@
 package com.readrops.app.compose.base
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import cafe.adriel.voyager.core.model.ScreenModel
+import cafe.adriel.voyager.core.model.screenModelScope
 import com.readrops.app.compose.repositories.BaseRepository
 import com.readrops.db.Database
 import com.readrops.db.entities.account.Account
@@ -15,9 +15,9 @@ import org.koin.core.parameter.parametersOf
 /**
  * Custom ViewModel for Tab screens handling account change
  */
-abstract class TabViewModel(
+abstract class TabScreenModel(
     private val database: Database,
-) : ViewModel(), KoinComponent {
+) : ScreenModel, KoinComponent {
 
     /**
      * Repository intended to be rebuilt when the current account changes
@@ -29,7 +29,7 @@ abstract class TabViewModel(
     protected val accountEvent = MutableSharedFlow<Account>()
 
     init {
-        viewModelScope.launch {
+        screenModelScope.launch {
             database.newAccountDao()
                 .selectCurrentAccount()
                 .distinctUntilChanged()

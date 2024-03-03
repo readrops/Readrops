@@ -1,10 +1,10 @@
 package com.readrops.app.compose.feeds
 
 import android.util.Patterns
-import androidx.lifecycle.viewModelScope
+import cafe.adriel.voyager.core.model.screenModelScope
 import com.readrops.api.localfeed.LocalRSSDataSource
 import com.readrops.api.utils.HtmlParser
-import com.readrops.app.compose.base.TabViewModel
+import com.readrops.app.compose.base.TabScreenModel
 import com.readrops.app.compose.repositories.GetFoldersWithFeeds
 import com.readrops.app.compose.util.components.TextFieldError
 import com.readrops.db.Database
@@ -25,11 +25,11 @@ import org.koin.core.component.get
 import java.net.UnknownHostException
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class FeedViewModel(
+class FeedScreenModel(
     database: Database,
     private val getFoldersWithFeeds: GetFoldersWithFeeds,
     private val localRSSDataSource: LocalRSSDataSource,
-) : TabViewModel(database), KoinComponent {
+) : TabScreenModel(database), KoinComponent {
 
     private val _feedState = MutableStateFlow(FeedState())
     val feedsState = _feedState.asStateFlow()
@@ -44,7 +44,7 @@ class FeedViewModel(
     val folderState = _folderState.asStateFlow()
 
     init {
-        viewModelScope.launch(context = Dispatchers.IO) {
+        screenModelScope.launch(context = Dispatchers.IO) {
             accountEvent
                 .flatMapConcat { account ->
                     getFoldersWithFeeds.get(account.id, FilterType.NO_FILTER)
@@ -61,7 +61,7 @@ class FeedViewModel(
                 }
         }
 
-        viewModelScope.launch(context = Dispatchers.IO) {
+        screenModelScope.launch(context = Dispatchers.IO) {
             database.newAccountDao()
                 .selectAllAccounts()
                 .collect { accounts ->
@@ -74,7 +74,7 @@ class FeedViewModel(
                 }
         }
 
-        viewModelScope.launch(context = Dispatchers.IO) {
+        screenModelScope.launch(context = Dispatchers.IO) {
             accountEvent
                 .flatMapConcat { account ->
                     database.newFolderDao()
@@ -120,13 +120,13 @@ class FeedViewModel(
     }
 
     fun deleteFeed(feed: Feed) {
-        viewModelScope.launch(Dispatchers.IO) {
+        screenModelScope.launch(Dispatchers.IO) {
             repository?.deleteFeed(feed)
         }
     }
 
     fun deleteFolder(folder: Folder) {
-        viewModelScope.launch(Dispatchers.IO) {
+        screenModelScope.launch(Dispatchers.IO) {
             repository?.deleteFolder(folder)
         }
     }
@@ -166,7 +166,7 @@ class FeedViewModel(
                 return
             }
 
-            else -> viewModelScope.launch(Dispatchers.IO) {
+            else -> screenModelScope.launch(Dispatchers.IO) {
                 try {
                     if (localRSSDataSource.isUrlRSSResource(url)) {
                         // TODO add support for all account types
@@ -267,7 +267,7 @@ class FeedViewModel(
             }
 
             else -> {
-                viewModelScope.launch(Dispatchers.IO) {
+                screenModelScope.launch(Dispatchers.IO) {
                     with(_updateFeedDialogState.value) {
                         repository?.updateFeed(
                             Feed(
@@ -312,7 +312,7 @@ class FeedViewModel(
             return
         }
 
-        viewModelScope.launch(Dispatchers.IO) {
+        screenModelScope.launch(Dispatchers.IO) {
             if (updateFolder) {
                 repository?.updateFolder(_folderState.value.folder)
             } else {

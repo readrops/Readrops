@@ -38,6 +38,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import cafe.adriel.voyager.koin.getNavigatorScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
@@ -49,7 +50,6 @@ import com.readrops.app.compose.util.components.CenteredColumn
 import com.readrops.app.compose.util.components.TwoChoicesDialog
 import com.readrops.app.compose.util.theme.spacing
 import com.readrops.db.filters.FilterType
-import org.koin.androidx.compose.getViewModel
 
 
 object TimelineTab : Tab {
@@ -64,12 +64,13 @@ object TimelineTab : Tab {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
-        val viewModel = getViewModel<TimelineViewModel>()
-        val state by viewModel.timelineState.collectAsStateWithLifecycle()
-        val items = state.itemState.collectAsLazyPagingItems()
-
         val navigator = LocalNavigator.currentOrThrow
         val context = LocalContext.current
+
+        val viewModel = navigator.getNavigatorScreenModel<TimelineScreenModel>()
+
+        val state by viewModel.timelineState.collectAsStateWithLifecycle()
+        val items = state.itemState.collectAsLazyPagingItems()
 
         val scrollState = rememberLazyListState()
         val swipeState = rememberPullToRefreshState()

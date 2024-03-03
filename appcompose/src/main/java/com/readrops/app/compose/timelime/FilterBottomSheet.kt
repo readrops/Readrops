@@ -24,7 +24,7 @@ import com.readrops.db.queries.QueryFilters
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterBottomSheet(
-    viewModel: TimelineViewModel,
+    viewModel: TimelineScreenModel,
     filters: QueryFilters,
     onDismiss: () -> Unit,
 ) {

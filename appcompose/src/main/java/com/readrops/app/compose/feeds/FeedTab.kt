@@ -30,6 +30,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import cafe.adriel.voyager.koin.getNavigatorScreenModel
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.readrops.app.compose.R
@@ -43,7 +46,6 @@ import com.readrops.app.compose.util.components.Placeholder
 import com.readrops.app.compose.util.components.TwoChoicesDialog
 import com.readrops.app.compose.util.theme.spacing
 import com.readrops.db.entities.Feed
-import org.koin.androidx.compose.getViewModel
 
 object FeedTab : Tab {
 
@@ -59,7 +61,9 @@ object FeedTab : Tab {
     override fun Content() {
         val haptic = LocalHapticFeedback.current
         val uriHandler = LocalUriHandler.current
-        val viewModel = getViewModel<FeedViewModel>()
+
+        val navigator = LocalNavigator.currentOrThrow
+        val viewModel = navigator.getNavigatorScreenModel<FeedScreenModel>()
 
         val state by viewModel.feedsState.collectAsStateWithLifecycle()
 
