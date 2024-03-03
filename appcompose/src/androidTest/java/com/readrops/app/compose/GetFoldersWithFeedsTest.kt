@@ -10,6 +10,7 @@ import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
+import com.readrops.db.filters.FilterType
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.joda.time.LocalDateTime
@@ -72,7 +73,7 @@ class GetFoldersWithFeedsTest {
     @Test
     fun getFoldersWithFeedsTest() = runTest {
         getFoldersWithFeeds = GetFoldersWithFeeds(database)
-        val foldersAndFeeds = getFoldersWithFeeds.get(account.id).first()
+        val foldersAndFeeds = getFoldersWithFeeds.get(account.id, FilterType.NO_FILTER).first()
 
         assertTrue { foldersAndFeeds.size == 4 }
         assertTrue { foldersAndFeeds.entries.first().value.size == 2 }
