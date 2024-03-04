@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -168,19 +169,30 @@ object TimelineTab : Tab {
                 topBar = {
                     TopAppBar(
                         title = {
-                            Text(
-                                text = when (state.filters.subFilter) {
-                                    SubFilter.FEED -> state.filterFeedName
-                                    SubFilter.FOLDER -> state.filterFolderName
-                                    else -> when (state.filters.mainFilter) {
+                            Column {
+                                Text(
+                                    text = when (state.filters.mainFilter) {
                                         MainFilter.STARS -> stringResource(R.string.favorites)
                                         MainFilter.ALL -> stringResource(R.string.articles)
                                         MainFilter.NEW -> stringResource(R.string.new_articles)
-                                    }
-                                },
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
+                                    },
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+
+                                if (state.showSubtitle) {
+                                    Text(
+                                        text = when (state.filters.subFilter) {
+                                            SubFilter.FEED -> state.filterFeedName
+                                            SubFilter.FOLDER -> state.filterFolderName
+                                            else -> ""
+                                        },
+                                        style = MaterialTheme.typography.labelLarge,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                            }
                         },
                         navigationIcon = {
                             IconButton(

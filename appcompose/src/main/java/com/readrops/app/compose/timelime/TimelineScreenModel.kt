@@ -255,7 +255,10 @@ data class TimelineState(
     val foldersAndFeeds: Map<Folder?, List<Feed>> = emptyMap(),
     val itemState: Flow<PagingData<ItemWithFeed>> = emptyFlow(),
     val dialog: DialogState? = null
-)
+) {
+
+    val showSubtitle = filters.subFilter != SubFilter.ALL
+}
 
 sealed interface DialogState {
     object ConfirmDialog : DialogState
