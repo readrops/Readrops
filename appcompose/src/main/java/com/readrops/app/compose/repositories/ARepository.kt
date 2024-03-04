@@ -73,6 +73,10 @@ abstract class BaseRepository(
         database.newItemDao().setAllStarredItemsRead(accountId)
     }
 
+    open suspend fun setAllNewItemsRead(accountId: Int) {
+        database.newItemDao().setAllNewItemsRead(accountId)
+    }
+
     open suspend fun setAllItemsReadByFeed(feedId: Int, accountId: Int) {
         database.newItemDao().setAllItemsReadByFeed(feedId, accountId)
     }

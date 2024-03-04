@@ -29,6 +29,11 @@ abstract class NewItemDao : NewBaseDao<Item> {
     @Query("Update Item set read = 1 Where starred = 1 And feed_id IN (Select id From Feed Where account_id = :accountId)")
     abstract suspend fun setAllStarredItemsRead(accountId: Int)
 
+    @Query("Update Item set read = 1 Where DateTime(Round(pub_date / 1000), 'unixepoch') " +
+            "Between DateTime(DateTime(\"now\"), \"-24 hour\") And DateTime(\"now\") " +
+            "And feed_id IN (Select id From Feed Where account_id = :accountId)")
+    abstract suspend fun setAllNewItemsRead(accountId: Int)
+
     @Query("Update Item set read = 1 Where feed_id IN " +
             "(Select id From Feed Where id = :feedId And account_id = :accountId)")
     abstract suspend fun setAllItemsReadByFeed(feedId: Int, accountId: Int)
