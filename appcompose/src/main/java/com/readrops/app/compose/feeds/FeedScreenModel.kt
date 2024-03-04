@@ -11,7 +11,7 @@ import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.account.Account
-import com.readrops.db.filters.FilterType
+import com.readrops.db.filters.MainFilter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,7 +47,7 @@ class FeedScreenModel(
         screenModelScope.launch(context = Dispatchers.IO) {
             accountEvent
                 .flatMapConcat { account ->
-                    getFoldersWithFeeds.get(account.id, FilterType.NO_FILTER)
+                    getFoldersWithFeeds.get(account.id, MainFilter.ALL)
                 }
                 .catch { throwable ->
                     _feedState.update {

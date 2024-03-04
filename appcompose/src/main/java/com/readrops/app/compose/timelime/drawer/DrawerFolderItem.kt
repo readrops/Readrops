@@ -51,7 +51,7 @@ fun DrawerFolderItem(
 ) {
     val colors = NavigationDrawerItemDefaults.colors()
 
-    var isExpanded by remember { mutableStateOf(false) }
+    var isExpanded by remember { mutableStateOf(feeds.any { it.id == selectedFeed }) }
     val rotationState by animateFloatAsState(
         targetValue = if (isExpanded) 180f else 0f,
         label = "drawer item arrow rotation"

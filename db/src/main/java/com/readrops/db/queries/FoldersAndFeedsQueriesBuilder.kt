@@ -2,15 +2,15 @@ package com.readrops.db.queries
 
 import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQuery
-import com.readrops.db.filters.FilterType
+import com.readrops.db.filters.MainFilter
 import org.intellij.lang.annotations.Language
 
 object FoldersAndFeedsQueriesBuilder {
 
-    fun buildFoldersAndFeedsQuery(accountId: Int, filterType: FilterType): SupportSQLiteQuery {
-        val filter = when (filterType) {
-            FilterType.STARS_FILTER -> "And Item.starred = 1"
-            FilterType.NEW -> "And DateTime(Round(Item.pub_date / 1000), 'unixepoch') Between DateTime(DateTime(\"now\"), \"-24 hour\") And DateTime(\"now\") "
+    fun buildFoldersAndFeedsQuery(accountId: Int, mainFilter: MainFilter): SupportSQLiteQuery {
+        val filter = when (mainFilter) {
+            MainFilter.STARS -> "And Item.starred = 1"
+            MainFilter.NEW -> "And DateTime(Round(Item.pub_date / 1000), 'unixepoch') Between DateTime(DateTime(\"now\"), \"-24 hour\") And DateTime(\"now\") "
             else -> ""
         }
 
@@ -29,10 +29,10 @@ object FoldersAndFeedsQueriesBuilder {
         return query
     }
 
-    fun buildFeedsWithoutFolderQuery(accountId: Int, filterType: FilterType): SupportSQLiteQuery {
-        val filter = when (filterType) {
-            FilterType.STARS_FILTER -> "And Item.starred = 1 "
-            FilterType.NEW -> "And DateTime(Round(Item.pub_date / 1000), 'unixepoch') Between DateTime(DateTime(\"now\"), \"-24 hour\") And DateTime(\"now\") "
+    fun buildFeedsWithoutFolderQuery(accountId: Int, mainFilter: MainFilter): SupportSQLiteQuery {
+        val filter = when (mainFilter) {
+            MainFilter.STARS -> "And Item.starred = 1 "
+            MainFilter.NEW -> "And DateTime(Round(Item.pub_date / 1000), 'unixepoch') Between DateTime(DateTime(\"now\"), \"-24 hour\") And DateTime(\"now\") "
             else -> ""
         }
 

@@ -4,8 +4,9 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.readrops.db.filters.FilterType
 import com.readrops.db.filters.ListSortType
+import com.readrops.db.filters.MainFilter
+import com.readrops.db.filters.SubFilter
 import com.readrops.db.queries.ItemsQueryBuilder
 import com.readrops.db.queries.QueryFilters
 import junit.framework.TestCase.assertFalse
@@ -51,7 +52,7 @@ class ItemsQueryBuilderTest {
 
     @Test
     fun feedFilterCaseTest() {
-        val queryFilters = QueryFilters(accountId = 1, filterType = FilterType.FEED_FILTER,
+        val queryFilters = QueryFilters(accountId = 1, subFilter = SubFilter.FEED,
                 filterFeedId = 15)
 
         val query = ItemsQueryBuilder.buildItemsQuery(queryFilters)
@@ -62,7 +63,7 @@ class ItemsQueryBuilderTest {
 
     @Test
     fun starsFilterCaseTest() {
-        val queryFilters = QueryFilters(accountId = 1, filterType = FilterType.STARS_FILTER)
+        val queryFilters = QueryFilters(accountId = 1, mainFilter = MainFilter.STARS)
 
         val query = ItemsQueryBuilder.buildItemsQuery(queryFilters)
         database.query(query)
@@ -72,7 +73,7 @@ class ItemsQueryBuilderTest {
 
     @Test
     fun folderFilterCaseTest() {
-        val queryFilters = QueryFilters(accountId = 1, filterType = FilterType.FOLDER_FILER, filterFolderId = 1)
+        val queryFilters = QueryFilters(accountId = 1, subFilter = SubFilter.FOLDER, filterFolderId = 1)
 
         val query = ItemsQueryBuilder.buildItemsQuery(queryFilters)
         database.query(query)
@@ -97,7 +98,7 @@ class ItemsQueryBuilderTest {
 
     @Test
     fun separateStateTest() {
-        val queryFilters = QueryFilters(accountId = 1, showReadItems = false, filterType = FilterType.STARS_FILTER)
+        val queryFilters = QueryFilters(accountId = 1, showReadItems = false, mainFilter = MainFilter.STARS)
 
         val query = ItemsQueryBuilder.buildItemsQuery(queryFilters, true)
         database.query(query)
@@ -117,7 +118,7 @@ class ItemsQueryBuilderTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun filterFeedIdExceptionTest() {
-        val queryFilters = QueryFilters(accountId = 1, filterType = FilterType.FEED_FILTER)
+        val queryFilters = QueryFilters(accountId = 1, subFilter = SubFilter.FEED)
         ItemsQueryBuilder.buildItemsQuery(queryFilters)
     }
 }

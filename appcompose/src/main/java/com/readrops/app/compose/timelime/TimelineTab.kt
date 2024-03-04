@@ -49,7 +49,8 @@ import com.readrops.app.compose.timelime.drawer.TimelineDrawer
 import com.readrops.app.compose.util.components.CenteredColumn
 import com.readrops.app.compose.util.components.TwoChoicesDialog
 import com.readrops.app.compose.util.theme.spacing
-import com.readrops.db.filters.FilterType
+import com.readrops.db.filters.MainFilter
+import com.readrops.db.filters.SubFilter
 
 
 object TimelineTab : Tab {
@@ -168,12 +169,14 @@ object TimelineTab : Tab {
                     TopAppBar(
                         title = {
                             Text(
-                                text = when (state.filters.filterType) {
-                                    FilterType.FEED_FILTER -> state.filterFeedName
-                                    FilterType.FOLDER_FILER -> state.filterFolderName
-                                    FilterType.STARS_FILTER -> stringResource(R.string.favorites)
-                                    FilterType.NO_FILTER -> stringResource(R.string.articles)
-                                    FilterType.NEW -> stringResource(R.string.new_articles)
+                                text = when (state.filters.subFilter) {
+                                    SubFilter.FEED -> state.filterFeedName
+                                    SubFilter.FOLDER -> state.filterFolderName
+                                    else -> when (state.filters.mainFilter) {
+                                        MainFilter.STARS -> stringResource(R.string.favorites)
+                                        MainFilter.ALL -> stringResource(R.string.articles)
+                                        MainFilter.NEW -> stringResource(R.string.new_articles)
+                                    }
                                 },
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
@@ -213,7 +216,7 @@ object TimelineTab : Tab {
                 floatingActionButton = {
                     FloatingActionButton(
                         onClick = {
-                            if (state.filters.filterType == FilterType.NO_FILTER) {
+                            if (state.filters.mainFilter == MainFilter.ALL) {
                                 viewModel.openDialog(DialogState.ConfirmDialog)
                             } else {
                                 viewModel.setAllItemsRead()

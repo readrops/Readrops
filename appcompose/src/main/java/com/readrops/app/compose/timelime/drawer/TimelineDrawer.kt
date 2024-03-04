@@ -28,12 +28,12 @@ import com.readrops.app.compose.timelime.TimelineState
 import com.readrops.app.compose.util.theme.spacing
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
-import com.readrops.db.filters.FilterType
+import com.readrops.db.filters.MainFilter
 
 @Composable
 fun TimelineDrawer(
     state: TimelineState,
-    onClickDefaultItem: (FilterType) -> Unit,
+    onClickDefaultItem: (MainFilter) -> Unit,
     onFolderClick: (Folder) -> Unit,
     onFeedClick: (Feed) -> Unit,
 ) {
@@ -47,7 +47,7 @@ fun TimelineDrawer(
         Spacer(modifier = Modifier.size(MaterialTheme.spacing.drawerSpacing))
 
         DrawerDefaultItems(
-            selectedItem = state.filters.filterType,
+            selectedItem = state.filters.mainFilter,
             onClick = { onClickDefaultItem(it) }
         )
 
@@ -116,8 +116,8 @@ fun TimelineDrawer(
 
 @Composable
 fun DrawerDefaultItems(
-    selectedItem: FilterType,
-    onClick: (FilterType) -> Unit,
+    selectedItem: MainFilter,
+    onClick: (MainFilter) -> Unit,
 ) {
     NavigationDrawerItem(
         label = { Text(text = stringResource(R.string.articles)) },
@@ -127,8 +127,8 @@ fun DrawerDefaultItems(
                 contentDescription = null
             )
         },
-        selected = selectedItem == FilterType.NO_FILTER,
-        onClick = { onClick(FilterType.NO_FILTER) },
+        selected = selectedItem == MainFilter.ALL,
+        onClick = { onClick(MainFilter.ALL) },
         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
     )
 
@@ -140,8 +140,8 @@ fun DrawerDefaultItems(
                 contentDescription = null
             )
         },
-        selected = selectedItem == FilterType.NEW,
-        onClick = { onClick(FilterType.NEW) },
+        selected = selectedItem == MainFilter.NEW,
+        onClick = { onClick(MainFilter.NEW) },
         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
     )
 
@@ -153,8 +153,8 @@ fun DrawerDefaultItems(
                 contentDescription = null
             )
         },
-        selected = selectedItem == FilterType.STARS_FILTER,
-        onClick = { onClick(FilterType.STARS_FILTER) },
+        selected = selectedItem == MainFilter.STARS,
+        onClick = { onClick(MainFilter.STARS) },
         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
     )
 }

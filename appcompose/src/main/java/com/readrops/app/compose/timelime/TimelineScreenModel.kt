@@ -14,8 +14,9 @@ import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
-import com.readrops.db.filters.FilterType
 import com.readrops.db.filters.ListSortType
+import com.readrops.db.filters.MainFilter
+import com.readrops.db.filters.SubFilter
 import com.readrops.db.pojo.ItemWithFeed
 import com.readrops.db.queries.ItemsQueryBuilder
 import com.readrops.db.queries.QueryFilters
@@ -47,8 +48,7 @@ class TimelineScreenModel(
                 accountEvent,
                 filters
             ) { account, filters ->
-                filters.accountId = account.id
-                Pair(account, filters)
+                Pair(account, filters.copy(accountId = account.id))
             }.collectLatest { (account, filters) ->
                 val query = ItemsQueryBuilder.buildItemsQuery(filters)
 
@@ -67,7 +67,7 @@ class TimelineScreenModel(
                     )
                 }
 
-                getFoldersWithFeeds.get(account.id, filters.filterType)
+                getFoldersWithFeeds.get(account.id, filters.mainFilter)
                     .collect { foldersAndFeeds ->
                         _timelineState.update {
                             it.copy(
@@ -103,12 +103,15 @@ class TimelineScreenModel(
         _timelineState.update { it.copy(isDrawerOpen = false) }
     }
 
-    fun updateDrawerDefaultItem(selection: FilterType) {
+    fun updateDrawerDefaultItem(selection: MainFilter) {
         _timelineState.update {
             it.copy(
                 filters = updateFilters {
                     it.filters.copy(
-                        filterType = selection
+                        mainFilter = selection,
+                        subFilter = SubFilter.ALL,
+                        filterFeedId = 0,
+                        filterFolderId = 0
                     )
                 },
                 isDrawerOpen = false
@@ -121,7 +124,7 @@ class TimelineScreenModel(
             it.copy(
                 filters = updateFilters {
                     it.filters.copy(
-                        filterType = FilterType.FOLDER_FILER,
+                        subFilter = SubFilter.FOLDER,
                         filterFolderId = folder.id,
                         filterFeedId = 0
                     )
@@ -137,7 +140,7 @@ class TimelineScreenModel(
             it.copy(
                 filters = updateFilters {
                     it.filters.copy(
-                        filterType = FilterType.FEED_FILTER,
+                        subFilter = SubFilter.FEED,
                         filterFeedId = feed.id,
                         filterFolderId = 0
                     )
@@ -187,21 +190,25 @@ class TimelineScreenModel(
 
     fun setAllItemsRead() {
         screenModelScope.launch(dispatcher) {
-            when (_timelineState.value.filters.filterType) {
-                FilterType.FEED_FILTER ->
+            when (_timelineState.value.filters.subFilter) {
+                SubFilter.FEED ->
                     repository?.setAllItemsReadByFeed(
                         _timelineState.value.filters.filterFeedId,
                         currentAccount!!.id
                     )
 
-                FilterType.FOLDER_FILER -> repository?.setAllItemsReadByFolder(
+                SubFilter.FOLDER -> repository?.setAllItemsReadByFolder(
                     _timelineState.value.filters.filterFolderId,
                     currentAccount!!.id
                 )
 
-                FilterType.STARS_FILTER -> repository?.setAllStarredItemsRead(currentAccount!!.id)
-                FilterType.NO_FILTER -> repository?.setAllItemsRead(currentAccount!!.id)
-                FilterType.NEW -> TODO()
+                else -> when (_timelineState.value.filters.mainFilter) {
+                    MainFilter.STARS -> repository?.setAllStarredItemsRead(currentAccount!!.id)
+                    MainFilter.ALL -> repository?.setAllItemsRead(currentAccount!!.id)
+                    MainFilter.NEW -> TODO()
+                }
+
+
             }
         }
     }
