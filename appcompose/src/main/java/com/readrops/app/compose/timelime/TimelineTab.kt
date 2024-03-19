@@ -50,6 +50,7 @@ import com.readrops.app.compose.util.components.CenteredProgressIndicator
 import com.readrops.app.compose.util.components.Placeholder
 import com.readrops.app.compose.util.components.TwoChoicesDialog
 import com.readrops.app.compose.util.theme.spacing
+import com.readrops.db.filters.ListSortType
 import com.readrops.db.filters.MainFilter
 import com.readrops.db.filters.SubFilter
 
@@ -137,8 +138,18 @@ object TimelineTab : Tab {
 
             DialogState.FilterSheet -> {
                 FilterBottomSheet(
-                    viewModel = viewModel,
                     filters = state.filters,
+                    onSetShowReadItemsState = {
+                        viewModel.setShowReadItemsState(!state.filters.showReadItems)
+                    },
+                    onSetSortTypeState = {
+                        viewModel.setSortTypeState(
+                            if (state.filters.sortType == ListSortType.NEWEST_TO_OLDEST)
+                                ListSortType.OLDEST_TO_NEWEST
+                            else
+                                ListSortType.NEWEST_TO_OLDEST
+                        )
+                    },
                     onDismiss = {
                         viewModel.closeDialog()
                     }
