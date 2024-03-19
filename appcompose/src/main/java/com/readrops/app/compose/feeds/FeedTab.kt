@@ -30,9 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import cafe.adriel.voyager.koin.getNavigatorScreenModel
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
+import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.readrops.app.compose.R
@@ -62,8 +60,7 @@ object FeedTab : Tab {
         val haptic = LocalHapticFeedback.current
         val uriHandler = LocalUriHandler.current
 
-        val navigator = LocalNavigator.currentOrThrow
-        val viewModel = navigator.getNavigatorScreenModel<FeedScreenModel>()
+        val viewModel = getScreenModel<FeedScreenModel>()
 
         val state by viewModel.feedsState.collectAsStateWithLifecycle()
 

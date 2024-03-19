@@ -28,7 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import cafe.adriel.voyager.koin.getNavigatorScreenModel
+import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
@@ -56,7 +56,7 @@ object AccountTab : Tab {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
-        val viewModel = navigator.getNavigatorScreenModel<AccountScreenModel>()
+        val viewModel = getScreenModel<AccountScreenModel>()
 
         val closeHome by viewModel.closeHome.collectAsStateWithLifecycle()
         val state by viewModel.accountState.collectAsStateWithLifecycle()
