@@ -1,5 +1,5 @@
 [versions]
-compose-bom = "2024.02.01"
+compose-bom = "2024.02.02"
 voyager = "1.0.0"
 lifecycle = "2.7.0"
 coil = "2.4.0"
@@ -14,7 +14,7 @@ compose-ui = { module = "androidx.compose.ui:ui" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 # specify material3 version is required for gradle to find the dependency
-compose-material3 = { module = "androidx.compose.material3:material3", version = "1.2.0" }
+compose-material3 = { module = "androidx.compose.material3:material3", version = "1.2.1" }
 compose-activity = "androidx.activity:activity-compose:1.8.2"
 
 voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
@@ -38,7 +38,7 @@ coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", ve
 [bundles]
 compose = ["bom", "compose-foundation", "compose-runtime", "compose-animation",
     "compose-ui", "compose-ui-tooling", "compose-ui-tooling-preview", "compose-material3"]
-voyager = ["voyager-navigator", "voyager-tab-navigator", "voyager-koin", "voyager-transitions"]
+voyager = ["voyager-navigator", "voyager-screenmodel", "voyager-tab-navigator", "voyager-koin", "voyager-transitions"]
 lifecycle = ["lifecycle-viewmodel-ktx", "lifecycle-viewmodel-compose", "lifecycle-viewmodel-savedstate",
     "lifecyle-runtime-compose"]
 coil = ["coil-core", "coil-compose"]
