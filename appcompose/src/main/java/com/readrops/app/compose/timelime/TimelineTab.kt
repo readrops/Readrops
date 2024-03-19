@@ -1,6 +1,5 @@
 package com.readrops.app.compose.timelime
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,7 +10,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -39,6 +37,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
@@ -47,7 +46,8 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.readrops.app.compose.R
 import com.readrops.app.compose.item.ItemScreen
 import com.readrops.app.compose.timelime.drawer.TimelineDrawer
-import com.readrops.app.compose.util.components.CenteredColumn
+import com.readrops.app.compose.util.components.CenteredProgressIndicator
+import com.readrops.app.compose.util.components.Placeholder
 import com.readrops.app.compose.util.components.TwoChoicesDialog
 import com.readrops.app.compose.util.theme.spacing
 import com.readrops.db.filters.MainFilter
@@ -249,39 +249,48 @@ object TimelineTab : Tab {
                 ) {
                     when {
                         items.isLoading() -> {
-                            Log.d("TAG", "loading")
-                            CenteredColumn {
-                                CircularProgressIndicator()
-                            }
+                            CenteredProgressIndicator()
                         }
 
-                        items.isError() -> Text(text = "error")
-                        else -> {
-                            LazyColumn(
-                                state = scrollState,
-                                contentPadding = PaddingValues(vertical = MaterialTheme.spacing.shortSpacing),
-                                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.shortSpacing)
-                            ) {
-                                items(
-                                    count = items.itemCount,
-                                    //key = { items[it]!! },
-                                    contentType = { "item_with_feed" }
-                                ) { itemCount ->
-                                    val itemWithFeed = items[itemCount]!!
+                        items.isError() -> {
+                            Placeholder(
+                                text = stringResource(R.string.error_occured),
+                                painter = painterResource(id = R.drawable.ic_error)
+                            )
+                        }
 
-                                    TimelineItem(
-                                        itemWithFeed = itemWithFeed,
-                                        onClick = {
-                                            viewModel.setItemRead(itemWithFeed.item)
-                                            navigator.push(ItemScreen())
-                                        },
-                                        onFavorite = { viewModel.updateStarState(itemWithFeed.item) },
-                                        onShare = {
-                                            viewModel.shareItem(itemWithFeed.item, context)
-                                        },
-                                        compactLayout = true
-                                    )
+                        else -> {
+                            if (items.itemCount > 0) {
+                                LazyColumn(
+                                    state = scrollState,
+                                    contentPadding = PaddingValues(vertical = MaterialTheme.spacing.shortSpacing),
+                                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.shortSpacing)
+                                ) {
+                                    items(
+                                        count = items.itemCount,
+                                        key = items.itemKey { it.item.id },
+                                    ) { itemCount ->
+                                        val itemWithFeed = items[itemCount]!!
+
+                                        TimelineItem(
+                                            itemWithFeed = itemWithFeed,
+                                            onClick = {
+                                                viewModel.setItemRead(itemWithFeed.item)
+                                                navigator.push(ItemScreen())
+                                            },
+                                            onFavorite = { viewModel.updateStarState(itemWithFeed.item) },
+                                            onShare = {
+                                                viewModel.shareItem(itemWithFeed.item, context)
+                                            },
+                                            compactLayout = true
+                                        )
+                                    }
                                 }
+                            } else {
+                                Placeholder(
+                                    text = stringResource(R.string.no_item),
+                                    painter = painterResource(R.drawable.ic_rss_feed_grey)
+                                )
                             }
                         }
                     }
