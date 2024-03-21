@@ -173,6 +173,7 @@ class FeedScreenModel(
                         repository?.insertNewFeeds(listOf(url))
 
                         closeDialog()
+                        resetAddFeedDialogState()
                     } else {
                         val rssUrls = HtmlParser.getFeedLink(url, get())
 
@@ -185,6 +186,7 @@ class FeedScreenModel(
                             repository?.insertNewFeeds(rssUrls.map { it.url })
 
                             closeDialog()
+                            resetAddFeedDialogState()
                         }
                     }
                 } catch (e: Exception) {
