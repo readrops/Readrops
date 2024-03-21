@@ -27,15 +27,15 @@ class LocalRSSRepository(
     }
 
     override suspend fun synchronize(
-        selectedFeeds: List<Feed>?,
+        selectedFeeds: List<Feed>,
         onUpdate: (Feed) -> Unit
     ): Pair<SyncResult, ErrorResult> {
         val errors = mutableMapOf<Feed, Exception>()
         val syncResult = SyncResult()
 
-        val feeds = if (selectedFeeds.isNullOrEmpty()) {
+        val feeds = selectedFeeds.ifEmpty {
             database.newFeedDao().selectFeeds(account.id)
-        } else selectedFeeds
+        }
 
         for (feed in feeds) {
             onUpdate(feed)

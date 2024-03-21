@@ -29,7 +29,7 @@ abstract class ARepository(
      * and errors per feed if occurred to be transmitted to the user
      */
     abstract suspend fun synchronize(
-        selectedFeeds: List<Feed>?,
+        selectedFeeds: List<Feed>,
         onUpdate: (Feed) -> Unit
     ): Pair<SyncResult, ErrorResult>
 

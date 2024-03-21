@@ -81,10 +81,20 @@ class TimelineScreenModel(
 
     fun refreshTimeline() {
         _timelineState.update { it.copy(isRefreshing = true) }
-        screenModelScope.launch(dispatcher) {
-            repository?.synchronize(null) {
 
-            }
+        screenModelScope.launch(dispatcher) {
+            val selectedFeeds = if (currentAccount!!.isLocal) {
+                when (filters.value.subFilter) {
+                    SubFilter.FEED -> listOf(database.newFeedDao().selectFeed(filters.value.filterFeedId))
+                    SubFilter.FOLDER -> database.newFeedDao().selectFeedsByFolder(filters.value.filterFolderId)
+                    else -> listOf()
+                }
+            } else listOf()
+
+            repository?.synchronize(
+                selectedFeeds = selectedFeeds,
+                onUpdate = { }
+            )
 
             _timelineState.update {
                 it.copy(

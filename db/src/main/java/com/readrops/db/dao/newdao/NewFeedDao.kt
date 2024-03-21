@@ -12,8 +12,11 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 abstract class NewFeedDao : NewBaseDao<Feed> {
 
-    @Query("Select * From Feed")
-    abstract fun selectFeeds(): Flow<List<Feed>>
+    @Query("Select * From Feed Where id = :feedId")
+    abstract suspend fun selectFeed(feedId: Int): Feed
+
+    @Query("Select * From Feed Where folder_id = :folderId")
+    abstract suspend fun selectFeedsByFolder(folderId: Int): List<Feed>
 
     @Query("Select * from Feed Where account_id = :accountId order by name ASC")
     abstract suspend fun selectFeeds(accountId: Int): List<Feed>
