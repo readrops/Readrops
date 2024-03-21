@@ -89,7 +89,7 @@ object TimelineTab : Tab {
         // Material3 pull to refresh doesn't have a onRefresh callback,
         // so we need to listen to the internal state change to trigger the refresh
         LaunchedEffect(swipeState.isRefreshing) {
-            if (swipeState.isRefreshing) {
+            if (swipeState.isRefreshing && !state.isRefreshing) {
                 viewModel.refreshTimeline()
             }
         }
