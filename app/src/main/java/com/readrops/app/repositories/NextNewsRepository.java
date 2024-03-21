@@ -337,7 +337,9 @@ public class NextNewsRepository extends ARepository {
             }
 
             item.setFeedId(feedId);
-            item.setReadTime(Utils.readTimeFromString(item.getContent()));
+
+            if (item.getText() != null)
+                item.setReadTime(Utils.readTimeFromString(item.getText()));
 
             itemsToInsert.add(item);
         }
