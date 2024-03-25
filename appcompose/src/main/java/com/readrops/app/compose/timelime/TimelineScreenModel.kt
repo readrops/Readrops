@@ -9,6 +9,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.readrops.app.compose.base.TabScreenModel
+import com.readrops.app.compose.repositories.ErrorResult
 import com.readrops.app.compose.repositories.GetFoldersWithFeeds
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
@@ -85,13 +86,18 @@ class TimelineScreenModel(
         screenModelScope.launch(dispatcher) {
             val selectedFeeds = if (currentAccount!!.isLocal) {
                 when (filters.value.subFilter) {
-                    SubFilter.FEED -> listOf(database.newFeedDao().selectFeed(filters.value.filterFeedId))
-                    SubFilter.FOLDER -> database.newFeedDao().selectFeedsByFolder(filters.value.filterFolderId)
+                    SubFilter.FEED -> listOf(
+                        database.newFeedDao().selectFeed(filters.value.filterFeedId)
+                    )
+
+                    SubFilter.FOLDER -> database.newFeedDao()
+                        .selectFeedsByFolder(filters.value.filterFolderId)
+
                     else -> listOf()
                 }
             } else listOf()
 
-            repository?.synchronize(
+            val results = repository?.synchronize(
                 selectedFeeds = selectedFeeds,
                 onUpdate = { }
             )
@@ -99,7 +105,8 @@ class TimelineScreenModel(
             _timelineState.update {
                 it.copy(
                     isRefreshing = false,
-                    endSynchronizing = true
+                    endSynchronizing = true,
+                    synchronizationErrors = if (results!!.second.isNotEmpty()) results.second else null
                 )
             }
         }
@@ -225,7 +232,13 @@ class TimelineScreenModel(
 
     fun openDialog(dialog: DialogState) = _timelineState.update { it.copy(dialog = dialog) }
 
-    fun closeDialog() = _timelineState.update { it.copy(dialog = null) }
+    fun closeDialog(dialog: DialogState? = null) {
+        if (dialog is DialogState.ErrorList) {
+            _timelineState.update { it.copy(synchronizationErrors = null) }
+        }
+
+        _timelineState.update { it.copy(dialog = null) }
+    }
 
     fun setShowReadItemsState(showReadItems: Boolean) {
         _timelineState.update {
@@ -259,6 +272,7 @@ data class TimelineState(
     val isRefreshing: Boolean = false,
     val isDrawerOpen: Boolean = false,
     val endSynchronizing: Boolean = false,
+    val synchronizationErrors: ErrorResult? = null,
     val filters: QueryFilters = QueryFilters(),
     val filterFeedName: String = "",
     val filterFolderName: String = "",
@@ -273,4 +287,5 @@ data class TimelineState(
 sealed interface DialogState {
     object ConfirmDialog : DialogState
     object FilterSheet : DialogState
+    class ErrorList(val errorResult: ErrorResult) : DialogState
 }

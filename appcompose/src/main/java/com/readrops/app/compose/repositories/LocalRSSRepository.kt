@@ -61,7 +61,7 @@ class LocalRSSRepository(
 
         }
 
-        return Pair(syncResult, ErrorResult(errors))
+        return Pair(syncResult, errors)
     }
 
     override suspend fun synchronize(): SyncResult =

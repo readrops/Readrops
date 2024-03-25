@@ -18,6 +18,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
@@ -26,6 +30,8 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -53,6 +59,7 @@ import com.readrops.app.compose.util.theme.spacing
 import com.readrops.db.filters.ListSortType
 import com.readrops.db.filters.MainFilter
 import com.readrops.db.filters.SubFilter
+import kotlinx.coroutines.launch
 
 
 object TimelineTab : Tab {
@@ -69,6 +76,7 @@ object TimelineTab : Tab {
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
         val context = LocalContext.current
+        val coroutineScope = rememberCoroutineScope()
 
         val viewModel = getScreenModel<TimelineScreenModel>()
 
@@ -77,6 +85,7 @@ object TimelineTab : Tab {
 
         val scrollState = rememberLazyListState()
         val swipeState = rememberPullToRefreshState()
+        val snackbarHostState = remember { SnackbarHostState() }
 
         LaunchedEffect(state.isRefreshing) {
             if (state.isRefreshing) {
@@ -120,8 +129,27 @@ object TimelineTab : Tab {
             }
         }
 
-        when (state.dialog) {
-            DialogState.ConfirmDialog -> {
+        LaunchedEffect(state.synchronizationErrors) {
+            if (state.synchronizationErrors != null) {
+                coroutineScope.launch {
+                    val action = snackbarHostState.showSnackbar(
+                        message = context.resources.getQuantityString(R.plurals.error_occurred, state.synchronizationErrors!!.size),
+                        actionLabel = context.getString(R.string.details),
+                        duration = SnackbarDuration.Short
+                    )
+
+                    if (action == SnackbarResult.ActionPerformed) {
+                        viewModel.openDialog(DialogState.ErrorList(state.synchronizationErrors!!))
+                    } else {
+                        // remove errors from state
+                        viewModel.closeDialog(DialogState.ErrorList(state.synchronizationErrors!!))
+                    }
+                }
+            }
+        }
+
+        when (val dialog = state.dialog) {
+            is DialogState.ConfirmDialog -> {
                 TwoChoicesDialog(
                     title = "Mark all items as read",
                     text = "Do you really want to mark all items as read?",
@@ -136,7 +164,7 @@ object TimelineTab : Tab {
                 )
             }
 
-            DialogState.FilterSheet -> {
+            is DialogState.FilterSheet -> {
                 FilterBottomSheet(
                     filters = state.filters,
                     onSetShowReadItemsState = {
@@ -150,9 +178,14 @@ object TimelineTab : Tab {
                                 ListSortType.NEWEST_TO_OLDEST
                         )
                     },
-                    onDismiss = {
-                        viewModel.closeDialog()
-                    }
+                    onDismiss = { viewModel.closeDialog() }
+                )
+            }
+
+            is DialogState.ErrorList -> {
+                ErrorListDialog(
+                    errorResult = dialog.errorResult,
+                    onDismiss = { viewModel.closeDialog(state.dialog) }
                 )
             }
 
@@ -236,6 +269,7 @@ object TimelineTab : Tab {
                         }
                     )
                 },
+                snackbarHost = { SnackbarHost(snackbarHostState) },
                 floatingActionButton = {
                     FloatingActionButton(
                         onClick = {

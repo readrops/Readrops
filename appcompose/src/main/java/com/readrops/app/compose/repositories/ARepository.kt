@@ -7,9 +7,7 @@ import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
 
-data class ErrorResult(
-    val values: Map<Feed, Exception>
-)
+typealias ErrorResult = Map<Feed, Exception>
 
 abstract class ARepository(
     val database: Database,

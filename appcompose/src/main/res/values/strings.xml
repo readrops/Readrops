@@ -148,4 +148,18 @@
     <string name="mark_items_read">Mark items read on scroll</string>
     <string name="new_articles">New articles</string>
     <string name="filters">Filters</string>
+    <plurals name="error_occurred">
+        <item quantity="one">An error occurred</item>
+        <item quantity="other">Some errors occurred</item>
+    </plurals>
+    <string name="details">Details</string>
+    <string name="synchronization_errors">Synchronization errors</string>
+    <plurals name="error_occurred_feed">
+        <item quantity="one">An error occurred for the following feed:</item>
+        <item quantity="other">Some errors occurred for the following feeds:</item>
+    </plurals>
+    <string name="unreachable_feed_http_error">Unreachable feed, HTTP error %1$s</string>
+    <string name="network_failure">Network failure: %1$s</string>
+    <string name="processing_feed_error">Processing feed error</string>
+    <string name="unreachable_feed">Unreachable feed</string>
 </resources>
