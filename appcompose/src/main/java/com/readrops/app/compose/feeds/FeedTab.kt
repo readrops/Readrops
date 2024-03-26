@@ -69,8 +69,7 @@ object FeedTab : Tab {
                 AddFeedDialog(
                     viewModel = viewModel,
                     onDismiss = {
-                        viewModel.closeDialog()
-                        viewModel.resetAddFeedDialogState()
+                        viewModel.closeDialog(DialogState.AddFeed)
                     },
                 )
             }
@@ -123,8 +122,7 @@ object FeedTab : Tab {
                 FolderDialog(
                     viewModel = viewModel,
                     onDismiss = {
-                        viewModel.closeDialog()
-                        viewModel.resetFolderState()
+                        viewModel.closeDialog(DialogState.AddFolder)
                     },
                     onValidate = {
                         viewModel.folderValidate()
@@ -152,8 +150,7 @@ object FeedTab : Tab {
                     updateFolder = true,
                     viewModel = viewModel,
                     onDismiss = {
-                        viewModel.closeDialog()
-                        viewModel.resetFolderState()
+                        viewModel.closeDialog(DialogState.UpdateFolder(dialog.folder))
                     },
                     onValidate = {
                         viewModel.folderValidate(updateFolder = true)

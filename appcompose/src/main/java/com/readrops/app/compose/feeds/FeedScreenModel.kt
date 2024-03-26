@@ -94,7 +94,25 @@ class FeedScreenModel(
     fun setFolderExpandState(isExpanded: Boolean) =
         _feedState.update { it.copy(areFoldersExpanded = isExpanded) }
 
-    fun closeDialog() = _feedState.update { it.copy(dialog = null) }
+    fun closeDialog(dialog: DialogState? = null) {
+        if (dialog is DialogState.AddFeed) {
+            _addFeedDialogState.update {
+                it.copy(
+                    url = "",
+                    error = null,
+                )
+            }
+        } else if (dialog is DialogState.AddFolder || dialog is DialogState.UpdateFolder) {
+            _folderState.update {
+                it.copy(
+                    folder = Folder(),
+                    nameError = null,
+                )
+            }
+        }
+
+        _feedState.update { it.copy(dialog = null) }
+    }
 
     fun openDialog(state: DialogState) {
         if (state is DialogState.UpdateFeed) {
@@ -172,8 +190,7 @@ class FeedScreenModel(
                         // TODO add support for all account types
                         repository?.insertNewFeeds(listOf(url))
 
-                        closeDialog()
-                        resetAddFeedDialogState()
+                        closeDialog(DialogState.AddFeed)
                     } else {
                         val rssUrls = HtmlParser.getFeedLink(url, get())
 
@@ -185,8 +202,7 @@ class FeedScreenModel(
                             // TODO add support for all account types
                             repository?.insertNewFeeds(rssUrls.map { it.url })
 
-                            closeDialog()
-                            resetAddFeedDialogState()
+                            closeDialog(DialogState.AddFeed)
                         }
                     }
                 } catch (e: Exception) {
@@ -196,15 +212,6 @@ class FeedScreenModel(
                     }
                 }
             }
-        }
-    }
-
-    fun resetAddFeedDialogState() {
-        _addFeedDialogState.update {
-            it.copy(
-                url = "",
-                error = null,
-            )
         }
     }
 
@@ -298,13 +305,6 @@ class FeedScreenModel(
         )
     }
 
-    fun resetFolderState() = _folderState.update {
-        it.copy(
-            folder = Folder(),
-            nameError = null,
-        )
-    }
-
     fun folderValidate(updateFolder: Boolean = false) {
         val name = _folderState.value.name.orEmpty()
 
@@ -323,8 +323,7 @@ class FeedScreenModel(
                 })
             }
 
-            closeDialog()
-            resetFolderState()
+            closeDialog(DialogState.AddFolder)
         }
     }
 
