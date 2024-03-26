@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -290,6 +291,7 @@ object TimelineTab : Tab {
                 Box(
                     modifier = Modifier
                         .padding(paddingValues)
+                        .fillMaxSize()
                         .nestedScroll(swipeState.nestedScrollConnection)
                 ) {
                     when {
@@ -331,7 +333,23 @@ object TimelineTab : Tab {
                                         )
                                     }
                                 }
+
+                                PullToRefreshContainer(
+                                    state = swipeState,
+                                    modifier = Modifier.align(Alignment.TopCenter)
+                                )
                             } else {
+                                // Empty lazyColumn to let the pull to refresh be usable
+                                // when the no item placeholder is displayed
+                                LazyColumn(
+                                    modifier = Modifier.fillMaxSize()
+                                ) {}
+
+                                PullToRefreshContainer(
+                                    state = swipeState,
+                                    modifier = Modifier.align(Alignment.TopCenter)
+                                )
+
                                 Placeholder(
                                     text = stringResource(R.string.no_item),
                                     painter = painterResource(R.drawable.ic_rss_feed_grey)
@@ -339,11 +357,6 @@ object TimelineTab : Tab {
                             }
                         }
                     }
-
-                    PullToRefreshContainer(
-                        state = swipeState,
-                        modifier = Modifier.align(Alignment.TopCenter)
-                    )
                 }
             }
         }
