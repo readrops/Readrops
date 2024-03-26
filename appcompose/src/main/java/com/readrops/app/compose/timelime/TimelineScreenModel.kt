@@ -81,8 +81,6 @@ class TimelineScreenModel(
     }
 
     fun refreshTimeline() {
-        _timelineState.update { it.copy(isRefreshing = true) }
-
         screenModelScope.launch(dispatcher) {
             val selectedFeeds = if (currentAccount!!.isLocal) {
                 when (filters.value.subFilter) {
@@ -97,9 +95,28 @@ class TimelineScreenModel(
                 }
             } else listOf()
 
+            _timelineState.update {
+                it.copy(
+                    feedCount = 0,
+                    feedMax = if (selectedFeeds.isNotEmpty())
+                        selectedFeeds.size
+                    else
+                        database.newFeedDao().selectFeedCount(currentAccount!!.id)
+                )
+            }
+
+            _timelineState.update { it.copy(isRefreshing = true) }
+
             val results = repository?.synchronize(
                 selectedFeeds = selectedFeeds,
-                onUpdate = { }
+                onUpdate = { feed ->
+                    _timelineState.update {
+                        it.copy(
+                            currentFeed = feed.name!!,
+                            feedCount = it.feedCount + 1
+                        )
+                    }
+                }
             )
 
             _timelineState.update {
@@ -271,6 +288,9 @@ class TimelineScreenModel(
 data class TimelineState(
     val isRefreshing: Boolean = false,
     val isDrawerOpen: Boolean = false,
+    val currentFeed: String = "",
+    val feedCount: Int = 0,
+    val feedMax: Int = 0,
     val endSynchronizing: Boolean = false,
     val synchronizationErrors: ErrorResult? = null,
     val filters: QueryFilters = QueryFilters(),

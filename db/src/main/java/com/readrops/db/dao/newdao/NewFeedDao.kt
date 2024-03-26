@@ -33,4 +33,6 @@ abstract class NewFeedDao : NewBaseDao<Feed> {
     @Query("Update Feed set name = :feedName, url = :feedUrl, folder_id = :folderId Where id = :feedId")
     abstract fun updateFeedFields(feedId: Int, feedName: String, feedUrl: String, folderId: Int?)
 
+    @Query("Select count(*) from Feed Where account_id = :accountId")
+    abstract suspend fun selectFeedCount(accountId: Int): Int
 }

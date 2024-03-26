@@ -55,6 +55,7 @@ import com.readrops.app.compose.item.ItemScreen
 import com.readrops.app.compose.timelime.drawer.TimelineDrawer
 import com.readrops.app.compose.util.components.CenteredProgressIndicator
 import com.readrops.app.compose.util.components.Placeholder
+import com.readrops.app.compose.util.components.RefreshScreen
 import com.readrops.app.compose.util.components.TwoChoicesDialog
 import com.readrops.app.compose.util.theme.spacing
 import com.readrops.db.filters.ListSortType
@@ -80,26 +81,25 @@ object TimelineTab : Tab {
         val coroutineScope = rememberCoroutineScope()
 
         val viewModel = getScreenModel<TimelineScreenModel>()
-
         val state by viewModel.timelineState.collectAsStateWithLifecycle()
         val items = state.itemState.collectAsLazyPagingItems()
 
-        val scrollState = rememberLazyListState()
-        val swipeState = rememberPullToRefreshState()
+        val lazyListState = rememberLazyListState()
+        val pullToRefreshState = rememberPullToRefreshState()
         val snackbarHostState = remember { SnackbarHostState() }
 
         LaunchedEffect(state.isRefreshing) {
             if (state.isRefreshing) {
-                swipeState.startRefresh()
+                pullToRefreshState.startRefresh()
             } else {
-                swipeState.endRefresh()
+                pullToRefreshState.endRefresh()
             }
         }
 
         // Material3 pull to refresh doesn't have a onRefresh callback,
         // so we need to listen to the internal state change to trigger the refresh
-        LaunchedEffect(swipeState.isRefreshing) {
-            if (swipeState.isRefreshing && !state.isRefreshing) {
+        LaunchedEffect(pullToRefreshState.isRefreshing) {
+            if (pullToRefreshState.isRefreshing && !state.isRefreshing) {
                 viewModel.refreshTimeline()
             }
         }
@@ -292,9 +292,15 @@ object TimelineTab : Tab {
                     modifier = Modifier
                         .padding(paddingValues)
                         .fillMaxSize()
-                        .nestedScroll(swipeState.nestedScrollConnection)
+                        .nestedScroll(pullToRefreshState.nestedScrollConnection)
                 ) {
                     when {
+                        state.isRefreshing -> RefreshScreen(
+                            currentFeed = state.currentFeed,
+                            feedCount = state.feedCount,
+                            feedMax = state.feedMax
+                        )
+
                         items.isLoading() -> {
                             CenteredProgressIndicator()
                         }
@@ -309,7 +315,7 @@ object TimelineTab : Tab {
                         else -> {
                             if (items.itemCount > 0) {
                                 LazyColumn(
-                                    state = scrollState,
+                                    state = lazyListState,
                                     contentPadding = PaddingValues(vertical = MaterialTheme.spacing.shortSpacing),
                                     verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.shortSpacing)
                                 ) {
@@ -335,7 +341,7 @@ object TimelineTab : Tab {
                                 }
 
                                 PullToRefreshContainer(
-                                    state = swipeState,
+                                    state = pullToRefreshState,
                                     modifier = Modifier.align(Alignment.TopCenter)
                                 )
                             } else {
@@ -346,7 +352,7 @@ object TimelineTab : Tab {
                                 ) {}
 
                                 PullToRefreshContainer(
-                                    state = swipeState,
+                                    state = pullToRefreshState,
                                     modifier = Modifier.align(Alignment.TopCenter)
                                 )
 
