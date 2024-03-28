@@ -13,7 +13,7 @@ fun RefreshScreen(
 ) {
     CenteredColumn {
         LinearProgressIndicator(
-            progress = { (feedCount / feedMax).toFloat() }
+            progress = { feedCount.toFloat() / feedMax.toFloat() }
         )
 
         VeryShortSpacer()
