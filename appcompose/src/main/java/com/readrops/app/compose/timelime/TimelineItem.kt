@@ -74,7 +74,8 @@ fun TimelineItem(
                     ) {
                         AsyncImage(
                             model = itemWithFeed.feedIconUrl,
-                            contentDescription = null,
+                            error = painterResource(id = R.drawable.ic_rss_feed_grey),
+                            contentDescription = itemWithFeed.feedName,
                             placeholder = painterResource(R.drawable.ic_rss_feed_grey),
                             modifier = Modifier.size(24.dp)
                         )

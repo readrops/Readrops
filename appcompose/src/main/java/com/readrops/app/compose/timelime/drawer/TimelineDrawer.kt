@@ -98,6 +98,7 @@ fun TimelineDrawer(
                                 AsyncImage(
                                     model = feed.iconUrl,
                                     contentDescription = feed.name,
+                                    error = painterResource(id = R.drawable.ic_rss_feed_grey),
                                     placeholder = painterResource(id = R.drawable.ic_folder_grey),
                                     modifier = Modifier.size(24.dp)
                                 )
