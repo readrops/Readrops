@@ -1,5 +1,7 @@
 package com.readrops.app.compose.account
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -33,6 +36,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
+import com.readrops.api.utils.ApiUtils
 import com.readrops.app.compose.R
 import com.readrops.app.compose.account.credentials.AccountCredentialsScreen
 import com.readrops.app.compose.account.selection.AccountSelectionDialog
@@ -56,6 +60,7 @@ object AccountTab : Tab {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
+        val context = LocalContext.current
         val viewModel = getScreenModel<AccountScreenModel>()
 
         val closeHome by viewModel.closeHome.collectAsStateWithLifecycle()
@@ -65,8 +70,13 @@ object AccountTab : Tab {
             navigator.replaceAll(AccountSelectionScreen())
         }
 
-        when (state.dialog) {
-            DialogState.DeleteAccount -> {
+        val launcher =
+            rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+                uri?.let { viewModel.parseOPMLFile(uri, context) }
+            }
+
+        when (val dialog = state.dialog) {
+            is DialogState.DeleteAccount -> {
                 TwoChoicesDialog(
                     title = stringResource(R.string.delete_account),
                     text = stringResource(R.string.delete_account_question),
@@ -81,13 +91,21 @@ object AccountTab : Tab {
                 )
             }
 
-            DialogState.NewAccount -> {
+            is DialogState.NewAccount -> {
                 AccountSelectionDialog(
                     onDismiss = { viewModel.closeDialog() },
                     onValidate = { accountType ->
                         viewModel.closeDialog()
                         navigator.push(AccountCredentialsScreen(accountType, state.account))
                     }
+                )
+            }
+
+            is DialogState.OPMLImport -> {
+                OPMLImportProgressDialog(
+                    currentFeed = dialog.currentFeed,
+                    feedCount = dialog.feedCount,
+                    feedMax = dialog.feedMax
                 )
             }
 
@@ -162,6 +180,15 @@ object AccountTab : Tab {
                     spacing = MaterialTheme.spacing.mediumSpacing,
                     padding = MaterialTheme.spacing.mediumSpacing,
                     onClick = { }
+                )
+
+                SelectableIconText(
+                    icon = painterResource(id = R.drawable.ic_import_export),
+                    text = stringResource(R.string.opml_import_export),
+                    style = MaterialTheme.typography.titleMedium,
+                    spacing = MaterialTheme.spacing.mediumSpacing,
+                    padding = MaterialTheme.spacing.mediumSpacing,
+                    onClick = { launcher.launch(ApiUtils.OPML_MIMETYPES.toTypedArray()) }
                 )
 
                 SelectableIconText(

@@ -93,7 +93,7 @@
     <string name="external_navigator">Navigateur externe</string>
     <string name="actualize">Actualiser</string>
     <string name="share_url">Partager le lien</string>
-    <string name="opml_import_export">Importation/Exportation OPML</string>
+    <string name="opml_import_export">Import/Export OPML</string>
     <string name="opml_processing">Traitement du fichier OPML</string>
     <string name="operation_takes_time">Cette opération peut prendre un certain temps car il faut interroger chaque flux.</string>
     <string name="processing_file_failed">Une erreur s\'est produite lors du traitement du fichier</string>

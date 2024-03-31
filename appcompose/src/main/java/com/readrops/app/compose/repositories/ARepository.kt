@@ -37,7 +37,7 @@ abstract class ARepository(
      */
     abstract suspend fun synchronize(): SyncResult
 
-    abstract suspend fun insertNewFeeds(urls: List<String>)
+    abstract suspend fun insertNewFeeds(newFeeds: List<Feed>, onUpdate: (Feed) -> Unit)
 }
 
 abstract class BaseRepository(
@@ -45,7 +45,8 @@ abstract class BaseRepository(
     account: Account,
 ) : ARepository(database, account) {
 
-    open suspend fun updateFeed(feed: Feed) = database.newFeedDao().updateFeedFields(feed.id, feed.name!!, feed.url!!, feed.folderId)
+    open suspend fun updateFeed(feed: Feed) =
+        database.newFeedDao().updateFeedFields(feed.id, feed.name!!, feed.url!!, feed.folderId)
 
     open suspend fun deleteFeed(feed: Feed) = database.newFeedDao().delete(feed)
 
@@ -81,5 +82,31 @@ abstract class BaseRepository(
 
     open suspend fun setAllItemsReadByFolder(folderId: Int, accountId: Int) {
         database.newItemDao().setAllItemsReadByFolder(folderId, accountId)
+    }
+
+    suspend fun insertOPMLFoldersAndFeeds(
+        foldersAndFeeds: Map<Folder?, List<Feed>>,
+        onUpdate: (Feed) -> Unit
+    ) {
+        for ((folder, feeds) in foldersAndFeeds) {
+            if (folder != null) {
+                folder.accountId = account.id
+
+                val dbFolder = database.newFolderDao().selectFolderByName(folder.name!!, account.id)
+
+                if (dbFolder != null) {
+                    folder.id = dbFolder.id
+                } else {
+                    folder.id = database.newFolderDao().insert(folder).toInt()
+                }
+            }
+
+            feeds.forEach { it.folderId = folder?.id }
+
+            insertNewFeeds(
+                newFeeds = feeds,
+                onUpdate = onUpdate
+            )
+        }
     }
 }

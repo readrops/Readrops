@@ -64,7 +64,8 @@ public class AccountViewModel extends ViewModel {
     }
 
     public Completable parseOPMLFile(Uri uri, Context context) throws FileNotFoundException {
-        return OPMLParser.read(context.getContentResolver().openInputStream(uri))
-                .flatMapCompletable(foldersAndFeeds -> repository.insertOPMLFoldersAndFeeds(foldersAndFeeds));
+        /*return OPMLParser.read(context.getContentResolver().openInputStream(uri))
+                .flatMapCompletable(foldersAndFeeds -> repository.insertOPMLFoldersAndFeeds(foldersAndFeeds));*/
+        return Completable.complete();
     }
 }

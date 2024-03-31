@@ -257,8 +257,8 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat {
                         .blockingGet();
 
 
-                OPMLParser.write(folderListMap, outputStream)
-                        .blockingAwait();
+                /*OPMLParser.write(folderListMap, outputStream)
+                        .blockingAwait();*/
 
                 return Unit.INSTANCE;
             });

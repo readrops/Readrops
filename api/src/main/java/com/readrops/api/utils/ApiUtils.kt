@@ -16,6 +16,8 @@ object ApiUtils {
     const val HTTP_NOT_FOUND = 404
     const val HTTP_CONFLICT = 409
 
+    val OPML_MIMETYPES = listOf("application/xml", "text/xml", "text/x-opml")
+
     private const val RSS_CONTENT_TYPE_REGEX = "([^;]+)"
 
     fun isMimeImage(type: String): Boolean =

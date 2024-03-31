@@ -78,4 +78,6 @@ dependencies {
 
     debugApi 'com.chimerapps.niddler:niddler:1.5.5'
     releaseApi 'com.chimerapps.niddler:niddler-noop:1.5.5'
+
+    testImplementation(libs.coroutines.test)
 }

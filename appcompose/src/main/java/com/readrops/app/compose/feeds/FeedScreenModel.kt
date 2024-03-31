@@ -188,7 +188,9 @@ class FeedScreenModel(
                 try {
                     if (localRSSDataSource.isUrlRSSResource(url)) {
                         // TODO add support for all account types
-                        repository?.insertNewFeeds(listOf(url))
+                        repository?.insertNewFeeds(
+                            newFeeds = listOf(Feed(url = url))
+                        ) {}
 
                         closeDialog(DialogState.AddFeed)
                     } else {
@@ -200,7 +202,9 @@ class FeedScreenModel(
                             }
                         } else {
                             // TODO add support for all account types
-                            repository?.insertNewFeeds(rssUrls.map { it.url })
+                            repository?.insertNewFeeds(
+                                newFeeds = rssUrls.map { Feed(url = it.url) }
+                            ) {}
 
                             closeDialog(DialogState.AddFeed)
                         }

@@ -18,4 +18,7 @@ interface NewFolderDao : NewBaseDao<Folder> {
 
     @Query("Select * From Folder Where account_id = :accountId")
     fun selectFolders(accountId: Int): Flow<List<Folder>>
+
+    @Query("Select * From Folder Where name = :name And account_id = :accountId")
+    suspend fun selectFolderByName(name: String, accountId: Int): Folder?
 }

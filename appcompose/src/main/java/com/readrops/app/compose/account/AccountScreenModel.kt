@@ -1,6 +1,9 @@
 package com.readrops.app.compose.account
 
+import android.content.Context
+import android.net.Uri
 import cafe.adriel.voyager.core.model.screenModelScope
+import com.readrops.api.opml.OPMLParser
 import com.readrops.app.compose.base.TabScreenModel
 import com.readrops.db.Database
 import com.readrops.db.entities.account.Account
@@ -45,6 +48,39 @@ class AccountScreenModel(
             _closeHome.update { true }
         }
     }
+
+    fun parseOPMLFile(uri: Uri, context: Context) {
+        screenModelScope.launch(Dispatchers.IO) {
+            val stream = context.contentResolver.openInputStream(uri)!!
+            val foldersAndFeeds = OPMLParser.read(stream)
+
+            openDialog(
+                DialogState.OPMLImport(
+                    currentFeed = foldersAndFeeds.values.first().first().name!!,
+                    feedCount = 0,
+                    feedMax = foldersAndFeeds.values.flatten().size
+                )
+            )
+
+            repository?.insertOPMLFoldersAndFeeds(
+                foldersAndFeeds = foldersAndFeeds,
+                onUpdate = { feed ->
+                    _accountState.update {
+                        val dialog = (it.dialog as DialogState.OPMLImport)
+
+                        it.copy(
+                            dialog = dialog.copy(
+                                currentFeed = feed.name!!,
+                                feedCount = dialog.feedCount + 1
+                            )
+                        )
+                    }
+                }
+            )
+
+            closeDialog()
+        }
+    }
 }
 
 data class AccountState(
@@ -55,4 +91,6 @@ data class AccountState(
 sealed interface DialogState {
     object DeleteAccount : DialogState
     object NewAccount : DialogState
+    data class OPMLImport(val currentFeed: String, val feedCount: Int, val feedMax: Int) :
+        DialogState
 }
