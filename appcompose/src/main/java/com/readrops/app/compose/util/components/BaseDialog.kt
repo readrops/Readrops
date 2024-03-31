@@ -25,13 +25,15 @@ fun BaseDialog(
     title: String,
     icon: Painter,
     onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
     Dialog(
         onDismissRequest = onDismiss
     ) {
         Card(
-            shape = RoundedCornerShape(24.dp)
+            shape = RoundedCornerShape(24.dp),
+            modifier = modifier
         ) {
             Column(
                 verticalArrangement = Arrangement.Center,

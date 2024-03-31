@@ -12,8 +12,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import coil.compose.AsyncImage
+import com.readrops.app.compose.R
 import com.readrops.app.compose.util.theme.ShortSpacer
 import com.readrops.app.compose.util.theme.spacing
 import com.readrops.app.compose.util.toDp
@@ -43,6 +45,7 @@ fun FeedItem(
         ) {
             AsyncImage(
                 model = feed.iconUrl,
+                error = painterResource(id = R.drawable.ic_rss_feed_grey),
                 contentDescription = feed.name!!,
                 modifier = Modifier.size(MaterialTheme.typography.bodyLarge.toDp())
             )

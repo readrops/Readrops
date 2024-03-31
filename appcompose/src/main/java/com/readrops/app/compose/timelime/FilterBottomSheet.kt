@@ -24,7 +24,8 @@ import com.readrops.db.queries.QueryFilters
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterBottomSheet(
-    viewModel: TimelineViewModel,
+    onSetShowReadItemsState: () -> Unit,
+    onSetSortTypeState: () -> Unit,
     filters: QueryFilters,
     onDismiss: () -> Unit,
 ) {
@@ -44,11 +45,11 @@ fun FilterBottomSheet(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { viewModel.setShowReadItemsState(!filters.showReadItems) }
+                    .clickable(onClick = onSetShowReadItemsState)
             ) {
                 Checkbox(
                     checked = filters.showReadItems,
-                    onCheckedChange = { viewModel.setShowReadItemsState(!filters.showReadItems) }
+                    onCheckedChange = { onSetShowReadItemsState() }
                 )
 
                 ShortSpacer()
@@ -60,24 +61,15 @@ fun FilterBottomSheet(
 
             ShortSpacer()
 
-            fun setSortTypeState() {
-                viewModel.setSortTypeState(
-                    if (filters.sortType == ListSortType.NEWEST_TO_OLDEST)
-                        ListSortType.OLDEST_TO_NEWEST
-                    else
-                        ListSortType.NEWEST_TO_OLDEST
-                )
-            }
-
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { setSortTypeState() }
+                    .clickable(onClick = onSetSortTypeState)
             ) {
                 Checkbox(
                     checked = filters.sortType == ListSortType.OLDEST_TO_NEWEST,
-                    onCheckedChange = { setSortTypeState() }
+                    onCheckedChange = { onSetSortTypeState() }
                 )
 
                 ShortSpacer()

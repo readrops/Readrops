@@ -85,7 +85,7 @@ class LocalRSSRepositoryTest : KoinTest {
                 .setBody(Buffer().readFrom(stream))
         )
 
-        val result = repository.synchronize(null) {
+        val result = repository.synchronize(listOf()) {
             assertEquals(it.name, feeds.first().name)
         }
 

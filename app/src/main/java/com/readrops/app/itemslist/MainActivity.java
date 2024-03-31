@@ -62,7 +62,7 @@ import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
 import com.readrops.db.entities.account.Account;
-import com.readrops.db.filters.FilterType;
+import com.readrops.db.filters.MainFilter;
 import com.readrops.db.filters.ListSortType;
 import com.readrops.db.pojo.ItemWithFeed;
 
@@ -273,18 +273,18 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             switch (id) {
                 default:
                 case DrawerManager.ARTICLES_ITEM_ID:
-                    viewModel.setFilterType(FilterType.NO_FILTER);
+                    viewModel.setFilterType(MainFilter.ALL);
                     scrollToTop = true;
                     viewModel.invalidate();
                     setTitle(R.string.articles);
                     break;
                 case DrawerManager.READ_LATER_ID:
-                    viewModel.setFilterType(FilterType.READ_IT_LATER_FILTER);
+                    //viewModel.setFilterType(FilterType.READ_IT_LATER_FILTER);
                     viewModel.invalidate();
                     setTitle(R.string.read_later);
                     break;
                 case DrawerManager.STARS_ID:
-                    viewModel.setFilterType(FilterType.STARS_FILTER);
+                    viewModel.setFilterType(MainFilter.STARS);
                     viewModel.invalidate();
                     setTitle(R.string.favorites);
                     break;
@@ -302,14 +302,14 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             drawer.closeDrawer();
 
             viewModel.setFilterFeedId((int) drawerItem.getIdentifier());
-            viewModel.setFilterType(FilterType.FEED_FILTER);
+            viewModel.setFilterType(MainFilter.ALL);
             viewModel.invalidate();
             setTitle(((SecondaryDrawerItem) drawerItem).getName().getText());
         } else if (drawerItem instanceof CustomExpandableBadgeDrawerItem) {
             drawer.closeDrawer();
 
             viewModel.setFilerFolderId((int) (drawerItem.getIdentifier() / 1000));
-            viewModel.setFilterType(FilterType.FOLDER_FILER);
+            viewModel.setFilterType(MainFilter.ALL);
             viewModel.invalidate();
             setTitle(((CustomExpandableBadgeDrawerItem) drawerItem).getName().getText());
         }

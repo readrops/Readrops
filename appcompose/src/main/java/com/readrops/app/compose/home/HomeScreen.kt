@@ -16,7 +16,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import cafe.adriel.voyager.androidx.AndroidScreen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.CurrentTab
@@ -26,6 +25,7 @@ import com.readrops.app.compose.account.AccountTab
 import com.readrops.app.compose.feeds.FeedTab
 import com.readrops.app.compose.more.MoreTab
 import com.readrops.app.compose.timelime.TimelineTab
+import com.readrops.app.compose.util.components.AndroidScreen
 
 class HomeScreen : AndroidScreen() {
 

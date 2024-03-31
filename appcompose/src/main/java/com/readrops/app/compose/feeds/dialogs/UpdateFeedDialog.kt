@@ -15,7 +15,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.readrops.app.compose.R
-import com.readrops.app.compose.feeds.FeedViewModel
+import com.readrops.app.compose.feeds.FeedScreenModel
 import com.readrops.app.compose.util.components.BaseDialog
 import com.readrops.app.compose.util.theme.LargeSpacer
 import com.readrops.app.compose.util.theme.MediumSpacer
@@ -24,7 +24,7 @@ import com.readrops.app.compose.util.theme.MediumSpacer
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpdateFeedDialog(
-    viewModel: FeedViewModel,
+    viewModel: FeedScreenModel,
     onDismissRequest: () -> Unit
 ) {
     val state by viewModel.updateFeedDialogState.collectAsStateWithLifecycle()

@@ -1,0 +1,65 @@
+[versions]
+compose-bom = "2024.02.02"
+voyager = "1.0.0"
+lifecycle = "2.7.0"
+coil = "2.4.0"
+coroutines = "1.8.0"
+room = "2.6.1"
+koin-bom = "3.5.0"
+
+[libraries]
+bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+compose-foundation = { module = "androidx.compose.foundation:foundation" }
+compose-runtime = { module = "androidx.compose.runtime:runtime" }
+compose-animation = { module = "androidx.compose.animation:animation" }
+compose-ui = { module = "androidx.compose.ui:ui" }
+compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+# specify material3 version is required for gradle to find the dependency
+compose-material3 = { module = "androidx.compose.material3:material3", version = "1.2.1" }
+compose-activity = "androidx.activity:activity-compose:1.8.2"
+
+voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
+voyager-screenmodel = { module = "cafe.adriel.voyager:voyager-screenmodel", version.ref = "voyager" }
+voyager-tab-navigator = { module = "cafe.adriel.voyager:voyager-tab-navigator", version.ref = "voyager" }
+voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyager" }
+voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", version.ref = "voyager" }
+
+lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "lifecycle" }
+lifecyle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
+
+coil-core = { module = "io.coil-kt:coil", version.ref = "coil" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+room-rxjava2 = { module = "androidx.room:room-rxjava2", version.ref = "room" } #TODO remove usage of this
+room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
+room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
+
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
+koin-core = { module = "io.insert-koin:koin-core" }
+koin-android = { module = "io.insert-koin:koin-android" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose" }
+koin-android-compat = { module = "io.insert-koin:koin-android-compat" } #TODO remove usage of this
+koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin-bom" }
+koin-test-junit4 = { module = "io.insert-koin:koin-test-junit4", version.ref = "koin-bom" }
+
+[bundles]
+compose = ["bom", "compose-foundation", "compose-runtime", "compose-animation",
+    "compose-ui", "compose-ui-tooling", "compose-ui-tooling-preview", "compose-material3"]
+voyager = ["voyager-navigator", "voyager-screenmodel", "voyager-tab-navigator", "voyager-koin", "voyager-transitions"]
+lifecycle = ["lifecycle-viewmodel-ktx", "lifecycle-viewmodel-compose", "lifecycle-viewmodel-savedstate",
+    "lifecyle-runtime-compose"]
+coil = ["coil-core", "coil-compose"]
+coroutines = ["coroutines-core", "coroutines-android"]
+room = ["room-runtime", "room-ktx", "room-rxjava2", "room-paging"]
+koin = ["koin-bom", "koin-core", "koin-android", "koin-androidx-compose", "koin-android-compat"]
+kointest = ["koin-test", "koin-test-junit4"]

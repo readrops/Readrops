@@ -17,7 +17,7 @@ import com.readrops.db.entities.Feed;
 import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
 import com.readrops.db.entities.account.Account;
-import com.readrops.db.filters.FilterType;
+import com.readrops.db.filters.MainFilter;
 import com.readrops.db.filters.ListSortType;
 import com.readrops.db.pojo.ItemWithFeed;
 import com.readrops.db.queries.ItemsQueryBuilder;
@@ -54,8 +54,8 @@ public class MainViewModel extends ViewModel {
         itemsWithFeed = new MediatorLiveData<>();
 
         queryFilters = new QueryFilters();
-        queryFilters.setShowReadItems(SharedPreferencesManager.readBoolean(
-                SharedPreferencesManager.SharedPrefKey.SHOW_READ_ARTICLES));
+       /* queryFilters.setShowReadItems(SharedPreferencesManager.readBoolean(
+                SharedPreferencesManager.SharedPrefKey.SHOW_READ_ARTICLES));*/
     }
 
     //region main query
@@ -71,7 +71,7 @@ public class MainViewModel extends ViewModel {
         }
 
         DataSource.Factory<Integer, ItemWithFeed> items;
-        items = database.itemDao().selectAll(ItemsQueryBuilder.buildItemsQuery(queryFilters, currentAccount.getConfig().getUseSeparateState()));
+        items = database.itemDao().selectAll(ItemsQueryBuilder.INSTANCE.buildItemsQuery(queryFilters, currentAccount.getConfig().getUseSeparateState()));
 
         lastFetch = new LivePagedListBuilder<>(new RoomFactoryWrapper<>(items),
                 new PagedList.Config.Builder()
@@ -89,23 +89,23 @@ public class MainViewModel extends ViewModel {
     }
 
     public void setShowReadItems(boolean showReadItems) {
-        queryFilters.setShowReadItems(showReadItems);
+        //queryFilters.setShowReadItems(showReadItems);
     }
 
     public boolean showReadItems() {
         return queryFilters.getShowReadItems();
     }
 
-    public void setFilterType(FilterType filterType) {
-        queryFilters.setFilterType(filterType);
+    public void setFilterType(MainFilter filterType) {
+        //queryFilters.setMainFilter(filterType);
     }
 
-    public FilterType getFilterType() {
-        return queryFilters.getFilterType();
+    public MainFilter getFilterType() {
+        return queryFilters.getMainFilter();
     }
 
     public void setSortType(ListSortType sortType) {
-        queryFilters.setSortType(sortType);
+        //queryFilters.setSortType(sortType);
     }
 
     public ListSortType getSortType() {
@@ -113,11 +113,11 @@ public class MainViewModel extends ViewModel {
     }
 
     public void setFilterFeedId(int filterFeedId) {
-        queryFilters.setFilterFeedId(filterFeedId);
+        //queryFilters.setFilterFeedId(filterFeedId);
     }
 
     public void setFilerFolderId(int folderId) {
-        queryFilters.setFilterFolderId(folderId);
+        //queryFilters.setFilterFolderId(folderId);
     }
 
     public MediatorLiveData<PagedList<ItemWithFeed>> getItemsWithFeed() {
@@ -128,7 +128,7 @@ public class MainViewModel extends ViewModel {
         itemsWithFeed.removeSource(lastFetch);
 
         // get current viewed feed
-        if (feeds == null && queryFilters.getFilterType() == FilterType.FEED_FILTER) {
+        if (feeds == null && queryFilters.getMainFilter() == MainFilter.ALL) {
             return Single.<Feed>create(emitter -> emitter.onSuccess(database.feedDao()
                     .getFeedById(queryFilters.getFilterFeedId())))
                     .flatMapCompletable(feed -> repository.sync(Collections.singletonList(feed), update));
@@ -181,7 +181,7 @@ public class MainViewModel extends ViewModel {
     public void setCurrentAccount(Account currentAccount) {
         this.currentAccount = currentAccount;
         setRepository();
-        queryFilters.setAccountId(currentAccount.getId());
+        //queryFilters.setAccountId(currentAccount.getId());
         buildPagedList();
 
         // set the new account as the current one
@@ -212,7 +212,7 @@ public class MainViewModel extends ViewModel {
                 currentAccountExists = true;
 
                 setRepository();
-                queryFilters.setAccountId(currentAccount.getId());
+                //queryFilters.setAccountId(currentAccount.getId());
                 buildPagedList();
                 break;
             }
@@ -252,7 +252,7 @@ public class MainViewModel extends ViewModel {
     }
 
     public Completable setAllItemsReadState(boolean read) {
-        if (queryFilters.getFilterType() == FilterType.FEED_FILTER)
+        if (queryFilters.getMainFilter() == MainFilter.ALL)
             return repository.setAllFeedItemsReadState(queryFilters.getFilterFeedId(), read);
         else
             return repository.setAllItemsReadState(read);

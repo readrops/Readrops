@@ -7,9 +7,7 @@ import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
 
-data class ErrorResult(
-    val values: Map<Feed, Exception>
-)
+typealias ErrorResult = Map<Feed, Exception>
 
 abstract class ARepository(
     val database: Database,
@@ -29,7 +27,7 @@ abstract class ARepository(
      * and errors per feed if occurred to be transmitted to the user
      */
     abstract suspend fun synchronize(
-        selectedFeeds: List<Feed>?,
+        selectedFeeds: List<Feed>,
         onUpdate: (Feed) -> Unit
     ): Pair<SyncResult, ErrorResult>
 
@@ -71,6 +69,10 @@ abstract class BaseRepository(
 
     open suspend fun setAllStarredItemsRead(accountId: Int) {
         database.newItemDao().setAllStarredItemsRead(accountId)
+    }
+
+    open suspend fun setAllNewItemsRead(accountId: Int) {
+        database.newItemDao().setAllNewItemsRead(accountId)
     }
 
     open suspend fun setAllItemsReadByFeed(feedId: Int, accountId: Int) {

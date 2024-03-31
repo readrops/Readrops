@@ -142,5 +142,18 @@
     <string name="hide_feeds">Cacher les flux sans nouveaux items</string>
     <string name="mark_items_read">Marquer les items comme lus pendant le défilement</string>
     <string name="filters">Filtres</string>
-
+    <plurals name="error_occurred">
+        <item quantity="one">Une erreur s\'est produite</item>
+        <item quantity="other">Des erreurs se sont produites</item>
+    </plurals>
+    <string name="details">Détails</string>
+    <string name="synchronization_errors">Erreurs de synchronisation</string>
+    <plurals name="error_occurred_feed">
+        <item quantity="one">Une erreur s\'est produite pour le flux suivant :</item>
+        <item quantity="other">Des erreurs se sont produites pour les flux suivants :</item>
+    </plurals>
+    <string name="unreachable_feed_http_error">Flux non attaignable, erreur HTTP %1$s</string>
+    <string name="network_failure">Erreur réseau: %1$s</string>
+    <string name="processing_feed_error">Erreur de traitement du flux</string>
+    <string name="unreachable_feed">Flux non attaignable</string>
 </resources>

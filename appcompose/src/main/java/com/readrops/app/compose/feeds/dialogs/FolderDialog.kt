@@ -13,14 +13,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.readrops.app.compose.R
-import com.readrops.app.compose.feeds.FeedViewModel
+import com.readrops.app.compose.feeds.FeedScreenModel
 import com.readrops.app.compose.util.components.BaseDialog
 import com.readrops.app.compose.util.theme.LargeSpacer
 
 @Composable
 fun FolderDialog(
     updateFolder: Boolean = false,
-    viewModel: FeedViewModel,
+    viewModel: FeedScreenModel,
     onDismiss: () -> Unit,
     onValidate: () -> Unit
 ) {

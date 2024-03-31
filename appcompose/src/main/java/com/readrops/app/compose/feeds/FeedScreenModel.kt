@@ -1,16 +1,17 @@
 package com.readrops.app.compose.feeds
 
 import android.util.Patterns
-import androidx.lifecycle.viewModelScope
+import cafe.adriel.voyager.core.model.screenModelScope
 import com.readrops.api.localfeed.LocalRSSDataSource
 import com.readrops.api.utils.HtmlParser
-import com.readrops.app.compose.base.TabViewModel
+import com.readrops.app.compose.base.TabScreenModel
 import com.readrops.app.compose.repositories.GetFoldersWithFeeds
 import com.readrops.app.compose.util.components.TextFieldError
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.account.Account
+import com.readrops.db.filters.MainFilter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,11 +25,11 @@ import org.koin.core.component.get
 import java.net.UnknownHostException
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class FeedViewModel(
+class FeedScreenModel(
     database: Database,
     private val getFoldersWithFeeds: GetFoldersWithFeeds,
     private val localRSSDataSource: LocalRSSDataSource,
-) : TabViewModel(database), KoinComponent {
+) : TabScreenModel(database), KoinComponent {
 
     private val _feedState = MutableStateFlow(FeedState())
     val feedsState = _feedState.asStateFlow()
@@ -43,10 +44,10 @@ class FeedViewModel(
     val folderState = _folderState.asStateFlow()
 
     init {
-        viewModelScope.launch(context = Dispatchers.IO) {
+        screenModelScope.launch(context = Dispatchers.IO) {
             accountEvent
                 .flatMapConcat { account ->
-                    getFoldersWithFeeds.get(account.id)
+                    getFoldersWithFeeds.get(account.id, MainFilter.ALL)
                 }
                 .catch { throwable ->
                     _feedState.update {
@@ -60,7 +61,7 @@ class FeedViewModel(
                 }
         }
 
-        viewModelScope.launch(context = Dispatchers.IO) {
+        screenModelScope.launch(context = Dispatchers.IO) {
             database.newAccountDao()
                 .selectAllAccounts()
                 .collect { accounts ->
@@ -73,7 +74,7 @@ class FeedViewModel(
                 }
         }
 
-        viewModelScope.launch(context = Dispatchers.IO) {
+        screenModelScope.launch(context = Dispatchers.IO) {
             accountEvent
                 .flatMapConcat { account ->
                     database.newFolderDao()
@@ -93,7 +94,25 @@ class FeedViewModel(
     fun setFolderExpandState(isExpanded: Boolean) =
         _feedState.update { it.copy(areFoldersExpanded = isExpanded) }
 
-    fun closeDialog() = _feedState.update { it.copy(dialog = null) }
+    fun closeDialog(dialog: DialogState? = null) {
+        if (dialog is DialogState.AddFeed) {
+            _addFeedDialogState.update {
+                it.copy(
+                    url = "",
+                    error = null,
+                )
+            }
+        } else if (dialog is DialogState.AddFolder || dialog is DialogState.UpdateFolder) {
+            _folderState.update {
+                it.copy(
+                    folder = Folder(),
+                    nameError = null,
+                )
+            }
+        }
+
+        _feedState.update { it.copy(dialog = null) }
+    }
 
     fun openDialog(state: DialogState) {
         if (state is DialogState.UpdateFeed) {
@@ -119,13 +138,13 @@ class FeedViewModel(
     }
 
     fun deleteFeed(feed: Feed) {
-        viewModelScope.launch(Dispatchers.IO) {
+        screenModelScope.launch(Dispatchers.IO) {
             repository?.deleteFeed(feed)
         }
     }
 
     fun deleteFolder(folder: Folder) {
-        viewModelScope.launch(Dispatchers.IO) {
+        screenModelScope.launch(Dispatchers.IO) {
             repository?.deleteFolder(folder)
         }
     }
@@ -165,13 +184,13 @@ class FeedViewModel(
                 return
             }
 
-            else -> viewModelScope.launch(Dispatchers.IO) {
+            else -> screenModelScope.launch(Dispatchers.IO) {
                 try {
                     if (localRSSDataSource.isUrlRSSResource(url)) {
                         // TODO add support for all account types
                         repository?.insertNewFeeds(listOf(url))
 
-                        closeDialog()
+                        closeDialog(DialogState.AddFeed)
                     } else {
                         val rssUrls = HtmlParser.getFeedLink(url, get())
 
@@ -183,7 +202,7 @@ class FeedViewModel(
                             // TODO add support for all account types
                             repository?.insertNewFeeds(rssUrls.map { it.url })
 
-                            closeDialog()
+                            closeDialog(DialogState.AddFeed)
                         }
                     }
                 } catch (e: Exception) {
@@ -193,15 +212,6 @@ class FeedViewModel(
                     }
                 }
             }
-        }
-    }
-
-    fun resetAddFeedDialogState() {
-        _addFeedDialogState.update {
-            it.copy(
-                url = "",
-                error = null,
-            )
         }
     }
 
@@ -266,7 +276,7 @@ class FeedViewModel(
             }
 
             else -> {
-                viewModelScope.launch(Dispatchers.IO) {
+                screenModelScope.launch(Dispatchers.IO) {
                     with(_updateFeedDialogState.value) {
                         repository?.updateFeed(
                             Feed(
@@ -295,13 +305,6 @@ class FeedViewModel(
         )
     }
 
-    fun resetFolderState() = _folderState.update {
-        it.copy(
-            folder = Folder(),
-            nameError = null,
-        )
-    }
-
     fun folderValidate(updateFolder: Boolean = false) {
         val name = _folderState.value.name.orEmpty()
 
@@ -311,7 +314,7 @@ class FeedViewModel(
             return
         }
 
-        viewModelScope.launch(Dispatchers.IO) {
+        screenModelScope.launch(Dispatchers.IO) {
             if (updateFolder) {
                 repository?.updateFolder(_folderState.value.folder)
             } else {
@@ -320,8 +323,7 @@ class FeedViewModel(
                 })
             }
 
-            closeDialog()
-            resetFolderState()
+            closeDialog(DialogState.AddFolder)
         }
     }
 

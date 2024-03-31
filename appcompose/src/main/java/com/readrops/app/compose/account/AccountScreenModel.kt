@@ -1,7 +1,7 @@
 package com.readrops.app.compose.account
 
-import androidx.lifecycle.viewModelScope
-import com.readrops.app.compose.base.TabViewModel
+import cafe.adriel.voyager.core.model.screenModelScope
+import com.readrops.app.compose.base.TabScreenModel
 import com.readrops.db.Database
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
@@ -11,9 +11,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class AccountViewModel(
+class AccountScreenModel(
     private val database: Database
-) : TabViewModel(database) {
+) : TabScreenModel(database) {
 
     private val _closeHome = MutableStateFlow(false)
     val closeHome = _closeHome.asStateFlow()
@@ -22,7 +22,7 @@ class AccountViewModel(
     val accountState = _accountState.asStateFlow()
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
+        screenModelScope.launch(Dispatchers.IO) {
             accountEvent.collect { account ->
                 _accountState.update {
                     it.copy(
@@ -38,7 +38,7 @@ class AccountViewModel(
     fun closeDialog() = _accountState.update { it.copy(dialog = null) }
 
     fun deleteAccount() {
-        viewModelScope.launch(Dispatchers.IO) {
+        screenModelScope.launch(Dispatchers.IO) {
             database.newAccountDao()
                 .delete(currentAccount!!)
 

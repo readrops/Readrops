@@ -17,17 +17,17 @@ interface BaseDao<T> {
     fun compatInsert(entity: T): Long
 
     @Insert
-    fun insert(entities: List<T>?): List<Long>
+    fun insert(entities: List<T>): List<Long>
 
     @Update
     fun update(entity: T): Completable
 
     @Update
-    fun update(entities: List<T>?): Completable
+    fun update(entities: List<T>): Completable
 
     @Delete
     fun delete(entity: T): Completable
 
     @Delete
-    fun delete(entities: List<T>?): Completable
+    fun delete(entities: List<T>): Completable
 }

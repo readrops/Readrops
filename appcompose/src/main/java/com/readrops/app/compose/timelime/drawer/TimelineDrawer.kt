@@ -28,12 +28,12 @@ import com.readrops.app.compose.timelime.TimelineState
 import com.readrops.app.compose.util.theme.spacing
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
-import com.readrops.db.filters.FilterType
+import com.readrops.db.filters.MainFilter
 
 @Composable
 fun TimelineDrawer(
     state: TimelineState,
-    onClickDefaultItem: (FilterType) -> Unit,
+    onClickDefaultItem: (MainFilter) -> Unit,
     onFolderClick: (Folder) -> Unit,
     onFeedClick: (Feed) -> Unit,
 ) {
@@ -47,7 +47,7 @@ fun TimelineDrawer(
         Spacer(modifier = Modifier.size(MaterialTheme.spacing.drawerSpacing))
 
         DrawerDefaultItems(
-            selectedItem = state.filters.filterType,
+            selectedItem = state.filters.mainFilter,
             onClick = { onClickDefaultItem(it) }
         )
 
@@ -98,6 +98,7 @@ fun TimelineDrawer(
                                 AsyncImage(
                                     model = feed.iconUrl,
                                     contentDescription = feed.name,
+                                    error = painterResource(id = R.drawable.ic_rss_feed_grey),
                                     placeholder = painterResource(id = R.drawable.ic_folder_grey),
                                     modifier = Modifier.size(24.dp)
                                 )
@@ -116,8 +117,8 @@ fun TimelineDrawer(
 
 @Composable
 fun DrawerDefaultItems(
-    selectedItem: FilterType,
-    onClick: (FilterType) -> Unit,
+    selectedItem: MainFilter,
+    onClick: (MainFilter) -> Unit,
 ) {
     NavigationDrawerItem(
         label = { Text(text = stringResource(R.string.articles)) },
@@ -127,8 +128,8 @@ fun DrawerDefaultItems(
                 contentDescription = null
             )
         },
-        selected = selectedItem == FilterType.NO_FILTER,
-        onClick = { onClick(FilterType.NO_FILTER) },
+        selected = selectedItem == MainFilter.ALL,
+        onClick = { onClick(MainFilter.ALL) },
         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
     )
 
@@ -140,8 +141,8 @@ fun DrawerDefaultItems(
                 contentDescription = null
             )
         },
-        selected = selectedItem == FilterType.NEW,
-        onClick = { onClick(FilterType.NEW) },
+        selected = selectedItem == MainFilter.NEW,
+        onClick = { onClick(MainFilter.NEW) },
         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
     )
 
@@ -153,21 +154,8 @@ fun DrawerDefaultItems(
                 contentDescription = null
             )
         },
-        selected = selectedItem == FilterType.STARS_FILTER,
-        onClick = { onClick(FilterType.STARS_FILTER) },
-        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-    )
-
-    NavigationDrawerItem(
-        label = { Text(text = stringResource(R.string.read_later)) },
-        icon = {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_read_later),
-                contentDescription = null
-            )
-        },
-        selected = selectedItem == FilterType.READ_IT_LATER_FILTER,
-        onClick = { onClick(FilterType.READ_IT_LATER_FILTER) },
+        selected = selectedItem == MainFilter.STARS,
+        onClick = { onClick(MainFilter.STARS) },
         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
     )
 }

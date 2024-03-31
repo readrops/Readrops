@@ -43,7 +43,6 @@ fun TimelineItem(
     itemWithFeed: ItemWithFeed,
     onClick: () -> Unit,
     onFavorite: () -> Unit,
-    onReadLater: () -> Unit,
     onShare: () -> Unit,
     modifier: Modifier = Modifier,
     compactLayout: Boolean = false,
@@ -75,7 +74,8 @@ fun TimelineItem(
                     ) {
                         AsyncImage(
                             model = itemWithFeed.feedIconUrl,
-                            contentDescription = null,
+                            error = painterResource(id = R.drawable.ic_rss_feed_grey),
+                            contentDescription = itemWithFeed.feedName,
                             placeholder = painterResource(R.drawable.ic_rss_feed_grey),
                             modifier = Modifier.size(24.dp)
                         )
@@ -186,12 +186,6 @@ fun TimelineItem(
                     imageVector = if (itemWithFeed.item.isStarred) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                     contentDescription = null,
                     modifier = Modifier.clickable { onFavorite() }
-                )
-
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_read_later),
-                    contentDescription = null,
-                    modifier = Modifier.clickable { onReadLater() }
                 )
 
                 Icon(

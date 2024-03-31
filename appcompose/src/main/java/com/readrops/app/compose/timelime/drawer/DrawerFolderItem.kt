@@ -51,7 +51,7 @@ fun DrawerFolderItem(
 ) {
     val colors = NavigationDrawerItemDefaults.colors()
 
-    var isExpanded by remember { mutableStateOf(false) }
+    var isExpanded by remember { mutableStateOf(feeds.any { it.id == selectedFeed }) }
     val rotationState by animateFloatAsState(
         targetValue = if (isExpanded) 180f else 0f,
         label = "drawer item arrow rotation"
@@ -125,6 +125,7 @@ fun DrawerFolderItem(
                         AsyncImage(
                             model = feed.iconUrl,
                             contentDescription = feed.name,
+                            error = painterResource(id = R.drawable.ic_rss_feed_grey),
                             placeholder = painterResource(id = R.drawable.ic_folder_grey),
                             modifier = Modifier.size(24.dp)
                         )

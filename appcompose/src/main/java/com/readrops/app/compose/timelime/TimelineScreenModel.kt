@@ -3,19 +3,21 @@ package com.readrops.app.compose.timelime
 import android.content.Context
 import android.content.Intent
 import androidx.compose.runtime.Immutable
-import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.readrops.app.compose.base.TabViewModel
+import cafe.adriel.voyager.core.model.screenModelScope
+import com.readrops.app.compose.base.TabScreenModel
+import com.readrops.app.compose.repositories.ErrorResult
 import com.readrops.app.compose.repositories.GetFoldersWithFeeds
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
-import com.readrops.db.filters.FilterType
 import com.readrops.db.filters.ListSortType
+import com.readrops.db.filters.MainFilter
+import com.readrops.db.filters.SubFilter
 import com.readrops.db.pojo.ItemWithFeed
 import com.readrops.db.queries.ItemsQueryBuilder
 import com.readrops.db.queries.QueryFilters
@@ -30,11 +32,11 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class TimelineViewModel(
+class TimelineScreenModel(
     private val database: Database,
     private val getFoldersWithFeeds: GetFoldersWithFeeds,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : TabViewModel(database) {
+) : TabScreenModel(database) {
 
     private val _timelineState = MutableStateFlow(TimelineState())
     val timelineState = _timelineState.asStateFlow()
@@ -42,13 +44,12 @@ class TimelineViewModel(
     private val filters = MutableStateFlow(_timelineState.value.filters)
 
     init {
-        viewModelScope.launch(dispatcher) {
+        screenModelScope.launch(dispatcher) {
             combine(
                 accountEvent,
                 filters
             ) { account, filters ->
-                filters.accountId = account.id
-                Pair(account, filters)
+                Pair(account, filters.copy(accountId = account.id))
             }.collectLatest { (account, filters) ->
                 val query = ItemsQueryBuilder.buildItemsQuery(filters)
 
@@ -63,11 +64,11 @@ class TimelineViewModel(
                                 database.newItemDao().selectAll(query)
                             },
                         ).flow
-                            .cachedIn(viewModelScope)
+                            .cachedIn(screenModelScope)
                     )
                 }
 
-                getFoldersWithFeeds.get(account.id)
+                getFoldersWithFeeds.get(account.id, filters.mainFilter)
                     .collect { foldersAndFeeds ->
                         _timelineState.update {
                             it.copy(
@@ -80,16 +81,49 @@ class TimelineViewModel(
     }
 
     fun refreshTimeline() {
-        _timelineState.update { it.copy(isRefreshing = true) }
-        viewModelScope.launch(dispatcher) {
-            repository?.synchronize(null) {
+        screenModelScope.launch(dispatcher) {
+            val selectedFeeds = if (currentAccount!!.isLocal) {
+                when (filters.value.subFilter) {
+                    SubFilter.FEED -> listOf(
+                        database.newFeedDao().selectFeed(filters.value.filterFeedId)
+                    )
 
+                    SubFilter.FOLDER -> database.newFeedDao()
+                        .selectFeedsByFolder(filters.value.filterFolderId)
+
+                    else -> listOf()
+                }
+            } else listOf()
+
+            _timelineState.update {
+                it.copy(
+                    feedCount = 0,
+                    feedMax = if (selectedFeeds.isNotEmpty())
+                        selectedFeeds.size
+                    else
+                        database.newFeedDao().selectFeedCount(currentAccount!!.id)
+                )
             }
+
+            _timelineState.update { it.copy(isRefreshing = true) }
+
+            val results = repository?.synchronize(
+                selectedFeeds = selectedFeeds,
+                onUpdate = { feed ->
+                    _timelineState.update {
+                        it.copy(
+                            currentFeed = feed.name!!,
+                            feedCount = it.feedCount + 1
+                        )
+                    }
+                }
+            )
 
             _timelineState.update {
                 it.copy(
                     isRefreshing = false,
-                    endSynchronizing = true
+                    endSynchronizing = true,
+                    synchronizationErrors = if (results!!.second.isNotEmpty()) results.second else null
                 )
             }
         }
@@ -103,12 +137,15 @@ class TimelineViewModel(
         _timelineState.update { it.copy(isDrawerOpen = false) }
     }
 
-    fun updateDrawerDefaultItem(selection: FilterType) {
+    fun updateDrawerDefaultItem(selection: MainFilter) {
         _timelineState.update {
             it.copy(
                 filters = updateFilters {
                     it.filters.copy(
-                        filterType = selection
+                        mainFilter = selection,
+                        subFilter = SubFilter.ALL,
+                        filterFeedId = 0,
+                        filterFolderId = 0
                     )
                 },
                 isDrawerOpen = false
@@ -121,7 +158,7 @@ class TimelineViewModel(
             it.copy(
                 filters = updateFilters {
                     it.filters.copy(
-                        filterType = FilterType.FOLDER_FILER,
+                        subFilter = SubFilter.FOLDER,
                         filterFolderId = folder.id,
                         filterFeedId = 0
                     )
@@ -137,7 +174,7 @@ class TimelineViewModel(
             it.copy(
                 filters = updateFilters {
                     it.filters.copy(
-                        filterType = FilterType.FEED_FILTER,
+                        subFilter = SubFilter.FEED,
                         filterFeedId = feed.id,
                         filterFolderId = 0
                     )
@@ -161,13 +198,13 @@ class TimelineViewModel(
     }
 
     private fun updateItemReadState(item: Item) {
-        viewModelScope.launch(dispatcher) {
+        screenModelScope.launch(dispatcher) {
             repository?.setItemReadState(item)
         }
     }
 
     fun updateStarState(item: Item) {
-        viewModelScope.launch(dispatcher) {
+        screenModelScope.launch(dispatcher) {
             with(item) {
                 isStarred = isStarred.not()
                 repository?.setItemStarState(this)
@@ -186,30 +223,39 @@ class TimelineViewModel(
     }
 
     fun setAllItemsRead() {
-        viewModelScope.launch(dispatcher) {
-            when (_timelineState.value.filters.filterType) {
-                FilterType.FEED_FILTER ->
+        screenModelScope.launch(dispatcher) {
+            val accountId = currentAccount!!.id
+
+            when (_timelineState.value.filters.subFilter) {
+                SubFilter.FEED ->
                     repository?.setAllItemsReadByFeed(
-                        _timelineState.value.filters.filterFeedId,
-                        currentAccount!!.id
+                        feedId = _timelineState.value.filters.filterFeedId,
+                        accountId = accountId
                     )
 
-                FilterType.FOLDER_FILER -> repository?.setAllItemsReadByFolder(
-                    _timelineState.value.filters.filterFolderId,
-                    currentAccount!!.id
+                SubFilter.FOLDER -> repository?.setAllItemsReadByFolder(
+                    folderId = _timelineState.value.filters.filterFolderId,
+                    accountId = accountId
                 )
 
-                FilterType.READ_IT_LATER_FILTER -> TODO()
-                FilterType.STARS_FILTER -> repository?.setAllStarredItemsRead(currentAccount!!.id)
-                FilterType.NO_FILTER -> repository?.setAllItemsRead(currentAccount!!.id)
-                FilterType.NEW -> TODO()
+                else -> when (_timelineState.value.filters.mainFilter) {
+                    MainFilter.STARS -> repository?.setAllStarredItemsRead(accountId)
+                    MainFilter.ALL -> repository?.setAllItemsRead(accountId)
+                    MainFilter.NEW -> repository?.setAllNewItemsRead(accountId)
+                }
             }
         }
     }
 
     fun openDialog(dialog: DialogState) = _timelineState.update { it.copy(dialog = dialog) }
 
-    fun closeDialog() = _timelineState.update { it.copy(dialog = null) }
+    fun closeDialog(dialog: DialogState? = null) {
+        if (dialog is DialogState.ErrorList) {
+            _timelineState.update { it.copy(synchronizationErrors = null) }
+        }
+
+        _timelineState.update { it.copy(dialog = null) }
+    }
 
     fun setShowReadItemsState(showReadItems: Boolean) {
         _timelineState.update {
@@ -234,22 +280,32 @@ class TimelineViewModel(
             )
         }
     }
+
+
 }
 
 @Immutable
 data class TimelineState(
     val isRefreshing: Boolean = false,
     val isDrawerOpen: Boolean = false,
+    val currentFeed: String = "",
+    val feedCount: Int = 0,
+    val feedMax: Int = 0,
     val endSynchronizing: Boolean = false,
+    val synchronizationErrors: ErrorResult? = null,
     val filters: QueryFilters = QueryFilters(),
     val filterFeedName: String = "",
     val filterFolderName: String = "",
     val foldersAndFeeds: Map<Folder?, List<Feed>> = emptyMap(),
     val itemState: Flow<PagingData<ItemWithFeed>> = emptyFlow(),
     val dialog: DialogState? = null
-)
+) {
+
+    val showSubtitle = filters.subFilter != SubFilter.ALL
+}
 
 sealed interface DialogState {
     object ConfirmDialog : DialogState
     object FilterSheet : DialogState
+    class ErrorList(val errorResult: ErrorResult) : DialogState
 }

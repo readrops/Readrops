@@ -30,6 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.readrops.app.compose.R
@@ -43,7 +44,6 @@ import com.readrops.app.compose.util.components.Placeholder
 import com.readrops.app.compose.util.components.TwoChoicesDialog
 import com.readrops.app.compose.util.theme.spacing
 import com.readrops.db.entities.Feed
-import org.koin.androidx.compose.getViewModel
 
 object FeedTab : Tab {
 
@@ -59,7 +59,8 @@ object FeedTab : Tab {
     override fun Content() {
         val haptic = LocalHapticFeedback.current
         val uriHandler = LocalUriHandler.current
-        val viewModel = getViewModel<FeedViewModel>()
+
+        val viewModel = getScreenModel<FeedScreenModel>()
 
         val state by viewModel.feedsState.collectAsStateWithLifecycle()
 
@@ -68,8 +69,7 @@ object FeedTab : Tab {
                 AddFeedDialog(
                     viewModel = viewModel,
                     onDismiss = {
-                        viewModel.closeDialog()
-                        viewModel.resetAddFeedDialogState()
+                        viewModel.closeDialog(DialogState.AddFeed)
                     },
                 )
             }
@@ -122,8 +122,7 @@ object FeedTab : Tab {
                 FolderDialog(
                     viewModel = viewModel,
                     onDismiss = {
-                        viewModel.closeDialog()
-                        viewModel.resetFolderState()
+                        viewModel.closeDialog(DialogState.AddFolder)
                     },
                     onValidate = {
                         viewModel.folderValidate()
@@ -151,8 +150,7 @@ object FeedTab : Tab {
                     updateFolder = true,
                     viewModel = viewModel,
                     onDismiss = {
-                        viewModel.closeDialog()
-                        viewModel.resetFolderState()
+                        viewModel.closeDialog(DialogState.UpdateFolder(dialog.folder))
                     },
                     onValidate = {
                         viewModel.folderValidate(updateFolder = true)
