@@ -162,4 +162,5 @@
     <string name="network_failure">Network failure: %1$s</string>
     <string name="processing_feed_error">Processing feed error</string>
     <string name="unreachable_feed">Unreachable feed</string>
+    <string name="unable_open_file">Unable to open file</string>
 </resources>

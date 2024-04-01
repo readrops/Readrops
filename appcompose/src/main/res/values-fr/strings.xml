@@ -156,4 +156,5 @@
     <string name="network_failure">Erreur réseau: %1$s</string>
     <string name="processing_feed_error">Erreur de traitement du flux</string>
     <string name="unreachable_feed">Flux non attaignable</string>
+    <string name="unable_open_file">Impossible d\'ouvrir le fichier</string>
 </resources>

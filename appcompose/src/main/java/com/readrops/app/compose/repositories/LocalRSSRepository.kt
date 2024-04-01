@@ -1,6 +1,5 @@
 package com.readrops.app.compose.repositories
 
-import android.util.Log
 import com.readrops.api.localfeed.LocalRSSDataSource
 import com.readrops.api.services.SyncResult
 import com.readrops.api.utils.ApiUtils
@@ -69,19 +68,25 @@ class LocalRSSRepository(
         throw NotImplementedError("This method can't be called here")
 
 
-    override suspend fun insertNewFeeds(newFeeds: List<Feed>, onUpdate: (Feed) -> Unit) = withContext(Dispatchers.IO) {
-            for (newFeed in newFeeds) {
-                onUpdate(newFeed)
+    override suspend fun insertNewFeeds(
+        newFeeds: List<Feed>,
+        onUpdate: (Feed) -> Unit
+    ): ErrorResult = withContext(Dispatchers.IO) {
+        val errors = mutableMapOf<Feed, Exception>()
 
-                try {
-                    val result = dataSource.queryRSSResource(newFeed.url!!, null)!!
-                    insertFeed(result.first.also { it.folderId = newFeed.folderId })
-                } catch (e: Exception) {
-                    Log.d("LocalRSSRepository", e.message.orEmpty())
-                    //throw e
-                }
+        for (newFeed in newFeeds) {
+            onUpdate(newFeed)
+
+            try {
+                val result = dataSource.queryRSSResource(newFeed.url!!, null)!!
+                insertFeed(result.first.also { it.folderId = newFeed.folderId })
+            } catch (e: Exception) {
+                errors[newFeed] = e
             }
         }
+
+        return@withContext errors
+    }
 
     private suspend fun insertNewItems(items: List<Item>, feed: Feed) {
         items.sortedWith(Item::compareTo) // TODO Check if ordering is useful in this situation

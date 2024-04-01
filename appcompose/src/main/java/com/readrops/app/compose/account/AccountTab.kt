@@ -19,10 +19,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -41,6 +47,8 @@ import com.readrops.app.compose.R
 import com.readrops.app.compose.account.credentials.AccountCredentialsScreen
 import com.readrops.app.compose.account.selection.AccountSelectionDialog
 import com.readrops.app.compose.account.selection.AccountSelectionScreen
+import com.readrops.app.compose.timelime.ErrorListDialog
+import com.readrops.app.compose.util.components.ErrorDialog
 import com.readrops.app.compose.util.components.SelectableIconText
 import com.readrops.app.compose.util.components.TwoChoicesDialog
 import com.readrops.app.compose.util.theme.LargeSpacer
@@ -66,6 +74,8 @@ object AccountTab : Tab {
         val closeHome by viewModel.closeHome.collectAsStateWithLifecycle()
         val state by viewModel.accountState.collectAsStateWithLifecycle()
 
+        val snackbarHostState = remember { SnackbarHostState() }
+
         if (closeHome) {
             navigator.replaceAll(AccountSelectionScreen())
         }
@@ -74,6 +84,44 @@ object AccountTab : Tab {
             rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
                 uri?.let { viewModel.parseOPMLFile(uri, context) }
             }
+
+        LaunchedEffect(state.opmlImportError) {
+            if (state.opmlImportError != null) {
+                val action = snackbarHostState.showSnackbar(
+                    message = context.resources.getQuantityString(
+                        R.plurals.error_occurred,
+                        1
+                    ),
+                    actionLabel = context.getString(R.string.details),
+                    duration = SnackbarDuration.Short
+                )
+
+                if (action == SnackbarResult.ActionPerformed) {
+                    viewModel.openDialog(DialogState.Error(state.opmlImportError!!))
+                } else {
+                    viewModel.closeDialog(DialogState.Error(state.opmlImportError!!))
+                }
+            }
+        }
+
+        LaunchedEffect(state.synchronizationErrors) {
+            if (state.synchronizationErrors != null) {
+                val action = snackbarHostState.showSnackbar(
+                    message = context.resources.getQuantityString(
+                        R.plurals.error_occurred,
+                        state.synchronizationErrors!!.size
+                    ),
+                    actionLabel = context.getString(R.string.details),
+                    duration = SnackbarDuration.Short
+                )
+
+                if (action == SnackbarResult.ActionPerformed) {
+                    viewModel.openDialog(DialogState.ErrorList(state.synchronizationErrors!!))
+                } else {
+                    viewModel.closeDialog(DialogState.ErrorList(state.synchronizationErrors!!))
+                }
+            }
+        }
 
         when (val dialog = state.dialog) {
             is DialogState.DeleteAccount -> {
@@ -109,6 +157,20 @@ object AccountTab : Tab {
                 )
             }
 
+            is DialogState.ErrorList -> {
+                ErrorListDialog(
+                    errorResult = dialog.errorResult,
+                    onDismiss = { viewModel.closeDialog(dialog) }
+                )
+            }
+
+            is DialogState.Error -> {
+                ErrorDialog(
+                    exception = dialog.exception,
+                    onDismiss = { viewModel.closeDialog(dialog) }
+                )
+            }
+
             else -> {}
         }
 
@@ -137,7 +199,8 @@ object AccountTab : Tab {
                         contentDescription = null
                     )
                 }
-            }
+            },
+            snackbarHost = { SnackbarHost(snackbarHostState) }
         ) { paddingValues ->
             Column(
                 modifier = Modifier

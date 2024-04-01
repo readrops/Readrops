@@ -37,7 +37,7 @@ abstract class ARepository(
      */
     abstract suspend fun synchronize(): SyncResult
 
-    abstract suspend fun insertNewFeeds(newFeeds: List<Feed>, onUpdate: (Feed) -> Unit)
+    abstract suspend fun insertNewFeeds(newFeeds: List<Feed>, onUpdate: (Feed) -> Unit): ErrorResult
 }
 
 abstract class BaseRepository(
@@ -87,7 +87,9 @@ abstract class BaseRepository(
     suspend fun insertOPMLFoldersAndFeeds(
         foldersAndFeeds: Map<Folder?, List<Feed>>,
         onUpdate: (Feed) -> Unit
-    ) {
+    ): ErrorResult {
+        val errors = mutableMapOf<Feed, Exception>()
+
         for ((folder, feeds) in foldersAndFeeds) {
             if (folder != null) {
                 folder.accountId = account.id
@@ -103,10 +105,12 @@ abstract class BaseRepository(
 
             feeds.forEach { it.folderId = folder?.id }
 
-            insertNewFeeds(
+            errors += insertNewFeeds(
                 newFeeds = feeds,
                 onUpdate = onUpdate
             )
         }
+
+        return errors
     }
 }

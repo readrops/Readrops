@@ -32,7 +32,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -61,7 +60,6 @@ import com.readrops.app.compose.util.theme.spacing
 import com.readrops.db.filters.ListSortType
 import com.readrops.db.filters.MainFilter
 import com.readrops.db.filters.SubFilter
-import kotlinx.coroutines.launch
 
 
 object TimelineTab : Tab {
@@ -78,7 +76,6 @@ object TimelineTab : Tab {
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
         val context = LocalContext.current
-        val coroutineScope = rememberCoroutineScope()
 
         val viewModel = getScreenModel<TimelineScreenModel>()
         val state by viewModel.timelineState.collectAsStateWithLifecycle()
@@ -132,19 +129,20 @@ object TimelineTab : Tab {
 
         LaunchedEffect(state.synchronizationErrors) {
             if (state.synchronizationErrors != null) {
-                coroutineScope.launch {
-                    val action = snackbarHostState.showSnackbar(
-                        message = context.resources.getQuantityString(R.plurals.error_occurred, state.synchronizationErrors!!.size),
-                        actionLabel = context.getString(R.string.details),
-                        duration = SnackbarDuration.Short
-                    )
+                val action = snackbarHostState.showSnackbar(
+                    message = context.resources.getQuantityString(
+                        R.plurals.error_occurred,
+                        state.synchronizationErrors!!.size
+                    ),
+                    actionLabel = context.getString(R.string.details),
+                    duration = SnackbarDuration.Short
+                )
 
-                    if (action == SnackbarResult.ActionPerformed) {
-                        viewModel.openDialog(DialogState.ErrorList(state.synchronizationErrors!!))
-                    } else {
-                        // remove errors from state
-                        viewModel.closeDialog(DialogState.ErrorList(state.synchronizationErrors!!))
-                    }
+                if (action == SnackbarResult.ActionPerformed) {
+                    viewModel.openDialog(DialogState.ErrorList(state.synchronizationErrors!!))
+                } else {
+                    // remove errors from state
+                    viewModel.closeDialog(DialogState.ErrorList(state.synchronizationErrors!!))
                 }
             }
         }
@@ -186,7 +184,7 @@ object TimelineTab : Tab {
             is DialogState.ErrorList -> {
                 ErrorListDialog(
                     errorResult = dialog.errorResult,
-                    onDismiss = { viewModel.closeDialog(state.dialog) }
+                    onDismiss = { viewModel.closeDialog(dialog) }
                 )
             }
 

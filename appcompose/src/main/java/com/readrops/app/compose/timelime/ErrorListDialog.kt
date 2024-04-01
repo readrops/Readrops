@@ -11,16 +11,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.readrops.api.utils.exceptions.HttpException
-import com.readrops.api.utils.exceptions.ParseException
-import com.readrops.api.utils.exceptions.UnknownFormatException
 import com.readrops.app.compose.R
 import com.readrops.app.compose.repositories.ErrorResult
 import com.readrops.app.compose.util.components.BaseDialog
+import com.readrops.app.compose.util.components.errorText
 import com.readrops.app.compose.util.theme.MediumSpacer
 import com.readrops.app.compose.util.theme.ShortSpacer
-import java.io.IOException
-import java.net.UnknownHostException
 
 @Composable
 fun ErrorListDialog(
@@ -54,14 +50,4 @@ fun ErrorListDialog(
             }
         }
     }
-}
-
-// TODO check compatibility with other accounts errors
-@Composable
-fun errorText(exception: Exception) = when (exception) {
-    is HttpException -> stringResource(id = R.string.unreachable_feed_http_error, exception.code.toString())
-    is UnknownHostException -> stringResource(R.string.unreachable_feed)
-    is IOException -> stringResource(R.string.network_failure, exception.message.orEmpty())
-    is ParseException, is UnknownFormatException -> stringResource(R.string.processing_feed_error)
-    else -> "${exception.javaClass.simpleName}: ${exception.message}"
 }
