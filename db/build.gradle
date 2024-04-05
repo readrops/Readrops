@@ -80,20 +80,15 @@ dependencies {
     kapt(libs.room.compiler)
     androidTestImplementation(libs.room.testing)
 
-    implementation 'com.github.MatrixDev.Roomigrant:RoomigrantLib:0.3.4'
+    implementation 'com.github.MatrixDev.Roomigrant:RoomigrantLib:0.3.4' //TODO delete
     kapt 'com.github.MatrixDev.Roomigrant:RoomigrantCompiler:0.3.4'
 
-    api 'androidx.paging:paging-runtime:2.1.2'
-    api 'androidx.paging:paging-common:2.1.2'
+    implementation(libs.bundles.paging)
 
-    api 'joda-time:joda-time:2.10.10'
+    api 'joda-time:joda-time:2.10.10' //TODO replace with java.time?
 
     implementation(libs.bundles.koin)
     testImplementation(libs.bundles.kointest)
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
-
-    api "androidx.paging:paging-runtime-ktx:3.2.1"
-    api "androidx.paging:paging-compose:3.2.1"
+    implementation(libs.bundles.coroutines)
 }

@@ -81,6 +81,7 @@ dependencies {
     androidTestImplementation(libs.coroutines.test)
 
     implementation(libs.bundles.room)
+    implementation(libs.bundles.paging)
 
     implementation(libs.bundles.koin)
     androidTestImplementation(libs.bundles.kointest)

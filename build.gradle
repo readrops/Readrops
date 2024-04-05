@@ -34,8 +34,6 @@ ext {
     minSdkVersion = 21
     targetSdkVersion = 34
     buildToolsVersion = "34.0.0"
-
-    koin_version = "3.3.3"
 }
 
 tasks.register('clean', Delete) {
