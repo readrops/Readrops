@@ -1,5 +1,6 @@
 package com.readrops.app.compose.account
 
+import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -69,10 +70,10 @@ object AccountTab : Tab {
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
         val context = LocalContext.current
-        val viewModel = getScreenModel<AccountScreenModel>()
+        val screenModel = getScreenModel<AccountScreenModel>()
 
-        val closeHome by viewModel.closeHome.collectAsStateWithLifecycle()
-        val state by viewModel.accountState.collectAsStateWithLifecycle()
+        val closeHome by screenModel.closeHome.collectAsStateWithLifecycle()
+        val state by screenModel.accountState.collectAsStateWithLifecycle()
 
         val snackbarHostState = remember { SnackbarHostState() }
 
@@ -80,13 +81,18 @@ object AccountTab : Tab {
             navigator.replaceAll(AccountSelectionScreen())
         }
 
-        val launcher =
+        val opmlImportLauncher =
             rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-                uri?.let { viewModel.parseOPMLFile(uri, context) }
+                uri?.let { screenModel.parseOPMLFile(uri, context) }
             }
 
-        LaunchedEffect(state.opmlImportError) {
-            if (state.opmlImportError != null) {
+        val opmlExportLauncher =
+            rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/xml")) { uri ->
+                uri?.let { screenModel.exportOPMLFile(uri, context) }
+            }
+
+        LaunchedEffect(state.error) {
+            if (state.error != null) {
                 val action = snackbarHostState.showSnackbar(
                     message = context.resources.getQuantityString(
                         R.plurals.error_occurred,
@@ -97,9 +103,9 @@ object AccountTab : Tab {
                 )
 
                 if (action == SnackbarResult.ActionPerformed) {
-                    viewModel.openDialog(DialogState.Error(state.opmlImportError!!))
+                    screenModel.openDialog(DialogState.Error(state.error!!))
                 } else {
-                    viewModel.closeDialog(DialogState.Error(state.opmlImportError!!))
+                    screenModel.closeDialog(DialogState.Error(state.error!!))
                 }
             }
         }
@@ -116,9 +122,31 @@ object AccountTab : Tab {
                 )
 
                 if (action == SnackbarResult.ActionPerformed) {
-                    viewModel.openDialog(DialogState.ErrorList(state.synchronizationErrors!!))
+                    screenModel.openDialog(DialogState.ErrorList(state.synchronizationErrors!!))
                 } else {
-                    viewModel.closeDialog(DialogState.ErrorList(state.synchronizationErrors!!))
+                    screenModel.closeDialog(DialogState.ErrorList(state.synchronizationErrors!!))
+                }
+            }
+        }
+
+        LaunchedEffect(state.opmlExportSuccess) {
+            if (state.opmlExportSuccess) {
+                val action = snackbarHostState.showSnackbar(
+                    message = "OPML export success",
+                    actionLabel = "Open file"
+                )
+
+                if (action == SnackbarResult.ActionPerformed) {
+                    Intent().apply {
+                        this.action = Intent.ACTION_VIEW
+                        setDataAndType(state.opmlExportUri, "text/xml")
+                    }.also {
+                        context.startActivity(Intent.createChooser(it, null))
+                    }
+
+                    screenModel.resetOPMLState()
+                } else {
+                    screenModel.resetOPMLState()
                 }
             }
         }
@@ -131,19 +159,19 @@ object AccountTab : Tab {
                     icon = rememberVectorPainter(image = Icons.Default.Delete),
                     confirmText = stringResource(R.string.delete),
                     dismissText = stringResource(R.string.cancel),
-                    onDismiss = { viewModel.closeDialog() },
+                    onDismiss = { screenModel.closeDialog() },
                     onConfirm = {
-                        viewModel.closeDialog()
-                        viewModel.deleteAccount()
+                        screenModel.closeDialog()
+                        screenModel.deleteAccount()
                     }
                 )
             }
 
             is DialogState.NewAccount -> {
                 AccountSelectionDialog(
-                    onDismiss = { viewModel.closeDialog() },
+                    onDismiss = { screenModel.closeDialog() },
                     onValidate = { accountType ->
-                        viewModel.closeDialog()
+                        screenModel.closeDialog()
                         navigator.push(AccountCredentialsScreen(accountType, state.account))
                     }
                 )
@@ -160,15 +188,31 @@ object AccountTab : Tab {
             is DialogState.ErrorList -> {
                 ErrorListDialog(
                     errorResult = dialog.errorResult,
-                    onDismiss = { viewModel.closeDialog(dialog) }
+                    onDismiss = { screenModel.closeDialog(dialog) }
                 )
             }
 
             is DialogState.Error -> {
                 ErrorDialog(
                     exception = dialog.exception,
-                    onDismiss = { viewModel.closeDialog(dialog) }
+                    onDismiss = { screenModel.closeDialog(dialog) }
                 )
+            }
+
+            is DialogState.OPMLChoice -> {
+                OPMLChoiceDialog(
+                    onChoice = {
+                        if (it == OPML.IMPORT) {
+                            opmlImportLauncher.launch(ApiUtils.OPML_MIMETYPES.toTypedArray())
+                        } else {
+                            opmlExportLauncher.launch("subscriptions.opml")
+                        }
+
+                        screenModel.closeDialog()
+                    },
+                    onDismiss = { screenModel.closeDialog() }
+                )
+
             }
 
             else -> {}
@@ -192,7 +236,7 @@ object AccountTab : Tab {
             },
             floatingActionButton = {
                 FloatingActionButton(
-                    onClick = { viewModel.openDialog(DialogState.NewAccount) }
+                    onClick = { screenModel.openDialog(DialogState.NewAccount) }
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_add_account),
@@ -251,7 +295,7 @@ object AccountTab : Tab {
                     style = MaterialTheme.typography.titleMedium,
                     spacing = MaterialTheme.spacing.mediumSpacing,
                     padding = MaterialTheme.spacing.mediumSpacing,
-                    onClick = { launcher.launch(ApiUtils.OPML_MIMETYPES.toTypedArray()) }
+                    onClick = { screenModel.openDialog(DialogState.OPMLChoice) }
                 )
 
                 SelectableIconText(
@@ -262,7 +306,7 @@ object AccountTab : Tab {
                     padding = MaterialTheme.spacing.mediumSpacing,
                     color = MaterialTheme.colorScheme.error,
                     tint = MaterialTheme.colorScheme.error,
-                    onClick = { viewModel.openDialog(DialogState.DeleteAccount) }
+                    onClick = { screenModel.openDialog(DialogState.DeleteAccount) }
                 )
             }
         }

@@ -2,19 +2,23 @@ package com.readrops.app.compose.account
 
 import android.content.Context
 import android.net.Uri
+import androidx.compose.runtime.Stable
 import androidx.core.net.toFile
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.readrops.api.opml.OPMLParser
 import com.readrops.app.compose.base.TabScreenModel
 import com.readrops.app.compose.repositories.ErrorResult
+import com.readrops.app.compose.repositories.GetFoldersWithFeeds
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
+import com.readrops.db.filters.MainFilter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -46,7 +50,7 @@ class AccountScreenModel(
         if (dialog is DialogState.ErrorList) {
             _accountState.update { it.copy(synchronizationErrors = null) }
         } else if (dialog is DialogState.Error) {
-            _accountState.update { it.copy(opmlImportError = null) }
+            _accountState.update { it.copy(error = null) }
         }
 
         _accountState.update { it.copy(dialog = null) }
@@ -61,6 +65,28 @@ class AccountScreenModel(
         }
     }
 
+    fun exportOPMLFile(uri: Uri, context: Context) {
+        screenModelScope.launch {
+            val stream = context.contentResolver.openOutputStream(uri)
+            if (stream == null) {
+                _accountState.update { it.copy(error = NoSuchFileException(uri.toFile())) }
+                return@launch
+            }
+
+            val foldersAndFeeds =
+                GetFoldersWithFeeds(database).get(currentAccount!!.id, MainFilter.ALL).first()
+
+            OPMLParser.write(foldersAndFeeds, stream)
+
+            _accountState.update {
+                it.copy(
+                    opmlExportSuccess = true,
+                    opmlExportUri = uri
+                )
+            }
+        }
+    }
+
     fun parseOPMLFile(uri: Uri, context: Context) {
         screenModelScope.launch(Dispatchers.IO) {
             val foldersAndFeeds: Map<Folder?, List<Feed>>
@@ -68,13 +94,13 @@ class AccountScreenModel(
             try {
                 val stream = context.contentResolver.openInputStream(uri)
                 if (stream == null) {
-                    _accountState.update { it.copy(opmlImportError = NoSuchFileException(uri.toFile())) }
+                    _accountState.update { it.copy(error = NoSuchFileException(uri.toFile())) }
                     return@launch
                 }
 
                 foldersAndFeeds = OPMLParser.read(stream)
             } catch (e: Exception) {
-                _accountState.update { it.copy(opmlImportError = e) }
+                _accountState.update { it.copy(error = e) }
                 return@launch
             }
 
@@ -109,13 +135,19 @@ class AccountScreenModel(
             }
         }
     }
+
+    fun resetOPMLState() =
+        _accountState.update { it.copy(opmlExportUri = null, opmlExportSuccess = false) }
 }
 
+@Stable
 data class AccountState(
     val account: Account = Account(accountName = "account", accountType = AccountType.LOCAL),
     val dialog: DialogState? = null,
     val synchronizationErrors: ErrorResult? = null,
-    val opmlImportError: Exception? = null
+    val error: Exception? = null,
+    val opmlExportSuccess: Boolean = false,
+    val opmlExportUri: Uri? = null,
 )
 
 sealed interface DialogState {
@@ -126,4 +158,6 @@ sealed interface DialogState {
 
     data class ErrorList(val errorResult: ErrorResult) : DialogState
     data class Error(val exception: Exception) : DialogState
+
+    object OPMLChoice : DialogState
 }

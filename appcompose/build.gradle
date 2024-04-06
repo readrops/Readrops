@@ -34,6 +34,8 @@ android {
     }
 
     compileOptions {
+        coreLibraryDesugaringEnabled true
+
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
@@ -87,4 +89,6 @@ dependencies {
     androidTestImplementation(libs.bundles.kointest)
 
     androidTestImplementation 'com.squareup.okhttp3:mockwebserver:4.9.0'
+
+    coreLibraryDesugaring(libs.jdk.desugar)
 }

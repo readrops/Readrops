@@ -10,7 +10,6 @@ import java.io.OutputStream
 
 object OPMLParser {
 
-    @JvmStatic
     suspend fun read(stream: InputStream): Map<Folder?, List<Feed>> {
         try {
             val adapter = OPMLAdapter()
@@ -23,7 +22,6 @@ object OPMLParser {
         }
     }
 
-    @JvmStatic
     suspend fun write(foldersAndFeeds: Map<Folder?, List<Feed>>, outputStream: OutputStream) {
         val opml = xml("opml") {
             attribute("version", "2.0")
@@ -64,5 +62,6 @@ object OPMLParser {
 
         outputStream.write(opml.toString().toByteArray())
         outputStream.flush()
+        outputStream.close()
     }
 }

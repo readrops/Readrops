@@ -63,6 +63,7 @@ okhttp-mockserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref
 konsumexml = "com.gitlab.mvysny.konsume-xml:konsume-xml:1.1"
 kotlinxmlbuilder = "org.redundent:kotlin-xml-builder:1.7.3" #TODO update this
 
+jdk-desugar = "com.android.tools:desugar_jdk_libs:2.0.4"
 
 [bundles]
 compose = ["bom", "compose-foundation", "compose-runtime", "compose-animation",
