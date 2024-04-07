@@ -321,20 +321,24 @@ object TimelineTab : Tab {
                                         count = items.itemCount,
                                         key = items.itemKey { it.item.id },
                                     ) { itemCount ->
-                                        val itemWithFeed = items[itemCount]!!
+                                        val itemWithFeed = items[itemCount]
 
-                                        TimelineItem(
-                                            itemWithFeed = itemWithFeed,
-                                            onClick = {
-                                                viewModel.setItemRead(itemWithFeed.item)
-                                                navigator.push(ItemScreen())
-                                            },
-                                            onFavorite = { viewModel.updateStarState(itemWithFeed.item) },
-                                            onShare = {
-                                                viewModel.shareItem(itemWithFeed.item, context)
-                                            },
-                                            compactLayout = true
-                                        )
+                                        if (itemWithFeed != null) {
+                                            TimelineItem(
+                                                itemWithFeed = itemWithFeed,
+                                                onClick = {
+                                                    viewModel.setItemRead(itemWithFeed.item)
+                                                    navigator.push(ItemScreen(itemWithFeed.item.id))
+                                                },
+                                                onFavorite = {
+                                                    viewModel.updateStarState(itemWithFeed.item)
+                                                },
+                                                onShare = {
+                                                    viewModel.shareItem(itemWithFeed.item, context)
+                                                },
+                                                compactLayout = true
+                                            )
+                                        }
                                     }
                                 }
 
