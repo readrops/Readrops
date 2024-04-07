@@ -135,7 +135,7 @@ fun TimelineItem(
 
                 IconText(
                     icon = painterResource(id = R.drawable.ic_hourglass_empty),
-                    text = if (itemWithFeed.item.readTime < 1) "> 1 min" else "${itemWithFeed.item.readTime.roundToInt()} mins",
+                    text = if (itemWithFeed.item.readTime < 1) "< 1 min" else "${itemWithFeed.item.readTime.roundToInt()} mins",
                     style = MaterialTheme.typography.labelMedium
                 )
             }

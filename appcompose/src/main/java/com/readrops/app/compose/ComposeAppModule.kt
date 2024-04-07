@@ -3,6 +3,7 @@ package com.readrops.app.compose
 import com.readrops.app.compose.account.AccountScreenModel
 import com.readrops.app.compose.account.selection.AccountSelectionViewModel
 import com.readrops.app.compose.feeds.FeedScreenModel
+import com.readrops.app.compose.item.ItemScreenModel
 import com.readrops.app.compose.repositories.BaseRepository
 import com.readrops.app.compose.repositories.GetFoldersWithFeeds
 import com.readrops.app.compose.repositories.LocalRSSRepository
@@ -19,6 +20,10 @@ val composeAppModule = module {
     factory { AccountSelectionViewModel(get()) }
 
     factory { AccountScreenModel(get()) }
+
+    factory { (itemId: Int) ->
+        ItemScreenModel(get(), itemId)
+    }
 
     single { GetFoldersWithFeeds(get()) }
 

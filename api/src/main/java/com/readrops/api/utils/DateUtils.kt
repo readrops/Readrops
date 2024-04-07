@@ -3,7 +3,7 @@ package com.readrops.api.utils
 import org.joda.time.LocalDateTime
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatterBuilder
-import java.util.*
+import java.util.Locale
 
 object DateUtils {
 
@@ -35,16 +35,16 @@ object DateUtils {
         null
     } else try {
         val formatter = DateTimeFormatterBuilder()
-                .appendOptional(DateTimeFormat.forPattern("$RSS_2_BASE_PATTERN ").parser) // with timezone
-                .appendOptional(DateTimeFormat.forPattern(RSS_2_BASE_PATTERN).parser) // no timezone, important order here
-                .appendOptional(DateTimeFormat.forPattern(ATOM_JSON_DATE_FORMAT).parser)
-                .appendOptional(DateTimeFormat.forPattern(GMT_PATTERN).parser)
-                .appendOptional(DateTimeFormat.forPattern(OFFSET_PATTERN).parser)
-                .appendOptional(DateTimeFormat.forPattern(ISO_PATTERN).parser)
-                .appendOptional(DateTimeFormat.forPattern(EDT_PATTERN).parser)
-                .toFormatter()
-                .withLocale(Locale.ENGLISH)
-                .withOffsetParsed()
+            .appendOptional(DateTimeFormat.forPattern("$RSS_2_BASE_PATTERN ").parser) // with timezone
+            .appendOptional(DateTimeFormat.forPattern(RSS_2_BASE_PATTERN).parser) // no timezone, important order here
+            .appendOptional(DateTimeFormat.forPattern(ATOM_JSON_DATE_FORMAT).parser)
+            .appendOptional(DateTimeFormat.forPattern(GMT_PATTERN).parser)
+            .appendOptional(DateTimeFormat.forPattern(OFFSET_PATTERN).parser)
+            .appendOptional(DateTimeFormat.forPattern(ISO_PATTERN).parser)
+            .appendOptional(DateTimeFormat.forPattern(EDT_PATTERN).parser)
+            .toFormatter()
+            .withLocale(Locale.ENGLISH)
+            .withOffsetParsed()
 
         formatter.parseLocalDateTime(value)
     } catch (e: Exception) {
@@ -54,14 +54,26 @@ object DateUtils {
     @JvmStatic
     fun formattedDateByLocal(dateTime: LocalDateTime): String {
         return DateTimeFormat.mediumDate()
-                .withLocale(Locale.getDefault())
-                .print(dateTime)
+            .withLocale(Locale.getDefault())
+            .print(dateTime)
     }
 
     @JvmStatic
     fun formattedDateTimeByLocal(dateTime: LocalDateTime): String {
         return DateTimeFormat.forPattern("dd MMM yyyy · HH:mm")
-                .withLocale(Locale.getDefault())
-                .print(dateTime)
+            .withLocale(Locale.getDefault())
+            .print(dateTime)
+    }
+
+    fun formattedDate(dateTime: LocalDateTime): String {
+        val pattern = if (dateTime.year != LocalDateTime.now().year) {
+            "dd MMMM yyyy"
+        } else {
+            "dd MMMM"
+        }
+
+        return DateTimeFormat.forPattern(pattern)
+            .withLocale(Locale.getDefault())
+            .print(dateTime)
     }
 }

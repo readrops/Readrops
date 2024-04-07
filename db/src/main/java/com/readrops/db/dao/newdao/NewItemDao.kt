@@ -17,6 +17,9 @@ abstract class NewItemDao : NewBaseDao<Item> {
     @RawQuery(observedEntities = [Item::class, Feed::class, Folder::class, ItemState::class])
     abstract fun selectAll(query: SupportSQLiteQuery): PagingSource<Int, ItemWithFeed>
 
+    @RawQuery(observedEntities = [Item::class, ItemState::class])
+    abstract suspend fun selectItemById(query: SupportSQLiteQuery): ItemWithFeed
+
     @Query("Update Item Set read = :read Where id = :itemId")
     abstract suspend fun updateReadState(itemId: Int, read: Boolean)
 
