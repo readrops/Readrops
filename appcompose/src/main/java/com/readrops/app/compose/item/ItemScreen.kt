@@ -1,5 +1,8 @@
 package com.readrops.app.compose.item
 
+import android.util.Base64
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -20,20 +23,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.koin.getScreenModel
 import coil.compose.AsyncImage
 import com.readrops.api.utils.DateUtils
 import com.readrops.app.compose.R
+import com.readrops.app.compose.util.Utils
 import com.readrops.app.compose.util.components.AndroidScreen
 import com.readrops.app.compose.util.components.CenteredProgressIndicator
 import com.readrops.app.compose.util.components.IconText
+import com.readrops.app.compose.util.theme.MediumSpacer
 import com.readrops.app.compose.util.theme.ShortSpacer
-import com.readrops.app.compose.util.theme.VeryShortSpacer
 import com.readrops.app.compose.util.theme.spacing
 import com.readrops.db.pojo.ItemWithFeed
 import org.koin.core.parameter.parametersOf
@@ -45,11 +52,16 @@ class ItemScreen(
 
     @Composable
     override fun Content() {
+        val context = LocalContext.current
         val screenModel =
             getScreenModel<ItemScreenModel>(parameters = { parametersOf(itemId) })
         val scrollState = rememberScrollState()
 
         val state by screenModel.state.collectAsStateWithLifecycle()
+
+        val primaryColor = MaterialTheme.colorScheme.primary
+        val backgroundColor = MaterialTheme.colorScheme.background
+        val onBackgroundColor = MaterialTheme.colorScheme.onBackground
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -75,10 +87,47 @@ class ItemScreen(
                     SimpleTitle(
                         itemWithFeed = itemWithFeed,
                         titleColor = tintColor,
-                        tintColor = tintColor,
-                        baseColor = MaterialTheme.colorScheme.onBackground
+                        accentColor = tintColor,
+                        baseColor = MaterialTheme.colorScheme.onBackground,
+                        bottomPadding = true
                     )
                 }
+
+                AndroidView(
+                    factory = { context ->
+                        WebView(context).apply {
+                            settings.javaScriptEnabled = true
+                            webViewClient = WebViewClient()
+
+                            settings.builtInZoomControls = true
+                            settings.displayZoomControls = false
+                            settings.setSupportZoom(false)
+
+                            isVerticalScrollBarEnabled = false
+                            setBackgroundColor(backgroundColor.toArgb())
+                        }
+                    },
+                    update = { webView ->
+                        val tintColor = if (itemWithFeed.bgColor != 0) {
+                            Color(itemWithFeed.bgColor)
+                        } else {
+                            primaryColor
+                        }
+
+                        val string = context.getString(
+                            R.string.webview_html_template,
+                            Utils.getCssColor(tintColor.toArgb()),
+                            Utils.getCssColor(onBackgroundColor.toArgb()),
+                            Utils.getCssColor(backgroundColor.toArgb()),
+                            screenModel.formatText()
+                        )
+                        val data =
+                            Base64.encodeToString(string.encodeToByteArray(), Base64.NO_PADDING)
+
+                        webView.loadData(data, "text/html; charset=utf-8", "base64")
+                    }
+                )
+
             } else {
                 CenteredProgressIndicator()
             }
@@ -91,7 +140,7 @@ fun BackgroundTitle(
     itemWithFeed: ItemWithFeed,
 ) {
     val onScrimColor = Color.White.copy(alpha = 0.85f)
-    val tintColor = if (itemWithFeed.bgColor != 0) {
+    val accentColor = if (itemWithFeed.bgColor != 0) {
         Color(itemWithFeed.bgColor)
     } else {
         onScrimColor
@@ -114,32 +163,42 @@ fun BackgroundTitle(
         )
 
         Surface(
-            color = Color.Black.copy(alpha = 0.7f),
+            color = Color.Black.copy(alpha = 0.6f),
             modifier = Modifier
                 .fillMaxSize()
         ) {
             SimpleTitle(
                 itemWithFeed = itemWithFeed,
                 titleColor = onScrimColor,
-                tintColor = tintColor,
-                baseColor = onScrimColor
+                accentColor = accentColor,
+                baseColor = onScrimColor,
+                bottomPadding = true
             )
         }
     }
+
+    MediumSpacer()
 }
 
 @Composable
 fun SimpleTitle(
     itemWithFeed: ItemWithFeed,
     titleColor: Color,
-    tintColor: Color,
-    baseColor: Color
+    accentColor: Color,
+    baseColor: Color,
+    bottomPadding: Boolean,
 ) {
     val item = itemWithFeed.item
+    val spacing = MaterialTheme.spacing.mediumSpacing
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(MaterialTheme.spacing.mediumSpacing)
+        modifier = Modifier.padding(
+            start = spacing,
+            end = spacing,
+            top = spacing,
+            bottom = if (bottomPadding) spacing else 0.dp
+        )
     ) {
         AsyncImage(
             model = itemWithFeed.feedIconUrl,
@@ -151,7 +210,7 @@ fun SimpleTitle(
                 .clip(CircleShape)
         )
 
-        VeryShortSpacer()
+        ShortSpacer()
 
         Text(
             text = itemWithFeed.feedName,
@@ -177,7 +236,7 @@ fun SimpleTitle(
                 text = itemWithFeed.item.author!!,
                 style = MaterialTheme.typography.labelMedium,
                 color = baseColor,
-                tint = tintColor
+                tint = accentColor
             )
         }
 

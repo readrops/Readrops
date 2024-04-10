@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="webview_html_template" translatable="false"><![CDATA[
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset=\"UTF-8\">
+        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+        <style type=\"text/css\">
+
+        /*
+            %1$s: accent color
+            %2$s: text color
+            %3$s: background color
+        */
+
+        a:link, a:active, a:hover { color: %1$s }
+
+        * {
+            word-wrap: break-word !important;
+            line-height: 1.4;
+        }
+
+        body, blockquote, img, iframe, video, div, table, tbody, tr, td, blockquote, p, em, b, span {
+            max-width: 100%% !important;
+        }
+
+        body {
+            margin-left: 3%%;
+            margin-right: 3%%;
+            color: %2$s;
+            background-color: %3$s;
+        }
+
+        figure, img, iframe, video {
+            margin: 0px;
+            display: inline;
+            height: auto;
+            max-width: 100%%;
+        }
+
+        iframe {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        h1, p, div {
+            margin-top: 0px;
+        }
+
+        pre, code {
+            color: #FFFFFF;
+            background-color: #757575;
+        }
+
+        pre {
+            padding: 6px;
+            overflow: auto;
+            border-radius: 4px;
+        }
+
+        code {
+            padding: 2px;
+            border-radius: 2px;
+        }
+
+        pre > code {
+            padding: 0px;
+            border-radius: 0px;
+        }
+
+        figcaption {
+            font-style: italic;
+            font-size: small;
+            overflow: auto;
+            text-align: center;
+            padding-left: 3px;
+            padding-right: 3px;
+            padding-bottom: 10px;
+        }
+        </style>
+    </head>
+
+    <body>
+      %4$s
+    </body>
+</html>]]></string>
+</resources>

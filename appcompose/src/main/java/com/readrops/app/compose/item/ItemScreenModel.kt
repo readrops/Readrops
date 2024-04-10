@@ -9,6 +9,8 @@ import com.readrops.db.queries.ItemSelectionQueryBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jsoup.Jsoup
+import org.jsoup.parser.Parser
 
 class ItemScreenModel(
     private val database: Database,
@@ -27,6 +29,18 @@ class ItemScreenModel(
         }
     }
 
+    fun formatText(): String {
+        val itemWithFeed = state.value.itemWithFeed!!
+
+        val document = if (itemWithFeed.websiteUrl != null) Jsoup.parse(
+            Parser.unescapeEntities(itemWithFeed.item.text, false), itemWithFeed.websiteUrl
+        ) else Jsoup.parse(
+            Parser.unescapeEntities(itemWithFeed.item.text, false)
+        )
+
+        document.select("div,span").forEach { it.clearAttributes() }
+        return document.body().html()
+    }
 }
 
 @Stable
