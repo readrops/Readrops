@@ -10,10 +10,13 @@ import com.readrops.app.compose.account.selection.AccountSelectionScreen
 import com.readrops.app.compose.account.selection.AccountSelectionViewModel
 import com.readrops.app.compose.home.HomeScreen
 import com.readrops.app.compose.util.theme.ReadropsTheme
+import org.koin.androidx.compose.KoinAndroidContext
 import org.koin.androidx.viewmodel.ext.android.getViewModel
+import org.koin.core.annotation.KoinExperimentalAPI
 
 class MainActivity : ComponentActivity() {
 
+    @OptIn(KoinExperimentalAPI::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -21,15 +24,17 @@ class MainActivity : ComponentActivity() {
         val accountExists = viewModel.accountExists()
 
         setContent {
-            ReadropsTheme {
-                Navigator(
-                    screen = if (accountExists) HomeScreen() else AccountSelectionScreen(),
-                    disposeBehavior = NavigatorDisposeBehavior(
-                        // prevent screenModels being recreated when opening a screen from a tab
-                        disposeNestedNavigators = false
-                    )
-                ) {
-                    CurrentScreen()
+            KoinAndroidContext {
+                ReadropsTheme {
+                    Navigator(
+                        screen = if (accountExists) HomeScreen() else AccountSelectionScreen(),
+                        disposeBehavior = NavigatorDisposeBehavior(
+                            // prevent screenModels being recreated when opening a screen from a tab
+                            disposeNestedNavigators = false
+                        )
+                    ) {
+                        CurrentScreen()
+                    }
                 }
             }
         }
