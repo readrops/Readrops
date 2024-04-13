@@ -15,6 +15,14 @@
             %3$s: background color
         */
 
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: normal;
+            font-display: swap;
+            src: url("fonts/Inter-Regular.woff2") format("woff2");
+        }
+
         a:link, a:active, a:hover { color: %1$s }
 
         * {
@@ -31,6 +39,7 @@
             margin-right: 3%%;
             color: %2$s;
             background-color: %3$s;
+            font-family: Inter !important;
         }
 
         figure, img, iframe, video {

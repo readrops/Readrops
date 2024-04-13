@@ -3,7 +3,6 @@ package com.readrops.app.compose.item.view
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Base64
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.ui.graphics.Color
@@ -50,8 +49,13 @@ class ItemWebView(
             formatText(itemWithFeed)
         )
 
-        val data = Base64.encodeToString(string.encodeToByteArray(), Base64.NO_PADDING)
-        loadData(data, "text/html; charset=utf-8", "base64")
+        loadDataWithBaseURL(
+            "file:///android_asset/",
+            string,
+            "text/html; charset=utf-8",
+            "UTF-8",
+            null
+        )
     }
 
     private fun formatText(itemWithFeed: ItemWithFeed): String {
