@@ -10,6 +10,7 @@ import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.ItemState
 import com.readrops.db.pojo.ItemWithFeed
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 abstract class NewItemDao : NewBaseDao<Item> {
@@ -18,7 +19,7 @@ abstract class NewItemDao : NewBaseDao<Item> {
     abstract fun selectAll(query: SupportSQLiteQuery): PagingSource<Int, ItemWithFeed>
 
     @RawQuery(observedEntities = [Item::class, ItemState::class])
-    abstract suspend fun selectItemById(query: SupportSQLiteQuery): ItemWithFeed
+    abstract fun selectItemById(query: SupportSQLiteQuery): Flow<ItemWithFeed>
 
     @Query("Update Item Set read = :read Where id = :itemId")
     abstract suspend fun updateReadState(itemId: Int, read: Boolean)

@@ -1,35 +1,54 @@
 package com.readrops.app.compose.item
 
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import android.util.Base64
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.compose.foundation.background
+import android.widget.FrameLayout
+import android.widget.RelativeLayout
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.view.ViewCompat
+import androidx.core.view.children
+import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.koin.getScreenModel
 import coil.compose.AsyncImage
@@ -47,90 +66,182 @@ import org.koin.core.parameter.parametersOf
 import kotlin.math.roundToInt
 
 class ItemScreen(
-    private val itemId: Int,
+    private val itemId: Int
 ) : AndroidScreen() {
 
+    @SuppressLint("ResourceType", "SetJavaScriptEnabled")
     @Composable
     override fun Content() {
         val context = LocalContext.current
+        val density = LocalDensity.current
+
         val screenModel =
             getScreenModel<ItemScreenModel>(parameters = { parametersOf(itemId) })
-        val scrollState = rememberScrollState()
-
         val state by screenModel.state.collectAsStateWithLifecycle()
 
         val primaryColor = MaterialTheme.colorScheme.primary
         val backgroundColor = MaterialTheme.colorScheme.background
         val onBackgroundColor = MaterialTheme.colorScheme.onBackground
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.background)
-                .verticalScroll(scrollState)
-        ) {
-            if (state.itemWithFeed != null) {
-                val itemWithFeed = state.itemWithFeed!!
+        var isScrollable by remember { mutableStateOf(true) }
 
-                if (itemWithFeed.item.imageLink != null) {
-                    BackgroundTitle(
-                        itemWithFeed = itemWithFeed
-                    )
-                } else {
-                    val tintColor = if (itemWithFeed.bgColor != 0) {
-                        Color(itemWithFeed.bgColor)
-                    } else {
-                        MaterialTheme.colorScheme.onBackground
-                    }
+        // https://developer.android.com/develop/ui/compose/touch-input/pointer-input/scroll#parent-compose-child-view
+        val bottomBarHeight = 64.dp
+        val bottomBarHeightPx = with(density) { bottomBarHeight.roundToPx().toFloat() }
+        val bottomBarOffsetHeightPx = remember { mutableFloatStateOf(0f) }
 
-                    SimpleTitle(
-                        itemWithFeed = itemWithFeed,
-                        titleColor = tintColor,
-                        accentColor = tintColor,
-                        baseColor = MaterialTheme.colorScheme.onBackground,
-                        bottomPadding = true
+        val nestedScrollConnection = remember {
+            object : NestedScrollConnection {
+                override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                    val delta = available.y
+                    val newOffset = bottomBarOffsetHeightPx.floatValue + delta
+                    bottomBarOffsetHeightPx.floatValue = newOffset.coerceIn(-bottomBarHeightPx, 0f)
+
+                    return Offset.Zero
+                }
+            }
+        }
+
+        if (state.itemWithFeed != null) {
+            val itemWithFeed = state.itemWithFeed!!
+            val item = itemWithFeed.item
+
+            val accentColor = if (itemWithFeed.bgColor != 0) {
+                Color(itemWithFeed.bgColor)
+            } else {
+                primaryColor
+            }
+
+            Scaffold(
+                modifier = Modifier
+                    .nestedScroll(nestedScrollConnection),
+                bottomBar = {
+                    ItemScreenBottomBar(
+                        item = item,
+                        accentColor = accentColor,
+                        modifier = Modifier
+                            .height(bottomBarHeight)
+                            .offset {
+                                if (isScrollable) {
+                                    IntOffset(
+                                        x = 0,
+                                        y = -bottomBarOffsetHeightPx.floatValue.roundToInt()
+                                    )
+                                } else {
+                                    IntOffset(0, 0)
+                                }
+                            },
+                        onShare = { screenModel.shareItem(item, context) },
+                        onOpenUrl = {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.link))
+                            context.startActivity(intent)
+                        },
+                        onChangeReadState = {
+                            screenModel.setItemReadState(item.apply { isRead = it })
+                        },
+                        onChangeStarState = {
+                            screenModel.setItemStarState(item.apply { isStarred = it })
+                        }
                     )
                 }
+            ) { paddingValues ->
+                Box(
+                    modifier = Modifier.padding(paddingValues)
+                ) {
+                    AndroidView(
+                        factory = { context ->
+                            NestedScrollView(context).apply {
+                                val treeObserver = viewTreeObserver
+                                treeObserver.addOnGlobalLayoutListener {
+                                    val viewHeight = this.measuredHeight
+                                    val contentHeight = getChildAt(0).height
 
-                AndroidView(
-                    factory = { context ->
-                        WebView(context).apply {
-                            settings.javaScriptEnabled = true
-                            webViewClient = WebViewClient()
+                                    isScrollable = viewHeight - contentHeight < 0
 
-                            settings.builtInZoomControls = true
-                            settings.displayZoomControls = false
-                            settings.setSupportZoom(false)
+                                }
 
-                            isVerticalScrollBarEnabled = false
-                            setBackgroundColor(backgroundColor.toArgb())
+                                addView(
+                                    RelativeLayout(context).apply {
+                                        ViewCompat.setNestedScrollingEnabled(this, true)
+
+                                        val composeView = ComposeView(context).apply {
+                                            id = 1
+
+                                            setContent {
+                                                if (item.imageLink != null) {
+                                                    BackgroundTitle(
+                                                        itemWithFeed = itemWithFeed
+                                                    )
+                                                } else {
+                                                    val tintColor =
+                                                        if (itemWithFeed.bgColor != 0) {
+                                                            Color(itemWithFeed.bgColor)
+                                                        } else {
+                                                            MaterialTheme.colorScheme.onBackground
+                                                        }
+
+                                                    SimpleTitle(
+                                                        itemWithFeed = itemWithFeed,
+                                                        titleColor = tintColor,
+                                                        accentColor = tintColor,
+                                                        baseColor = MaterialTheme.colorScheme.onBackground,
+                                                        bottomPadding = true
+                                                    )
+                                                }
+                                            }
+                                        }
+
+                                        val webView = WebView(context).apply {
+                                            id = 2
+                                            ViewCompat.setNestedScrollingEnabled(this, true)
+
+                                            settings.javaScriptEnabled = true
+                                            webViewClient = WebViewClient()
+
+                                            settings.builtInZoomControls = true
+                                            settings.displayZoomControls = false
+                                            settings.setSupportZoom(false)
+
+                                            isVerticalScrollBarEnabled = false
+                                            setBackgroundColor(backgroundColor.toArgb())
+                                        }
+
+                                        val params = RelativeLayout.LayoutParams(
+                                            FrameLayout.LayoutParams.MATCH_PARENT,
+                                            FrameLayout.LayoutParams.WRAP_CONTENT
+                                        )
+
+                                        params.addRule(RelativeLayout.BELOW, composeView.id)
+                                        webView.layoutParams = params
+
+                                        addView(composeView)
+                                        addView(webView)
+                                    }
+                                )
+                            }
+                        },
+                        update = { nestedScrollView ->
+                            val relativeLayout =
+                                (nestedScrollView.children.toList()[0] as RelativeLayout)
+                            val webView = relativeLayout.children.toList()[1] as WebView
+
+                            val string = context.getString(
+                                R.string.webview_html_template,
+                                Utils.getCssColor(accentColor.toArgb()),
+                                Utils.getCssColor(onBackgroundColor.toArgb()),
+                                Utils.getCssColor(backgroundColor.toArgb()),
+                                screenModel.formatText()
+                            )
+                            val data =
+                                Base64.encodeToString(string.encodeToByteArray(), Base64.NO_PADDING)
+
+                            webView.loadData(data, "text/html; charset=utf-8", "base64")
                         }
-                    },
-                    update = { webView ->
-                        val tintColor = if (itemWithFeed.bgColor != 0) {
-                            Color(itemWithFeed.bgColor)
-                        } else {
-                            primaryColor
-                        }
-
-                        val string = context.getString(
-                            R.string.webview_html_template,
-                            Utils.getCssColor(tintColor.toArgb()),
-                            Utils.getCssColor(onBackgroundColor.toArgb()),
-                            Utils.getCssColor(backgroundColor.toArgb()),
-                            screenModel.formatText()
-                        )
-                        val data =
-                            Base64.encodeToString(string.encodeToByteArray(), Base64.NO_PADDING)
-
-                        webView.loadData(data, "text/html; charset=utf-8", "base64")
-                    }
-                )
-
-            } else {
-                CenteredProgressIndicator()
+                    )
+                }
             }
+        } else {
+            CenteredProgressIndicator()
         }
     }
 }
