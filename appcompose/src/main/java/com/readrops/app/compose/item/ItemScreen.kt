@@ -1,12 +1,7 @@
 package com.readrops.app.compose.item
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
-import android.util.Base64
-import android.webkit.WebView
-import android.webkit.WebViewClient
-import android.widget.FrameLayout
 import android.widget.RelativeLayout
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,12 +28,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -46,15 +39,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.view.ViewCompat
 import androidx.core.view.children
-import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.koin.getScreenModel
 import coil.compose.AsyncImage
 import com.readrops.api.utils.DateUtils
 import com.readrops.app.compose.R
-import com.readrops.app.compose.util.Utils
+import com.readrops.app.compose.item.view.ItemNestedScrollView
+import com.readrops.app.compose.item.view.ItemWebView
 import com.readrops.app.compose.util.components.AndroidScreen
 import com.readrops.app.compose.util.components.CenteredProgressIndicator
 import com.readrops.app.compose.util.components.IconText
@@ -69,7 +61,6 @@ class ItemScreen(
     private val itemId: Int
 ) : AndroidScreen() {
 
-    @SuppressLint("ResourceType", "SetJavaScriptEnabled")
     @Composable
     override fun Content() {
         val context = LocalContext.current
@@ -150,92 +141,44 @@ class ItemScreen(
                 ) {
                     AndroidView(
                         factory = { context ->
-                            NestedScrollView(context).apply {
-                                val treeObserver = viewTreeObserver
-                                treeObserver.addOnGlobalLayoutListener {
-                                    val viewHeight = this.measuredHeight
-                                    val contentHeight = getChildAt(0).height
-
+                            ItemNestedScrollView(
+                                context = context,
+                                onGlobalLayoutListener = { viewHeight, contentHeight ->
                                     isScrollable = viewHeight - contentHeight < 0
-
                                 }
-
-                                addView(
-                                    RelativeLayout(context).apply {
-                                        ViewCompat.setNestedScrollingEnabled(this, true)
-
-                                        val composeView = ComposeView(context).apply {
-                                            id = 1
-
-                                            setContent {
-                                                if (item.imageLink != null) {
-                                                    BackgroundTitle(
-                                                        itemWithFeed = itemWithFeed
-                                                    )
-                                                } else {
-                                                    val tintColor =
-                                                        if (itemWithFeed.bgColor != 0) {
-                                                            Color(itemWithFeed.bgColor)
-                                                        } else {
-                                                            MaterialTheme.colorScheme.onBackground
-                                                        }
-
-                                                    SimpleTitle(
-                                                        itemWithFeed = itemWithFeed,
-                                                        titleColor = tintColor,
-                                                        accentColor = tintColor,
-                                                        baseColor = MaterialTheme.colorScheme.onBackground,
-                                                        bottomPadding = true
-                                                    )
-                                                }
-                                            }
-                                        }
-
-                                        val webView = WebView(context).apply {
-                                            id = 2
-                                            ViewCompat.setNestedScrollingEnabled(this, true)
-
-                                            settings.javaScriptEnabled = true
-                                            webViewClient = WebViewClient()
-
-                                            settings.builtInZoomControls = true
-                                            settings.displayZoomControls = false
-                                            settings.setSupportZoom(false)
-
-                                            isVerticalScrollBarEnabled = false
-                                            setBackgroundColor(backgroundColor.toArgb())
-                                        }
-
-                                        val params = RelativeLayout.LayoutParams(
-                                            FrameLayout.LayoutParams.MATCH_PARENT,
-                                            FrameLayout.LayoutParams.WRAP_CONTENT
-                                        )
-
-                                        params.addRule(RelativeLayout.BELOW, composeView.id)
-                                        webView.layoutParams = params
-
-                                        addView(composeView)
-                                        addView(webView)
+                            ) {
+                                if (item.imageLink != null) {
+                                    BackgroundTitle(
+                                        itemWithFeed = itemWithFeed
+                                    )
+                                } else {
+                                    val tintColor = if (itemWithFeed.bgColor != 0) {
+                                        Color(itemWithFeed.bgColor)
+                                    } else {
+                                        MaterialTheme.colorScheme.onBackground
                                     }
-                                )
+
+                                    SimpleTitle(
+                                        itemWithFeed = itemWithFeed,
+                                        titleColor = tintColor,
+                                        accentColor = tintColor,
+                                        baseColor = MaterialTheme.colorScheme.onBackground,
+                                        bottomPadding = true
+                                    )
+                                }
                             }
                         },
                         update = { nestedScrollView ->
                             val relativeLayout =
                                 (nestedScrollView.children.toList()[0] as RelativeLayout)
-                            val webView = relativeLayout.children.toList()[1] as WebView
+                            val webView = relativeLayout.children.toList()[1] as ItemWebView
 
-                            val string = context.getString(
-                                R.string.webview_html_template,
-                                Utils.getCssColor(accentColor.toArgb()),
-                                Utils.getCssColor(onBackgroundColor.toArgb()),
-                                Utils.getCssColor(backgroundColor.toArgb()),
-                                screenModel.formatText()
+                            webView.loadText(
+                                itemWithFeed = itemWithFeed,
+                                accentColor = accentColor,
+                                backgroundColor = backgroundColor,
+                                onBackgroundColor = onBackgroundColor
                             )
-                            val data =
-                                Base64.encodeToString(string.encodeToByteArray(), Base64.NO_PADDING)
-
-                            webView.loadData(data, "text/html; charset=utf-8", "base64")
                         }
                     )
                 }
@@ -326,7 +269,8 @@ fun SimpleTitle(
         Text(
             text = itemWithFeed.feedName,
             style = MaterialTheme.typography.labelLarge,
-            color = baseColor
+            color = baseColor,
+            textAlign = TextAlign.Center
         )
 
         ShortSpacer()
