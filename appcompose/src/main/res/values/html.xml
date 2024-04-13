@@ -88,6 +88,28 @@
             padding-right: 3px;
             padding-bottom: 10px;
         }
+
+        blockquote {
+            width:60%%;
+            margin:30px auto;
+            padding:0px 3em;
+            border-left: 5px solid %1$s;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        blockquote::before {
+            content: \"\\201C\";
+            color: %1$s;
+            font-size: 4em;
+            position: absolute;
+            left: 10px;
+            top: -10px;
+        }
+
+        blockquote::after{
+            content: \'\';
+        }
         </style>
     </head>
 
