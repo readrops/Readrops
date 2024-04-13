@@ -103,6 +103,11 @@ class ItemScreen(
                 primaryColor
             }
 
+            fun openUrl(url: String) {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                context.startActivity(intent)
+            }
+
             Scaffold(
                 modifier = Modifier
                     .nestedScroll(nestedScrollConnection),
@@ -123,10 +128,7 @@ class ItemScreen(
                                 }
                             },
                         onShare = { screenModel.shareItem(item, context) },
-                        onOpenUrl = {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.link))
-                            context.startActivity(intent)
-                        },
+                        onOpenUrl = { openUrl(item.link!!) },
                         onChangeReadState = {
                             screenModel.setItemReadState(item.apply { isRead = it })
                         },
@@ -145,7 +147,8 @@ class ItemScreen(
                                 context = context,
                                 onGlobalLayoutListener = { viewHeight, contentHeight ->
                                     isScrollable = viewHeight - contentHeight < 0
-                                }
+                                },
+                                onUrlClick = { url -> openUrl(url) }
                             ) {
                                 if (item.imageLink != null) {
                                     BackgroundTitle(

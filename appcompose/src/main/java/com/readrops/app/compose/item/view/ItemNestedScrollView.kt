@@ -8,10 +8,11 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.ViewCompat
 import androidx.core.widget.NestedScrollView
 
-@SuppressLint("ResourceType")
+@SuppressLint("ResourceType", "ViewConstructor")
 class ItemNestedScrollView(
     context: Context,
     onGlobalLayoutListener: (viewHeight: Int, contentHeight: Int) -> Unit,
+    onUrlClick: (String) -> Unit,
     composeViewContent: @Composable () -> Unit
 ) : NestedScrollView(context) {
 
@@ -35,7 +36,10 @@ class ItemNestedScrollView(
                 composeViewParams.addRule(RelativeLayout.CENTER_HORIZONTAL)
                 composeView.layoutParams = composeViewParams
 
-                val webView = ItemWebView(context).apply {
+                val webView = ItemWebView(
+                    context = context,
+                    onUrlClick = onUrlClick
+                ).apply {
                     id = 2
                     ViewCompat.setNestedScrollingEnabled(this, true)
                 }
@@ -53,7 +57,7 @@ class ItemNestedScrollView(
             }
         )
 
-         viewTreeObserver.addOnGlobalLayoutListener {
+        viewTreeObserver.addOnGlobalLayoutListener {
             val viewHeight = this.measuredHeight
             val contentHeight = getChildAt(0).height
 

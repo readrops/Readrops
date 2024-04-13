@@ -14,22 +14,26 @@ import com.readrops.db.pojo.ItemWithFeed
 import org.jsoup.Jsoup
 import org.jsoup.parser.Parser
 
-@SuppressLint("SetJavaScriptEnabled")
+@SuppressLint("SetJavaScriptEnabled", "ViewConstructor")
 class ItemWebView(
     context: Context,
-    attrs: AttributeSet?,
+    onUrlClick: (String) -> Unit,
+    attrs: AttributeSet? = null,
 ) : WebView(context, attrs) {
-
-    constructor(context: Context): this(context, null)
 
     init {
         settings.javaScriptEnabled = true
         settings.builtInZoomControls = true
         settings.displayZoomControls = false
         settings.setSupportZoom(false)
-
-        webViewClient = WebViewClient()
         isVerticalScrollBarEnabled = false
+
+        webViewClient = object : WebViewClient() {
+            override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+                url?.let { onUrlClick(it) }
+                return true
+            }
+        }
     }
 
     fun loadText(
