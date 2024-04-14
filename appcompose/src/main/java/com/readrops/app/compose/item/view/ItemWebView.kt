@@ -17,6 +17,7 @@ import org.jsoup.parser.Parser
 class ItemWebView(
     context: Context,
     onUrlClick: (String) -> Unit,
+    onImageLongPress: (String) -> Unit,
     attrs: AttributeSet? = null,
 ) : WebView(context, attrs) {
 
@@ -32,6 +33,15 @@ class ItemWebView(
                 url?.let { onUrlClick(it) }
                 return true
             }
+        }
+
+        setOnLongClickListener {
+            val type = hitTestResult.type
+            if (type == HitTestResult.IMAGE_TYPE || type == HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {
+                hitTestResult.extra?.let { onImageLongPress(it) }
+            }
+
+            false
         }
     }
 
@@ -72,5 +82,4 @@ class ItemWebView(
             ""
         }
     }
-
 }

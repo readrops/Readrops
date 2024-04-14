@@ -13,6 +13,7 @@ class ItemNestedScrollView(
     context: Context,
     onGlobalLayoutListener: (viewHeight: Int, contentHeight: Int) -> Unit,
     onUrlClick: (String) -> Unit,
+    onImageLongPress: (String) -> Unit,
     composeViewContent: @Composable () -> Unit
 ) : NestedScrollView(context) {
 
@@ -38,7 +39,8 @@ class ItemNestedScrollView(
 
                 val webView = ItemWebView(
                     context = context,
-                    onUrlClick = onUrlClick
+                    onUrlClick = onUrlClick,
+                    onImageLongPress = onImageLongPress
                 ).apply {
                     id = 2
                     ViewCompat.setNestedScrollingEnabled(this, true)

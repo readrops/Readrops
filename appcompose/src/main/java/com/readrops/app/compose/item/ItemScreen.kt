@@ -15,9 +15,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -74,6 +77,7 @@ class ItemScreen(
         val backgroundColor = MaterialTheme.colorScheme.background
         val onBackgroundColor = MaterialTheme.colorScheme.onBackground
 
+        val snackbarHostState = remember { SnackbarHostState() }
         var isScrollable by remember { mutableStateOf(true) }
 
         // https://developer.android.com/develop/ui/compose/touch-input/pointer-input/scroll#parent-compose-child-view
@@ -90,6 +94,28 @@ class ItemScreen(
 
                     return Offset.Zero
                 }
+            }
+        }
+
+        if (state.imageDialogUrl != null) {
+            ItemImageDialog(
+                onChoice = {
+                    if (it == ItemImageChoice.SHARE) {
+                        screenModel.shareImage(state.imageDialogUrl!!, context)
+                    } else {
+                        screenModel.downloadImage(state.imageDialogUrl!!, context)
+
+                    }
+
+                    screenModel.closeImageDialog()
+                },
+                onDismiss = { screenModel.closeImageDialog() }
+            )
+        }
+
+        LaunchedEffect(state.fileDownloadedEvent) {
+            if (state.fileDownloadedEvent) {
+                snackbarHostState.showSnackbar("Downloaded file!")
             }
         }
 
@@ -111,6 +137,7 @@ class ItemScreen(
             Scaffold(
                 modifier = Modifier
                     .nestedScroll(nestedScrollConnection),
+                snackbarHost = { SnackbarHost(snackbarHostState) },
                 bottomBar = {
                     ItemScreenBottomBar(
                         item = item,
@@ -148,12 +175,11 @@ class ItemScreen(
                                 onGlobalLayoutListener = { viewHeight, contentHeight ->
                                     isScrollable = viewHeight - contentHeight < 0
                                 },
-                                onUrlClick = { url -> openUrl(url) }
+                                onUrlClick = { url -> openUrl(url) },
+                                onImageLongPress = { url -> screenModel.openImageDialog(url) }
                             ) {
                                 if (item.imageLink != null) {
-                                    BackgroundTitle(
-                                        itemWithFeed = itemWithFeed
-                                    )
+                                    BackgroundTitle(itemWithFeed = itemWithFeed)
                                 } else {
                                     val tintColor = if (itemWithFeed.bgColor != 0) {
                                         Color(itemWithFeed.bgColor)
