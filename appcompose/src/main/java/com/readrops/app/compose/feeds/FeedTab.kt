@@ -92,22 +92,16 @@ object FeedTab : Tab {
             is DialogState.FeedSheet -> {
                 FeedModalBottomSheet(
                     feed = dialog.feed,
-                    folder = dialog.folder,
                     onDismissRequest = { viewModel.closeDialog() },
                     onOpen = {
                         uriHandler.openUri(dialog.feed.siteUrl!!)
                         viewModel.closeDialog()
                     },
                     onUpdate = {
-                        viewModel.openDialog(
-                            DialogState.UpdateFeed(
-                                dialog.feed,
-                                dialog.folder
-                            )
-                        )
+                        viewModel.openDialog(DialogState.UpdateFeed(dialog.feed, dialog.folder))
                     },
                     onUpdateColor = {},
-                    onDelete = { viewModel.openDialog(DialogState.DeleteFeed(dialog.feed)) },
+                    onDelete = { viewModel.openDialog(DialogState.DeleteFeed(dialog.feed)) }
                 )
             }
 
@@ -170,10 +164,12 @@ object FeedTab : Tab {
                             onClick = { viewModel.setFolderExpandState(state.areFoldersExpanded.not()) }
                         ) {
                             Icon(
-                                painter = painterResource(id = if (state.areFoldersExpanded)
-                                    R.drawable.ic_unfold_less
-                                else
-                                    R.drawable.ic_unfold_more),
+                                painter = painterResource(
+                                    id = if (state.areFoldersExpanded)
+                                        R.drawable.ic_unfold_less
+                                    else
+                                        R.drawable.ic_unfold_more
+                                ),
                                 contentDescription = null
                             )
                         }
@@ -282,7 +278,8 @@ object FeedTab : Tab {
                     }
 
                     is FolderAndFeedsState.ErrorState -> {
-                        val exception = (state.foldersAndFeeds as FolderAndFeedsState.ErrorState).exception
+                        val exception =
+                            (state.foldersAndFeeds as FolderAndFeedsState.ErrorState).exception
                         ErrorMessage(exception = exception)
                     }
                 }

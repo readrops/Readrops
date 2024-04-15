@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -31,13 +32,11 @@ import com.readrops.app.compose.util.theme.MediumSpacer
 import com.readrops.app.compose.util.theme.VeryShortSpacer
 import com.readrops.app.compose.util.theme.spacing
 import com.readrops.db.entities.Feed
-import com.readrops.db.entities.Folder
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FeedModalBottomSheet(
     feed: Feed,
-    folder: Folder?,
     onDismissRequest: () -> Unit,
     onOpen: () -> Unit,
     onUpdate: () -> Unit,
@@ -58,6 +57,8 @@ fun FeedModalBottomSheet(
                 AsyncImage(
                     model = feed.iconUrl,
                     contentDescription = feed.name!!,
+                    placeholder = painterResource(id = R.drawable.ic_rss_feed_grey),
+                    error = painterResource(id = R.drawable.ic_rss_feed_grey),
                     modifier = Modifier.size(MaterialTheme.spacing.veryLargeSpacing)
                 )
 
@@ -71,12 +72,15 @@ fun FeedModalBottomSheet(
                         overflow = TextOverflow.Ellipsis
                     )
 
-                    if (folder != null) {
+                    if (feed.description != null) {
                         VeryShortSpacer()
 
                         Text(
-                            text = folder.name!!,
-                            style = MaterialTheme.typography.labelLarge
+                            text = feed.description!!,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.85f),
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }

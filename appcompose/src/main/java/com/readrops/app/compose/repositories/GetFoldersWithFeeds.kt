@@ -39,6 +39,7 @@ class GetFoldersWithFeeds(
                         iconUrl = it.feedIcon,
                         url = it.feedUrl,
                         siteUrl = it.feedSiteUrl,
+                        description = it.feedDescription,
                         unreadCount = it.unreadCount
                     )
                 }
@@ -61,6 +62,7 @@ class GetFoldersWithFeeds(
                                 iconUrl = feedWithoutFolder.feedIcon,
                                 url = feedWithoutFolder.feedUrl,
                                 siteUrl = feedWithoutFolder.feedSiteUrl,
+                                description = feedWithoutFolder.feedDescription,
                                 unreadCount = feedWithoutFolder.unreadCount
                             )
                         })
