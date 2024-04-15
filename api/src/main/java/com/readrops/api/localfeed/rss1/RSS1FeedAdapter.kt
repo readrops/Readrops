@@ -26,6 +26,7 @@ class RSS1FeedAdapter : XmlAdapter<Pair<Feed, List<Item>>> {
                     when (tagName) {
                         "channel" -> parseChannel(this, feed)
                         "item" -> items += itemAdapter.fromXml(this)
+                        else -> skipContents()
                     }
                 }
             }

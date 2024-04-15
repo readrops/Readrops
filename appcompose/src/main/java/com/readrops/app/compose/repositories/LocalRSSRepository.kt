@@ -1,5 +1,6 @@
 package com.readrops.app.compose.repositories
 
+import android.util.Log
 import com.readrops.api.localfeed.LocalRSSDataSource
 import com.readrops.api.services.SyncResult
 import com.readrops.api.utils.ApiUtils
@@ -123,8 +124,12 @@ class LocalRSSRepository(
             etag = null
             lastModified = null
 
-            iconUrl = HtmlParser.getFaviconLink(siteUrl!!, get()).also { feedUrl ->
-                feedUrl?.let { backgroundColor = FeedColors.getFeedColor(it) }
+            try {
+                iconUrl = HtmlParser.getFaviconLink(siteUrl!!, get()).also { feedUrl ->
+                    feedUrl?.let { backgroundColor = FeedColors.getFeedColor(it) }
+                }
+            } catch (e: Exception) {
+                Log.d("LocalRSSRepository", "insertFeed: ${e.message}")
             }
 
             id = database.newFeedDao().insert(this).toInt()
