@@ -69,7 +69,7 @@ class ItemWebView(
     }
 
     private fun formatText(itemWithFeed: ItemWithFeed): String {
-        return if (itemWithFeed.item.content != null) {
+        return if (itemWithFeed.item.text != null) {
             val document = if (itemWithFeed.websiteUrl != null) Jsoup.parse(
                 Parser.unescapeEntities(itemWithFeed.item.text, false), itemWithFeed.websiteUrl
             ) else Jsoup.parse(
