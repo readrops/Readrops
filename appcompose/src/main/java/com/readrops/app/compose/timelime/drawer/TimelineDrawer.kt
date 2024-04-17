@@ -48,6 +48,7 @@ fun TimelineDrawer(
 
         DrawerDefaultItems(
             selectedItem = state.filters.mainFilter,
+            unreadNewItemsCount = state.unreadNewItemsCount,
             onClick = { onClickDefaultItem(it) }
         )
 
@@ -62,7 +63,7 @@ fun TimelineDrawer(
                         label = {
                             Text(
                                 text = folder.name!!,
-                                maxLines =  1,
+                                maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
                         },
@@ -118,6 +119,7 @@ fun TimelineDrawer(
 @Composable
 fun DrawerDefaultItems(
     selectedItem: MainFilter,
+    unreadNewItemsCount: Int,
     onClick: (MainFilter) -> Unit,
 ) {
     NavigationDrawerItem(
@@ -134,7 +136,7 @@ fun DrawerDefaultItems(
     )
 
     NavigationDrawerItem(
-        label = { Text("New articles") },
+        label = { Text("New articles ($unreadNewItemsCount)") },
         icon = {
             Icon(
                 painter = painterResource(id = R.drawable.ic_new),

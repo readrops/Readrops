@@ -45,4 +45,8 @@ abstract class NewItemDao : NewBaseDao<Item> {
     @Query("Update Item set read = 1 Where feed_id IN (Select Feed.id From Feed Inner Join Folder " +
             "On Feed.folder_id = Folder.id Where Folder.id = :folderId And Folder.account_id = :accountId)")
     abstract suspend fun setAllItemsReadByFolder(folderId: Int, accountId: Int)
+
+    @Query("Select count(*) From Item Inner Join Feed On Item.feed_id = Feed.id Where read = 0 and account_id = :accountId " +
+        "And DateTime(Round(Item.pub_date / 1000), 'unixepoch') Between DateTime(DateTime(\"now\"), \"-24 hour\") And DateTime(\"now\")")
+    abstract fun selectUnreadNewItemsCount(accountId: Int): Flow<Int>
 }

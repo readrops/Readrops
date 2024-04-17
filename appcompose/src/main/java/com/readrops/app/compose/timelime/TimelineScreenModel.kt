@@ -23,15 +23,18 @@ import com.readrops.db.queries.ItemsQueryBuilder
 import com.readrops.db.queries.QueryFilters
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class TimelineScreenModel(
     private val database: Database,
     private val getFoldersWithFeeds: GetFoldersWithFeeds,
@@ -76,7 +79,17 @@ class TimelineScreenModel(
                             )
                         }
                     }
+
             }
+        }
+
+        screenModelScope.launch(dispatcher) {
+            accountEvent.flatMapConcat { database.newItemDao().selectUnreadNewItemsCount(it.id) }
+                .collectLatest { count ->
+                    _timelineState.update {
+                        it.copy(unreadNewItemsCount = count)
+                    }
+                }
         }
     }
 
@@ -289,6 +302,7 @@ data class TimelineState(
     val isRefreshing: Boolean = false,
     val isDrawerOpen: Boolean = false,
     val currentFeed: String = "",
+    val unreadNewItemsCount: Int = 0,
     val feedCount: Int = 0,
     val feedMax: Int = 0,
     val endSynchronizing: Boolean = false,
