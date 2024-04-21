@@ -79,6 +79,7 @@ class ItemScreen(
 
         val snackbarHostState = remember { SnackbarHostState() }
         var isScrollable by remember { mutableStateOf(true) }
+        var refreshAndroidView by remember { mutableStateOf(true) }
 
         // https://developer.android.com/develop/ui/compose/touch-input/pointer-input/scroll#parent-compose-child-view
         val bottomBarHeight = 64.dp
@@ -198,16 +199,20 @@ class ItemScreen(
                             }
                         },
                         update = { nestedScrollView ->
-                            val relativeLayout =
-                                (nestedScrollView.children.toList()[0] as RelativeLayout)
-                            val webView = relativeLayout.children.toList()[1] as ItemWebView
+                            if (refreshAndroidView) {
+                                val relativeLayout =
+                                    (nestedScrollView.children.toList()[0] as RelativeLayout)
+                                val webView = relativeLayout.children.toList()[1] as ItemWebView
 
-                            webView.loadText(
-                                itemWithFeed = itemWithFeed,
-                                accentColor = accentColor,
-                                backgroundColor = backgroundColor,
-                                onBackgroundColor = onBackgroundColor
-                            )
+                                webView.loadText(
+                                    itemWithFeed = itemWithFeed,
+                                    accentColor = accentColor,
+                                    backgroundColor = backgroundColor,
+                                    onBackgroundColor = onBackgroundColor
+                                )
+
+                                refreshAndroidView = false
+                            }
                         }
                     )
                 }
