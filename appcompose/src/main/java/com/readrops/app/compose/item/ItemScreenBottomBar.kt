@@ -13,8 +13,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import com.readrops.app.compose.R
+import com.readrops.app.compose.util.FeedColors
 import com.readrops.app.compose.util.theme.spacing
 import com.readrops.db.entities.Item
 
@@ -28,6 +30,11 @@ fun ItemScreenBottomBar(
     onChangeStarState: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val tint = if (FeedColors.isColorDark(accentColor.toArgb()))
+        Color.White
+    else
+        Color.Black
+
     Surface(
         color = accentColor,
         modifier = modifier.fillMaxWidth()
@@ -45,6 +52,7 @@ fun ItemScreenBottomBar(
                             R.drawable.ic_remove_done
                         else R.drawable.ic_done_all
                     ),
+                    tint = tint,
                     contentDescription = null
                 )
             }
@@ -58,6 +66,7 @@ fun ItemScreenBottomBar(
                             R.drawable.ic_star
                         else R.drawable.ic_star_outline
                     ),
+                    tint = tint,
                     contentDescription = null
                 )
             }
@@ -67,6 +76,7 @@ fun ItemScreenBottomBar(
             ) {
                 Icon(
                     imageVector = Icons.Default.Share,
+                    tint = tint,
                     contentDescription = null
                 )
             }
@@ -76,6 +86,7 @@ fun ItemScreenBottomBar(
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_open_in_browser),
+                    tint = tint,
                     contentDescription = null
                 )
             }

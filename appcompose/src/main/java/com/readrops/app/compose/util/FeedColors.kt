@@ -45,4 +45,7 @@ object FeedColors : KoinComponent {
         val b = color shr 0 and 0xff
         return 0.2126 * r + 0.7152 * g + 0.0722 * b
     }
+
+    fun isColorDark(color: Int) = getColorLuma(color) < 130
+
 }
