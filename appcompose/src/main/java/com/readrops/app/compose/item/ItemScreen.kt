@@ -141,7 +141,7 @@ class ItemScreen(
                 snackbarHost = { SnackbarHost(snackbarHostState) },
                 bottomBar = {
                     ItemScreenBottomBar(
-                        item = item,
+                        state = state.bottomBarState,
                         accentColor = accentColor,
                         modifier = Modifier
                             .height(bottomBarHeight)

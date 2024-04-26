@@ -53,7 +53,13 @@ class ItemScreenModel(
                     database.newItemDao().selectItemById(query)
                         .collect { itemWithFeed ->
                             mutableState.update {
-                                it.copy(itemWithFeed = itemWithFeed)
+                                it.copy(
+                                    itemWithFeed = itemWithFeed,
+                                    bottomBarState = BottomBarState(
+                                        isRead = itemWithFeed.item.isRead,
+                                        isStarred = itemWithFeed.item.isStarred
+                                    )
+                                )
                             }
                         }
                 }
@@ -150,6 +156,7 @@ class ItemScreenModel(
 @Stable
 data class ItemState(
     val itemWithFeed: ItemWithFeed? = null,
+    val bottomBarState: BottomBarState = BottomBarState(),
     val imageDialogUrl: String? = null,
     val fileDownloadedEvent: Boolean = false
 )

@@ -18,11 +18,15 @@ import androidx.compose.ui.res.painterResource
 import com.readrops.app.compose.R
 import com.readrops.app.compose.util.FeedColors
 import com.readrops.app.compose.util.theme.spacing
-import com.readrops.db.entities.Item
+
+data class BottomBarState(
+    val isRead: Boolean = false,
+    val isStarred: Boolean = false
+)
 
 @Composable
 fun ItemScreenBottomBar(
-    item: Item,
+    state: BottomBarState,
     accentColor: Color,
     onShare: () -> Unit,
     onOpenUrl: () -> Unit,
@@ -44,11 +48,11 @@ fun ItemScreenBottomBar(
             modifier = Modifier.padding(MaterialTheme.spacing.shortSpacing)
         ) {
             IconButton(
-                onClick = { onChangeReadState(!item.isRead) }
+                onClick = { onChangeReadState(!state.isRead) }
             ) {
                 Icon(
                     painter = painterResource(
-                        id = if (item.isRead)
+                        id = if (state.isRead)
                             R.drawable.ic_remove_done
                         else R.drawable.ic_done_all
                     ),
@@ -58,11 +62,11 @@ fun ItemScreenBottomBar(
             }
 
             IconButton(
-                onClick = { onChangeStarState(!item.isStarred) }
+                onClick = { onChangeStarState(!state.isStarred) }
             ) {
                 Icon(
                     painter = painterResource(
-                        id = if (item.isStarred)
+                        id = if (state.isStarred)
                             R.drawable.ic_star
                         else R.drawable.ic_star_outline
                     ),
