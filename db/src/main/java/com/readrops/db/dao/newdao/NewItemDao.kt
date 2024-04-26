@@ -2,6 +2,7 @@ package com.readrops.db.dao.newdao
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
+import androidx.room.MapColumn
 import androidx.room.Query
 import androidx.room.RawQuery
 import androidx.sqlite.db.SupportSQLiteQuery
@@ -49,4 +50,8 @@ abstract class NewItemDao : NewBaseDao<Item> {
     @Query("Select count(*) From Item Inner Join Feed On Item.feed_id = Feed.id Where read = 0 and account_id = :accountId " +
         "And DateTime(Round(Item.pub_date / 1000), 'unixepoch') Between DateTime(DateTime(\"now\"), \"-24 hour\") And DateTime(\"now\")")
     abstract fun selectUnreadNewItemsCount(accountId: Int): Flow<Int>
+
+    @RawQuery(observedEntities = [Item::class])
+    abstract fun selectFeedUnreadItemsCount(query: SupportSQLiteQuery):
+            Flow<Map<@MapColumn(columnName = "feed_id") Int, @MapColumn(columnName = "item_count") Int>>
 }

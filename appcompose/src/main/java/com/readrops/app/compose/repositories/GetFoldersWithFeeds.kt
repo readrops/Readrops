@@ -4,7 +4,7 @@ import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.filters.MainFilter
-import com.readrops.db.queries.FoldersAndFeedsQueriesBuilder
+import com.readrops.db.queries.FeedUnreadItemsCountQueryBuilder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 
@@ -13,24 +13,24 @@ class GetFoldersWithFeeds(
 ) {
 
     fun get(accountId: Int, mainFilter: MainFilter): Flow<Map<Folder?, List<Feed>>> {
-        val foldersAndFeedsQuery =
-            FoldersAndFeedsQueriesBuilder.buildFoldersAndFeedsQuery(accountId, mainFilter)
-        val feedsWithoutFolderQuery =
-            FoldersAndFeedsQueriesBuilder.buildFeedsWithoutFolderQuery(accountId, mainFilter)
+        val query = FeedUnreadItemsCountQueryBuilder.build(accountId, mainFilter)
 
         return combine(
-            flow = database.newFolderDao()
-                .selectFoldersAndFeeds(foldersAndFeedsQuery),
-            flow2 = database.newFeedDao()
-                .selectFeedsWithoutFolder(feedsWithoutFolderQuery)
-        ) { folders, feedsWithoutFolder ->
+            flow = database.newFolderDao().selectFoldersAndFeeds(accountId),
+            flow2 = database.newItemDao().selectFeedUnreadItemsCount(query)
+        ) { folders, itemCounts ->
             val foldersWithFeeds = folders.groupBy(
                 keySelector = {
-                    Folder(
-                        id = it.folderId,
-                        name = it.folderName,
-                        accountId = it.accountId
-                    ) as Folder?
+                    if (it.folderId != null) {
+                        Folder(
+                            id = it.folderId!!,
+                            name = it.folderName,
+                            accountId = it.accountId
+                        )
+                    } else {
+                        null
+                    }
+
                 },
                 valueTransform = {
                     Feed(
@@ -40,10 +40,11 @@ class GetFoldersWithFeeds(
                         url = it.feedUrl,
                         siteUrl = it.feedSiteUrl,
                         description = it.feedDescription,
-                        unreadCount = it.unreadCount
+                        unreadCount = itemCounts[it.feedId] ?: 0
                     )
                 }
             ).mapValues { listEntry ->
+                // Empty folder case
                 if (listEntry.value.any { it.id == 0 }) {
                     listOf()
                 } else {
@@ -51,25 +52,7 @@ class GetFoldersWithFeeds(
                 }
             }
 
-            if (feedsWithoutFolder.isNotEmpty()) {
-                foldersWithFeeds + mapOf(
-                    Pair(
-                        null,
-                        feedsWithoutFolder.map { feedWithoutFolder ->
-                            Feed(
-                                id = feedWithoutFolder.feedId,
-                                name = feedWithoutFolder.feedName,
-                                iconUrl = feedWithoutFolder.feedIcon,
-                                url = feedWithoutFolder.feedUrl,
-                                siteUrl = feedWithoutFolder.feedSiteUrl,
-                                description = feedWithoutFolder.feedDescription,
-                                unreadCount = feedWithoutFolder.unreadCount
-                            )
-                        })
-                )
-            } else {
-                foldersWithFeeds
-            }
+            foldersWithFeeds
         }
     }
 }

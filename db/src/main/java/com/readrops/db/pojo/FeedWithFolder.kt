@@ -13,15 +13,14 @@ data class FeedWithFolder(
 ) : Parcelable
 
 data class FolderWithFeed(
-    val folderId: Int,
-    val folderName: String,
+    val folderId: Int?,
+    val folderName: String?,
     val feedId: Int = 0,
     val feedName: String? = null,
     val feedIcon: String? = null,
     val feedUrl: String? = null,
     val feedDescription: String? = null,
     val feedSiteUrl: String? = null,
-    val unreadCount: Int = 0,
     val accountId: Int = 0
 )
 
