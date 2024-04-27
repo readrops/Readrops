@@ -30,7 +30,6 @@ class GetFoldersWithFeeds(
                     } else {
                         null
                     }
-
                 },
                 valueTransform = {
                     Feed(
@@ -52,7 +51,7 @@ class GetFoldersWithFeeds(
                 }
             }
 
-            foldersWithFeeds
+            foldersWithFeeds.toSortedMap(nullsLast(Folder::compareTo))
         }
     }
 }
