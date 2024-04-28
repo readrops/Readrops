@@ -172,7 +172,7 @@ object AccountTab : Tab {
                     onDismiss = { screenModel.closeDialog() },
                     onValidate = { accountType ->
                         screenModel.closeDialog()
-                        navigator.push(AccountCredentialsScreen(accountType, state.account))
+                        navigator.push(AccountCredentialsScreen(accountType))
                     }
                 )
             }
