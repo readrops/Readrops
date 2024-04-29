@@ -1,28 +1,23 @@
 package com.readrops.app.compose.account.selection
 
 import android.content.Context
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import cafe.adriel.voyager.core.model.StateScreenModel
+import cafe.adriel.voyager.core.model.screenModelScope
 import com.readrops.db.Database
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
-class AccountSelectionViewModel(
+class AccountSelectionScreenModel(
         private val database: Database,
         private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : ViewModel(), KoinComponent {
-
-    private val _navState = MutableStateFlow<NavState>(NavState.Idle)
-    val navState = _navState.asStateFlow()
+) : StateScreenModel<NavState>(NavState.Idle), KoinComponent {
 
     fun accountExists(): Boolean {
         val accountCount = runBlocking {
@@ -36,12 +31,12 @@ class AccountSelectionViewModel(
         if (accountType == AccountType.LOCAL) {
             createLocalAccount()
         } else {
-            _navState.update { NavState.GoToAccountCredentialsScreen(accountType) }
+            mutableState.update { NavState.GoToAccountCredentialsScreen(accountType) }
         }
     }
 
     fun resetNavState() {
-        _navState.update { NavState.Idle }
+        mutableState.update { NavState.Idle }
     }
 
     private fun createLocalAccount() {
@@ -53,17 +48,16 @@ class AccountSelectionViewModel(
                 isCurrentAccount = true
         )
 
-        viewModelScope.launch(dispatcher) {
+        screenModelScope.launch(dispatcher) {
             database.newAccountDao().insert(account)
 
-            _navState.update { NavState.GoToHomeScreen }
+            mutableState.update { NavState.GoToHomeScreen }
         }
     }
+}
 
-
-    sealed class NavState {
-        object Idle : NavState()
-        object GoToHomeScreen : NavState()
-        class GoToAccountCredentialsScreen(val accountType: AccountType) : NavState()
-    }
+sealed class NavState {
+    object Idle : NavState()
+    object GoToHomeScreen : NavState()
+    class GoToAccountCredentialsScreen(val accountType: AccountType) : NavState()
 }

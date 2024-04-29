@@ -7,21 +7,22 @@ import cafe.adriel.voyager.navigator.CurrentScreen
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.NavigatorDisposeBehavior
 import com.readrops.app.compose.account.selection.AccountSelectionScreen
-import com.readrops.app.compose.account.selection.AccountSelectionViewModel
+import com.readrops.app.compose.account.selection.AccountSelectionScreenModel
 import com.readrops.app.compose.home.HomeScreen
 import com.readrops.app.compose.util.theme.ReadropsTheme
 import org.koin.androidx.compose.KoinAndroidContext
-import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
-class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity(), KoinComponent {
 
     @OptIn(KoinExperimentalAPI::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val viewModel = getViewModel<AccountSelectionViewModel>()
-        val accountExists = viewModel.accountExists()
+        val screenModel = get<AccountSelectionScreenModel>()
+        val accountExists = screenModel.accountExists()
 
         setContent {
             KoinAndroidContext {

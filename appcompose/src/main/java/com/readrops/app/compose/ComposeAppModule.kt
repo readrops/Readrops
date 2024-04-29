@@ -2,7 +2,7 @@ package com.readrops.app.compose
 
 import com.readrops.app.compose.account.AccountScreenModel
 import com.readrops.app.compose.account.credentials.AccountCredentialsScreenModel
-import com.readrops.app.compose.account.selection.AccountSelectionViewModel
+import com.readrops.app.compose.account.selection.AccountSelectionScreenModel
 import com.readrops.app.compose.feeds.FeedScreenModel
 import com.readrops.app.compose.item.ItemScreenModel
 import com.readrops.app.compose.repositories.BaseRepository
@@ -19,7 +19,7 @@ val composeAppModule = module {
 
     factory { FeedScreenModel(get(), get(), get()) }
 
-    factory { AccountSelectionViewModel(get()) }
+    factory { AccountSelectionScreenModel(get()) }
 
     factory { AccountScreenModel(get()) }
 
