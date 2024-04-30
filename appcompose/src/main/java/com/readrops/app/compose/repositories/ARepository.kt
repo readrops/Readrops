@@ -17,7 +17,7 @@ abstract class ARepository(
     /**
      * This method is intended for remote accounts.
      */
-    abstract suspend fun login()
+    abstract suspend fun login(account: Account)
 
     /**
      * Global synchronization for the local account.

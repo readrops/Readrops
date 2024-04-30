@@ -35,7 +35,9 @@ import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.readrops.app.compose.R
+import com.readrops.app.compose.home.HomeScreen
 import com.readrops.app.compose.util.components.AndroidScreen
+import com.readrops.app.compose.util.components.errorText
 import com.readrops.app.compose.util.theme.ShortSpacer
 import com.readrops.app.compose.util.theme.VeryLargeSpacer
 import com.readrops.app.compose.util.theme.spacing
@@ -53,6 +55,10 @@ class AccountCredentialsScreen(
             getScreenModel<AccountCredentialsScreenModel>(parameters = { parametersOf(accountType) })
 
         val state by screenModel.state.collectAsStateWithLifecycle()
+
+        if (state.goToHomeScreen) {
+            navigator.replaceAll(HomeScreen())
+        }
 
         Box(
             modifier = Modifier.imePadding()
@@ -129,9 +135,9 @@ class AccountCredentialsScreen(
                         ) {
                             Icon(
                                 painter = painterResource(
-                                    id = if (state.isPasswordVisible)
+                                    id = if (state.isPasswordVisible) {
                                         R.drawable.ic_visible_off
-                                    else R.drawable.ic_visible
+                                    } else R.drawable.ic_visible
                                 ),
                                 contentDescription = null
                             )
@@ -157,7 +163,7 @@ class AccountCredentialsScreen(
                     onClick = { screenModel.login() },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    if (state.isLoginStarted) {
+                    if (state.isLoginOnGoing) {
                         CircularProgressIndicator(
                             color = MaterialTheme.colorScheme.onPrimary,
                             strokeWidth = 2.dp,
@@ -166,6 +172,16 @@ class AccountCredentialsScreen(
                     } else {
                         Text(text = stringResource(id = R.string.validate))
                     }
+                }
+
+                if (state.loginException != null) {
+                    ShortSpacer()
+
+                    Text(
+                        text = errorText(exception = state.loginException!!),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
             }
         }

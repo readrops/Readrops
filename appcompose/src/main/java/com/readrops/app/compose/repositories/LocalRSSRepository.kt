@@ -24,7 +24,7 @@ class LocalRSSRepository(
     account: Account
 ) : BaseRepository(database, account), KoinComponent {
 
-    override suspend fun login() { /* useless here */
+    override suspend fun login(account: Account) { /* useless here */
     }
 
     override suspend fun synchronize(
