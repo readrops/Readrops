@@ -155,6 +155,13 @@
     <string name="unreachable_feed_http_error">Flux non attaignable, erreur HTTP %1$s</string>
     <string name="network_failure">Erreur réseau: %1$s</string>
     <string name="processing_feed_error">Erreur de traitement du flux</string>
-    <string name="unreachable_feed">Flux non attaignable</string>
+    <string name="unreachable_url">URL non attaignable</string>
     <string name="unable_open_file">Impossible d\'ouvrir le fichier</string>
+    <string name="http_error_400">Erreur HTTP 400, veuillez vérifier l\'URL du serveur</string>
+    <string name="http_error_401">Erreur HTTP 401, veuillez vérifier vos identifiants</string>
+    <string name="http_error_403">Erreur HTTP 403, accès interdit</string>
+    <string name="http_error_404">Erreur HTTP 404, l\'URL n\'existe pas</string>
+    <string name="http_error_4XX">Erreur HTTP %1$s, veuillez vérifier vos champs</string>
+    <string name="http_error_5XX">Erreur HTTP %1$s, erreur serveur</string>
+    <string name="http_error">Erreur HTTP %1$s</string>
 </resources>

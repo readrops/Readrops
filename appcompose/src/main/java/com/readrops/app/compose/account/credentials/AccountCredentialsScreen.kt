@@ -37,7 +37,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.readrops.app.compose.R
 import com.readrops.app.compose.home.HomeScreen
 import com.readrops.app.compose.util.components.AndroidScreen
-import com.readrops.app.compose.util.components.errorText
+import com.readrops.app.compose.util.ErrorMessage
 import com.readrops.app.compose.util.theme.ShortSpacer
 import com.readrops.app.compose.util.theme.VeryLargeSpacer
 import com.readrops.app.compose.util.theme.spacing
@@ -178,7 +178,7 @@ class AccountCredentialsScreen(
                     ShortSpacer()
 
                     Text(
-                        text = errorText(exception = state.loginException!!),
+                        text = ErrorMessage.get(exception = state.loginException!!),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.error
                     )

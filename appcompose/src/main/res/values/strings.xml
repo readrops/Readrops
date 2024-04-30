@@ -161,6 +161,13 @@
     <string name="unreachable_feed_http_error">Unreachable feed, HTTP error %1$s</string>
     <string name="network_failure">Network failure: %1$s</string>
     <string name="processing_feed_error">Processing feed error</string>
-    <string name="unreachable_feed">Unreachable feed</string>
+    <string name="unreachable_url">Unreachable URL</string>
     <string name="unable_open_file">Unable to open file</string>
+    <string name="http_error_400">HTTP error 400, please check your server URL</string>
+    <string name="http_error_401">HTTP error 401, please check your credentials</string>
+    <string name="http_error_403">HTTP error 403, access forbidden</string>
+    <string name="http_error_404">HTTP error 404, URL not found</string>
+    <string name="http_error_4XX">HTTP error %1$s, please check your fields</string>
+    <string name="http_error_5XX">HTTP error %1$s, server error</string>
+    <string name="http_error">HTTP error %1$s</string>
 </resources>

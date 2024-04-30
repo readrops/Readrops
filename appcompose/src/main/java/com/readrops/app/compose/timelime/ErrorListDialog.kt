@@ -13,8 +13,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.readrops.app.compose.R
 import com.readrops.app.compose.repositories.ErrorResult
+import com.readrops.app.compose.util.ErrorMessage
 import com.readrops.app.compose.util.components.BaseDialog
-import com.readrops.app.compose.util.components.errorText
 import com.readrops.app.compose.util.theme.MediumSpacer
 import com.readrops.app.compose.util.theme.ShortSpacer
 
@@ -44,7 +44,7 @@ fun ErrorListDialog(
             modifier = Modifier.verticalScroll(scrollableState)
         ) {
             for (error in errorResult.entries) {
-                Text(text = "${error.key.name}: ${errorText(error.value)}")
+                Text(text = "${error.key.name}: ${ErrorMessage.get(error.value)}")
 
                 ShortSpacer()
             }
