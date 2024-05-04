@@ -91,4 +91,5 @@ dependencies {
     testImplementation(libs.bundles.kointest)
 
     implementation(libs.bundles.coroutines)
+    androidTestImplementation(libs.coroutines.test)
 }
