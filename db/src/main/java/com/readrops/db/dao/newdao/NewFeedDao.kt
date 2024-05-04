@@ -58,7 +58,7 @@ abstract class NewFeedDao : NewBaseDao<Feed> {
      * @return the list of the inserted feeds ids
      */
     @Transaction
-    suspend fun upsertFeeds(feeds: List<Feed>, account: Account): List<Long> {
+    open suspend fun upsertFeeds(feeds: List<Feed>, account: Account): List<Long> {
         val localFeedIds = selectFeedRemoteIds(account.id)
 
         val feedsToInsert = feeds.filter { feed -> localFeedIds.none { localFeedId -> feed.remoteId == localFeedId } }
