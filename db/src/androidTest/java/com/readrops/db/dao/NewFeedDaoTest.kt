@@ -74,7 +74,7 @@ class NewFeedDaoTest {
             /*Feed(
                 name = "Feed 1",
                 remoteId = "feed_1",
-                folderId = 1,
+                remoteFolderId = "folder_1",
                 accountId = account.id
             ),*/
 
@@ -90,7 +90,7 @@ class NewFeedDaoTest {
             Feed(
                 name = "Feed 3",
                 remoteId = "feed_3",
-                folderId = 1,
+                remoteFolderId = "folder_0",
                 accountId = account.id
             ),
         )
@@ -102,6 +102,6 @@ class NewFeedDaoTest {
         assertTrue(allFeeds.any { it.remoteId == "feed_2" && it.folderId == 2 })
 
         assertFalse(allFeeds.any { it.remoteId == "feed_1" })
-        assertTrue(allFeeds.any { it.remoteId == "feed_3" })
+        assertTrue(allFeeds.any { it.remoteId == "feed_3" && it.folderId == 1 })
     }
 }

@@ -64,16 +64,15 @@ abstract class NewFeedDao : NewBaseDao<Feed> {
         val feedsToInsert = feeds.filter { feed -> localFeedIds.none { localFeedId -> feed.remoteId == localFeedId } }
         val feedsToDelete = localFeedIds.filter { localFeedId -> feeds.none { feed -> localFeedId == feed.remoteId } }
 
-        // feeds to update
-        feeds.filter { feed -> localFeedIds.any { localFeedId -> feed.remoteId == localFeedId } }
-            .forEach { feed ->
-                val folderId: Int? = if (feed.remoteFolderId == null) {
+        feeds.forEach { feed ->
+                feed.folderId = if (feed.remoteFolderId == null) {
                     null
                 } else {
                     selectRemoteFolderLocalId(feed.remoteFolderId!!, account.id)
                 }
 
-                updateFeedNameAndFolder(feed.remoteId!!, account.id, feed.name!!, folderId)
+                // works only for already existing feeds
+                updateFeedNameAndFolder(feed.remoteId!!, account.id, feed.name!!, feed.folderId)
             }
 
         if (feedsToDelete.isNotEmpty()) {

@@ -1,7 +1,11 @@
 package com.readrops.api.services.freshrss
 
+import com.readrops.api.services.SyncResult
 import com.readrops.api.services.freshrss.adapters.FreshRSSUserInfo
 import com.readrops.db.entities.Item
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import okhttp3.MultipartBody
 import java.io.StringReader
 import java.util.Properties
@@ -28,15 +32,19 @@ class NewFreshRSSDataSource(private val service: NewFreshRSSService) {
 
     suspend fun getUserInfo(): FreshRSSUserInfo = service.userInfo()
 
-    suspend fun sync() {
-
+    suspend fun sync(): SyncResult = with(CoroutineScope(Dispatchers.IO)) {
+        return SyncResult().apply {
+            folders =  async { getFolders() }.await()
+            feeds = async { getFeeds() }.await()
+            //items = async { getItems(listOf(GOOGLE_READ, GOOGLE_STARRED), MAX_ITEMS, null) }.await()
+        }
     }
 
     suspend fun getFolders() = service.getFolders()
 
     suspend fun getFeeds() = service.getFeeds()
 
-    suspend fun getItems(excludeTargets: List<String>, max: Int, lastModified: Long): List<Item> {
+    suspend fun getItems(excludeTargets: List<String>, max: Int, lastModified: Long?): List<Item> {
         return service.getItems(excludeTargets, max, lastModified)
     }
 

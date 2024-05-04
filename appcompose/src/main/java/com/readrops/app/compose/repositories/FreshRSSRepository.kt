@@ -6,6 +6,8 @@ import com.readrops.api.services.freshrss.NewFreshRSSDataSource
 import com.readrops.api.utils.AuthInterceptor
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
+import com.readrops.db.entities.Folder
+import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
 import org.koin.core.component.KoinComponent
 
@@ -36,7 +38,14 @@ class FreshRSSRepository(
     }
 
     override suspend fun synchronize(): SyncResult {
-        TODO("Not yet implemented")
+        val syncResult = dataSource.sync().apply {
+            insertFolders(folders)
+            insertFeeds(feeds)
+
+            //insertItems(items)
+        }
+
+        return syncResult
     }
 
     override suspend fun insertNewFeeds(
@@ -44,5 +53,19 @@ class FreshRSSRepository(
         onUpdate: (Feed) -> Unit
     ): ErrorResult {
         TODO("Not yet implemented")
+    }
+
+    private suspend fun insertFeeds(feeds: List<Feed>) {
+        feeds.forEach { it.accountId = account.id }
+        database.newFeedDao().upsertFeeds(feeds, account)
+    }
+
+    private suspend fun insertFolders(folders: List<Folder>) {
+        folders.forEach { it.accountId = account.id }
+        database.newFolderDao().upsertFolders(folders, account)
+    }
+
+    private suspend fun insertItems(items: List<Item>) {
+
     }
 }

@@ -95,50 +95,70 @@ class TimelineScreenModel(
 
     fun refreshTimeline() {
         screenModelScope.launch(dispatcher) {
-            val selectedFeeds = if (currentAccount!!.isLocal) {
-                when (filters.value.subFilter) {
-                    SubFilter.FEED -> listOf(
-                        database.newFeedDao().selectFeed(filters.value.filterFeedId)
+            if (currentAccount!!.isLocal) {
+                refreshLocalAccount()
+            } else {
+                _timelineState.update { it.copy(isRefreshing = true) }
+
+                try {
+                    repository?.synchronize()
+                } catch (e: Exception) {
+                    // handle sync exceptions
+                }
+
+                _timelineState.update {
+                    it.copy(
+                        isRefreshing = false,
+                        endSynchronizing = true
                     )
-
-                    SubFilter.FOLDER -> database.newFeedDao()
-                        .selectFeedsByFolder(filters.value.filterFolderId)
-
-                    else -> listOf()
                 }
-            } else listOf()
-
-            _timelineState.update {
-                it.copy(
-                    feedCount = 0,
-                    feedMax = if (selectedFeeds.isNotEmpty())
-                        selectedFeeds.size
-                    else
-                        database.newFeedDao().selectFeedCount(currentAccount!!.id)
-                )
             }
+        }
+    }
 
-            _timelineState.update { it.copy(isRefreshing = true) }
-
-            val results = repository?.synchronize(
-                selectedFeeds = selectedFeeds,
-                onUpdate = { feed ->
-                    _timelineState.update {
-                        it.copy(
-                            currentFeed = feed.name!!,
-                            feedCount = it.feedCount + 1
-                        )
-                    }
-                }
+    private suspend fun refreshLocalAccount() {
+        val selectedFeeds = when (filters.value.subFilter) {
+            SubFilter.FEED -> listOf(
+                database.newFeedDao().selectFeed(filters.value.filterFeedId)
             )
 
-            _timelineState.update {
-                it.copy(
-                    isRefreshing = false,
-                    endSynchronizing = true,
-                    synchronizationErrors = if (results!!.second.isNotEmpty()) results.second else null
-                )
+            SubFilter.FOLDER -> database.newFeedDao()
+                .selectFeedsByFolder(filters.value.filterFolderId)
+
+            else -> listOf()
+        }
+
+
+        _timelineState.update {
+            it.copy(
+                feedCount = 0,
+                feedMax = if (selectedFeeds.isNotEmpty())
+                    selectedFeeds.size
+                else
+                    database.newFeedDao().selectFeedCount(currentAccount!!.id)
+            )
+        }
+
+        _timelineState.update { it.copy(isRefreshing = true) }
+
+        val results = repository?.synchronize(
+            selectedFeeds = selectedFeeds,
+            onUpdate = { feed ->
+                _timelineState.update {
+                    it.copy(
+                        currentFeed = feed.name!!,
+                        feedCount = it.feedCount + 1
+                    )
+                }
             }
+        )
+
+        _timelineState.update {
+            it.copy(
+                isRefreshing = false,
+                endSynchronizing = true,
+                synchronizationErrors = if (results!!.second.isNotEmpty()) results.second else null
+            )
         }
     }
 
