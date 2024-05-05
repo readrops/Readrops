@@ -44,6 +44,9 @@ abstract class NewFeedDao : NewBaseDao<Feed> {
     @Query("Select id From Folder Where remoteId = :remoteId And account_id = :accountId")
     abstract suspend fun selectRemoteFolderLocalId(remoteId: String, accountId: Int): Int
 
+    @Query("Select id From Feed Where remoteId = :remoteId And account_id = :accountId")
+    abstract suspend fun selectRemoteFeedLocalId(remoteId: String, accountId: Int): Int
+
     @Query("Update Feed set name = :name, folder_id = :folderId Where remoteId = :remoteFeedId And account_id = :accountId")
     abstract fun updateFeedNameAndFolder(remoteFeedId: String, accountId: Int, name: String, folderId: Int?)
 

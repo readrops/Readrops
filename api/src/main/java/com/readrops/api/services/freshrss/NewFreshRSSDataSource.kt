@@ -1,6 +1,7 @@
 package com.readrops.api.services.freshrss
 
 import com.readrops.api.services.SyncResult
+import com.readrops.api.services.SyncType
 import com.readrops.api.services.freshrss.adapters.FreshRSSUserInfo
 import com.readrops.db.entities.Item
 import kotlinx.coroutines.CoroutineScope
@@ -32,12 +33,20 @@ class NewFreshRSSDataSource(private val service: NewFreshRSSService) {
 
     suspend fun getUserInfo(): FreshRSSUserInfo = service.userInfo()
 
-    suspend fun sync(): SyncResult = with(CoroutineScope(Dispatchers.IO)) {
-        return SyncResult().apply {
-            folders =  async { getFolders() }.await()
-            feeds = async { getFeeds() }.await()
-            //items = async { getItems(listOf(GOOGLE_READ, GOOGLE_STARRED), MAX_ITEMS, null) }.await()
+    suspend fun synchronise(syncType: SyncType): SyncResult = with(CoroutineScope(Dispatchers.IO)) {
+        return if (syncType == SyncType.INITIAL_SYNC) {
+            SyncResult().apply {
+                folders =  async { getFolders() }.await()
+                feeds = async { getFeeds() }.await()
+                items = async { getItems(listOf(GOOGLE_READ, GOOGLE_STARRED), MAX_ITEMS, null) }.await()
+                starredItems = async { getStarredItems(MAX_STARRED_ITEMS) }.await()
+                //unreadIds = async { getItemsIds(GOOGLE_READ, GOOGLE_READING_LIST, MAX_ITEMS) }.await()
+                // starredIds = async { getItemsIds(null, GOOGLE_STARRED, MAX_STARRED_ITEMS) }.await()
+            }
+        } else {
+            SyncResult()
         }
+
     }
 
     suspend fun getFolders() = service.getFolders()

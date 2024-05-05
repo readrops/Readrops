@@ -2,6 +2,7 @@ package com.readrops.app.compose.timelime
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.compose.runtime.Immutable
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -100,10 +101,11 @@ class TimelineScreenModel(
             } else {
                 _timelineState.update { it.copy(isRefreshing = true) }
 
+                repository?.synchronize()
                 try {
-                    repository?.synchronize()
                 } catch (e: Exception) {
                     // handle sync exceptions
+                    Log.d("TimelineScreenModel", "refreshTimeline: ${e.message}")
                 }
 
                 _timelineState.update {

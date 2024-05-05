@@ -2,8 +2,10 @@ package com.readrops.app.compose.repositories
 
 import com.readrops.api.services.Credentials
 import com.readrops.api.services.SyncResult
+import com.readrops.api.services.SyncType
 import com.readrops.api.services.freshrss.NewFreshRSSDataSource
 import com.readrops.api.utils.AuthInterceptor
+import com.readrops.app.compose.util.Utils
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
@@ -38,11 +40,12 @@ class FreshRSSRepository(
     }
 
     override suspend fun synchronize(): SyncResult {
-        val syncResult = dataSource.sync().apply {
+        val syncResult = dataSource.synchronise(SyncType.INITIAL_SYNC).apply {
             insertFolders(folders)
             insertFeeds(feeds)
 
-            //insertItems(items)
+            insertItems(items, false)
+            insertItems(starredItems, true)
         }
 
         return syncResult
@@ -65,7 +68,39 @@ class FreshRSSRepository(
         database.newFolderDao().upsertFolders(folders, account)
     }
 
-    private suspend fun insertItems(items: List<Item>) {
+    private suspend fun insertItems(items: List<Item>, starredItems: Boolean) {
+        val itemsToInsert = arrayListOf<Item>()
+        val itemsFeedsIds = mutableMapOf<String?, Int>()
 
+        for (item in items) {
+            val feedId: Int
+            if (itemsFeedsIds.containsKey(item.feedRemoteId)) {
+                feedId = itemsFeedsIds.getValue(item.feedRemoteId)
+            } else {
+                feedId = database.newFeedDao().selectRemoteFeedLocalId(item.feedRemoteId!!, account.id)
+                itemsFeedsIds[item.feedRemoteId] = feedId
+            }
+
+            item.feedId = feedId
+
+            if (item.text != null) {
+                item.readTime = Utils.readTimeFromString(item.text!!)
+            }
+
+            // workaround to avoid inserting starred items coming from the main item call
+            // as the API exclusion filter doesn't seem to work
+            if (!starredItems) {
+                if (!item.isStarred) {
+                    itemsToInsert.add(item)
+                }
+            } else {
+                itemsToInsert.add(item)
+            }
+        }
+
+        if (itemsToInsert.isNotEmpty()) {
+            itemsToInsert.sortWith(Item::compareTo)
+            database.itemDao().insert(itemsToInsert)
+        }
     }
 }

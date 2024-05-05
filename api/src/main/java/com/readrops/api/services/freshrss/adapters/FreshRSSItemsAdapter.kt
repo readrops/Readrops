@@ -1,6 +1,5 @@
 package com.readrops.api.services.freshrss.adapters
 
-import android.util.TimingLogger
 import com.readrops.api.services.freshrss.FreshRSSDataSource.GOOGLE_READ
 import com.readrops.api.services.freshrss.FreshRSSDataSource.GOOGLE_STARRED
 import com.readrops.api.utils.exceptions.ParseException
@@ -108,7 +107,6 @@ class FreshRSSItemsAdapter : JsonAdapter<List<Item>>() {
             when (reader.nextString()) {
                 GOOGLE_READ -> item.isRead = true
                 GOOGLE_STARRED -> item.isStarred = true
-                else -> reader.skipValue()
             }
         }
 
