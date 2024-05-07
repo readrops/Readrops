@@ -10,6 +10,7 @@ import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
+import com.readrops.db.entities.ItemState
 import com.readrops.db.entities.account.Account
 import org.koin.core.component.KoinComponent
 
@@ -46,6 +47,8 @@ class FreshRSSRepository(
 
             insertItems(items, false)
             insertItems(starredItems, true)
+
+            insertItemsIds(unreadIds, readIds, starredIds.toMutableList())
         }
 
         return syncResult
@@ -101,6 +104,58 @@ class FreshRSSRepository(
         if (itemsToInsert.isNotEmpty()) {
             itemsToInsert.sortWith(Item::compareTo)
             database.itemDao().insert(itemsToInsert)
+        }
+    }
+
+    private suspend fun insertItemsIds(
+        unreadIds: List<String>,
+        readIds: List<String>,
+        starredIds: MutableList<String> // TODO is it performance wise?
+    ) {
+        database.newItemStateDao().deleteItemStates(account.id)
+
+        database.newItemStateDao().insert(unreadIds.map { id ->
+            val starred = starredIds.count { starredId -> starredId == id } == 1
+
+            if (starred) {
+                starredIds.remove(id)
+            }
+
+            ItemState(
+                id = 0,
+                read = false,
+                starred = starred,
+                remoteId = id,
+                accountId = account.id
+            )
+        })
+
+        database.newItemStateDao().insert(readIds.map { id ->
+            val starred = starredIds.count { starredId -> starredId == id } == 1
+            if (starred) {
+                starredIds.remove(id)
+            }
+
+            ItemState(
+                id = 0,
+                read = true,
+                starred = starred,
+                remoteId = id,
+                accountId = account.id
+            )
+        })
+
+        // insert starred items ids which are read
+        if (starredIds.isNotEmpty()) {
+            database.newItemStateDao().insert(starredIds.map { id ->
+                ItemState(
+                    0,
+                    read = true,
+                    starred = true,
+                    remoteId = id,
+                    accountId = account.id
+                )
+            })
         }
     }
 }

@@ -40,8 +40,8 @@ class NewFreshRSSDataSource(private val service: NewFreshRSSService) {
                 feeds = async { getFeeds() }.await()
                 items = async { getItems(listOf(GOOGLE_READ, GOOGLE_STARRED), MAX_ITEMS, null) }.await()
                 starredItems = async { getStarredItems(MAX_STARRED_ITEMS) }.await()
-                //unreadIds = async { getItemsIds(GOOGLE_READ, GOOGLE_READING_LIST, MAX_ITEMS) }.await()
-                // starredIds = async { getItemsIds(null, GOOGLE_STARRED, MAX_STARRED_ITEMS) }.await()
+                unreadIds = async { getItemsIds(GOOGLE_READ, GOOGLE_READING_LIST, MAX_ITEMS) }.await()
+                starredIds = async { getItemsIds(null, GOOGLE_STARRED, MAX_STARRED_ITEMS) }.await()
             }
         } else {
             SyncResult()
@@ -59,7 +59,7 @@ class NewFreshRSSDataSource(private val service: NewFreshRSSService) {
 
     suspend fun getStarredItems(max: Int) = service.getStarredItems(max)
 
-    suspend fun getItemsIds(excludeTarget: String, includeTarget: String, max: Int): List<String> {
+    suspend fun getItemsIds(excludeTarget: String?, includeTarget: String, max: Int): List<String> {
         return service.getItemsIds(excludeTarget, includeTarget, max)
     }
 
