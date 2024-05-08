@@ -19,4 +19,7 @@ interface NewAccountDao : NewBaseDao<Account> {
 
     @Query("Delete From Account")
     suspend fun deleteAllAccounts()
+
+    @Query("Update Account set last_modified = :lastModified Where id = :accountId")
+    suspend fun updateLastModified(lastModified: Long, accountId: Int)
 }

@@ -3,6 +3,7 @@ package com.readrops.app.compose.repositories
 import com.readrops.api.services.Credentials
 import com.readrops.api.services.SyncResult
 import com.readrops.api.services.SyncType
+import com.readrops.api.services.freshrss.FreshRSSSyncData
 import com.readrops.api.services.freshrss.NewFreshRSSDataSource
 import com.readrops.api.utils.AuthInterceptor
 import com.readrops.app.compose.util.Utils
@@ -12,6 +13,7 @@ import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.ItemState
 import com.readrops.db.entities.account.Account
+import org.joda.time.DateTime
 import org.koin.core.component.KoinComponent
 
 class FreshRSSRepository(
@@ -24,10 +26,11 @@ class FreshRSSRepository(
         val authInterceptor = getKoin().get<AuthInterceptor>()
         authInterceptor.credentials = Credentials.toCredentials(account)
 
-        val authToken = dataSource.login(account.login!!, account.password!!)
-        account.token = authToken
+        account.token = dataSource.login(account.login!!, account.password!!)
         // we got the authToken, time to provide it to make real calls
         authInterceptor.credentials = Credentials.toCredentials(account)
+
+        account.writeToken = dataSource.getWriteToken()
 
         val userInfo = dataSource.getUserInfo()
         account.displayedName = userInfo.userName
@@ -36,12 +39,22 @@ class FreshRSSRepository(
     override suspend fun synchronize(
         selectedFeeds: List<Feed>,
         onUpdate: (Feed) -> Unit
-    ): Pair<SyncResult, ErrorResult> {
-        TODO("Not yet implemented")
-    }
+    ): Pair<SyncResult, ErrorResult> = throw NotImplementedError("This method can't be called here")
 
     override suspend fun synchronize(): SyncResult {
-        val syncResult = dataSource.synchronise(SyncType.INITIAL_SYNC).apply {
+        val syncData = FreshRSSSyncData()
+
+        val syncType: SyncType
+        if (account.lastModified != 0L) {
+            syncType = SyncType.CLASSIC_SYNC
+            syncData.lastModified = account.lastModified
+        } else {
+            syncType = SyncType.INITIAL_SYNC
+        }
+
+        val newLastModified = DateTime.now().millis / 1000L
+
+        return dataSource.synchronize(syncType, syncData, account.writeToken!!).apply {
             insertFolders(folders)
             insertFeeds(feeds)
 
@@ -49,9 +62,10 @@ class FreshRSSRepository(
             insertItems(starredItems, true)
 
             insertItemsIds(unreadIds, readIds, starredIds.toMutableList())
-        }
 
-        return syncResult
+            account.lastModified = newLastModified
+            database.newAccountDao().updateLastModified(newLastModified, account.id)
+        }
     }
 
     override suspend fun insertNewFeeds(
@@ -80,7 +94,8 @@ class FreshRSSRepository(
             if (itemsFeedsIds.containsKey(item.feedRemoteId)) {
                 feedId = itemsFeedsIds.getValue(item.feedRemoteId)
             } else {
-                feedId = database.newFeedDao().selectRemoteFeedLocalId(item.feedRemoteId!!, account.id)
+                feedId =
+                    database.newFeedDao().selectRemoteFeedLocalId(item.feedRemoteId!!, account.id)
                 itemsFeedsIds[item.feedRemoteId] = feedId
             }
 

@@ -15,10 +15,10 @@ class NewFreshRSSDataSource(private val service: NewFreshRSSService) {
 
     suspend fun login(login: String, password: String): String {
         val requestBody = MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("Email", login)
-                .addFormDataPart("Passwd", password)
-                .build()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("Email", login)
+            .addFormDataPart("Passwd", password)
+            .build()
 
         val response = service.login(requestBody)
 
@@ -33,18 +33,35 @@ class NewFreshRSSDataSource(private val service: NewFreshRSSService) {
 
     suspend fun getUserInfo(): FreshRSSUserInfo = service.userInfo()
 
-    suspend fun synchronise(syncType: SyncType): SyncResult = with(CoroutineScope(Dispatchers.IO)) {
+    suspend fun synchronize(
+        syncType: SyncType,
+        syncData: FreshRSSSyncData,
+        writeToken: String
+    ): SyncResult = with(CoroutineScope(Dispatchers.IO)) {
         return if (syncType == SyncType.INITIAL_SYNC) {
             SyncResult().apply {
-                folders =  async { getFolders() }.await()
+                folders = async { getFolders() }.await()
                 feeds = async { getFeeds() }.await()
-                items = async { getItems(listOf(GOOGLE_READ, GOOGLE_STARRED), MAX_ITEMS, null) }.await()
+                items =
+                    async { getItems(listOf(GOOGLE_READ, GOOGLE_STARRED), MAX_ITEMS, null) }.await()
                 starredItems = async { getStarredItems(MAX_STARRED_ITEMS) }.await()
-                unreadIds = async { getItemsIds(GOOGLE_READ, GOOGLE_READING_LIST, MAX_ITEMS) }.await()
+                unreadIds =
+                    async { getItemsIds(GOOGLE_READ, GOOGLE_READING_LIST, MAX_ITEMS) }.await()
                 starredIds = async { getItemsIds(null, GOOGLE_STARRED, MAX_STARRED_ITEMS) }.await()
             }
         } else {
-            SyncResult()
+            SyncResult().apply {
+                setItemsReadState(syncData, writeToken)
+                setItemsStarState(syncData, writeToken)
+
+                folders = async { getFolders() }.await()
+                feeds = async { getFeeds() }.await()
+                items = async { getItems(null, MAX_ITEMS, syncData.lastModified) }.await()
+
+                unreadIds = async { getItemsIds(GOOGLE_READ, GOOGLE_READING_LIST, MAX_ITEMS) }.await()
+                readIds = async { getItemsIds(GOOGLE_UNREAD, GOOGLE_READING_LIST, MAX_ITEMS) }.await()
+                starredIds = async { getItemsIds(null, GOOGLE_STARRED, MAX_STARRED_ITEMS) }.await()
+            }
         }
 
     }
@@ -53,7 +70,7 @@ class NewFreshRSSDataSource(private val service: NewFreshRSSService) {
 
     suspend fun getFeeds() = service.getFeeds()
 
-    suspend fun getItems(excludeTargets: List<String>, max: Int, lastModified: Long?): List<Item> {
+    suspend fun getItems(excludeTargets: List<String>?, max: Int, lastModified: Long?): List<Item> {
         return service.getItems(excludeTargets, max, lastModified)
     }
 
@@ -80,7 +97,7 @@ class NewFreshRSSDataSource(private val service: NewFreshRSSService) {
     }
 
     suspend fun createFeed(token: String, feedUrl: String) {
-        service.createOrDeleteFeed(token, FEED_PREFIX + feedUrl, "subscribe");
+        service.createOrDeleteFeed(token, FEED_PREFIX + feedUrl, "subscribe")
     }
 
     suspend fun deleteFeed(token: String, feedUrl: String) {
@@ -103,7 +120,7 @@ class NewFreshRSSDataSource(private val service: NewFreshRSSService) {
         service.deleteFolder(token, folderId)
     }
 
-    suspend fun setItemsReadState(syncData: FreshRSSSyncData, token: String) {
+    private suspend fun setItemsReadState(syncData: FreshRSSSyncData, token: String) {
         if (syncData.readItemsIds.isNotEmpty()) {
             setItemsReadState(true, syncData.readItemsIds, token)
         }
@@ -113,7 +130,7 @@ class NewFreshRSSDataSource(private val service: NewFreshRSSService) {
         }
     }
 
-    suspend fun setItemsStarState(syncData: FreshRSSSyncData, token: String) {
+    private suspend fun setItemsStarState(syncData: FreshRSSSyncData, token: String) {
         if (syncData.starredItemsIds.isNotEmpty()) {
             setItemStarState(true, syncData.starredItemsIds, token)
         }

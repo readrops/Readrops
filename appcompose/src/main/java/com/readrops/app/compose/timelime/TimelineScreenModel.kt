@@ -55,7 +55,7 @@ class TimelineScreenModel(
             ) { account, filters ->
                 Pair(account, filters.copy(accountId = account.id))
             }.collectLatest { (account, filters) ->
-                val query = ItemsQueryBuilder.buildItemsQuery(filters)
+                val query = ItemsQueryBuilder.buildItemsQuery(filters, account.config.useSeparateState)
 
                 _timelineState.update {
                     it.copy(
