@@ -52,6 +52,7 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.readrops.app.compose.R
 import com.readrops.app.compose.item.ItemScreen
 import com.readrops.app.compose.timelime.drawer.TimelineDrawer
+import com.readrops.app.compose.util.ErrorMessage
 import com.readrops.app.compose.util.components.CenteredProgressIndicator
 import com.readrops.app.compose.util.components.Placeholder
 import com.readrops.app.compose.util.components.RefreshScreen
@@ -127,23 +128,29 @@ object TimelineTab : Tab {
             }
         }
 
-        LaunchedEffect(state.synchronizationErrors) {
-            if (state.synchronizationErrors != null) {
+        LaunchedEffect(state.localSyncErrors) {
+            if (state.localSyncErrors != null) {
                 val action = snackbarHostState.showSnackbar(
                     message = context.resources.getQuantityString(
                         R.plurals.error_occurred,
-                        state.synchronizationErrors!!.size
+                        state.localSyncErrors!!.size
                     ),
                     actionLabel = context.getString(R.string.details),
                     duration = SnackbarDuration.Short
                 )
 
                 if (action == SnackbarResult.ActionPerformed) {
-                    viewModel.openDialog(DialogState.ErrorList(state.synchronizationErrors!!))
+                    viewModel.openDialog(DialogState.ErrorList(state.localSyncErrors!!))
                 } else {
                     // remove errors from state
-                    viewModel.closeDialog(DialogState.ErrorList(state.synchronizationErrors!!))
+                    viewModel.closeDialog(DialogState.ErrorList(state.localSyncErrors!!))
                 }
+            }
+        }
+        
+        LaunchedEffect(state.syncError) {
+            if (state.syncError != null) {
+                snackbarHostState.showSnackbar(ErrorMessage.get(state.syncError!!, context))
             }
         }
 

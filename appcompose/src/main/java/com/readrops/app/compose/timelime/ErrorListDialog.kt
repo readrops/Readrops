@@ -7,6 +7,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -44,7 +45,7 @@ fun ErrorListDialog(
             modifier = Modifier.verticalScroll(scrollableState)
         ) {
             for (error in errorResult.entries) {
-                Text(text = "${error.key.name}: ${ErrorMessage.get(error.value)}")
+                Text(text = "${error.key.name}: ${ErrorMessage.get(error.value, LocalContext.current)}")
 
                 ShortSpacer()
             }

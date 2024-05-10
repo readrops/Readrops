@@ -2,7 +2,6 @@ package com.readrops.app.compose.timelime
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -32,6 +31,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -68,6 +68,11 @@ class TimelineScreenModel(
                                 database.newItemDao().selectAll(query)
                             },
                         ).flow
+                            .transformLatest { value ->
+                                if (!timelineState.value.isRefreshing) {
+                                    emit(value)
+                                }
+                            }
                             .cachedIn(screenModelScope),
                         isAccountLocal = account.isLocal
                     )
@@ -102,11 +107,11 @@ class TimelineScreenModel(
             } else {
                 _timelineState.update { it.copy(isRefreshing = true) }
 
-                repository?.synchronize()
                 try {
+                    repository?.synchronize()
                 } catch (e: Exception) {
-                    // handle sync exceptions
-                    Log.d("TimelineScreenModel", "refreshTimeline: ${e.message}")
+                    _timelineState.update { it.copy(syncError = e, isRefreshing = false) }
+                    return@launch
                 }
 
                 _timelineState.update {
@@ -160,7 +165,7 @@ class TimelineScreenModel(
             it.copy(
                 isRefreshing = false,
                 endSynchronizing = true,
-                synchronizationErrors = if (results!!.second.isNotEmpty()) results.second else null
+                localSyncErrors = if (results!!.second.isNotEmpty()) results.second else null
             )
         }
     }
@@ -287,7 +292,7 @@ class TimelineScreenModel(
 
     fun closeDialog(dialog: DialogState? = null) {
         if (dialog is DialogState.ErrorList) {
-            _timelineState.update { it.copy(synchronizationErrors = null) }
+            _timelineState.update { it.copy(localSyncErrors = null) }
         }
 
         _timelineState.update { it.copy(dialog = null) }
@@ -329,7 +334,8 @@ data class TimelineState(
     val feedCount: Int = 0,
     val feedMax: Int = 0,
     val endSynchronizing: Boolean = false,
-    val synchronizationErrors: ErrorResult? = null,
+    val localSyncErrors: ErrorResult? = null,
+    val syncError: Exception? = null,
     val filters: QueryFilters = QueryFilters(),
     val filterFeedName: String = "",
     val filterFolderName: String = "",

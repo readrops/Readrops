@@ -167,7 +167,7 @@
     <string name="http_error_401">HTTP error 401, please check your credentials</string>
     <string name="http_error_403">HTTP error 403, access forbidden</string>
     <string name="http_error_404">HTTP error 404, URL not found</string>
-    <string name="http_error_4XX">HTTP error %1$s, please check your fields</string>
-    <string name="http_error_5XX">HTTP error %1$s, server error</string>
-    <string name="http_error">HTTP error %1$s</string>
+    <string name="http_error_4XX">HTTP error %1$d, please check your fields</string>
+    <string name="http_error_5XX">HTTP error %1$d, server error</string>
+    <string name="http_error">HTTP error %1$d</string>
 </resources>
