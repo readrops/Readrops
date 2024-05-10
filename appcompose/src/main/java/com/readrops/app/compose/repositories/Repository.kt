@@ -5,28 +5,26 @@ import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
+import com.readrops.db.entities.ItemState
 import com.readrops.db.entities.account.Account
 
 typealias ErrorResult = Map<Feed, Exception>
 
-abstract class ARepository(
-    val database: Database,
-    val account: Account
-) {
+interface Repository {
 
     /**
      * This method is intended for remote accounts.
      */
-    abstract suspend fun login(account: Account)
+    suspend fun login(account: Account)
 
     /**
      * Global synchronization for the local account.
-     * @param selectedFeeds feeds to be updated
-     * @param onUpdate get synchronization status
-     * @return returns the result of the synchronization used by notifications
+     * @param selectedFeeds feeds to be updated, will fetch all account feeds if list is empty
+     * @param onUpdate notify each feed update
+     * @return the result of the synchronization used by notifications
      * and errors per feed if occurred to be transmitted to the user
      */
-    abstract suspend fun synchronize(
+    suspend fun synchronize(
         selectedFeeds: List<Feed>,
         onUpdate: (Feed) -> Unit
     ): Pair<SyncResult, ErrorResult>
@@ -34,16 +32,23 @@ abstract class ARepository(
     /**
      * Global synchronization for remote accounts. Unlike the local account, remote accounts
      * won't benefit from synchronization status and granular synchronization
+     * @return the result of the synchronization
      */
-    abstract suspend fun synchronize(): SyncResult
+    suspend fun synchronize(): SyncResult
 
-    abstract suspend fun insertNewFeeds(newFeeds: List<Feed>, onUpdate: (Feed) -> Unit): ErrorResult
+    /**
+     * Insert new feeds by notifying each of them
+     * @param newFeeds feeds to insert
+     * @param onUpdate notify each feed insertion
+     * @return errors by feed
+     */
+    suspend fun insertNewFeeds(newFeeds: List<Feed>, onUpdate: (Feed) -> Unit): ErrorResult
 }
 
 abstract class BaseRepository(
-    database: Database,
-    account: Account,
-) : ARepository(database, account) {
+    val database: Database,
+    val account: Account,
+) : Repository {
 
     open suspend fun updateFeed(feed: Feed) =
         database.newFeedDao().updateFeedFields(feed.id, feed.name!!, feed.url!!, feed.folderId)
@@ -57,11 +62,39 @@ abstract class BaseRepository(
     open suspend fun deleteFolder(folder: Folder) = database.newFolderDao().delete(folder)
 
     open suspend fun setItemReadState(item: Item) {
-        database.newItemDao().updateReadState(item.id, item.isRead)
+        // TODO handle Nextcloud News case
+        if (account.config.useSeparateState) {
+            database.newItemStateChangeDao().upsertItemReadStateChange(item, account.id, true)
+            database.newItemStateDao().upsertItemReadState(
+                ItemState(
+                    id = 0,
+                    read = item.isRead,
+                    starred = item.isStarred,
+                    remoteId = item.remoteId!!,
+                    accountId = account.id
+                )
+            )
+        } else {
+            database.newItemDao().updateReadState(item.id, item.isRead)
+        }
     }
 
     open suspend fun setItemStarState(item: Item) {
-        database.newItemDao().updateStarState(item.id, item.isStarred)
+        // TODO handle Nextcloud News case
+        if (account.config.useSeparateState) {
+            database.newItemStateChangeDao().upsertItemStarStateChange(item, account.id, true)
+            database.newItemStateDao().upsertItemStarState(
+                ItemState(
+                    id = 0,
+                    read = item.isRead,
+                    starred = item.isStarred,
+                    remoteId = item.remoteId!!,
+                    accountId = account.id
+                )
+            )
+        } else {
+            database.newItemDao().updateStarState(item.id, item.isStarred)
+        }
     }
 
     open suspend fun setAllItemsRead(accountId: Int) {

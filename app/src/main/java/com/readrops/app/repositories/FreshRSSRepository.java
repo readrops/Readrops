@@ -96,22 +96,22 @@ public class FreshRSSRepository extends ARepository {
                     .itemStateChangesDao()
                     .getItemStateChanges(account.getId());
 
-            syncData.setReadItemsIds(itemStateChanges.stream()
+            syncData.setReadIds(itemStateChanges.stream()
                     .filter(it -> it.getReadChange() && it.getRead())
                     .map(ItemReadStarState::getRemoteId)
                     .collect(Collectors.toList()));
 
-            syncData.setUnreadItemsIds(itemStateChanges.stream()
+            syncData.setUnreadIds(itemStateChanges.stream()
                     .filter(it -> it.getReadChange() && !it.getRead())
                     .map(ItemReadStarState::getRemoteId)
                     .collect(Collectors.toList()));
 
-            syncData.setStarredItemsIds(itemStateChanges.stream()
+            syncData.setStarredIds(itemStateChanges.stream()
                     .filter(it -> it.getStarChange() && it.getStarred())
                     .map(ItemReadStarState::getRemoteId)
                     .collect(Collectors.toList()));
 
-            syncData.setUnstarredItemsIds(itemStateChanges.stream()
+            syncData.setUnstarredIds(itemStateChanges.stream()
                     .filter(it -> it.getStarChange() && !it.getStarred())
                     .map(ItemReadStarState::getRemoteId)
                     .collect(Collectors.toList()));

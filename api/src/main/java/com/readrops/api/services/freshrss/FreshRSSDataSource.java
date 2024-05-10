@@ -273,17 +273,17 @@ public class FreshRSSDataSource {
      */
     private Completable setItemsReadState(@NonNull FreshRSSSyncData syncData, @NonNull String token) {
         Completable readItemsCompletable;
-        if (syncData.getReadItemsIds().isEmpty()) {
+        if (syncData.getReadIds().isEmpty()) {
             readItemsCompletable = Completable.complete();
         } else {
-            readItemsCompletable = setItemsReadState(true, syncData.getReadItemsIds(), token);
+            readItemsCompletable = setItemsReadState(true, syncData.getReadIds(), token);
         }
 
         Completable unreadItemsCompletable;
-        if (syncData.getUnreadItemsIds().isEmpty()) {
+        if (syncData.getUnreadIds().isEmpty()) {
             unreadItemsCompletable = Completable.complete();
         } else {
-            unreadItemsCompletable = setItemsReadState(false, syncData.getUnreadItemsIds(), token);
+            unreadItemsCompletable = setItemsReadState(false, syncData.getUnreadIds(), token);
         }
 
         return readItemsCompletable.concatWith(unreadItemsCompletable);
@@ -298,17 +298,17 @@ public class FreshRSSDataSource {
      */
     private Completable setItemsStarState(@NonNull FreshRSSSyncData syncData, @NonNull String token) {
         Completable starredItemsCompletable;
-        if (syncData.getStarredItemsIds().isEmpty()) {
+        if (syncData.getStarredIds().isEmpty()) {
             starredItemsCompletable = Completable.complete();
         } else {
-            starredItemsCompletable = setItemsStarState(true, syncData.getStarredItemsIds(), token);
+            starredItemsCompletable = setItemsStarState(true, syncData.getStarredIds(), token);
         }
 
         Completable unstarredItemsCompletable;
-        if (syncData.getUnstarredItemsIds().isEmpty()) {
+        if (syncData.getUnstarredIds().isEmpty()) {
             unstarredItemsCompletable = Completable.complete();
         } else {
-            unstarredItemsCompletable = setItemsStarState(false, syncData.getUnstarredItemsIds(), token);
+            unstarredItemsCompletable = setItemsStarState(false, syncData.getUnstarredIds(), token);
         }
 
         return starredItemsCompletable.concatWith(unstarredItemsCompletable);

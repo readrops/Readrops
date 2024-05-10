@@ -42,7 +42,19 @@ class FreshRSSRepository(
     ): Pair<SyncResult, ErrorResult> = throw NotImplementedError("This method can't be called here")
 
     override suspend fun synchronize(): SyncResult {
-        val syncData = FreshRSSSyncData()
+        val itemStateChanges = database.newItemStateChangeDao()
+            .selectItemStateChanges(account.id)
+
+        val syncData = FreshRSSSyncData(
+            readIds = itemStateChanges.filter { it.readChange && it.read }
+                .map { it.remoteId },
+            unreadIds = itemStateChanges.filter { it.readChange && !it.read }
+                .map { it.remoteId },
+            starredIds = itemStateChanges.filter { it.starChange && it.starred }
+                .map { it.remoteId },
+            unstarredIds = itemStateChanges.filter { it.starChange && !it.starred }
+                .map { it.remoteId }
+        )
 
         val syncType: SyncType
         if (account.lastModified != 0L) {
@@ -65,6 +77,8 @@ class FreshRSSRepository(
 
             account.lastModified = newLastModified
             database.newAccountDao().updateLastModified(newLastModified, account.id)
+
+            database.newItemStateChangeDao().resetStateChanges(account.id)
         }
     }
 

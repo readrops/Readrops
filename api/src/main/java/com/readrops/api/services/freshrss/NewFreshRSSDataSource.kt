@@ -121,22 +121,22 @@ class NewFreshRSSDataSource(private val service: NewFreshRSSService) {
     }
 
     private suspend fun setItemsReadState(syncData: FreshRSSSyncData, token: String) {
-        if (syncData.readItemsIds.isNotEmpty()) {
-            setItemsReadState(true, syncData.readItemsIds, token)
+        if (syncData.readIds.isNotEmpty()) {
+            setItemsReadState(true, syncData.readIds, token)
         }
 
-        if (syncData.unreadItemsIds.isNotEmpty()) {
-            setItemsReadState(false, syncData.unreadItemsIds, token)
+        if (syncData.unreadIds.isNotEmpty()) {
+            setItemsReadState(false, syncData.unreadIds, token)
         }
     }
 
     private suspend fun setItemsStarState(syncData: FreshRSSSyncData, token: String) {
-        if (syncData.starredItemsIds.isNotEmpty()) {
-            setItemStarState(true, syncData.starredItemsIds, token)
+        if (syncData.starredIds.isNotEmpty()) {
+            setItemStarState(true, syncData.starredIds, token)
         }
 
-        if (syncData.unstarredItemsIds.isNotEmpty()) {
-            setItemStarState(false, syncData.unstarredItemsIds, token)
+        if (syncData.unstarredIds.isNotEmpty()) {
+            setItemStarState(false, syncData.unstarredIds, token)
         }
     }
 
