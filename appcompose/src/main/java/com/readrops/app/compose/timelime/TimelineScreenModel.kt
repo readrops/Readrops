@@ -3,7 +3,7 @@ package com.readrops.app.compose.timelime
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -68,7 +68,8 @@ class TimelineScreenModel(
                                 database.newItemDao().selectAll(query)
                             },
                         ).flow
-                            .cachedIn(screenModelScope)
+                            .cachedIn(screenModelScope),
+                        isAccountLocal = account.isLocal
                     )
                 }
 
@@ -319,7 +320,7 @@ class TimelineScreenModel(
 
 }
 
-@Immutable
+@Stable
 data class TimelineState(
     val isRefreshing: Boolean = false,
     val isDrawerOpen: Boolean = false,
@@ -334,10 +335,13 @@ data class TimelineState(
     val filterFolderName: String = "",
     val foldersAndFeeds: Map<Folder?, List<Feed>> = emptyMap(),
     val itemState: Flow<PagingData<ItemWithFeed>> = emptyFlow(),
-    val dialog: DialogState? = null
+    val dialog: DialogState? = null,
+    val isAccountLocal: Boolean = false
 ) {
 
     val showSubtitle = filters.subFilter != SubFilter.ALL
+
+    val displayRefreshScreen = isRefreshing && isAccountLocal
 }
 
 sealed interface DialogState {

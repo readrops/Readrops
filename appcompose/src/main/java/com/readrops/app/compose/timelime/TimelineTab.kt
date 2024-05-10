@@ -293,7 +293,7 @@ object TimelineTab : Tab {
                         .nestedScroll(pullToRefreshState.nestedScrollConnection)
                 ) {
                     when {
-                        state.isRefreshing -> RefreshScreen(
+                        state.displayRefreshScreen -> RefreshScreen(
                             currentFeed = state.currentFeed,
                             feedCount = state.feedCount,
                             feedMax = state.feedMax
