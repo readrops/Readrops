@@ -65,6 +65,8 @@ kotlinxmlbuilder = "org.redundent:kotlin-xml-builder:1.7.3" #TODO update this
 
 jdk-desugar = "com.android.tools:desugar_jdk_libs:2.0.4"
 
+encrypted-preferences = "androidx.security:security-crypto:1.1.0-alpha06"
+
 [bundles]
 compose = ["bom", "compose-foundation", "compose-runtime", "compose-animation",
     "compose-ui", "compose-ui-tooling", "compose-ui-tooling-preview", "compose-material3"]

@@ -36,8 +36,8 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.readrops.app.compose.R
 import com.readrops.app.compose.home.HomeScreen
-import com.readrops.app.compose.util.components.AndroidScreen
 import com.readrops.app.compose.util.ErrorMessage
+import com.readrops.app.compose.util.components.AndroidScreen
 import com.readrops.app.compose.util.theme.ShortSpacer
 import com.readrops.app.compose.util.theme.VeryLargeSpacer
 import com.readrops.app.compose.util.theme.spacing
@@ -118,7 +118,7 @@ class AccountCredentialsScreen(
                     label = { Text(text = stringResource(id = R.string.login)) },
                     singleLine = true,
                     isError = state.isLoginError,
-                    supportingText = { Text(text = state.passwordError?.errorText().orEmpty()) },
+                    supportingText = { Text(text = state.loginError?.errorText().orEmpty()) },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                     modifier = Modifier.fillMaxWidth()
                 )

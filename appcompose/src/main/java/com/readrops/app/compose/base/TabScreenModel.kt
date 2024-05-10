@@ -1,7 +1,10 @@
 package com.readrops.app.compose.base
 
+import android.content.SharedPreferences
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
+import com.readrops.api.services.Credentials
+import com.readrops.api.utils.AuthInterceptor
 import com.readrops.app.compose.repositories.BaseRepository
 import com.readrops.db.Database
 import com.readrops.db.entities.account.Account
@@ -35,8 +38,17 @@ abstract class TabScreenModel(
                 .distinctUntilChanged()
                 .collect { account ->
                     if (account != null) {
+                        if (account.login == null || account.password == null) {
+                            val encryptedPreferences = get<SharedPreferences>()
+
+                            account.login = encryptedPreferences.getString(account.loginKey, null)
+                            account.password = encryptedPreferences.getString(account.passwordKey, null)
+                        }
+
                         currentAccount = account
                         repository = get(parameters = { parametersOf(account) })
+                        // very important to avoid credentials conflicts between accounts
+                        get<AuthInterceptor>().credentials = Credentials.toCredentials(account)
 
                         accountEvent.emit(account)
                     }

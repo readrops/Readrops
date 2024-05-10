@@ -1,5 +1,6 @@
 package com.readrops.app.compose.account.credentials
 
+import android.content.SharedPreferences
 import android.util.Patterns
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
@@ -72,7 +73,13 @@ class AccountCredentialsScreenModel(
                         return@launch
                     }
 
-                    database.newAccountDao().insert(account)
+                    account.id = database.newAccountDao().insert(account).toInt()
+
+                    get<SharedPreferences>().edit()
+                        .putString(account.loginKey, account.login)
+                        .putString(account.passwordKey, account.password)
+                        .apply()
+
                     mutableState.update { it.copy(goToHomeScreen = true) }
                 }
             }
