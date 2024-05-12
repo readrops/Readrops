@@ -102,6 +102,13 @@ object TimelineTab : Tab {
             }
         }
 
+        LaunchedEffect(state.endSynchronizing) {
+            if (state.endSynchronizing) {
+                lazyListState.animateScrollToItem(0)
+                viewModel.resetEndSynchronizing()
+            }
+        }
+
         val drawerState = rememberDrawerState(
             initialValue = DrawerValue.Closed,
             confirmStateChange = {
@@ -147,7 +154,7 @@ object TimelineTab : Tab {
                 }
             }
         }
-        
+
         LaunchedEffect(state.syncError) {
             if (state.syncError != null) {
                 snackbarHostState.showSnackbar(ErrorMessage.get(state.syncError!!, context))

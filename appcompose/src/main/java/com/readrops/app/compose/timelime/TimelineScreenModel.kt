@@ -322,7 +322,9 @@ class TimelineScreenModel(
         }
     }
 
-
+    fun resetEndSynchronizing() {
+        _timelineState.update { it.copy(endSynchronizing = false) }
+    }
 }
 
 @Stable
