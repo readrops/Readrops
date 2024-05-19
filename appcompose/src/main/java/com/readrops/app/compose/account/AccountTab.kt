@@ -48,6 +48,7 @@ import com.readrops.app.compose.R
 import com.readrops.app.compose.account.credentials.AccountCredentialsScreen
 import com.readrops.app.compose.account.selection.AccountSelectionDialog
 import com.readrops.app.compose.account.selection.AccountSelectionScreen
+import com.readrops.app.compose.account.selection.adaptiveIconPainterResource
 import com.readrops.app.compose.timelime.ErrorListDialog
 import com.readrops.app.compose.util.components.ErrorDialog
 import com.readrops.app.compose.util.components.SelectableIconText
@@ -256,7 +257,7 @@ object AccountTab : Tab {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.ic_freshrss),
+                        painter = adaptiveIconPainterResource(id = R.drawable.ic_freshrss),
                         contentDescription = null,
                         modifier = Modifier.size(48.dp)
                     )

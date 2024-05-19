@@ -1,5 +1,7 @@
 package com.readrops.app.compose.feeds.dialogs
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.DropdownMenuItem
@@ -19,8 +21,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.readrops.app.compose.R
+import com.readrops.app.compose.account.selection.adaptiveIconPainterResource
 import com.readrops.app.compose.feeds.FeedScreenModel
 import com.readrops.app.compose.util.components.BaseDialog
 import com.readrops.app.compose.util.theme.LargeSpacer
@@ -82,14 +86,12 @@ fun AddFeedDialog(
                             viewModel.setAddFeedDialogSelectedAccount(account)
                         },
                         leadingIcon = {
-                            Icon(
-                                painter = painterResource(
-                                    id = if (state.selectedAccount.isLocal) {
-                                        R.drawable.ic_rss_feed_grey
-                                    } else
-                                        state.selectedAccount.accountType!!.iconRes
+                            Image(
+                                painter = adaptiveIconPainterResource(
+                                    id = state.selectedAccount.accountType!!.iconRes
                                 ),
-                                contentDescription = null
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp)
                             )
                         }
                     )
@@ -104,14 +106,12 @@ fun AddFeedDialog(
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
                 },
                 leadingIcon = {
-                    Icon(
-                        painter = painterResource(
-                            id = if (state.selectedAccount.isLocal) {
-                                R.drawable.ic_rss_feed_grey
-                            } else
-                                state.selectedAccount.accountType!!.iconRes
+                    Image(
+                        painter = adaptiveIconPainterResource(
+                            id = state.selectedAccount.accountType!!.iconRes
                         ),
-                        contentDescription = null
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
                     )
                 },
                 modifier = Modifier.menuAnchor()

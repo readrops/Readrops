@@ -16,6 +16,7 @@ import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.readrops.app.compose.BuildConfig
 import com.readrops.app.compose.R
+import com.readrops.app.compose.account.selection.adaptiveIconPainterResource
 import com.readrops.app.compose.util.components.SelectableIconText
 import com.readrops.app.compose.util.theme.LargeSpacer
 import com.readrops.app.compose.util.theme.MediumSpacer
@@ -41,7 +42,7 @@ object MoreTab : Tab {
             LargeSpacer()
 
             Image(
-                painter = painterResource(id = R.drawable.ic_freshrss),
+                painter = adaptiveIconPainterResource(id = R.mipmap.ic_launcher_round),
                 contentDescription = null,
                 modifier = Modifier.size(64.dp)
             )
