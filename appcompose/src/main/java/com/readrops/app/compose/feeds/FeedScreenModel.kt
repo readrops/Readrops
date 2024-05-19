@@ -1,9 +1,11 @@
 package com.readrops.app.compose.feeds
 
+import android.content.Context
 import android.util.Patterns
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.readrops.api.localfeed.LocalRSSDataSource
 import com.readrops.api.utils.HtmlParser
+import com.readrops.app.compose.R
 import com.readrops.app.compose.base.TabScreenModel
 import com.readrops.app.compose.repositories.GetFoldersWithFeeds
 import com.readrops.app.compose.util.components.TextFieldError
@@ -29,6 +31,7 @@ class FeedScreenModel(
     database: Database,
     private val getFoldersWithFeeds: GetFoldersWithFeeds,
     private val localRSSDataSource: LocalRSSDataSource,
+    private val context: Context
 ) : TabScreenModel(database), KoinComponent {
 
     private val _feedState = MutableStateFlow(FeedState())
@@ -47,6 +50,14 @@ class FeedScreenModel(
         screenModelScope.launch(context = Dispatchers.IO) {
             accountEvent
                 .flatMapConcat { account ->
+                    _feedState.update { it.copy(displayFolderCreationButton = account.config.canCreateFolder) }
+                    _updateFeedDialogState.update {
+                        it.copy(
+                            isFeedUrlReadOnly = account.config.isFeedUrlReadOnly,
+                            isNoFolderCase = account.config.isNoFolderCase
+                        )
+                    }
+
                     getFoldersWithFeeds.get(account.id, MainFilter.ALL)
                 }
                 .catch { throwable ->
@@ -77,14 +88,24 @@ class FeedScreenModel(
         screenModelScope.launch(context = Dispatchers.IO) {
             accountEvent
                 .flatMapConcat { account ->
+                    _updateFeedDialogState.update {
+                        it.copy(
+                            isFeedUrlReadOnly = account.config.isFeedUrlReadOnly,
+                            isNoFolderCase = account.config.isNoFolderCase
+                        )
+                    }
+
                     database.newFolderDao()
                         .selectFolders(account.id)
                 }
                 .collect { folders ->
                     _updateFeedDialogState.update {
                         it.copy(
-                            folders = folders,
-                            accountType = currentAccount!!.accountType
+                            folders = if (!it.isNoFolderCase) { // TODO implement no folder case properly
+                                folders + listOf(Folder(id = 0, name = context.resources.getString(R.string.no_folder)))
+                            } else {
+                                folders
+                            }
                         )
                     }
                 }

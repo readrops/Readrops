@@ -4,12 +4,12 @@ import com.readrops.app.compose.util.components.TextFieldError
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.account.Account
-import com.readrops.db.entities.account.AccountType
 
 data class FeedState(
     val foldersAndFeeds: FolderAndFeedsState = FolderAndFeedsState.InitialState,
     val dialog: DialogState? = null,
-    val areFoldersExpanded: Boolean = false
+    val areFoldersExpanded: Boolean = false,
+    val displayFolderCreationButton: Boolean = false
 )
 
 sealed interface DialogState {
@@ -43,19 +43,17 @@ data class UpdateFeedDialogState(
     val feedNameError: TextFieldError? = null,
     val feedUrl: String = "",
     val feedUrlError: TextFieldError? = null,
-    val accountType: AccountType? = null,
     val selectedFolder: Folder? = null,
     val folders: List<Folder> = listOf(),
     val isAccountDropDownExpanded: Boolean = false,
+    val isFeedUrlReadOnly: Boolean = true,
+    val isNoFolderCase: Boolean = false
 ) {
     val isFeedNameError
         get() = feedNameError != null
 
     val isFeedUrlError
         get() = feedUrlError != null
-
-    val isFeedUrlReadOnly: Boolean
-        get() = accountType != null && !accountType.accountConfig!!.isFeedUrlEditable
 
     val hasFolders = folders.isNotEmpty()
 }

@@ -116,7 +116,7 @@ public class EditFeedDialogFragment extends DialogFragment implements AdapterVie
         feedUrl = v.findViewById(R.id.edit_feed_url_edit_text);
         folder = v.findViewById(R.id.edit_feed_folder_spinner);
 
-        if (!account.getAccountType().getAccountConfig().isFeedUrlEditable())
+        if (!account.getAccountType().getAccountConfig().isFeedUrlReadOnly())
             feedUrl.setEnabled(false);
 
         feedName.setText(feedWithFolder.getFeed().getName());

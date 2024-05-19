@@ -57,6 +57,7 @@ fun UpdateFeedDialog(
             label = { Text(text = stringResource(R.string.feed_url)) },
             singleLine = true,
             readOnly = state.isFeedUrlReadOnly,
+            enabled = !state.isFeedUrlReadOnly,
             isError = state.isFeedUrlError,
             supportingText = {
                 if (state.isFeedUrlError) {

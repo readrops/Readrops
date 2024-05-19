@@ -178,19 +178,21 @@ object FeedTab : Tab {
             },
             floatingActionButton = {
                 Column {
-                    SmallFloatingActionButton(
-                        modifier = Modifier
-                            .padding(
-                                start = MaterialTheme.spacing.veryShortSpacing,
-                                bottom = MaterialTheme.spacing.shortSpacing
-                            ),
-                        onClick = { viewModel.openDialog(DialogState.AddFolder) }
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_new_folder),
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp)
-                        )
+                    if (state.displayFolderCreationButton) {
+                        SmallFloatingActionButton(
+                            modifier = Modifier
+                                .padding(
+                                    start = MaterialTheme.spacing.veryShortSpacing,
+                                    bottom = MaterialTheme.spacing.shortSpacing
+                                ),
+                            onClick = { viewModel.openDialog(DialogState.AddFolder) }
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_new_folder),
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
                     }
 
                     FloatingActionButton(

@@ -23,7 +23,7 @@ val composeAppModule = module {
 
     factory { TimelineScreenModel(get(), get()) }
 
-    factory { FeedScreenModel(get(), get(), get()) }
+    factory { FeedScreenModel(get(), get(), get(), androidContext()) }
 
     factory { AccountSelectionScreenModel(get()) }
 
