@@ -102,7 +102,12 @@ class FeedScreenModel(
                     _updateFeedDialogState.update {
                         it.copy(
                             folders = if (!it.isNoFolderCase) { // TODO implement no folder case properly
-                                folders + listOf(Folder(id = 0, name = context.resources.getString(R.string.no_folder)))
+                                folders + listOf(
+                                    Folder(
+                                        id = 0,
+                                        name = context.resources.getString(R.string.no_folder)
+                                    )
+                                )
                             } else {
                                 folders
                             }
@@ -128,6 +133,7 @@ class FeedScreenModel(
                 it.copy(
                     folder = Folder(),
                     nameError = null,
+                    exception = null
                 )
             }
         }
@@ -166,7 +172,11 @@ class FeedScreenModel(
 
     fun deleteFolder(folder: Folder) {
         screenModelScope.launch(Dispatchers.IO) {
-            repository?.deleteFolder(folder)
+            try {
+                repository?.deleteFolder(folder)
+            } catch (e: Exception) {
+                _feedState.update { it.copy(exception = e) }
+            }
         }
     }
 
@@ -340,17 +350,24 @@ class FeedScreenModel(
         }
 
         screenModelScope.launch(Dispatchers.IO) {
-            if (updateFolder) {
-                repository?.updateFolder(_folderState.value.folder)
-            } else {
-                repository?.addFolder(_folderState.value.folder.apply {
-                    accountId = currentAccount!!.id
-                })
+            try {
+                if (updateFolder) {
+                    repository?.updateFolder(_folderState.value.folder)
+                } else {
+                    repository?.addFolder(_folderState.value.folder.apply {
+                        accountId = currentAccount!!.id
+                    })
+                }
+            } catch (e: Exception) {
+                _folderState.update { it.copy(exception = e) }
+                return@launch
             }
 
             closeDialog(DialogState.AddFolder)
         }
     }
+
+    fun resetException() = _feedState.update { it.copy(exception = null) }
 
     // add/update folder
 }

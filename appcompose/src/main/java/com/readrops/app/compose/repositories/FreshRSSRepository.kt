@@ -85,8 +85,18 @@ class FreshRSSRepository(
     override suspend fun insertNewFeeds(
         newFeeds: List<Feed>,
         onUpdate: (Feed) -> Unit
-    ): ErrorResult {
-        TODO("Not yet implemented")
+    ): ErrorResult = TODO("Not yet implemented")
+
+    override suspend fun updateFolder(folder: Folder) {
+        dataSource.updateFolder(account.writeToken!!, folder.remoteId!!, folder.name!!)
+        folder.remoteId = NewFreshRSSDataSource.FOLDER_PREFIX + folder.name
+
+        super.updateFolder(folder)
+    }
+
+    override suspend fun deleteFolder(folder: Folder) {
+        dataSource.deleteFolder(account.writeToken!!, folder.remoteId!!)
+        super.deleteFolder(folder)
     }
 
     private suspend fun insertFeeds(feeds: List<Feed>) {

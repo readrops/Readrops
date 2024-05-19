@@ -9,7 +9,8 @@ data class FeedState(
     val foldersAndFeeds: FolderAndFeedsState = FolderAndFeedsState.InitialState,
     val dialog: DialogState? = null,
     val areFoldersExpanded: Boolean = false,
-    val displayFolderCreationButton: Boolean = false
+    val displayFolderCreationButton: Boolean = false,
+    val exception: Exception? = null
 )
 
 sealed interface DialogState {
@@ -61,8 +62,9 @@ data class UpdateFeedDialogState(
 data class FolderState(
     val folder: Folder = Folder(),
     val nameError: TextFieldError? = null,
+    val exception: Exception? = null
 ) {
     val name = folder.name
 
-    val isError = nameError != null
+    val isTextFieldError = nameError != null
 }

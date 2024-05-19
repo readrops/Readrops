@@ -25,6 +25,7 @@ class GetFoldersWithFeeds(
                         Folder(
                             id = it.folderId!!,
                             name = it.folderName,
+                            remoteId = it.folderRemoteId,
                             accountId = it.accountId
                         )
                     } else {

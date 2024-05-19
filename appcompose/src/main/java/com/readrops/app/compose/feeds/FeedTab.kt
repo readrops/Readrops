@@ -17,13 +17,18 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
@@ -38,6 +43,7 @@ import com.readrops.app.compose.feeds.dialogs.AddFeedDialog
 import com.readrops.app.compose.feeds.dialogs.FeedModalBottomSheet
 import com.readrops.app.compose.feeds.dialogs.FolderDialog
 import com.readrops.app.compose.feeds.dialogs.UpdateFeedDialog
+import com.readrops.app.compose.util.ErrorMessage
 import com.readrops.app.compose.util.components.CenteredProgressIndicator
 import com.readrops.app.compose.util.components.ErrorMessage
 import com.readrops.app.compose.util.components.Placeholder
@@ -59,10 +65,19 @@ object FeedTab : Tab {
     override fun Content() {
         val haptic = LocalHapticFeedback.current
         val uriHandler = LocalUriHandler.current
+        val context = LocalContext.current
 
         val viewModel = getScreenModel<FeedScreenModel>()
-
         val state by viewModel.feedsState.collectAsStateWithLifecycle()
+
+        val snackbarHostState = remember { SnackbarHostState() }
+
+        LaunchedEffect(state.exception) {
+            if (state.exception != null) {
+                snackbarHostState.showSnackbar(ErrorMessage.get(state.exception!!, context))
+                viewModel.resetException()
+            }
+        }
 
         when (val dialog = state.dialog) {
             is DialogState.AddFeed -> {
@@ -204,7 +219,8 @@ object FeedTab : Tab {
                         )
                     }
                 }
-            }
+            },
+            snackbarHost = { SnackbarHost(snackbarHostState) }
         ) { paddingValues ->
             Box(
                 modifier = Modifier
