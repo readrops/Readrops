@@ -121,21 +121,29 @@ class FeedScreenModel(
         _feedState.update { it.copy(areFoldersExpanded = isExpanded) }
 
     fun closeDialog(dialog: DialogState? = null) {
-        if (dialog is DialogState.AddFeed) {
-            _addFeedDialogState.update {
-                it.copy(
-                    url = "",
-                    error = null,
-                )
+        when (dialog) {
+            is DialogState.AddFeed -> {
+                _addFeedDialogState.update {
+                    it.copy(
+                        url = "",
+                        error = null,
+                        exception = null
+                    )
+                }
             }
-        } else if (dialog is DialogState.AddFolder || dialog is DialogState.UpdateFolder) {
-            _folderState.update {
-                it.copy(
-                    folder = Folder(),
-                    nameError = null,
-                    exception = null
-                )
+            is DialogState.AddFolder, is DialogState.UpdateFolder -> {
+                _folderState.update {
+                    it.copy(
+                        folder = Folder(),
+                        nameError = null,
+                        exception = null
+                    )
+                }
             }
+            is DialogState.UpdateFeed -> {
+                _updateFeedDialogState.update { it.copy(exception = null) }
+            }
+            else -> {}
         }
 
         _feedState.update { it.copy(dialog = null) }
@@ -166,7 +174,11 @@ class FeedScreenModel(
 
     fun deleteFeed(feed: Feed) {
         screenModelScope.launch(Dispatchers.IO) {
-            repository?.deleteFeed(feed)
+            try {
+                repository?.deleteFeed(feed)
+            } catch (e: Exception) {
+                _feedState.update { it.copy(exception = e) }
+            }
         }
     }
 
@@ -180,7 +192,7 @@ class FeedScreenModel(
         }
     }
 
-    // Add feed
+    //region Add Feed
 
     fun setAddFeedDialogURL(url: String) {
         _addFeedDialogState.update {
@@ -218,12 +230,7 @@ class FeedScreenModel(
             else -> screenModelScope.launch(Dispatchers.IO) {
                 try {
                     if (localRSSDataSource.isUrlRSSResource(url)) {
-                        // TODO add support for all account types
-                        repository?.insertNewFeeds(
-                            newFeeds = listOf(Feed(url = url))
-                        ) {}
-
-                        closeDialog(DialogState.AddFeed)
+                        insertFeeds(listOf(Feed(url = url)))
                     } else {
                         val rssUrls = HtmlParser.getFeedLink(url, get())
 
@@ -232,12 +239,7 @@ class FeedScreenModel(
                                 it.copy(error = TextFieldError.NoRSSFeed)
                             }
                         } else {
-                            // TODO add support for all account types
-                            repository?.insertNewFeeds(
-                                newFeeds = rssUrls.map { Feed(url = it.url) }
-                            ) {}
-
-                            closeDialog(DialogState.AddFeed)
+                            insertFeeds(rssUrls.map { Feed(url = it.url) })
                         }
                     }
                 } catch (e: Exception) {
@@ -250,9 +252,22 @@ class FeedScreenModel(
         }
     }
 
-    // add feed
+    private suspend fun insertFeeds(feeds: List<Feed>) {
+        val errors = repository?.insertNewFeeds(
+            newFeeds = feeds,
+            onUpdate = { /* no need of this here */ }
+        )!!
 
-    // update feed
+        if (errors.isEmpty()) {
+            closeDialog(DialogState.AddFeed)
+        } else {
+            _addFeedDialogState.update { it.copy(exception = errors.values.first()) }
+        }
+    }
+
+    //endregion
+
+    //region Update feed
 
     fun setAccountDropDownState(isExpanded: Boolean) {
         _updateFeedDialogState.update {
@@ -311,16 +326,24 @@ class FeedScreenModel(
             }
 
             else -> {
+                _updateFeedDialogState.update { it.copy(exception = null) }
+
                 screenModelScope.launch(Dispatchers.IO) {
                     with(_updateFeedDialogState.value) {
-                        repository?.updateFeed(
-                            Feed(
-                                id = feedId,
-                                name = feedName,
-                                url = feedUrl,
-                                folderId = selectedFolder?.id
+                        try {
+                            repository?.updateFeed(
+                                Feed(
+                                    id = feedId,
+                                    name = feedName,
+                                    url = feedUrl,
+                                    folderId = selectedFolder?.id,
+                                    remoteFolderId = selectedFolder?.remoteId
+                                )
                             )
-                        )
+                        } catch (e: Exception) {
+                            _updateFeedDialogState.update { it.copy(exception = e) }
+                            return@launch
+                        }
                     }
 
                     closeDialog()
@@ -329,9 +352,9 @@ class FeedScreenModel(
         }
     }
 
-    // update feed
+    //endregion
 
-    // add/update folder
+    //region Add/Update folder
 
     fun setFolderName(name: String) = _folderState.update {
         it.copy(
@@ -369,5 +392,5 @@ class FeedScreenModel(
 
     fun resetException() = _feedState.update { it.copy(exception = null) }
 
-    // add/update folder
+    //endregion
 }

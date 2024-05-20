@@ -85,7 +85,31 @@ class FreshRSSRepository(
     override suspend fun insertNewFeeds(
         newFeeds: List<Feed>,
         onUpdate: (Feed) -> Unit
-    ): ErrorResult = TODO("Not yet implemented")
+    ): ErrorResult {
+        val errors = mutableMapOf<Feed, Exception>()
+
+        for (newFeed in newFeeds) {
+            onUpdate(newFeed)
+
+            try {
+                dataSource.createFeed(account.writeToken!!, newFeed.url!!)
+            } catch (e: Exception) {
+                errors[newFeed] = e
+            }
+        }
+
+        return errors
+    }
+
+    override suspend fun updateFeed(feed: Feed) {
+        dataSource.updateFeed(account.writeToken!!, feed.url!!, feed.name!!, feed.remoteFolderId!!)
+        super.updateFeed(feed)
+    }
+
+    override suspend fun deleteFeed(feed: Feed) {
+        dataSource.deleteFeed(account.writeToken!!, feed.url!!)
+        super.deleteFeed(feed)
+    }
 
     override suspend fun updateFolder(folder: Folder) {
         dataSource.updateFolder(account.writeToken!!, folder.remoteId!!, folder.name!!)

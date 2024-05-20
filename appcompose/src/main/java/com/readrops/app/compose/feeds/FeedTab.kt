@@ -123,7 +123,7 @@ object FeedTab : Tab {
             is DialogState.UpdateFeed -> {
                 UpdateFeedDialog(
                     viewModel = viewModel,
-                    onDismissRequest = { viewModel.closeDialog() }
+                    onDismissRequest = { viewModel.closeDialog(dialog) }
                 )
             }
 

@@ -5,17 +5,20 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.readrops.app.compose.R
 import com.readrops.app.compose.feeds.FeedScreenModel
+import com.readrops.app.compose.util.ErrorMessage
 import com.readrops.app.compose.util.components.BaseDialog
 import com.readrops.app.compose.util.theme.LargeSpacer
 import com.readrops.app.compose.util.theme.MediumSpacer
@@ -116,6 +119,15 @@ fun UpdateFeedDialog(
                     }
                 },
                 modifier = Modifier.menuAnchor()
+            )
+        }
+
+        if (state.exception != null) {
+            MediumSpacer()
+
+            Text(
+                text = ErrorMessage.get(state.exception!!, LocalContext.current),
+                color = MaterialTheme.colorScheme.error
             )
         }
 
