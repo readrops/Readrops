@@ -64,6 +64,10 @@ fun UpdateFeedDialog(
                     Text(
                         text = state.feedUrlError?.errorText().orEmpty()
                     )
+                } else if (state.isFeedUrlReadOnly) {
+                    Text(
+                        text = stringResource(id = R.string.feed_url_read_only)
+                    )
                 }
             }
         )
