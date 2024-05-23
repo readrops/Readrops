@@ -53,6 +53,9 @@ abstract class NewFeedDao : NewBaseDao<Feed> {
     @Query("Delete from Feed Where remoteId in (:ids) And account_id = :accountId")
     abstract fun deleteByIds(ids: List<String>, accountId: Int)
 
+    @Query("Update Feed set background_color = :color Where id = :feedId")
+    abstract fun updateFeedColor(feedId: Int, color: Int)
+
     /**
      * Insert, update and delete feeds by account
      *
@@ -68,20 +71,24 @@ abstract class NewFeedDao : NewBaseDao<Feed> {
         val feedsToDelete = localFeedIds.filter { localFeedId -> feeds.none { feed -> localFeedId == feed.remoteId } }
 
         feeds.forEach { feed ->
-                feed.folderId = if (feed.remoteFolderId == null) {
-                    null
-                } else {
-                    selectRemoteFolderLocalId(feed.remoteFolderId!!, account.id)
-                }
-
-                // works only for already existing feeds
-                updateFeedNameAndFolder(feed.remoteId!!, account.id, feed.name!!, feed.folderId)
+            feed.folderId = if (feed.remoteFolderId == null) {
+                null
+            } else {
+                selectRemoteFolderLocalId(feed.remoteFolderId!!, account.id)
             }
+
+            // works only for already existing feeds
+            updateFeedNameAndFolder(feed.remoteId!!, account.id, feed.name!!, feed.folderId)
+        }
 
         if (feedsToDelete.isNotEmpty()) {
             deleteByIds(feedsToDelete, account.id)
         }
 
-        return insert(feedsToInsert)
+        return if (feedsToInsert.isNotEmpty()) {
+            insert(feedsToInsert).apply {
+                feedsToInsert.zip(this).forEach { (feed, id) -> feed.id = id.toInt() }
+            }
+        } else listOf()
     }
 }

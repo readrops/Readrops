@@ -2,6 +2,7 @@ package com.readrops.app.compose.timelime
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -11,6 +12,7 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import com.readrops.app.compose.base.TabScreenModel
 import com.readrops.app.compose.repositories.ErrorResult
 import com.readrops.app.compose.repositories.GetFoldersWithFeeds
+import com.readrops.app.compose.util.FeedColors
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
@@ -108,8 +110,21 @@ class TimelineScreenModel(
                 _timelineState.update { it.copy(isRefreshing = true) }
 
                 try {
-                    repository?.synchronize()
+                    val result = repository!!.synchronize()
+
+                    // TODO put this in a foreground worker
+                    for (feedId in result.newFeedIds) {
+                        val color = try {
+                            FeedColors.getFeedColor(result.feeds.first { it.id == feedId.toInt() }.iconUrl!!)
+                        } catch (e: Exception) {
+                            0
+                        }
+
+                        database.newFeedDao().updateFeedColor(feedId.toInt(), color)
+                    }
+
                 } catch (e: Exception) {
+                    Log.e("TimelineScreenModel", "${e.message}")
                     _timelineState.update { it.copy(syncError = e, isRefreshing = false) }
                     return@launch
                 }

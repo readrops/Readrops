@@ -68,7 +68,7 @@ class FreshRSSRepository(
 
         return dataSource.synchronize(syncType, syncData, account.writeToken!!).apply {
             insertFolders(folders)
-            insertFeeds(feeds)
+            newFeedIds = insertFeeds(feeds)
 
             insertItems(items, false)
             insertItems(starredItems, true)
@@ -123,9 +123,9 @@ class FreshRSSRepository(
         super.deleteFolder(folder)
     }
 
-    private suspend fun insertFeeds(feeds: List<Feed>) {
+    private suspend fun insertFeeds(feeds: List<Feed>): List<Long> {
         feeds.forEach { it.accountId = account.id }
-        database.newFeedDao().upsertFeeds(feeds, account)
+        return database.newFeedDao().upsertFeeds(feeds, account)
     }
 
     private suspend fun insertFolders(folders: List<Folder>) {

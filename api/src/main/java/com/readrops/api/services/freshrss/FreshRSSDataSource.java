@@ -11,6 +11,7 @@ import com.readrops.db.entities.Folder;
 import com.readrops.db.entities.Item;
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -100,7 +101,7 @@ public class FreshRSSDataSource {
                     getItemsIds(null, GOOGLE_STARRED, MAX_STARRED_ITEMS), // starred items ids
                     getStarredItems(MAX_STARRED_ITEMS),
                     (readState, starState, folders, feeds, items, unreadItemsIds, starredItemsIds, starredItems) ->
-                            new SyncResult(items, starredItems, feeds, folders, unreadItemsIds, Collections.emptyList(), starredItemsIds, false)
+                            new SyncResult(items, starredItems, feeds, new ArrayList<>(), folders, unreadItemsIds, Collections.emptyList(), starredItemsIds, false)
             );
         } else {
             return Single.zip(setItemsReadState(syncData, writeToken).toSingleDefault(""),
@@ -112,7 +113,7 @@ public class FreshRSSDataSource {
                     getItemsIds(GOOGLE_UNREAD, GOOGLE_READING_LIST, MAX_ITEMS), // read items ids
                     getItemsIds(null, GOOGLE_STARRED, MAX_STARRED_ITEMS), // starred items ids
                     (readState, starState, folders, feeds, items, unreadItemsIds, readItemsIds, starredItemsIds) ->
-                            new SyncResult(items, Collections.emptyList(), feeds, folders, unreadItemsIds, readItemsIds, starredItemsIds, false)
+                            new SyncResult(items, Collections.emptyList(), feeds, new ArrayList<>(), folders, unreadItemsIds, readItemsIds, starredItemsIds, false)
 
             );
         }
