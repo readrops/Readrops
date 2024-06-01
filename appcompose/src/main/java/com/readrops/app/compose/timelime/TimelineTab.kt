@@ -98,7 +98,7 @@ object TimelineTab : Tab {
         // so we need to listen to the internal state change to trigger the refresh
         LaunchedEffect(pullToRefreshState.isRefreshing) {
             if (pullToRefreshState.isRefreshing && !state.isRefreshing) {
-                viewModel.refreshTimeline()
+                viewModel.refreshTimeline(context)
             }
         }
 
@@ -158,6 +158,7 @@ object TimelineTab : Tab {
         LaunchedEffect(state.syncError) {
             if (state.syncError != null) {
                 snackbarHostState.showSnackbar(ErrorMessage.get(state.syncError!!, context))
+                viewModel.resetSyncError()
             }
         }
 
@@ -272,7 +273,7 @@ object TimelineTab : Tab {
                             }
 
                             IconButton(
-                                onClick = { viewModel.refreshTimeline() }
+                                onClick = { viewModel.refreshTimeline(context) }
                             ) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_sync),

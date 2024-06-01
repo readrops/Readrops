@@ -2,7 +2,6 @@ package com.readrops.app.compose.timelime
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -12,7 +11,7 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import com.readrops.app.compose.base.TabScreenModel
 import com.readrops.app.compose.repositories.ErrorResult
 import com.readrops.app.compose.repositories.GetFoldersWithFeeds
-import com.readrops.app.compose.util.FeedColors
+import com.readrops.app.compose.sync.SyncWorker
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
@@ -102,38 +101,33 @@ class TimelineScreenModel(
         }
     }
 
-    fun refreshTimeline() {
+    fun refreshTimeline(context: Context) {
         screenModelScope.launch(dispatcher) {
             if (currentAccount!!.isLocal) {
                 refreshLocalAccount()
             } else {
                 _timelineState.update { it.copy(isRefreshing = true) }
 
-                try {
-                    val result = repository!!.synchronize()
-
-                    // TODO put this in a foreground worker
-                    for (feedId in result.newFeedIds) {
-                        val color = try {
-                            FeedColors.getFeedColor(result.feeds.first { it.id == feedId.toInt() }.iconUrl!!)
-                        } catch (e: Exception) {
-                            0
+                SyncWorker.startNow(context) { data ->
+                    when {
+                        data.outputData.getBoolean(SyncWorker.END_SYNC_KEY, false) -> {
+                            _timelineState.update {
+                                it.copy(
+                                    isRefreshing = false,
+                                    endSynchronizing = true
+                                )
+                            }
                         }
 
-                        database.newFeedDao().updateFeedColor(feedId.toInt(), color)
+                        data.outputData.getBoolean(SyncWorker.SYNC_FAILURE_KEY, false) -> {
+                            _timelineState.update {
+                                it.copy(
+                                    syncError = Exception(), // TODO see how to improve this
+                                    isRefreshing = false
+                                )
+                            }
+                        }
                     }
-
-                } catch (e: Exception) {
-                    Log.e("TimelineScreenModel", "${e.message}")
-                    _timelineState.update { it.copy(syncError = e, isRefreshing = false) }
-                    return@launch
-                }
-
-                _timelineState.update {
-                    it.copy(
-                        isRefreshing = false,
-                        endSynchronizing = true
-                    )
                 }
             }
         }
@@ -339,6 +333,10 @@ class TimelineScreenModel(
 
     fun resetEndSynchronizing() {
         _timelineState.update { it.copy(endSynchronizing = false) }
+    }
+
+    fun resetSyncError() {
+        _timelineState.update { it.copy(syncError = null) }
     }
 }
 

@@ -93,4 +93,5 @@ dependencies {
     coreLibraryDesugaring(libs.jdk.desugar)
 
     implementation(libs.encrypted.preferences)
+    implementation(libs.work.manager)
 }
