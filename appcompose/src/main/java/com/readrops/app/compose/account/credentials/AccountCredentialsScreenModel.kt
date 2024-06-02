@@ -1,6 +1,5 @@
 package com.readrops.app.compose.account.credentials
 
-import android.content.Context
 import android.content.SharedPreferences
 import android.util.Patterns
 import cafe.adriel.voyager.core.model.StateScreenModel
@@ -9,7 +8,6 @@ import com.readrops.app.compose.repositories.BaseRepository
 import com.readrops.app.compose.util.components.TextFieldError
 import com.readrops.db.Database
 import com.readrops.db.entities.account.Account
-import com.readrops.db.entities.account.AccountType
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.update
@@ -19,15 +17,25 @@ import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
 
 class AccountCredentialsScreenModel(
-    private val accountType: AccountType,
+    private val account: Account,
+    private val mode: AccountCredentialsScreenMode,
     private val database: Database,
-    private val context: Context,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : StateScreenModel<AccountCredentialsState>(AccountCredentialsState(name = accountType.name)),
-    KoinComponent {
+) : StateScreenModel<AccountCredentialsState>(AccountCredentialsState()), KoinComponent {
 
     init {
-        mutableState.update { it.copy(name = context.resources.getString(accountType.typeName)) }
+        if (mode == AccountCredentialsScreenMode.EDIT_CREDENTIALS) {
+            mutableState.update {
+                it.copy(
+                    name = account.accountName!!,
+                    url = account.url!!,
+                    login = account.login!!,
+                    password = account.password!!
+                )
+            }
+        } else {
+            mutableState.update { it.copy(name = account.accountName!!) }
+        }
     }
 
     fun onEvent(event: Event): Unit = with(mutableState) {
@@ -48,20 +56,20 @@ class AccountCredentialsScreenModel(
             mutableState.update { it.copy(isLoginOnGoing = true) }
 
             with(state.value) {
-                val account = Account(
+                val newAccount = account.copy(
                     url = url,
                     accountName = name,
                     login = login,
                     password = password,
-                    accountType = accountType,
+                    accountType = account.accountType,
                     isCurrentAccount = true
                 )
 
-                val repository = get<BaseRepository> { parametersOf(account) }
+                val repository = get<BaseRepository> { parametersOf(newAccount) }
 
                 screenModelScope.launch(dispatcher) {
                     try {
-                        repository.login(account)
+                        repository.login(newAccount)
                     } catch (e: Exception) {
                         mutableState.update {
                             it.copy(
@@ -73,14 +81,18 @@ class AccountCredentialsScreenModel(
                         return@launch
                     }
 
-                    account.id = database.newAccountDao().insert(account).toInt()
+                    if (mode == AccountCredentialsScreenMode.NEW_CREDENTIALS) {
+                        newAccount.id = database.newAccountDao().insert(newAccount).toInt()
 
-                    get<SharedPreferences>().edit()
-                        .putString(account.loginKey, account.login)
-                        .putString(account.passwordKey, account.password)
-                        .apply()
+                        get<SharedPreferences>().edit()
+                            .putString(newAccount.loginKey, newAccount.login)
+                            .putString(newAccount.passwordKey, newAccount.password)
+                            .apply()
+                    } else {
+                        database.newAccountDao().update(newAccount)
+                    }
 
-                    mutableState.update { it.copy(goToHomeScreen = true) }
+                    mutableState.update { it.copy(exitScreen = true) }
                 }
             }
         }
@@ -129,7 +141,7 @@ data class AccountCredentialsState(
     val passwordError: TextFieldError? = null,
     val isPasswordVisible: Boolean = false,
     val isLoginOnGoing: Boolean = false,
-    val goToHomeScreen: Boolean = false,
+    val exitScreen: Boolean = false,
     val loginException: Exception? = null
 ) {
     val isUrlError = urlError != null

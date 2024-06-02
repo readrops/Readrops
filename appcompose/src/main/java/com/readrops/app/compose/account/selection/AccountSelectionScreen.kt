@@ -31,12 +31,14 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.readrops.app.compose.R
 import com.readrops.app.compose.account.credentials.AccountCredentialsScreen
+import com.readrops.app.compose.account.credentials.AccountCredentialsScreenMode
 import com.readrops.app.compose.home.HomeScreen
 import com.readrops.app.compose.util.components.AndroidScreen
 import com.readrops.app.compose.util.components.SelectableImageText
 import com.readrops.app.compose.util.theme.LargeSpacer
 import com.readrops.app.compose.util.theme.ShortSpacer
 import com.readrops.app.compose.util.theme.spacing
+import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
 
 class AccountSelectionScreen : AndroidScreen() {
@@ -56,8 +58,9 @@ class AccountSelectionScreen : AndroidScreen() {
 
             is NavState.GoToAccountCredentialsScreen -> {
                 val accountType = (state as NavState.GoToAccountCredentialsScreen).accountType
+                val account = Account(accountType = accountType, accountName = stringResource(id = accountType.typeName))
 
-                navigator.push(AccountCredentialsScreen(accountType))
+                navigator.push(AccountCredentialsScreen(account, AccountCredentialsScreenMode.NEW_CREDENTIALS))
                 screenModel.resetNavState()
             }
 

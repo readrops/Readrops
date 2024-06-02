@@ -46,6 +46,7 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.readrops.api.utils.ApiUtils
 import com.readrops.app.compose.R
 import com.readrops.app.compose.account.credentials.AccountCredentialsScreen
+import com.readrops.app.compose.account.credentials.AccountCredentialsScreenMode
 import com.readrops.app.compose.account.selection.AccountSelectionDialog
 import com.readrops.app.compose.account.selection.AccountSelectionScreen
 import com.readrops.app.compose.account.selection.adaptiveIconPainterResource
@@ -56,6 +57,7 @@ import com.readrops.app.compose.util.components.TwoChoicesDialog
 import com.readrops.app.compose.util.theme.LargeSpacer
 import com.readrops.app.compose.util.theme.MediumSpacer
 import com.readrops.app.compose.util.theme.spacing
+import com.readrops.db.entities.account.Account
 
 object AccountTab : Tab {
 
@@ -174,7 +176,12 @@ object AccountTab : Tab {
                     onDismiss = { screenModel.closeDialog() },
                     onValidate = { accountType ->
                         screenModel.closeDialog()
-                        navigator.push(AccountCredentialsScreen(accountType))
+
+                        val account = Account(
+                            accountType = accountType,
+                            accountName = context.resources.getString(accountType.typeName)
+                        )
+                        navigator.push(AccountCredentialsScreen(account, AccountCredentialsScreenMode.NEW_CREDENTIALS))
                     }
                 )
             }
@@ -279,7 +286,14 @@ object AccountTab : Tab {
                     style = MaterialTheme.typography.titleMedium,
                     spacing = MaterialTheme.spacing.mediumSpacing,
                     padding = MaterialTheme.spacing.mediumSpacing,
-                    onClick = { }
+                    onClick = {
+                        navigator.push(
+                            AccountCredentialsScreen(
+                                state.account,
+                                AccountCredentialsScreenMode.EDIT_CREDENTIALS
+                            )
+                        )
+                    }
                 )
 
                 SelectableIconText(

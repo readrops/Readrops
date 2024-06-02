@@ -5,6 +5,7 @@ import androidx.security.crypto.MasterKey
 import com.readrops.api.services.Credentials
 import com.readrops.app.compose.account.AccountScreenModel
 import com.readrops.app.compose.account.credentials.AccountCredentialsScreenModel
+import com.readrops.app.compose.account.credentials.AccountCredentialsScreenMode
 import com.readrops.app.compose.account.selection.AccountSelectionScreenModel
 import com.readrops.app.compose.feeds.FeedScreenModel
 import com.readrops.app.compose.item.ItemScreenModel
@@ -31,7 +32,9 @@ val composeAppModule = module {
 
     factory { (itemId: Int) -> ItemScreenModel(get(), itemId) }
 
-    factory { (accountType: AccountType) -> AccountCredentialsScreenModel(accountType, get(), androidContext()) }
+    factory { (accountType: Account, mode: AccountCredentialsScreenMode) ->
+        AccountCredentialsScreenModel(accountType, mode, get())
+    }
 
     single { GetFoldersWithFeeds(get()) }
 

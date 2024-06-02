@@ -42,23 +42,33 @@ import com.readrops.app.compose.util.components.AndroidScreen
 import com.readrops.app.compose.util.theme.ShortSpacer
 import com.readrops.app.compose.util.theme.VeryLargeSpacer
 import com.readrops.app.compose.util.theme.spacing
-import com.readrops.db.entities.account.AccountType
+import com.readrops.db.entities.account.Account
 import org.koin.core.parameter.parametersOf
 
+enum class AccountCredentialsScreenMode {
+    NEW_CREDENTIALS,
+    EDIT_CREDENTIALS
+}
+
 class AccountCredentialsScreen(
-    private val accountType: AccountType
+    private val account: Account,
+    private val mode: AccountCredentialsScreenMode
 ) : AndroidScreen() {
 
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
         val screenModel =
-            getScreenModel<AccountCredentialsScreenModel>(parameters = { parametersOf(accountType) })
+            getScreenModel<AccountCredentialsScreenModel>(parameters = { parametersOf(account, mode) })
 
         val state by screenModel.state.collectAsStateWithLifecycle()
 
-        if (state.goToHomeScreen) {
-            navigator.replaceAll(HomeScreen())
+        if (state.exitScreen) {
+            if (mode == AccountCredentialsScreenMode.NEW_CREDENTIALS) {
+                navigator.replaceAll(HomeScreen())
+            } else {
+                navigator.pop()
+            }
         }
 
         Box(
@@ -73,7 +83,7 @@ class AccountCredentialsScreen(
                     .verticalScroll(rememberScrollState())
             ) {
                 Image(
-                    painter = painterResource(id = accountType.iconRes),
+                    painter = painterResource(id = account.accountType!!.iconRes),
                     contentDescription = null,
                     modifier = Modifier.size(48.dp)
                 )
@@ -81,7 +91,7 @@ class AccountCredentialsScreen(
                 ShortSpacer()
 
                 Text(
-                    text = stringResource(id = accountType.typeName),
+                    text = stringResource(id = account.accountType!!.typeName),
                     style = MaterialTheme.typography.headlineMedium
                 )
 
