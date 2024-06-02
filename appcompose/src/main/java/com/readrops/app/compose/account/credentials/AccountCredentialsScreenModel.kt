@@ -1,5 +1,6 @@
 package com.readrops.app.compose.account.credentials
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.util.Patterns
 import cafe.adriel.voyager.core.model.StateScreenModel
@@ -20,21 +21,20 @@ import org.koin.core.parameter.parametersOf
 class AccountCredentialsScreenModel(
     private val accountType: AccountType,
     private val database: Database,
+    private val context: Context,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : StateScreenModel<AccountCredentialsState>(AccountCredentialsState(name = accountType.name)),
     KoinComponent {
+
+    init {
+        mutableState.update { it.copy(name = context.resources.getString(accountType.typeName)) }
+    }
 
     fun onEvent(event: Event): Unit = with(mutableState) {
         when (event) {
             is Event.LoginEvent -> update { it.copy(login = event.value, loginError = null) }
             is Event.NameEvent -> update { it.copy(name = event.value, nameError = null) }
-            is Event.PasswordEvent -> update {
-                it.copy(
-                    password = event.value,
-                    passwordError = null
-                )
-            }
-
+            is Event.PasswordEvent -> update { it.copy(password = event.value, passwordError = null) }
             is Event.URLEvent -> update { it.copy(url = event.value, urlError = null) }
         }
     }

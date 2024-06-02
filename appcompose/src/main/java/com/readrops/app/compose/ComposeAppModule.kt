@@ -31,7 +31,7 @@ val composeAppModule = module {
 
     factory { (itemId: Int) -> ItemScreenModel(get(), itemId) }
 
-    factory { (accountType: AccountType) -> AccountCredentialsScreenModel(accountType, get()) }
+    factory { (accountType: AccountType) -> AccountCredentialsScreenModel(accountType, get(), androidContext()) }
 
     single { GetFoldersWithFeeds(get()) }
 

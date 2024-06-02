@@ -80,6 +80,7 @@ object AccountTab : Tab {
 
         if (closeHome) {
             navigator.replaceAll(AccountSelectionScreen())
+            screenModel.resetCloseHome()
         }
 
         val opmlImportLauncher =

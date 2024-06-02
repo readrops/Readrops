@@ -138,6 +138,8 @@ class AccountScreenModel(
 
     fun resetOPMLState() =
         _accountState.update { it.copy(opmlExportUri = null, opmlExportSuccess = false) }
+
+    fun resetCloseHome() = _closeHome.update { false }
 }
 
 @Stable
