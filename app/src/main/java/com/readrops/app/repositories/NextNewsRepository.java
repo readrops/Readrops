@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import com.readrops.api.services.SyncResult;
 import com.readrops.api.services.SyncType;
 import com.readrops.api.services.nextcloudnews.NextNewsDataSource;
-import com.readrops.api.services.nextcloudnews.NextNewsSyncData;
+import com.readrops.api.services.nextcloudnews.NextcloudNewsSyncData;
 import com.readrops.api.utils.exceptions.UnknownFormatException;
 import com.readrops.app.addfeed.FeedInsertionResult;
 import com.readrops.app.addfeed.ParsingResult;
@@ -86,21 +86,21 @@ public class NextNewsRepository extends ARepository {
                     syncType = SyncType.INITIAL_SYNC;
                 }
 
-                NextNewsSyncData syncData = new NextNewsSyncData();
+                NextcloudNewsSyncData syncData = new NextcloudNewsSyncData();
 
-                if (syncType == SyncType.CLASSIC_SYNC) {
+                /*if (syncType == SyncType.CLASSIC_SYNC) {
                     syncData.setLastModified(account.getLastModified() / 1000L);
 
                     List<ItemReadStarState> itemStateChanges = database
                             .itemStateChangesDao()
                             .getNextcloudNewsStateChanges(account.getId());
 
-                    syncData.setReadItems(itemStateChanges.stream()
+                    syncData.setReadIds(itemStateChanges.stream()
                             .filter(it -> it.getReadChange() && it.getRead())
                             .map(ItemReadStarState::getRemoteId)
                             .collect(Collectors.toList()));
 
-                    syncData.setUnreadItems(itemStateChanges.stream()
+                    syncData.setUnreadIds(itemStateChanges.stream()
                             .filter(it -> it.getReadChange() && !it.getRead())
                             .map(ItemReadStarState::getRemoteId)
                             .collect(Collectors.toList()));
@@ -111,7 +111,7 @@ public class NextNewsRepository extends ARepository {
                             .collect(Collectors.toList());
 
                     if (!starredItemsIds.isEmpty()) {
-                        syncData.setStarredItems(database.itemDao().getStarChanges(starredItemsIds, account.getId()));
+                        syncData.setStarredIds(database.itemDao().getStarChanges(starredItemsIds, account.getId()));
                     }
 
                     List<String> unstarredItemsIds = itemStateChanges.stream()
@@ -120,10 +120,10 @@ public class NextNewsRepository extends ARepository {
                             .collect(Collectors.toList());
 
                     if (!unstarredItemsIds.isEmpty()) {
-                        syncData.setUnstarredItems(database.itemDao().getStarChanges(unstarredItemsIds, account.getId()));
+                        syncData.setUnstarredIds(database.itemDao().getStarChanges(unstarredItemsIds, account.getId()));
                     }
 
-                }
+                }*/
 
                 TimingLogger timings = new TimingLogger(TAG, "nextcloud news " + syncType.name().toLowerCase());
                 SyncResult result = dataSource.sync(syncType, syncData);

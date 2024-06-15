@@ -72,7 +72,7 @@ public class NextNewsDataSource {
         return response.body();
     }
 
-    public SyncResult sync(@NonNull SyncType syncType, @Nullable NextNewsSyncData data) throws IOException {
+    public SyncResult sync(@NonNull SyncType syncType, @Nullable NextcloudNewsSyncData data) throws IOException {
         SyncResult syncResult = new SyncResult();
         switch (syncType) {
             case INITIAL_SYNC:
@@ -113,7 +113,7 @@ public class NextNewsDataSource {
             syncResult.setStarredItems(starredItems);
     }
 
-    private void classicSync(SyncResult syncResult, NextNewsSyncData data) throws IOException {
+    private void classicSync(SyncResult syncResult, NextcloudNewsSyncData data) throws IOException {
         putModifiedItems(data, syncResult);
         getFeedsAndFolders(syncResult);
 
@@ -148,12 +148,12 @@ public class NextNewsDataSource {
 
     }
 
-    private void putModifiedItems(NextNewsSyncData data, SyncResult syncResult) throws IOException {
-        setReadState(data.getReadItems(), syncResult, StateType.READ);
-        setReadState(data.getUnreadItems(), syncResult, StateType.UNREAD);
+    private void putModifiedItems(NextcloudNewsSyncData data, SyncResult syncResult) throws IOException {
+        /*setReadState(data.getReadIds(), syncResult, StateType.READ);
+        setReadState(data.getUnreadIds(), syncResult, StateType.UNREAD);
 
-        setStarState(data.getStarredItems(), syncResult, StateType.STAR);
-        setStarState(data.getUnstarredItems(), syncResult, StateType.UNSTAR);
+        setStarState(data.getStarredIds(), syncResult, StateType.STAR);
+        setStarState(data.getUnstarredIds(), syncResult, StateType.UNSTAR);*/
     }
 
     public List<Folder> createFolder(Folder folder) throws IOException, UnknownFormatException, ConflictException {
