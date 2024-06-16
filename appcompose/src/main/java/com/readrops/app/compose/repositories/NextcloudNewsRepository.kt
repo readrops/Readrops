@@ -80,7 +80,35 @@ class NextcloudNewsRepository(
         newFeeds: List<Feed>,
         onUpdate: (Feed) -> Unit
     ): ErrorResult {
-        TODO("Not yet implemented")
+        val errors = mutableMapOf<Feed, Exception>()
+
+        for (newFeed in newFeeds) {
+            onUpdate(newFeed)
+
+            try {
+                val feeds = dataSource.createFeed(newFeed.url!!, null)
+                insertFeeds(feeds)
+            } catch (e: Exception) {
+                errors[newFeed] = e
+            }
+        }
+
+        return errors
+    }
+
+    override suspend fun updateFeed(feed: Feed) {
+        val folder =
+            if (feed.folderId != null) database.newFolderDao().select(feed.folderId!!) else null
+
+        dataSource.renameFeed(feed.name!!, feed.remoteId!!.toInt())
+        dataSource.changeFeedFolder(folder?.remoteId?.toInt(), feed.remoteId!!.toInt())
+
+        super.updateFeed(feed)
+    }
+
+    override suspend fun deleteFeed(feed: Feed) {
+        dataSource.deleteFeed(feed.remoteId!!.toInt())
+        super.deleteFeed(feed)
     }
 
     private suspend fun insertFolders(folders: List<Folder>) {

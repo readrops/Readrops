@@ -88,7 +88,7 @@ public class EditFeedDialogFragment extends DialogFragment implements AdapterVie
         viewModel.getFolders().observe(this, folders -> {
             values = new TreeMap<>(String::compareTo);
 
-            if (!account.getAccountType().getAccountConfig().isNoFolderCase())
+            if (!account.getAccountType().getAccountConfig().getAddNoFolder())
                 values.put(getString(R.string.no_folder), 0);
 
             for (Folder folder : folders) {

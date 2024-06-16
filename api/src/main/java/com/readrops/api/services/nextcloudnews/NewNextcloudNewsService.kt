@@ -53,7 +53,7 @@ interface NewNextcloudNewsService {
     suspend fun deleteFeed(@Path("feedId") feedId: Int)
 
     @PUT("feeds/{feedId}/move")
-    suspend fun changeFeedFolder(@Path("feedId") feedId: Int, @Body folderIdMap: Map<String, Int>)
+    suspend fun changeFeedFolder(@Path("feedId") feedId: Int, @Body folderIdMap: Map<String, Int?>)
 
     @PUT("feeds/{feedId}/rename")
     suspend fun renameFeed(@Path("feedId") feedId: Int, @Body feedTitleMap: Map<String, String>)

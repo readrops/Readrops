@@ -41,6 +41,7 @@ data class AddFeedDialogState(
 
 data class UpdateFeedDialogState(
     val feedId: Int = 0,
+    val feedRemoteId: String? = null,
     val feedName: String = "",
     val feedNameError: TextFieldError? = null,
     val feedUrl: String = "",
@@ -49,7 +50,6 @@ data class UpdateFeedDialogState(
     val folders: List<Folder> = listOf(),
     val isAccountDropDownExpanded: Boolean = false,
     val isFeedUrlReadOnly: Boolean = true,
-    val isNoFolderCase: Boolean = false,
     val exception: Exception? = null
 ) {
     val isFeedNameError

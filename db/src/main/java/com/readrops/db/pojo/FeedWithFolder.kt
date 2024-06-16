@@ -22,6 +22,7 @@ data class FolderWithFeed(
     val feedUrl: String? = null,
     val feedDescription: String? = null,
     val feedSiteUrl: String? = null,
+    val feedRemoteId: String? = null,
     val accountId: Int = 0
 )
 

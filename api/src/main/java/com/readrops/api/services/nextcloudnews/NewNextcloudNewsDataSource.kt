@@ -80,12 +80,12 @@ class NewNextcloudNewsDataSource(private val service: NewNextcloudNewsService) {
         return service.createFeed(url, folderId)
     }
 
-    suspend fun changeFeedFolder(newFolderId: Int, feedId: Int) {
+    suspend fun changeFeedFolder(newFolderId: Int?, feedId: Int) {
         service.changeFeedFolder(feedId, mapOf("folderId" to newFolderId))
     }
 
-    suspend fun renameFeed(name: String, folderId: Int) {
-        service.renameFeed(folderId, mapOf("feedTitle" to name))
+    suspend fun renameFeed(name: String, feedId: Int) {
+        service.renameFeed(feedId, mapOf("feedTitle" to name))
     }
 
     suspend fun deleteFeed(feedId: Int) {

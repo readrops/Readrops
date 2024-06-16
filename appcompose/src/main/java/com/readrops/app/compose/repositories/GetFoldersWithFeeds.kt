@@ -40,6 +40,7 @@ class GetFoldersWithFeeds(
                         url = it.feedUrl,
                         siteUrl = it.feedSiteUrl,
                         description = it.feedDescription,
+                        remoteId = it.feedRemoteId,
                         unreadCount = itemCounts[it.feedId] ?: 0
                     )
                 }

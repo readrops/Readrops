@@ -54,7 +54,6 @@ class FeedScreenModel(
                     _updateFeedDialogState.update {
                         it.copy(
                             isFeedUrlReadOnly = account.config.isFeedUrlReadOnly,
-                            isNoFolderCase = account.config.isNoFolderCase
                         )
                     }
 
@@ -91,7 +90,6 @@ class FeedScreenModel(
                     _updateFeedDialogState.update {
                         it.copy(
                             isFeedUrlReadOnly = account.config.isFeedUrlReadOnly,
-                            isNoFolderCase = account.config.isNoFolderCase
                         )
                     }
 
@@ -101,7 +99,7 @@ class FeedScreenModel(
                 .collect { folders ->
                     _updateFeedDialogState.update {
                         it.copy(
-                            folders = if (!it.isNoFolderCase) { // TODO implement no folder case properly
+                            folders = if (currentAccount!!.config.addNoFolder) {
                                 folders + listOf(
                                     Folder(
                                         id = 0,
@@ -156,7 +154,8 @@ class FeedScreenModel(
                     feedId = state.feed.id,
                     feedName = state.feed.name!!,
                     feedUrl = state.feed.url!!,
-                    selectedFolder = state.folder
+                    selectedFolder = state.folder ?: it.folders.find { folder -> folder.id == 0 },
+                    feedRemoteId = state.feed.remoteId
                 )
             }
         }
@@ -336,8 +335,11 @@ class FeedScreenModel(
                                     id = feedId,
                                     name = feedName,
                                     url = feedUrl,
-                                    folderId = selectedFolder?.id,
-                                    remoteFolderId = selectedFolder?.remoteId
+                                    folderId = if (selectedFolder?.id != 0)
+                                        selectedFolder?.id
+                                    else null,
+                                    remoteFolderId = selectedFolder?.remoteId,
+                                    remoteId = feedRemoteId
                                 )
                             )
                         } catch (e: Exception) {

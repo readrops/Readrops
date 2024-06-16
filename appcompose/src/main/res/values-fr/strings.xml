@@ -164,6 +164,6 @@
     <string name="http_error_4XX">Erreur HTTP %1$d, veuillez vérifier vos champs</string>
     <string name="http_error_5XX">Erreur HTTP %1$d, erreur serveur</string>
     <string name="http_error">Erreur HTTP %1$d</string>
-    <string name="feed_url_read_only">L\'API de FreshRSS ne permet pas de modifier l\'URL</string>
+    <string name="feed_url_read_only">L\'API ne permet pas de modifier l\'URL</string>
     <string name="updating_account">Mise à jour du compte %1$s</string>
 </resources>
