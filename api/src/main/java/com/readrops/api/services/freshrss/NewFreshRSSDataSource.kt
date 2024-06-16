@@ -7,6 +7,7 @@ import com.readrops.db.entities.Item
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import okhttp3.MultipartBody
 import java.io.StringReader
 import java.util.Properties
@@ -40,27 +41,35 @@ class NewFreshRSSDataSource(private val service: NewFreshRSSService) {
     ): SyncResult = with(CoroutineScope(Dispatchers.IO)) {
         return if (syncType == SyncType.INITIAL_SYNC) {
             SyncResult().apply {
-                folders = async { getFolders() }.await()
-                feeds = async { getFeeds() }.await()
-                items =
-                    async { getItems(listOf(GOOGLE_READ, GOOGLE_STARRED), MAX_ITEMS, null) }.await()
-                starredItems = async { getStarredItems(MAX_STARRED_ITEMS) }.await()
-                unreadIds =
-                    async { getItemsIds(GOOGLE_READ, GOOGLE_READING_LIST, MAX_ITEMS) }.await()
-                starredIds = async { getItemsIds(null, GOOGLE_STARRED, MAX_STARRED_ITEMS) }.await()
+                listOf(
+                    async { folders = getFolders() },
+                    async { feeds = getFeeds() },
+                    async {
+                        items = getItems(listOf(GOOGLE_READ, GOOGLE_STARRED), MAX_ITEMS, null)
+                    },
+                    async { starredItems = getStarredItems(MAX_STARRED_ITEMS) },
+                    async { unreadIds = getItemsIds(GOOGLE_READ, GOOGLE_READING_LIST, MAX_ITEMS) },
+                    async { starredIds = getItemsIds(null, GOOGLE_STARRED, MAX_STARRED_ITEMS) }
+                ).awaitAll()
+
             }
         } else {
             SyncResult().apply {
-                setItemsReadState(syncData, writeToken)
-                setItemsStarState(syncData, writeToken)
+                listOf(
+                    async { setItemsReadState(syncData, writeToken) },
+                    async { setItemsStarState(syncData, writeToken) },
+                ).awaitAll()
 
-                folders = async { getFolders() }.await()
-                feeds = async { getFeeds() }.await()
-                items = async { getItems(null, MAX_ITEMS, syncData.lastModified) }.await()
-
-                unreadIds = async { getItemsIds(GOOGLE_READ, GOOGLE_READING_LIST, MAX_ITEMS) }.await()
-                readIds = async { getItemsIds(GOOGLE_UNREAD, GOOGLE_READING_LIST, MAX_ITEMS) }.await()
-                starredIds = async { getItemsIds(null, GOOGLE_STARRED, MAX_STARRED_ITEMS) }.await()
+                listOf(
+                    async { folders = getFolders() },
+                    async { feeds = getFeeds() },
+                    async { items = getItems(null, MAX_ITEMS, syncData.lastModified) },
+                    async { unreadIds = getItemsIds(GOOGLE_READ, GOOGLE_READING_LIST, MAX_ITEMS) },
+                    async {
+                        readIds = getItemsIds(GOOGLE_UNREAD, GOOGLE_READING_LIST, MAX_ITEMS)
+                    },
+                    async { starredIds = getItemsIds(null, GOOGLE_STARRED, MAX_STARRED_ITEMS) }
+                ).awaitAll()
             }
         }
 
