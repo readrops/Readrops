@@ -28,6 +28,9 @@ abstract class NewItemDao : NewBaseDao<Item> {
     @Query("Update Item Set starred = :starred Where id = :itemId")
     abstract suspend fun updateStarState(itemId: Int, starred: Boolean)
 
+    @Query("Update Item set read = :read, starred = :starred Where remoteId = :remoteId")
+    abstract suspend fun updateReadAndStarState(remoteId: String, read: Boolean, starred: Boolean)
+
     @Query("Update Item set read = 1 Where feed_id IN (Select id From Feed Where account_id = :accountId)")
     abstract suspend fun setAllItemsRead(accountId: Int)
 
@@ -54,4 +57,7 @@ abstract class NewItemDao : NewBaseDao<Item> {
     @RawQuery(observedEntities = [Item::class])
     abstract fun selectFeedUnreadItemsCount(query: SupportSQLiteQuery):
             Flow<Map<@MapColumn(columnName = "feed_id") Int, @MapColumn(columnName = "item_count") Int>>
+
+    @Query("Select case When :guid In (Select guid From Item Inner Join Feed on Item.feed_id = Feed.id and account_id = :accountId) Then 1 else 0 end")
+    abstract suspend fun itemExists(guid: String, accountId: Int): Boolean
 }
