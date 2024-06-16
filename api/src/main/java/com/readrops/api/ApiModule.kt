@@ -10,8 +10,9 @@ import com.readrops.api.services.freshrss.adapters.FreshRSSFoldersAdapter
 import com.readrops.api.services.freshrss.adapters.FreshRSSItemsAdapter
 import com.readrops.api.services.freshrss.adapters.FreshRSSItemsIdsAdapter
 import com.readrops.api.services.freshrss.adapters.FreshRSSUserInfoAdapter
+import com.readrops.api.services.nextcloudnews.NewNextcloudNewsDataSource
+import com.readrops.api.services.nextcloudnews.NewNextcloudNewsService
 import com.readrops.api.services.nextcloudnews.NextNewsDataSource
-import com.readrops.api.services.nextcloudnews.NextNewsService
 import com.readrops.api.services.nextcloudnews.adapters.NextNewsFeedsAdapter
 import com.readrops.api.services.nextcloudnews.adapters.NextNewsFoldersAdapter
 import com.readrops.api.services.nextcloudnews.adapters.NextNewsItemsAdapter
@@ -24,7 +25,6 @@ import okhttp3.OkHttpClient
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
 
@@ -77,14 +77,15 @@ val apiModule = module {
 
     factory { params -> NextNewsDataSource(get(parameters = { params })) }
 
+    factory { params -> NewNextcloudNewsDataSource(get(parameters = { params })) }
+
     factory { (credentials: Credentials) ->
         Retrofit.Builder()
                 .baseUrl(credentials.url)
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(get())
                 .addConverterFactory(MoshiConverterFactory.create(get(named("nextcloudNewsMoshi"))))
                 .build()
-                .create(NextNewsService::class.java)
+                .create(NewNextcloudNewsService::class.java)
     }
 
     single(named("nextcloudNewsMoshi")) {
