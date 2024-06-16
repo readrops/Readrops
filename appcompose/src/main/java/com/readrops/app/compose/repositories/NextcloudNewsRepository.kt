@@ -12,6 +12,7 @@ import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
+import org.joda.time.DateTime
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
@@ -22,8 +23,9 @@ class NextcloudNewsRepository(
 ) : BaseRepository(database, account), KoinComponent {
 
     override suspend fun login(account: Account) {
-        val authInterceptor = get<AuthInterceptor>()
-        authInterceptor.credentials = Credentials.toCredentials(account)
+        get<AuthInterceptor>().apply {
+            credentials = Credentials.toCredentials(account)
+        }
 
         val displayName = dataSource.login(get(), account)
         account.displayedName = displayName
@@ -35,11 +37,42 @@ class NextcloudNewsRepository(
     ): Pair<SyncResult, ErrorResult> = throw NotImplementedError("This method can't be called here")
 
     override suspend fun synchronize(): SyncResult {
-        return dataSource.synchronize(SyncType.INITIAL_SYNC, NextcloudNewsSyncData()).apply {
-            insertFolders(folders)
-            insertFeeds(feeds)
+        val itemStateChanges = database.newItemStateChangeDao()
+            .selectItemStateChanges(account.id)
 
-            insertItems(items, true)
+        val starredIds = itemStateChanges.filter { it.starChange && it.starred }
+            .map { it.remoteId }
+        val unstarredIds = itemStateChanges.filter { it.starChange && !it.starred }
+            .map { it.remoteId }
+
+        val syncData = NextcloudNewsSyncData(
+            lastModified = account.lastModified,
+            readIds = itemStateChanges.filter { it.readChange && it.read }
+                .map { it.remoteId.toInt() },
+            unreadIds = itemStateChanges.filter { it.readChange && !it.read }
+                .map { it.remoteId.toInt() },
+            starredIds = database.newItemDao().selectStarChanges(starredIds, account.id),
+            unstarredIds = database.newItemDao().selectStarChanges(unstarredIds, account.id)
+        )
+
+        val syncType = if (account.lastModified != 0L) {
+            SyncType.CLASSIC_SYNC
+        } else {
+            SyncType.INITIAL_SYNC
+        }
+
+        val newLastModified = DateTime.now().millis / 1000L
+
+        return dataSource.synchronize(syncType, syncData).apply {
+            insertFolders(folders)
+            newFeedIds = insertFeeds(feeds)
+
+            insertItems(items, syncType == SyncType.INITIAL_SYNC)
+
+            account.lastModified = newLastModified
+            database.newAccountDao().updateLastModified(newLastModified, account.id)
+
+            database.itemStateChangesDao().resetStateChanges(account.id)
         }
     }
 

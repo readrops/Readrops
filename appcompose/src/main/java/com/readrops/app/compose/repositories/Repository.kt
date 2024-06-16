@@ -62,38 +62,50 @@ abstract class BaseRepository(
     open suspend fun deleteFolder(folder: Folder) = database.newFolderDao().delete(folder)
 
     open suspend fun setItemReadState(item: Item) {
-        // TODO handle Nextcloud News case
-        if (account.config.useSeparateState) {
-            database.newItemStateChangeDao().upsertItemReadStateChange(item, account.id, true)
-            database.newItemStateDao().upsertItemReadState(
-                ItemState(
-                    id = 0,
-                    read = item.isRead,
-                    starred = item.isStarred,
-                    remoteId = item.remoteId!!,
-                    accountId = account.id
+        when {
+            account.config.useSeparateState -> {
+                database.newItemStateChangeDao().upsertItemReadStateChange(item, account.id, true)
+                database.newItemStateDao().upsertItemReadState(
+                    ItemState(
+                        id = 0,
+                        read = item.isRead,
+                        starred = item.isStarred,
+                        remoteId = item.remoteId!!,
+                        accountId = account.id
+                    )
                 )
-            )
-        } else {
-            database.newItemDao().updateReadState(item.id, item.isRead)
+            }
+            account.isLocal -> {
+                database.newItemDao().updateReadState(item.id, item.isRead)
+            }
+            else -> {
+                database.newItemStateChangeDao().upsertItemReadStateChange(item, account.id, false)
+                database.newItemDao().updateReadState(item.id, item.isRead)
+            }
         }
     }
 
     open suspend fun setItemStarState(item: Item) {
-        // TODO handle Nextcloud News case
-        if (account.config.useSeparateState) {
-            database.newItemStateChangeDao().upsertItemStarStateChange(item, account.id, true)
-            database.newItemStateDao().upsertItemStarState(
-                ItemState(
-                    id = 0,
-                    read = item.isRead,
-                    starred = item.isStarred,
-                    remoteId = item.remoteId!!,
-                    accountId = account.id
+        when {
+            account.config.useSeparateState -> {
+                database.newItemStateChangeDao().upsertItemStarStateChange(item, account.id, true)
+                database.newItemStateDao().upsertItemStarState(
+                    ItemState(
+                        id = 0,
+                        read = item.isRead,
+                        starred = item.isStarred,
+                        remoteId = item.remoteId!!,
+                        accountId = account.id
+                    )
                 )
-            )
-        } else {
-            database.newItemDao().updateStarState(item.id, item.isStarred)
+            }
+            account.isLocal -> {
+                database.newItemDao().updateStarState(item.id, item.isStarred)
+            }
+            else -> {
+                database.newItemStateChangeDao().upsertItemStarStateChange(item, account.id, false)
+                database.newItemDao().updateStarState(item.id, item.isStarred)
+            }
         }
     }
 
