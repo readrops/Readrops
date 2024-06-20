@@ -67,7 +67,9 @@ class NextcloudNewsRepository(
             insertFolders(folders)
             newFeedIds = insertFeeds(feeds)
 
-            insertItems(items, syncType == SyncType.INITIAL_SYNC)
+            val initialSync = syncType == SyncType.INITIAL_SYNC
+            insertItems(items, initialSync)
+            insertItems(starredItems, initialSync)
 
             account.lastModified = newLastModified
             database.newAccountDao().updateLastModified(newLastModified, account.id)
