@@ -111,6 +111,23 @@ class NextcloudNewsRepository(
         super.deleteFeed(feed)
     }
 
+    override suspend fun addFolder(folder: Folder) {
+        val folders = dataSource.createFolder(folder.name!!)
+            .onEach { it.accountId = account.id }
+
+        database.newFolderDao().insert(folders)
+    }
+
+    override suspend fun updateFolder(folder: Folder) {
+        dataSource.renameFolder(folder.name!!, folder.remoteId!!.toInt())
+        super.updateFolder(folder)
+    }
+
+    override suspend fun deleteFolder(folder: Folder) {
+        dataSource.deleteFolder(folder.remoteId!!.toInt())
+        super.deleteFolder(folder)
+    }
+
     private suspend fun insertFolders(folders: List<Folder>) {
         folders.forEach { it.accountId = account.id }
         database.newFolderDao().upsertFolders(folders, account)
@@ -140,6 +157,7 @@ class NextcloudNewsRepository(
             ) {
                 database.newItemDao()
                     .updateReadAndStarState(item.remoteId!!, item.isRead, item.isStarred)
+                continue
             }
 
             item.feedId = feedId

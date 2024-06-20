@@ -55,7 +55,9 @@ abstract class BaseRepository(
 
     open suspend fun deleteFeed(feed: Feed) = database.newFeedDao().delete(feed)
 
-    open suspend fun addFolder(folder: Folder) = database.newFolderDao().insert(folder)
+    open suspend fun addFolder(folder: Folder) {
+        database.newFolderDao().insert(folder)
+    }
 
     open suspend fun updateFolder(folder: Folder) = database.newFolderDao().update(folder)
 
