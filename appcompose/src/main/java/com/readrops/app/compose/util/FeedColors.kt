@@ -1,32 +1,30 @@
 package com.readrops.app.compose.util
 
-import android.content.Context
-import android.graphics.drawable.BitmapDrawable
+import android.graphics.BitmapFactory
 import androidx.annotation.ColorInt
 import androidx.palette.graphics.Palette
-import coil.imageLoader
-import coil.request.ImageRequest
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
 object FeedColors : KoinComponent {
 
     suspend fun getFeedColor(feedUrl: String): Int {
-        val context = get<Context>() // TODO maybe call imageLoader directly ? may require some DI changes
+        // use OkHttp directly instead of Coil as Coil doesn't respect OkHttp timeout
+        val response = get<OkHttpClient>().newCall(
+            Request.Builder()
+                .url(feedUrl)
+                .build()
+        ).execute()
 
-        val result = context.imageLoader
-            .execute(
-                ImageRequest.Builder(context)
-                    .data(feedUrl)
-                    .allowHardware(false)
-                    .build()
-            ).drawable as BitmapDrawable
-
-        val palette = Palette.from(result.bitmap).generate()
+        val bitmap = BitmapFactory.decodeStream(response.body?.byteStream()) ?: return 0
+        val palette = Palette.from(bitmap).generate()
 
         val dominantSwatch = palette.dominantSwatch
         return if (dominantSwatch != null && !isColorTooBright(dominantSwatch.rgb)
-            && !isColorTooDark(dominantSwatch.rgb)) {
+            && !isColorTooDark(dominantSwatch.rgb)
+        ) {
             dominantSwatch.rgb
         } else 0
     }

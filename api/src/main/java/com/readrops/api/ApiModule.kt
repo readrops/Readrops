@@ -33,7 +33,7 @@ val apiModule = module {
     single {
         OkHttpClient.Builder()
             .callTimeout(1, TimeUnit.MINUTES)
-            .readTimeout(1, TimeUnit.HOURS)
+            .readTimeout(1, TimeUnit.MINUTES)
             .addInterceptor(get<AuthInterceptor>())
             .addInterceptor(get<ErrorInterceptor>())
             //.addInterceptor(NiddlerOkHttpInterceptor(get(), "niddler"))

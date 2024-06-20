@@ -87,14 +87,12 @@ class SyncWorker(
                 .setProgress(syncResult.newFeedIds.size, index + 1, false)
             notificationManager.notify(SYNC_NOTIFICATION_ID, notificationBuilder.build())
 
-            val color = try {
-                FeedColors.getFeedColor(syncResult.feeds.first { it.id == feedId.toInt() }.iconUrl!!)
+            try {
+                val color = FeedColors.getFeedColor(syncResult.feeds.first { it.id == feedId.toInt() }.iconUrl!!)
+                database.newFeedDao().updateFeedColor(feedId.toInt(), color)
             } catch (e: Exception) {
-                Log.e(TAG, "${e.message}")
-                0
+                Log.e(TAG, "$feedName: ${e.message}")
             }
-
-            database.newFeedDao().updateFeedColor(feedId.toInt(), color)
         }
     }
 
