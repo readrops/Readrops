@@ -34,4 +34,20 @@ interface NewItemStateDao : NewBaseDao<ItemState> {
             insert(itemState)
         }
     }
+
+    @Query("Insert Or Replace Into ItemState(read, remote_id) Select 1 as read, Item.remoteId From Item Inner Join Feed On Feed.account_id = :accountId")
+    suspend fun setAllItemsRead(accountId: Int)
+
+    suspend fun setAllItemsReadByFeed(feedId: Int, accountId: Int) {
+        setAllItemsReadByFeedByUpdate(feedId, accountId)
+        //setAllItemsReadByFeedByInsert(feedId, accountId) //TODO use this after putting ItemState.remoteId UNIQUE?
+    }
+
+    @Query("""Update ItemState set read = 1 Where remote_id In (Select Item.remoteId From Item 
+        Inner Join Feed On Feed.id = Item.feed_id Where account_id = :accountId and feed_id = :feedId)""")
+    suspend fun setAllItemsReadByFeedByUpdate(feedId: Int, accountId: Int)
+
+    @Query("""Insert Or Ignore Into ItemState(read, starred, remote_id) Select 1 as read, 0 as starred, 
+        Item.remoteId From Item Inner Join Feed Where Feed.account_id = :accountId And feed_id = :feedId""")
+    suspend fun setAllItemsReadByFeedByInsert(feedId: Int, accountId: Int)
 }

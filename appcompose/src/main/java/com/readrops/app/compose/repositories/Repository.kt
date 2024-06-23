@@ -124,7 +124,15 @@ abstract class BaseRepository(
     }
 
     open suspend fun setAllItemsReadByFeed(feedId: Int, accountId: Int) {
-        database.newItemDao().setAllItemsReadByFeed(feedId, accountId)
+        when {
+            account.config.useSeparateState || !account.isLocal -> {
+                database.newItemStateChangeDao().upsertItemReadStateChangesByFeed(feedId, accountId)
+                database.newItemStateDao().setAllItemsReadByFeed(feedId, accountId)
+            }
+            account.isLocal -> {
+                database.newItemDao().setAllItemsReadByFeed(feedId, accountId)
+            }
+        }
     }
 
     open suspend fun setAllItemsReadByFolder(folderId: Int, accountId: Int) {

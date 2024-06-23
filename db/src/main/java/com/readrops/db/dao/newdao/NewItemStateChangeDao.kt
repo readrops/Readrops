@@ -19,12 +19,6 @@ interface NewItemStateChangeDao: NewBaseDao<ItemStateChange> {
             "Left Join ItemState On ItemState.remote_id = Item.remoteId Where ItemStateChange.account_id = :accountId")
     suspend fun selectItemStateChanges(accountId: Int): List<ItemReadStarState>
 
-    @Query("Select Item.read, Item.starred," +
-            "ItemStateChange.read_change, ItemStateChange.star_change, Item.remoteId " +
-            "From ItemStateChange Inner Join Item On ItemStateChange.id = Item.id " +
-            "Where ItemStateChange.account_id = :accountId")
-    suspend fun selectNextcloudNewsStateChanges(accountId: Int): List<ItemReadStarState>
-
     @Query("Select Case When :itemId In (Select id From ItemStateChange Where read_change = 1) Then 1 Else 0 End")
     suspend fun readStateChangeExists(itemId: Int): Boolean
 
@@ -80,26 +74,41 @@ interface NewItemStateChangeDao: NewBaseDao<ItemStateChange> {
     }
 
     @Query("Select * From ItemStateChange Where id = :id")
-    fun selectItemStateChange(id: Int): ItemStateChange
+    suspend fun selectItemStateChange(id: Int): ItemStateChange
 
     @Query("Select case When Exists (Select id, account_id From ItemStateChange Where id = :id And account_id = :accountId) Then 1 else 0 End")
-    fun itemStateChangeExists(id: Int, accountId: Int): Boolean
+    suspend fun itemStateChangeExists(id: Int, accountId: Int): Boolean
 
     @Query("Select read From ItemState Where remote_id = :remoteId And account_id = :accountId")
-    fun selectItemReadState(remoteId: String, accountId: Int): Boolean
+    suspend fun selectItemReadState(remoteId: String, accountId: Int): Boolean
 
     @Query("Select read From Item Inner Join Feed On Item.feed_id = Feed.id Where Item.remoteId = :remoteId And account_id = :accountId")
-    fun selectStandardItemReadState(remoteId: String, accountId: Int): Boolean
+    suspend fun selectStandardItemReadState(remoteId: String, accountId: Int): Boolean
 
     @Query("Select starred From ItemState Where remote_id = :remoteId And account_id = :accountId")
-    fun selectItemStarState(remoteId: String, accountId: Int): Boolean
+    suspend fun selectItemStarState(remoteId: String, accountId: Int): Boolean
 
     @Query("Select starred From Item Inner Join Feed On Item.feed_id = Feed.id Where Item.remoteId = :remoteId And account_id = :accountId")
-    fun selectStandardItemStarState(remoteId: String, accountId: Int): Boolean
+    suspend fun selectStandardItemStarState(remoteId: String, accountId: Int): Boolean
 
     @Query("Update ItemStateChange set read_change = :readChange Where id = :id")
-    fun updateItemReadStateChange(readChange: Boolean, id: Int)
+    suspend fun updateItemReadStateChange(readChange: Boolean, id: Int)
 
     @Query("Update ItemStateChange set star_change = :starChange Where id = :id")
-    fun updateItemStarStateChange(starChange: Boolean, id: Int)
+    suspend fun updateItemStarStateChange(starChange: Boolean, id: Int)
+
+    suspend fun upsertItemReadStateChangesByFeed(feedId: Int, accountId: Int) {
+        upsertItemsReadStateChangesByFeedByUpdate(feedId, accountId)
+        upsertItemsReadStateChangesByFeedByInsert(feedId, accountId)
+    }
+
+    @Query("""Update ItemStateChange Set read_change = 1 Where id In (Select Item.id From Item 
+        Inner Join Feed On Feed.id = Item.feed_id Where account_id = :accountId And feed_id = :feedId)""")
+    suspend fun upsertItemsReadStateChangesByFeedByUpdate(feedId: Int, accountId: Int)
+
+    @Query("""Insert Or Ignore Into ItemStateChange(id, read_change, star_change, account_id) 
+        Select Item.id, 1 as read_change, 0 as star_change, account_id
+        From Item Inner Join Feed On Feed.id = Item.feed_id Where account_id = :accountId And feed_id = :feedId""")
+    suspend fun upsertItemsReadStateChangesByFeedByInsert(feedId: Int, accountId: Int)
+
 }
