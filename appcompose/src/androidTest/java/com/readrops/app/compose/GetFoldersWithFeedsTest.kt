@@ -56,7 +56,7 @@ class GetFoldersWithFeedsTest {
             }
 
             // insert 3 read items items linked to second feed (feed 1)
-           repeat(3) { time ->
+            repeat(3) { time ->
                 database.newItemDao()
                     .insert(
                         Item(
@@ -73,7 +73,9 @@ class GetFoldersWithFeedsTest {
     @Test
     fun getFoldersWithFeedsTest() = runTest {
         getFoldersWithFeeds = GetFoldersWithFeeds(database)
-        val foldersAndFeeds = getFoldersWithFeeds.get(account.id, MainFilter.ALL).first()
+        val foldersAndFeeds =
+            getFoldersWithFeeds.get(account.id, MainFilter.ALL, account.config.useSeparateState)
+                .first()
 
         assertTrue { foldersAndFeeds.size == 4 }
         assertTrue { foldersAndFeeds.entries.first().value.size == 2 }

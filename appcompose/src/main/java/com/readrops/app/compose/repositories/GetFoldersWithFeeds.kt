@@ -4,7 +4,7 @@ import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.filters.MainFilter
-import com.readrops.db.queries.FeedUnreadItemsCountQueryBuilder
+import com.readrops.db.queries.FeedUnreadCountQueryBuilder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 
@@ -12,8 +12,8 @@ class GetFoldersWithFeeds(
     private val database: Database,
 ) {
 
-    fun get(accountId: Int, mainFilter: MainFilter): Flow<Map<Folder?, List<Feed>>> {
-        val query = FeedUnreadItemsCountQueryBuilder.build(accountId, mainFilter)
+    fun get(accountId: Int, mainFilter: MainFilter, useSeparateState: Boolean): Flow<Map<Folder?, List<Feed>>> {
+        val query = FeedUnreadCountQueryBuilder.build(accountId, mainFilter, useSeparateState)
 
         return combine(
             flow = database.newFolderDao().selectFoldersAndFeeds(accountId),

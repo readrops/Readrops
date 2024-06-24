@@ -56,7 +56,8 @@ class TimelineScreenModel(
             ) { account, filters ->
                 Pair(account, filters.copy(accountId = account.id))
             }.collectLatest { (account, filters) ->
-                val query = ItemsQueryBuilder.buildItemsQuery(filters, account.config.useSeparateState)
+                val query =
+                    ItemsQueryBuilder.buildItemsQuery(filters, account.config.useSeparateState)
 
                 _timelineState.update {
                     it.copy(
@@ -79,7 +80,11 @@ class TimelineScreenModel(
                     )
                 }
 
-                getFoldersWithFeeds.get(account.id, filters.mainFilter)
+                getFoldersWithFeeds.get(
+                    account.id,
+                    filters.mainFilter,
+                    account.config.useSeparateState
+                )
                     .collect { foldersAndFeeds ->
                         _timelineState.update {
                             it.copy(

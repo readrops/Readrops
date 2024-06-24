@@ -55,7 +55,7 @@ abstract class NewItemDao : NewBaseDao<Item> {
         "And DateTime(Round(Item.pub_date / 1000), 'unixepoch') Between DateTime(DateTime(\"now\"), \"-24 hour\") And DateTime(\"now\")")
     abstract fun selectUnreadNewItemsCount(accountId: Int): Flow<Int>
 
-    @RawQuery(observedEntities = [Item::class])
+    @RawQuery(observedEntities = [Item::class, ItemState::class])
     abstract fun selectFeedUnreadItemsCount(query: SupportSQLiteQuery):
             Flow<Map<@MapColumn(columnName = "feed_id") Int, @MapColumn(columnName = "item_count") Int>>
 

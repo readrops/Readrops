@@ -57,7 +57,7 @@ class FeedScreenModel(
                         )
                     }
 
-                    getFoldersWithFeeds.get(account.id, MainFilter.ALL)
+                    getFoldersWithFeeds.get(account.id, MainFilter.ALL, account.config.useSeparateState)
                 }
                 .catch { throwable ->
                     _feedState.update {

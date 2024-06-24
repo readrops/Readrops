@@ -74,7 +74,11 @@ class AccountScreenModel(
             }
 
             val foldersAndFeeds =
-                GetFoldersWithFeeds(database).get(currentAccount!!.id, MainFilter.ALL).first()
+                GetFoldersWithFeeds(database).get(
+                    currentAccount!!.id,
+                    MainFilter.ALL,
+                    currentAccount!!.config.useSeparateState
+                ).first()
 
             OPMLParser.write(foldersAndFeeds, stream)
 
