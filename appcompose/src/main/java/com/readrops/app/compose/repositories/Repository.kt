@@ -111,32 +111,95 @@ abstract class BaseRepository(
         }
     }
 
-    open suspend fun setAllItemsRead(accountId: Int) {
-        database.newItemDao().setAllItemsRead(accountId)
-    }
+    open suspend fun setAllItemsRead() {
+        val accountId = account.id
 
-    open suspend fun setAllStarredItemsRead(accountId: Int) {
-        database.newItemDao().setAllStarredItemsRead(accountId)
-    }
-
-    open suspend fun setAllNewItemsRead(accountId: Int) {
-        database.newItemDao().setAllNewItemsRead(accountId)
-    }
-
-    open suspend fun setAllItemsReadByFeed(feedId: Int, accountId: Int) {
         when {
-            account.config.useSeparateState || !account.isLocal -> {
-                database.newItemStateChangeDao().upsertItemReadStateChangesByFeed(feedId, accountId)
+            account.config.useSeparateState -> {
+                database.newItemStateChangeDao().upsertAllItemsReadStateChanges(accountId)
+                database.newItemStateDao().setAllItemsRead(accountId)
+            }
+            account.isLocal -> {
+                database.newItemDao().setAllItemsRead(account.id)
+            }
+            else -> {
+                database.newItemStateChangeDao().upsertAllItemsReadStateChanges(accountId)
+                database.newItemDao().setAllItemsRead(accountId)
+            }
+        }
+    }
+
+    open suspend fun setAllStarredItemsRead() {
+        val accountId = account.id
+
+        when {
+            account.config.useSeparateState -> {
+                database.newItemStateChangeDao().upsertStarredItemReadStateChanges(accountId)
+                database.newItemStateDao().setAllStarredItemsRead(accountId)
+            }
+            account.isLocal -> {
+                database.newItemDao().setAllStarredItemsRead(accountId)
+            }
+            else -> {
+                database.newItemStateChangeDao().upsertStarredItemReadStateChanges(accountId)
+                database.newItemDao().setAllStarredItemsRead(accountId)
+            }
+        }
+    }
+
+    open suspend fun setAllNewItemsRead() {
+        val accountId = account.id
+
+        when {
+            account.config.useSeparateState -> {
+                database.newItemStateChangeDao().upsertNewItemReadStateChanges(accountId)
+                database.newItemStateDao().setAllNewItemsRead(accountId)
+            }
+            account.isLocal -> {
+                database.newItemDao().setAllNewItemsRead(accountId)
+            }
+            else -> {
+                database.newItemStateChangeDao().upsertNewItemReadStateChanges(accountId)
+                database.newItemDao().setAllNewItemsRead(accountId)
+            }
+        }
+    }
+
+    open suspend fun setAllItemsReadByFeed(feedId: Int) {
+        val accountId = account.id
+
+        when {
+            account.config.useSeparateState -> {
+                database.newItemStateChangeDao()
+                    .upsertItemReadStateChangesByFeed(feedId, accountId)
                 database.newItemStateDao().setAllItemsReadByFeed(feedId, accountId)
             }
             account.isLocal -> {
                 database.newItemDao().setAllItemsReadByFeed(feedId, accountId)
             }
+            else -> {
+                database.newItemStateChangeDao().upsertItemReadStateChangesByFeed(feedId, accountId)
+                database.newItemDao().setAllItemsReadByFeed(feedId, accountId)
+            }
         }
     }
 
-    open suspend fun setAllItemsReadByFolder(folderId: Int, accountId: Int) {
-        database.newItemDao().setAllItemsReadByFolder(folderId, accountId)
+    open suspend fun setAllItemsReadByFolder(folderId: Int) {
+        val accountId = account.id
+
+        when {
+            account.config.useSeparateState -> {
+                database.newItemStateChangeDao().upsertItemReadStateChangesByFolder(folderId, accountId)
+                database.newItemStateDao().setAllItemsReadByFolder(folderId, accountId)
+            }
+            account.isLocal -> {
+                database.newItemDao().setAllItemsReadByFolder(folderId, accountId)
+            }
+            else -> {
+                database.newItemStateChangeDao().upsertItemReadStateChangesByFolder(folderId, accountId)
+                database.newItemDao().setAllItemsReadByFolder(folderId, accountId)
+            }
+        }
     }
 
     suspend fun insertOPMLFoldersAndFeeds(

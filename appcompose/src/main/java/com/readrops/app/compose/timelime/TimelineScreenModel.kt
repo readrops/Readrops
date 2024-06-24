@@ -274,24 +274,20 @@ class TimelineScreenModel(
 
     fun setAllItemsRead() {
         screenModelScope.launch(dispatcher) {
-            val accountId = currentAccount!!.id
-
             when (_timelineState.value.filters.subFilter) {
                 SubFilter.FEED ->
                     repository?.setAllItemsReadByFeed(
-                        feedId = _timelineState.value.filters.filterFeedId,
-                        accountId = accountId
+                        feedId = _timelineState.value.filters.filterFeedId
                     )
 
                 SubFilter.FOLDER -> repository?.setAllItemsReadByFolder(
-                    folderId = _timelineState.value.filters.filterFolderId,
-                    accountId = accountId
+                    folderId = _timelineState.value.filters.filterFolderId
                 )
 
                 else -> when (_timelineState.value.filters.mainFilter) {
-                    MainFilter.STARS -> repository?.setAllStarredItemsRead(accountId)
-                    MainFilter.ALL -> repository?.setAllItemsRead(accountId)
-                    MainFilter.NEW -> repository?.setAllNewItemsRead(accountId)
+                    MainFilter.STARS -> repository?.setAllStarredItemsRead()
+                    MainFilter.ALL -> repository?.setAllItemsRead()
+                    MainFilter.NEW -> repository?.setAllNewItemsRead()
                 }
             }
         }

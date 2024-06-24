@@ -97,18 +97,77 @@ interface NewItemStateChangeDao: NewBaseDao<ItemStateChange> {
     @Query("Update ItemStateChange set star_change = :starChange Where id = :id")
     suspend fun updateItemStarStateChange(starChange: Boolean, id: Int)
 
+    suspend fun upsertAllItemsReadStateChanges(accountId: Int) {
+        upsertAllItemsReadStateChangesByUpdate(accountId)
+        upsertAllItemsReadStateChangesByInsert(accountId)
+    }
+
+    @Query("""Update ItemStateChange Set read_change = 1 Where id In (Select Item.id From Item 
+        Inner Join Feed On Feed.id = Item.feed_id Where account_id = :accountId)""")
+    suspend fun upsertAllItemsReadStateChangesByUpdate(accountId: Int)
+
+    @Query("""Insert Or Ignore Into ItemStateChange(id, read_change, star_change, account_id) 
+        Select Item.id, 1 as read_change, 0 as star_change, account_id
+        From Item Inner Join Feed On Feed.id = Item.feed_id Where account_id = :accountId""")
+    suspend fun upsertAllItemsReadStateChangesByInsert(accountId: Int)
+
     suspend fun upsertItemReadStateChangesByFeed(feedId: Int, accountId: Int) {
-        upsertItemsReadStateChangesByFeedByUpdate(feedId, accountId)
-        upsertItemsReadStateChangesByFeedByInsert(feedId, accountId)
+        upsertItemReadStateChangesByFeedByUpdate(feedId, accountId)
+        upsertItemReadStateChangesByFeedByInsert(feedId, accountId)
     }
 
     @Query("""Update ItemStateChange Set read_change = 1 Where id In (Select Item.id From Item 
         Inner Join Feed On Feed.id = Item.feed_id Where account_id = :accountId And feed_id = :feedId)""")
-    suspend fun upsertItemsReadStateChangesByFeedByUpdate(feedId: Int, accountId: Int)
+    suspend fun upsertItemReadStateChangesByFeedByUpdate(feedId: Int, accountId: Int)
 
     @Query("""Insert Or Ignore Into ItemStateChange(id, read_change, star_change, account_id) 
         Select Item.id, 1 as read_change, 0 as star_change, account_id
         From Item Inner Join Feed On Feed.id = Item.feed_id Where account_id = :accountId And feed_id = :feedId""")
-    suspend fun upsertItemsReadStateChangesByFeedByInsert(feedId: Int, accountId: Int)
+    suspend fun upsertItemReadStateChangesByFeedByInsert(feedId: Int, accountId: Int)
 
+    suspend fun upsertItemReadStateChangesByFolder(folderId: Int, accountId: Int) {
+        upsertItemReadStateChangesByFolderByUpdate(folderId, accountId)
+        upsertItemReadStateChangesByFolderByInsert(folderId, accountId)
+    }
+
+    @Query("""Update ItemStateChange Set read_change = 1 Where id In (Select Item.id From Item 
+        Inner Join Feed On Feed.id = Item.feed_id Where account_id = :accountId And folder_id = :folderId)""")
+    suspend fun upsertItemReadStateChangesByFolderByUpdate(folderId: Int, accountId: Int)
+
+    @Query("""Insert Or Ignore Into ItemStateChange(id, read_change, star_change, account_id) 
+        Select Item.id, 1 as read_change, 0 as star_change, account_id
+        From Item Inner Join Feed On Feed.id = Item.feed_id Where account_id = :accountId And folder_id = :folderId""")
+    suspend fun upsertItemReadStateChangesByFolderByInsert(folderId: Int, accountId: Int)
+
+    suspend fun upsertStarredItemReadStateChanges(accountId: Int) {
+        upsertStarredItemReadStateChangesByUpdate(accountId)
+        upsertStarredItemReadStateChangesByInsert(accountId)
+    }
+
+    @Query("""Update ItemStateChange Set read_change = 1 Where id In (Select Item.id From Item 
+        Inner Join Feed On Feed.id = Item.feed_id Where account_id = :accountId And starred = 1)""")
+    suspend fun upsertStarredItemReadStateChangesByUpdate(accountId: Int)
+
+    @Query("""Insert Or Ignore Into ItemStateChange(id, read_change, star_change, account_id) 
+        Select Item.id, 1 as read_change, 0 as star_change, account_id
+        From Item Inner Join Feed On Feed.id = Item.feed_id Where account_id = :accountId And starred = 1""")
+    suspend fun upsertStarredItemReadStateChangesByInsert(accountId: Int)
+
+    suspend fun upsertNewItemReadStateChanges(accountId: Int) {
+        upsertNewItemReadStateChangesByUpdate(accountId)
+        upsertNewItemReadStateChangesByInsert(accountId)
+    }
+
+    @Query("""Update ItemStateChange Set read_change = 1 Where id In (Select Item.id From Item 
+        Inner Join Feed On Feed.id = Item.feed_id Where account_id = :accountId
+        And DateTime(Round(Item.pub_date / 1000), 'unixepoch') 
+        Between DateTime(DateTime("now"), "-24 hour") And DateTime("now"))""")
+    suspend fun upsertNewItemReadStateChangesByUpdate(accountId: Int)
+
+    @Query("""Insert Or Ignore Into ItemStateChange(id, read_change, star_change, account_id) 
+        Select Item.id, 1 as read_change, 0 as star_change, account_id
+        From Item Inner Join Feed On Feed.id = Item.feed_id Where account_id = :accountId 
+        And DateTime(Round(Item.pub_date / 1000), 'unixepoch') 
+        Between DateTime(DateTime("now"), "-24 hour") And DateTime("now")""")
+    suspend fun upsertNewItemReadStateChangesByInsert(accountId: Int)
 }
