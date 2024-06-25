@@ -80,9 +80,6 @@ dependencies {
     kapt(libs.room.compiler)
     androidTestImplementation(libs.room.testing)
 
-    implementation 'com.github.MatrixDev.Roomigrant:RoomigrantLib:0.3.4' //TODO delete
-    kapt 'com.github.MatrixDev.Roomigrant:RoomigrantCompiler:0.3.4'
-
     implementation(libs.bundles.paging)
 
     api 'joda-time:joda-time:2.10.10' //TODO replace with java.time?
