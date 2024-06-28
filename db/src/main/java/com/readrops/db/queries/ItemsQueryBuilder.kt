@@ -30,7 +30,7 @@ object ItemsQueryBuilder {
 
     private val SEPARATE_STATE_COLUMNS = arrayOf(
         "case When ItemState.remote_id is NULL Or ItemState.read = 1 Then 1 else 0 End read",
-        "case When ItemState.remote_id is NULL or ItemState.starred = 1 Then 1 else 0 End starred"
+        "case When ItemState.starred = 1 Then 1 else 0 End starred"
     )
 
     private val OTHER_COLUMNS = arrayOf("read", "starred")
