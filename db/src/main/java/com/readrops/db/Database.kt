@@ -1,5 +1,6 @@
 package com.readrops.db
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -24,8 +25,13 @@ import com.readrops.db.entities.ItemState
 import com.readrops.db.entities.ItemStateChange
 import com.readrops.db.entities.account.Account
 
-@Database(entities = [Feed::class, Item::class, Folder::class, Account::class,
-    ItemStateChange::class, ItemState::class], version = 3)
+@Database(
+    entities = [Feed::class, Item::class, Folder::class, Account::class,
+        ItemStateChange::class, ItemState::class], version = 4,
+    autoMigrations = [
+        AutoMigration(3, 4)
+    ]
+)
 @TypeConverters(Converters::class)
 abstract class Database : RoomDatabase() {
     abstract fun feedDao(): FeedDao
