@@ -97,12 +97,13 @@ class TimelineScreenModel(
         }
 
         screenModelScope.launch(dispatcher) {
-            accountEvent.flatMapConcat { database.newItemDao().selectUnreadNewItemsCount(it.id) }
-                .collectLatest { count ->
-                    _timelineState.update {
-                        it.copy(unreadNewItemsCount = count)
-                    }
+            accountEvent.flatMapConcat {
+                getFoldersWithFeeds.getNewItemsUnreadCount(it.id, it.config.useSeparateState)
+            }.collectLatest { count ->
+                _timelineState.update {
+                    it.copy(unreadNewItemsCount = count)
                 }
+            }
         }
     }
 

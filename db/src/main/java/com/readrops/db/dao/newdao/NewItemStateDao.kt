@@ -106,7 +106,7 @@ interface NewItemStateDao : NewBaseDao<ItemState> {
         Between DateTime(DateTime("now"), "-24 hour") And DateTime("now"))""")
     suspend fun setAllNewItemsReadByUpdate(accountId: Int)
 
-    @Query("""Insert Into ItemState(read, starred, remote_id, account_id) Select 1 as read, 0 as starred, 
+    @Query("""Insert Or Ignore Into ItemState(read, starred, remote_id, account_id) Select 1 as read, 0 as starred, 
         Item.remoteId As remote_id, account_id From Item Inner Join Feed On Feed.id = Item.feed_id 
         Where Feed.account_id = :accountId And DateTime(Round(Item.pub_date / 1000), 'unixepoch') 
         Between DateTime(DateTime("now"), "-24 hour") And DateTime("now")""")

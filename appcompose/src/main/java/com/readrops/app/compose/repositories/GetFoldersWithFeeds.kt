@@ -12,7 +12,11 @@ class GetFoldersWithFeeds(
     private val database: Database,
 ) {
 
-    fun get(accountId: Int, mainFilter: MainFilter, useSeparateState: Boolean): Flow<Map<Folder?, List<Feed>>> {
+    fun get(
+        accountId: Int,
+        mainFilter: MainFilter,
+        useSeparateState: Boolean
+    ): Flow<Map<Folder?, List<Feed>>> {
         val query = FeedUnreadCountQueryBuilder.build(accountId, mainFilter, useSeparateState)
 
         return combine(
@@ -56,4 +60,11 @@ class GetFoldersWithFeeds(
             foldersWithFeeds.toSortedMap(nullsLast(Folder::compareTo))
         }
     }
+
+    fun getNewItemsUnreadCount(accountId: Int, useSeparateState: Boolean): Flow<Int> =
+        if (useSeparateState) {
+            database.newItemDao().selectUnreadNewItemsCountByItemState(accountId)
+        } else {
+            database.newItemDao().selectUnreadNewItemsCount(accountId)
+        }
 }

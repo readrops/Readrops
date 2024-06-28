@@ -51,9 +51,15 @@ abstract class NewItemDao : NewBaseDao<Item> {
             "On Feed.folder_id = Folder.id Where Folder.id = :folderId And Folder.account_id = :accountId)")
     abstract suspend fun setAllItemsReadByFolder(folderId: Int, accountId: Int)
 
-    @Query("Select count(*) From Item Inner Join Feed On Item.feed_id = Feed.id Where read = 0 and account_id = :accountId " +
-        "And DateTime(Round(Item.pub_date / 1000), 'unixepoch') Between DateTime(DateTime(\"now\"), \"-24 hour\") And DateTime(\"now\")")
+    @Query("""Select count(*) From Item Inner Join Feed On Item.feed_id = Feed.id Where read = 0 
+        And account_id = :accountId And DateTime(Round(Item.pub_date / 1000), 'unixepoch') 
+        Between DateTime(DateTime("now"), "-24 hour") And DateTime("now")""")
     abstract fun selectUnreadNewItemsCount(accountId: Int): Flow<Int>
+
+    @Query("""Select count(*) From ItemState Inner Join Item On Item.remoteId = ItemState.remote_id 
+        Where ItemState.read = 0 and account_id = :accountId And DateTime(Round(Item.pub_date / 1000), 'unixepoch') 
+        Between DateTime(DateTime("now"), "-24 hour") And DateTime("now")""")
+    abstract fun selectUnreadNewItemsCountByItemState(accountId: Int): Flow<Int>
 
     @RawQuery(observedEntities = [Item::class, ItemState::class])
     abstract fun selectFeedUnreadItemsCount(query: SupportSQLiteQuery):
