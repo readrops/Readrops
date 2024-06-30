@@ -25,9 +25,11 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -85,6 +87,7 @@ object TimelineTab : Tab {
         val lazyListState = rememberLazyListState()
         val pullToRefreshState = rememberPullToRefreshState()
         val snackbarHostState = remember { SnackbarHostState() }
+        val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
         LaunchedEffect(state.isRefreshing) {
             if (state.isRefreshing) {
@@ -280,7 +283,8 @@ object TimelineTab : Tab {
                                     contentDescription = null
                                 )
                             }
-                        }
+                        },
+                        scrollBehavior = topAppBarScrollBehavior
                     )
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -306,6 +310,7 @@ object TimelineTab : Tab {
                         .padding(paddingValues)
                         .fillMaxSize()
                         .nestedScroll(pullToRefreshState.nestedScrollConnection)
+                        .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
                 ) {
                     when {
                         state.displayRefreshScreen -> RefreshScreen(

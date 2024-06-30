@@ -21,6 +21,8 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
@@ -71,6 +74,7 @@ object FeedTab : Tab {
         val state by viewModel.feedsState.collectAsStateWithLifecycle()
 
         val snackbarHostState = remember { SnackbarHostState() }
+        val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
         LaunchedEffect(state.exception) {
             if (state.exception != null) {
@@ -188,7 +192,8 @@ object FeedTab : Tab {
                                 contentDescription = null
                             )
                         }
-                    }
+                    },
+                    scrollBehavior = topAppBarScrollBehavior
                 )
             },
             floatingActionButton = {
@@ -226,6 +231,7 @@ object FeedTab : Tab {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
+                    .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
             ) {
                 when (state.foldersAndFeeds) {
                     is FolderAndFeedsState.LoadedState -> {
