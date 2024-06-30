@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -144,6 +145,7 @@ class ItemScreen(
                         state = state.bottomBarState,
                         accentColor = accentColor,
                         modifier = Modifier
+                            .navigationBarsPadding()
                             .height(bottomBarHeight)
                             .offset {
                                 if (isScrollable) {

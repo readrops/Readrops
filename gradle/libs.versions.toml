@@ -19,7 +19,7 @@ compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 # specify material3 version is required for gradle to find the dependency
 compose-material3 = { module = "androidx.compose.material3:material3", version = "1.2.1" }
-compose-activity = "androidx.activity:activity-compose:1.8.2"
+compose-activity = "androidx.activity:activity-compose:1.9.0"
 
 voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
 voyager-screenmodel = { module = "cafe.adriel.voyager:voyager-screenmodel", version.ref = "voyager" }

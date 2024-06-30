@@ -1,8 +1,15 @@
 package com.readrops.app.compose
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBarDefaults
+import androidx.compose.material3.surfaceColorAtElevation
+import androidx.compose.ui.graphics.toArgb
 import cafe.adriel.voyager.navigator.CurrentScreen
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.NavigatorDisposeBehavior
@@ -27,6 +34,18 @@ class MainActivity : ComponentActivity(), KoinComponent {
         setContent {
             KoinAndroidContext {
                 ReadropsTheme {
+                    val navigationBarElevation = NavigationBarDefaults.Elevation
+
+                    enableEdgeToEdge(
+                        statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
+                        navigationBarStyle = SystemBarStyle.light(
+                            MaterialTheme.colorScheme.surfaceColorAtElevation(navigationBarElevation)
+                                .toArgb(),
+                            MaterialTheme.colorScheme.surfaceColorAtElevation(navigationBarElevation)
+                                .toArgb()
+                        )
+                    )
+
                     Navigator(
                         screen = if (accountExists) HomeScreen() else AccountSelectionScreen(),
                         disposeBehavior = NavigatorDisposeBehavior(

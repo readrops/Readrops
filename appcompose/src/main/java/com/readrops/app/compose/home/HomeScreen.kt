@@ -1,7 +1,10 @@
 package com.readrops.app.compose.home
 
+import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -29,6 +32,7 @@ import com.readrops.app.compose.util.components.AndroidScreen
 
 class HomeScreen : AndroidScreen() {
 
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
@@ -91,7 +95,10 @@ class HomeScreen : AndroidScreen() {
                     },
                 ) { paddingValues ->
                     Box(
-                        modifier = Modifier.padding(paddingValues)
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues)
+                            .consumeWindowInsets(paddingValues)
                     ) {
                         CurrentTab()
                     }
