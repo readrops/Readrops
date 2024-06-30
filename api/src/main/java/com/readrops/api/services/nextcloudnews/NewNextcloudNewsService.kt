@@ -32,18 +32,18 @@ interface NewNextcloudNewsService {
         @Query("type") type: Int
     ): List<Item>
 
-    @PUT("items/{stateType}/multiple")
+    @POST("items/{stateType}/multiple")
     @JvmSuppressWildcards
     suspend fun setReadState(
         @Path("stateType") stateType: String,
         @Body itemIdsMap: Map<String, List<Int>>
     )
 
-    @PUT("items/{starType}/multiple")
+    @POST("items/{starType}/multiple")
     @JvmSuppressWildcards
     suspend fun setStarState(
         @Path("starType") starType: String?,
-        @Body body: Map<String?, List<Map<String, String>>>
+        @Body body: Map<String, List<Int>>
     )
 
     @POST("feeds")
@@ -68,6 +68,6 @@ interface NewNextcloudNewsService {
     suspend fun renameFolder(@Path("folderId") folderId: Int, @Body folderName: Map<String, String>)
 
     companion object {
-        const val END_POINT = "/index.php/apps/news/api/v1-2/"
+        const val END_POINT = "/index.php/apps/news/api/v1-3/"
     }
 }

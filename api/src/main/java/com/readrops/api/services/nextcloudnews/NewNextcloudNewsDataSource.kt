@@ -8,7 +8,6 @@ import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
-import com.readrops.db.pojo.StarItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -50,8 +49,7 @@ class NewNextcloudNewsDataSource(private val service: NewNextcloudNewsService) {
             } else {
                 listOf(
                     async { setItemsReadState(syncData) },
-                    async { setItemsStarState(StateType.STAR, syncData.starredIds) },
-                    async { setItemsStarState(StateType.UNSTAR, syncData.unstarredIds) }
+                    async { setItemsStarState(syncData) },
                 ).awaitAll()
 
                 SyncResult().apply {
@@ -108,32 +106,30 @@ class NewNextcloudNewsDataSource(private val service: NewNextcloudNewsService) {
         if (unreadIds.isNotEmpty()) {
             service.setReadState(
                 StateType.UNREAD.name.lowercase(),
-                mapOf("items" to unreadIds)
+                mapOf("itemIds" to unreadIds)
             )
         }
 
         if (readIds.isNotEmpty()) {
             service.setReadState(
                 StateType.READ.name.lowercase(),
-                mapOf("items" to readIds)
+                mapOf("itemIds" to readIds)
             )
         }
     }
 
-    suspend fun setItemsStarState(stateType: StateType, itemIds: List<StarItem>) {
-        if (itemIds.isNotEmpty()) {
-            val body = arrayListOf<Map<String, String>>()
-
-            for (item in itemIds) {
-                body += mapOf(
-                    "feedId" to item.feedRemoteId,
-                    "guidHash" to item.guidHash
-                )
-            }
-
+    suspend fun setItemsStarState(syncData: NextcloudNewsSyncData) = with(syncData) {
+        if (starredIds.isNotEmpty()) {
             service.setStarState(
-                stateType.name.lowercase(),
-                mapOf("items" to body)
+                StateType.STAR.name.lowercase(),
+                mapOf("itemIds" to starredIds)
+            )
+        }
+
+        if (unstarredIds.isNotEmpty()) {
+            service.setStarState(
+                StateType.UNSTAR.name.lowercase(),
+                mapOf("itemIds" to unstarredIds)
             )
         }
     }

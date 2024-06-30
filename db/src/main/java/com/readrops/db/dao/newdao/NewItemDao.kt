@@ -11,7 +11,6 @@ import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.ItemState
 import com.readrops.db.pojo.ItemWithFeed
-import com.readrops.db.pojo.StarItem
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -67,7 +66,4 @@ abstract class NewItemDao : NewBaseDao<Item> {
 
     @Query("Select case When :guid In (Select guid From Item Inner Join Feed on Item.feed_id = Feed.id and account_id = :accountId) Then 1 else 0 end")
     abstract suspend fun itemExists(guid: String, accountId: Int): Boolean
-
-    @Query("Select Item.guid, Feed.remoteId as feedRemoteId From Item Inner Join Feed On Item.feed_id = Feed.id Where Item.remoteId In (:remoteIds) And account_id = :accountId")
-    abstract suspend fun selectStarChanges(remoteIds: List<String>, accountId: Int): List<StarItem>
 }

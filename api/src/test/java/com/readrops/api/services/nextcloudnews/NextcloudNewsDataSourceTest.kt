@@ -6,7 +6,6 @@ import com.readrops.api.enqueueOK
 import com.readrops.api.enqueueStream
 import com.readrops.api.services.nextcloudnews.NextNewsDataSource.ItemQueryType
 import com.readrops.db.entities.account.Account
-import com.readrops.db.pojo.StarItem
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import kotlinx.coroutines.test.runTest
@@ -251,8 +250,8 @@ class NextcloudNewsDataSourceTest : KoinTest {
         val unreadBody = adapter.fromJson(unreadRequest.body)!!
         val readBody = adapter.fromJson(readRequest.body)!!
 
-        assertEquals(data.readIds, readBody["items"])
-        assertEquals(data.unreadIds, unreadBody["items"])
+        assertEquals(data.readIds, readBody["itemIds"])
+        assertEquals(data.unreadIds, unreadBody["itemIds"])
     }
 
     @Test
@@ -260,47 +259,27 @@ class NextcloudNewsDataSourceTest : KoinTest {
         mockServer.enqueueOK()
         mockServer.enqueueOK()
 
-        val starList = listOf(
-            StarItem("remote1", "guid1"),
-            StarItem("remote2", "guid2")
-        )
-        nextcloudNewsDataSource.setItemsStarState(
-            NewNextcloudNewsDataSource.StateType.STAR,
-            starList
+        val data = NextcloudNewsSyncData(
+            starredIds = listOf(15, 16, 17),
+            unstarredIds = listOf(18, 19, 20)
         )
 
+        nextcloudNewsDataSource.setItemsStarState(data)
         val starRequest = mockServer.takeRequest()
-
-        val unstarList = listOf(
-            StarItem("remote3", "guid3"),
-            StarItem("remote4", "guid4")
-        )
-        nextcloudNewsDataSource.setItemsStarState(
-            NewNextcloudNewsDataSource.StateType.UNSTAR,
-            unstarList
-        )
-
         val unstarRequest = mockServer.takeRequest()
 
         val type =
             Types.newParameterizedType(
                 Map::class.java,
                 String::class.java,
-                Types.newParameterizedType(
-                    List::class.java,
-                    Types.newParameterizedType(
-                        Map::class.java,
-                        String::class.java,
-                        String::class.java
-                    )
-                )
+                Types.newParameterizedType(List::class.java, Int::class.javaObjectType)
             )
-        val adapter = moshi.adapter<Map<String, List<Map<String, String>>>>(type)
+        val adapter = moshi.adapter<Map<String, List<Int>>>(type)
 
         val starBody = adapter.fromJson(starRequest.body)!!
         val unstarBody = adapter.fromJson(unstarRequest.body)!!
 
-        assertEquals(starList[0].feedRemoteId, starBody.values.first().first()["feedId"])
-        assertEquals(unstarList[0].feedRemoteId, unstarBody.values.first().first()["feedId"])
+        assertEquals(data.starredIds, starBody["itemIds"])
+        assertEquals(data.unstarredIds, unstarBody["itemIds"])
     }
 }

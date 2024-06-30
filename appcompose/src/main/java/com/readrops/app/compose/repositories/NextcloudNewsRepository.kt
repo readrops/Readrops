@@ -40,19 +40,16 @@ class NextcloudNewsRepository(
         val itemStateChanges = database.newItemStateChangeDao()
             .selectItemStateChanges(account.id)
 
-        val starredIds = itemStateChanges.filter { it.starChange && it.starred }
-            .map { it.remoteId }
-        val unstarredIds = itemStateChanges.filter { it.starChange && !it.starred }
-            .map { it.remoteId }
-
         val syncData = NextcloudNewsSyncData(
             lastModified = account.lastModified,
             readIds = itemStateChanges.filter { it.readChange && it.read }
                 .map { it.remoteId.toInt() },
             unreadIds = itemStateChanges.filter { it.readChange && !it.read }
                 .map { it.remoteId.toInt() },
-            starredIds = database.newItemDao().selectStarChanges(starredIds, account.id),
-            unstarredIds = database.newItemDao().selectStarChanges(unstarredIds, account.id)
+            starredIds = itemStateChanges.filter { it.starChange && it.starred }
+                .map { it.remoteId.toInt() },
+            unstarredIds = itemStateChanges.filter { it.starChange && !it.starred }
+                .map { it.remoteId.toInt() }
         )
 
         val syncType = if (account.lastModified != 0L) {
