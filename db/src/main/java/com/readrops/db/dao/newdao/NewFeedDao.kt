@@ -67,6 +67,9 @@ abstract class NewFeedDao : NewBaseDao<Feed> {
     @Query("Update Feed set notification_enabled = :enabled Where account_id = :accountId")
     abstract suspend fun updateAllFeedsNotificationState(accountId: Int, enabled: Boolean)
 
+    @Query("Select * From Feed Where id in (:ids)")
+    abstract suspend fun selectFromIds(ids: List<Int>): List<Feed>
+
     /**
      * Insert, update and delete feeds by account
      *

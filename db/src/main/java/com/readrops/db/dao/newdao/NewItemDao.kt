@@ -22,6 +22,9 @@ abstract class NewItemDao : NewBaseDao<Item> {
     @RawQuery(observedEntities = [Item::class, ItemState::class])
     abstract fun selectItemById(query: SupportSQLiteQuery): Flow<ItemWithFeed>
 
+    @Query("Select * From Item Where remoteId = :remoteId And feed_id = :feedId")
+    abstract suspend fun selectByRemoteId(remoteId: String, feedId: Int): Item
+
     @Query("Update Item Set read = :read Where id = :itemId")
     abstract suspend fun updateReadState(itemId: Int, read: Boolean)
 
