@@ -166,4 +166,6 @@
     <string name="http_error">Erreur HTTP %1$d</string>
     <string name="feed_url_read_only">L\'API ne permet pas de modifier l\'URL</string>
     <string name="updating_account">Mise à jour du compte %1$s</string>
+    <string name="enable_all">Tout activer</string>
+    <string name="disable_all">Tout désactiver</string>
 </resources>

@@ -22,4 +22,10 @@ interface NewAccountDao : NewBaseDao<Account> {
 
     @Query("Update Account set last_modified = :lastModified Where id = :accountId")
     suspend fun updateLastModified(lastModified: Long, accountId: Int)
+
+    @Query("Update Account set notifications_enabled = :enabled Where id = :accountId")
+    suspend fun updateNotificationState(accountId: Int, enabled: Boolean)
+
+    @Query("Select notifications_enabled From Account Where id = :accountId")
+    fun selectAccountNotificationsState(accountId: Int): Flow<Boolean>
 }

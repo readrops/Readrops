@@ -172,4 +172,6 @@
     <string name="http_error">HTTP error %1$d</string>
     <string name="feed_url_read_only">The API doesn\'t support Feed URL modification</string>
     <string name="updating_account">Updating %1$s account</string>
+    <string name="enable_all">Enable all</string>
+    <string name="disable_all">Disable all</string>
 </resources>

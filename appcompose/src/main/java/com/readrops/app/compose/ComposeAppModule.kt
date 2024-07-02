@@ -9,6 +9,7 @@ import com.readrops.app.compose.account.credentials.AccountCredentialsScreenMode
 import com.readrops.app.compose.account.selection.AccountSelectionScreenModel
 import com.readrops.app.compose.feeds.FeedScreenModel
 import com.readrops.app.compose.item.ItemScreenModel
+import com.readrops.app.compose.notifications.NotificationsScreenModel
 import com.readrops.app.compose.repositories.BaseRepository
 import com.readrops.app.compose.repositories.FreshRSSRepository
 import com.readrops.app.compose.repositories.GetFoldersWithFeeds
@@ -36,6 +37,8 @@ val composeAppModule = module {
     factory { (accountType: Account, mode: AccountCredentialsScreenMode) ->
         AccountCredentialsScreenModel(accountType, mode, get())
     }
+
+    factory { (account: Account) -> NotificationsScreenModel(account, get()) }
 
     single { GetFoldersWithFeeds(get()) }
 

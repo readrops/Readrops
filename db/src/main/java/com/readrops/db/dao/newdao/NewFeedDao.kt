@@ -9,6 +9,7 @@ import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
 import com.readrops.db.pojo.FeedWithCount
+import com.readrops.db.pojo.FeedWithFolder2
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -55,6 +56,16 @@ abstract class NewFeedDao : NewBaseDao<Feed> {
 
     @Query("Update Feed set background_color = :color Where id = :feedId")
     abstract fun updateFeedColor(feedId: Int, color: Int)
+
+    @Query("""Select Feed.*, Folder.name as folder_name From Feed Left Join Folder On Feed.folder_id = Folder.id 
+        Where Feed.account_id = :accountId Order By Feed.name, Folder.name""")
+    abstract fun selectFeedsWithFolderName(accountId: Int): Flow<List<FeedWithFolder2>>
+
+    @Query("Update Feed set notification_enabled = :enabled Where id = :feedId")
+    abstract suspend fun updateFeedNotificationState(feedId: Int, enabled: Boolean)
+
+    @Query("Update Feed set notification_enabled = :enabled Where account_id = :accountId")
+    abstract suspend fun updateAllFeedsNotificationState(accountId: Int, enabled: Boolean)
 
     /**
      * Insert, update and delete feeds by account

@@ -50,6 +50,7 @@ import com.readrops.app.compose.account.credentials.AccountCredentialsScreenMode
 import com.readrops.app.compose.account.selection.AccountSelectionDialog
 import com.readrops.app.compose.account.selection.AccountSelectionScreen
 import com.readrops.app.compose.account.selection.adaptiveIconPainterResource
+import com.readrops.app.compose.notifications.NotificationsScreen
 import com.readrops.app.compose.timelime.ErrorListDialog
 import com.readrops.app.compose.util.components.ErrorDialog
 import com.readrops.app.compose.util.components.SelectableIconText
@@ -302,7 +303,7 @@ object AccountTab : Tab {
                     style = MaterialTheme.typography.titleMedium,
                     spacing = MaterialTheme.spacing.mediumSpacing,
                     padding = MaterialTheme.spacing.mediumSpacing,
-                    onClick = { }
+                    onClick = { navigator.push(NotificationsScreen(state.account)) }
                 )
 
                 SelectableIconText(
