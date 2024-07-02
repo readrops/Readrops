@@ -71,7 +71,7 @@ class NextcloudNewsRepository(
             account.lastModified = newLastModified
             database.newAccountDao().updateLastModified(newLastModified, account.id)
 
-            database.itemStateChangesDao().resetStateChanges(account.id)
+            database.newItemStateChangeDao().resetStateChanges(account.id)
         }
     }
 

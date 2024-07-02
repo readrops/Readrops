@@ -94,7 +94,7 @@ class LocalRSSRepository(
         val itemsToInsert = mutableListOf<Item>()
 
         for (item in items) {
-            if (!database.itemDao().itemExists(item.guid!!, feed.accountId)) {
+            if (!database.newItemDao().itemExists(item.guid!!, feed.accountId)) {
                 if (item.description != null) {
                     item.cleanDescription = Jsoup.parse(item.description).text()
                 }

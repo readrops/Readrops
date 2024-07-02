@@ -166,7 +166,7 @@ class FreshRSSRepository(
 
         if (itemsToInsert.isNotEmpty()) {
             itemsToInsert.sortWith(Item::compareTo)
-            database.itemDao().insert(itemsToInsert)
+            database.newItemDao().insert(itemsToInsert)
         }
     }
 

@@ -2,7 +2,6 @@ package com.readrops.api
 
 import com.readrops.api.localfeed.LocalRSSDataSource
 import com.readrops.api.services.Credentials
-import com.readrops.api.services.freshrss.FreshRSSDataSource
 import com.readrops.api.services.freshrss.NewFreshRSSDataSource
 import com.readrops.api.services.freshrss.NewFreshRSSService
 import com.readrops.api.services.freshrss.adapters.FreshRSSFeedsAdapter
@@ -12,7 +11,6 @@ import com.readrops.api.services.freshrss.adapters.FreshRSSItemsIdsAdapter
 import com.readrops.api.services.freshrss.adapters.FreshRSSUserInfoAdapter
 import com.readrops.api.services.nextcloudnews.NewNextcloudNewsDataSource
 import com.readrops.api.services.nextcloudnews.NewNextcloudNewsService
-import com.readrops.api.services.nextcloudnews.NextNewsDataSource
 import com.readrops.api.services.nextcloudnews.adapters.NextNewsFeedsAdapter
 import com.readrops.api.services.nextcloudnews.adapters.NextNewsFoldersAdapter
 import com.readrops.api.services.nextcloudnews.adapters.NextNewsItemsAdapter
@@ -48,8 +46,6 @@ val apiModule = module {
 
     //region freshrss
 
-    factory { params -> FreshRSSDataSource(get(parameters = { params })) }
-
     factory { params -> NewFreshRSSDataSource(get(parameters = { params })) }
 
     factory { (credentials: Credentials) ->
@@ -74,8 +70,6 @@ val apiModule = module {
     //endregion freshrss
 
     //region nextcloud news
-
-    factory { params -> NextNewsDataSource(get(parameters = { params })) }
 
     factory { params -> NewNextcloudNewsDataSource(get(parameters = { params })) }
 

@@ -1,7 +1,7 @@
 package com.readrops.api.services.freshrss.adapters
 
-import com.readrops.api.services.freshrss.FreshRSSDataSource.GOOGLE_READ
-import com.readrops.api.services.freshrss.FreshRSSDataSource.GOOGLE_STARRED
+import com.readrops.api.services.freshrss.NewFreshRSSDataSource.Companion.GOOGLE_READ
+import com.readrops.api.services.freshrss.NewFreshRSSDataSource.Companion.GOOGLE_STARRED
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.extensions.nextNonEmptyString
 import com.readrops.api.utils.extensions.nextNullableString

@@ -4,7 +4,6 @@ import com.readrops.api.TestUtils
 import com.readrops.api.apiModule
 import com.readrops.api.enqueueOK
 import com.readrops.api.enqueueStream
-import com.readrops.api.services.nextcloudnews.NextNewsDataSource.ItemQueryType
 import com.readrops.db.entities.account.Account
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
@@ -94,7 +93,7 @@ class NextcloudNewsDataSourceTest : KoinTest {
         val stream = TestUtils.loadResource("services/nextcloudnews/adapters/items.json")
         mockServer.enqueueStream(stream)
 
-        val items = nextcloudNewsDataSource.getItems(ItemQueryType.ALL.value, false, 10)
+        val items = nextcloudNewsDataSource.getItems(NewNextcloudNewsDataSource.ItemQueryType.ALL.value, false, 10)
         val request = mockServer.takeRequest()
 
         assertTrue { items.size == 3 }
