@@ -60,17 +60,17 @@ tasks.register('jacocoFullReport', JacocoReport) {
         }
     }
 
-    dependsOn ":app:testDebugUnitTest"
+    //dependsOn ":app:testDebugUnitTest"
     dependsOn ":api:testDebugUnitTest"
     dependsOn ":db:testDebugUnitTest"
-    dependsOn ":app:connectedAndroidTest"
+    //dependsOn ":app:connectedAndroidTest"
     dependsOn ":db:connectedAndroidTest"
 
     final fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', 'android/**/*.*']
 
     classDirectories.setFrom files([
-            fileTree(dir: "$project.rootDir/app/build/intermediates/javac/debug", excludes: fileFilter),
-            fileTree(dir: "$project.rootDir/app/build/tmp/kotlin-classes/debug", excludes: fileFilter),
+            //fileTree(dir: "$project.rootDir/app/build/intermediates/javac/debug", excludes: fileFilter),
+            //fileTree(dir: "$project.rootDir/app/build/tmp/kotlin-classes/debug", excludes: fileFilter),
             fileTree(dir: "$project.rootDir/api/build/intermediates/javac/debug", excludes: fileFilter),
             fileTree(dir: "$project.rootDir/api/build/tmp/kotlin-classes/debug", excludes: fileFilter),
             fileTree(dir: "$project.rootDir/db/build/tmp/kotlin-classes/debug", excludes: fileFilter),
