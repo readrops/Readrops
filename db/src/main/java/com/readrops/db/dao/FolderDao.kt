@@ -1,4 +1,4 @@
-package com.readrops.db.dao.newdao
+package com.readrops.db.dao
 
 import androidx.room.Dao
 import androidx.room.Query
@@ -9,7 +9,7 @@ import com.readrops.db.pojo.FolderWithFeed
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface NewFolderDao : NewBaseDao<Folder> {
+interface FolderDao : BaseDao<Folder> {
 
     @Query("""
         Select Feed.id As feedId, Feed.name As feedName, Feed.icon_url As feedIcon, Feed.url As feedUrl, 

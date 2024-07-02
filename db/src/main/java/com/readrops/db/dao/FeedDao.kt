@@ -1,4 +1,4 @@
-package com.readrops.db.dao.newdao
+package com.readrops.db.dao
 
 import androidx.room.Dao
 import androidx.room.Query
@@ -13,7 +13,7 @@ import com.readrops.db.pojo.FeedWithFolder2
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-abstract class NewFeedDao : NewBaseDao<Feed> {
+abstract class FeedDao : BaseDao<Feed> {
 
     @Query("Select * From Feed Where id = :feedId")
     abstract suspend fun selectFeed(feedId: Int): Feed

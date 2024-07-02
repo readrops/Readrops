@@ -18,7 +18,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class NewFolderDaoTest {
+class FolderDaoTest {
 
     private lateinit var database: Database
     private lateinit var account: Account

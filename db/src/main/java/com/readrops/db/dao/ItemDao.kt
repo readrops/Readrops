@@ -1,4 +1,4 @@
-package com.readrops.db.dao.newdao
+package com.readrops.db.dao
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
@@ -14,7 +14,7 @@ import com.readrops.db.pojo.ItemWithFeed
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-abstract class NewItemDao : NewBaseDao<Item> {
+abstract class ItemDao : BaseDao<Item> {
 
     @RawQuery(observedEntities = [Item::class, Feed::class, Folder::class, ItemState::class])
     abstract fun selectAll(query: SupportSQLiteQuery): PagingSource<Int, ItemWithFeed>

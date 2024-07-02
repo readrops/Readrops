@@ -6,12 +6,12 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.readrops.db.dao.newdao.NewAccountDao
-import com.readrops.db.dao.newdao.NewFeedDao
-import com.readrops.db.dao.newdao.NewFolderDao
-import com.readrops.db.dao.newdao.NewItemDao
-import com.readrops.db.dao.newdao.NewItemStateChangeDao
-import com.readrops.db.dao.newdao.NewItemStateDao
+import com.readrops.db.dao.AccountDao
+import com.readrops.db.dao.FeedDao
+import com.readrops.db.dao.FolderDao
+import com.readrops.db.dao.ItemDao
+import com.readrops.db.dao.ItemStateChangeDao
+import com.readrops.db.dao.ItemStateDao
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
@@ -30,17 +30,17 @@ import com.readrops.db.entities.account.Account
 abstract class Database : RoomDatabase() {
     // new dao
 
-    abstract fun newFeedDao(): NewFeedDao
+    abstract fun newFeedDao(): FeedDao
 
-    abstract fun newItemDao(): NewItemDao
+    abstract fun newItemDao(): ItemDao
 
-    abstract fun newAccountDao(): NewAccountDao
+    abstract fun newAccountDao(): AccountDao
 
-    abstract fun newFolderDao(): NewFolderDao
+    abstract fun newFolderDao(): FolderDao
 
-    abstract fun newItemStateDao(): NewItemStateDao
+    abstract fun newItemStateDao(): ItemStateDao
 
-    abstract fun newItemStateChangeDao(): NewItemStateChangeDao
+    abstract fun newItemStateChangeDao(): ItemStateChangeDao
 }
 
 object MigrationFrom1To2 : Migration(1, 2) {

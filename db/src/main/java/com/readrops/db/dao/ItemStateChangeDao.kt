@@ -1,4 +1,4 @@
-package com.readrops.db.dao.newdao
+package com.readrops.db.dao
 
 import androidx.room.Dao
 import androidx.room.Query
@@ -7,7 +7,7 @@ import com.readrops.db.entities.ItemStateChange
 import com.readrops.db.pojo.ItemReadStarState
 
 @Dao
-interface NewItemStateChangeDao: NewBaseDao<ItemStateChange> {
+interface ItemStateChangeDao: BaseDao<ItemStateChange> {
 
     @Query("Delete From ItemStateChange Where account_id = :accountId")
     suspend fun resetStateChanges(accountId: Int)

@@ -1,10 +1,10 @@
-package com.readrops.db.dao.newdao
+package com.readrops.db.dao
 
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Update
 
-interface NewBaseDao<T> {
+interface BaseDao<T> {
 
     @Insert
     suspend fun insert(entity: T): Long

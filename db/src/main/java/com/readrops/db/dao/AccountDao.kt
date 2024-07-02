@@ -1,4 +1,4 @@
-package com.readrops.db.dao.newdao
+package com.readrops.db.dao
 
 import androidx.room.Dao
 import androidx.room.Query
@@ -6,7 +6,7 @@ import com.readrops.db.entities.account.Account
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface NewAccountDao : NewBaseDao<Account> {
+interface AccountDao : BaseDao<Account> {
 
     @Query("Select * From Account")
     fun selectAllAccounts(): Flow<List<Account>>

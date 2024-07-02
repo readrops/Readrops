@@ -1,11 +1,11 @@
-package com.readrops.db.dao.newdao
+package com.readrops.db.dao
 
 import androidx.room.Dao
 import androidx.room.Query
 import com.readrops.db.entities.ItemState
 
 @Dao
-interface NewItemStateDao : NewBaseDao<ItemState> {
+interface ItemStateDao : BaseDao<ItemState> {
 
     @Query("Delete From ItemState Where account_id = :accountId")
     suspend fun deleteItemStates(accountId: Int)
