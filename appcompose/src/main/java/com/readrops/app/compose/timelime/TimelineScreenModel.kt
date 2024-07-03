@@ -67,7 +67,7 @@ class TimelineScreenModel(
                                 prefetchDistance = 10
                             ),
                             pagingSourceFactory = {
-                                database.newItemDao().selectAll(query)
+                                database.itemDao().selectAll(query)
                             },
                         ).flow
                             .transformLatest { value ->
@@ -142,10 +142,10 @@ class TimelineScreenModel(
     private suspend fun refreshLocalAccount() {
         val selectedFeeds = when (filters.value.subFilter) {
             SubFilter.FEED -> listOf(
-                database.newFeedDao().selectFeed(filters.value.filterFeedId)
+                database.feedDao().selectFeed(filters.value.filterFeedId)
             )
 
-            SubFilter.FOLDER -> database.newFeedDao()
+            SubFilter.FOLDER -> database.feedDao()
                 .selectFeedsByFolder(filters.value.filterFolderId)
 
             else -> listOf()
@@ -158,7 +158,7 @@ class TimelineScreenModel(
                 feedMax = if (selectedFeeds.isNotEmpty())
                     selectedFeeds.size
                 else
-                    database.newFeedDao().selectFeedCount(currentAccount!!.id)
+                    database.feedDao().selectFeedCount(currentAccount!!.id)
             )
         }
 

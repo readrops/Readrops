@@ -82,14 +82,14 @@ class AccountCredentialsScreenModel(
                     }
 
                     if (mode == AccountCredentialsScreenMode.NEW_CREDENTIALS) {
-                        newAccount.id = database.newAccountDao().insert(newAccount).toInt()
+                        newAccount.id = database.accountDao().insert(newAccount).toInt()
 
                         get<SharedPreferences>().edit()
                             .putString(newAccount.loginKey, newAccount.login)
                             .putString(newAccount.passwordKey, newAccount.password)
                             .apply()
                     } else {
-                        database.newAccountDao().update(newAccount)
+                        database.accountDao().update(newAccount)
                     }
 
                     mutableState.update { it.copy(exitScreen = true) }

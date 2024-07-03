@@ -29,11 +29,11 @@ class FolderDaoTest {
         database = Room.inMemoryDatabaseBuilder(context, Database::class.java).build()
 
         account = Account(accountType = AccountType.LOCAL).apply {
-            id = database.newAccountDao().insert(this).toInt()
+            id = database.accountDao().insert(this).toInt()
         }
 
         repeat(2) { time ->
-            database.newFolderDao().insert(
+            database.folderDao().insert(
                 Folder(
                     name = "Folder $time",
                     remoteId = "folder_$time",
@@ -61,8 +61,8 @@ class FolderDaoTest {
             Folder(name = "Folder 2", remoteId = "folder_2", accountId = account.id)
         )
 
-        database.newFolderDao().upsertFolders(remoteFolders, account)
-        val allFolders = database.newFolderDao().selectFolders(account.id).first()
+        database.folderDao().upsertFolders(remoteFolders, account)
+        val allFolders = database.folderDao().selectFolders(account.id).first()
 
         assertTrue(allFolders.any { it.name == "New Folder 0" })
 

@@ -9,7 +9,7 @@ import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
 import com.readrops.db.pojo.FeedWithCount
-import com.readrops.db.pojo.FeedWithFolder2
+import com.readrops.db.pojo.FeedWithFolder
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -59,7 +59,7 @@ abstract class FeedDao : BaseDao<Feed> {
 
     @Query("""Select Feed.*, Folder.name as folder_name From Feed Left Join Folder On Feed.folder_id = Folder.id 
         Where Feed.account_id = :accountId Order By Feed.name, Folder.name""")
-    abstract fun selectFeedsWithFolderName(accountId: Int): Flow<List<FeedWithFolder2>>
+    abstract fun selectFeedsWithFolderName(accountId: Int): Flow<List<FeedWithFolder>>
 
     @Query("Update Feed set notification_enabled = :enabled Where id = :feedId")
     abstract suspend fun updateFeedNotificationState(feedId: Int, enabled: Boolean)

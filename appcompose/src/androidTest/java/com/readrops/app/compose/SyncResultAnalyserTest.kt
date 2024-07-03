@@ -52,9 +52,9 @@ class SyncAnalyzerTest {
 
         syncAnalyzer = SyncAnalyzer(context, database)
 
-        account1.id = database.newAccountDao().insert(account1).toInt()
-        account2.id = database.newAccountDao().insert(account2).toInt()
-        account3.id = database.newAccountDao().insert(account3).toInt()
+        account1.id = database.accountDao().insert(account1).toInt()
+        account2.id = database.accountDao().insert(account2).toInt()
+        account3.id = database.accountDao().insert(account3).toInt()
 
         val accountIds = listOf(account1.id, account2.id, account3.id)
         for (i in 0..2) {
@@ -66,7 +66,7 @@ class SyncAnalyzerTest {
                 isNotificationEnabled = i % 2 == 0
             }
 
-            database.newFeedDao().insert(feed)
+            database.feedDao().insert(feed)
         }
     }
 
@@ -84,7 +84,7 @@ class SyncAnalyzerTest {
             pubDate = LocalDateTime.now()
         )
 
-        database.newItemDao().insert(item)
+        database.itemDao().insert(item)
 
         val syncResult = SyncResult(items = listOf(item))
         val notificationContent = syncAnalyzer.getNotificationContent(mapOf(account1 to syncResult))
@@ -94,7 +94,7 @@ class SyncAnalyzerTest {
         assertTrue(notificationContent.largeIcon != null)
         assertTrue(notificationContent.accountId > 0)
 
-        database.newItemDao().delete(item)
+        database.itemDao().delete(item)
     }
 
     @Test
@@ -183,7 +183,7 @@ class SyncAnalyzerTest {
             feedId = 3
         )
 
-        database.newItemDao().insert(item1)
+        database.itemDao().insert(item1)
 
         val syncResult1 = SyncResult(items = listOf(item1))
         val syncResult2 = SyncResult(items = listOf(item2, item3))
@@ -197,7 +197,7 @@ class SyncAnalyzerTest {
         assertTrue(notificationContent.largeIcon != null)
         assertTrue(notificationContent.item != null)
 
-        database.newItemDao().delete(item1)
+        database.itemDao().delete(item1)
     }
 
     @Test
@@ -219,7 +219,7 @@ class SyncAnalyzerTest {
             feedId = 2
         )
 
-        database.newItemDao().insert(item1)
+        database.itemDao().insert(item1)
 
         val syncResult1 = SyncResult(items = listOf(item1))
         val syncResult2 = SyncResult(items = listOf(item2, item3))
@@ -232,7 +232,7 @@ class SyncAnalyzerTest {
         assertTrue(notificationContent.largeIcon != null)
         assertTrue(notificationContent.item != null)
 
-        database.newItemDao().delete(item1)
+        database.itemDao().delete(item1)
     }
 
 
@@ -255,7 +255,7 @@ class SyncAnalyzerTest {
             feedId = 2
         )
 
-        database.newItemDao().insert(item1)
+        database.itemDao().insert(item1)
 
         val syncResult = SyncResult(items = listOf(item1, item2, item3))
         val notificationContent = syncAnalyzer.getNotificationContent(mapOf(account1 to syncResult))
@@ -266,6 +266,6 @@ class SyncAnalyzerTest {
         assertTrue(notificationContent.item != null)
         assertTrue(notificationContent.accountId > 0)
 
-        database.newItemDao().delete(item1)
+        database.itemDao().delete(item1)
     }
 }

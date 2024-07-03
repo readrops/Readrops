@@ -47,7 +47,7 @@ class SyncWorker(
                     .setStyle(NotificationCompat.BigTextStyle())
                     .setOnlyAlertOnce(true)
 
-            val accounts = database.newAccountDao().selectAllAccounts().first()
+            val accounts = database.accountDao().selectAllAccounts().first()
 
             for (account in accounts) {
                 account.login = sharedPreferences.getString(account.loginKey, null)
@@ -89,7 +89,7 @@ class SyncWorker(
 
             try {
                 val color = FeedColors.getFeedColor(syncResult.feeds.first { it.id == feedId.toInt() }.iconUrl!!)
-                database.newFeedDao().updateFeedColor(feedId.toInt(), color)
+                database.feedDao().updateFeedColor(feedId.toInt(), color)
             } catch (e: Exception) {
                 Log.e(TAG, "$feedName: ${e.message}")
             }

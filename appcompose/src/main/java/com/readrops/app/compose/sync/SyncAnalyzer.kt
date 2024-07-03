@@ -29,7 +29,7 @@ class SyncAnalyzer(
 
     suspend fun getNotificationContent(syncResults: Map<Account, SyncResult>): NotificationContent {
         return if (newItemsInMultipleAccounts(syncResults)) { // new items from several accounts
-            val feeds = database.newFeedDao().selectFromIds(getFeedsIdsForNewItems(syncResults))
+            val feeds = database.feedDao().selectFromIds(getFeedsIdsForNewItems(syncResults))
 
             var itemCount = 0
             syncResults.values.forEach { syncResult ->
@@ -53,7 +53,7 @@ class SyncAnalyzer(
             val feedsIdsForNewItems = getFeedsIdsForNewItems(syncResult)
 
             if (account.isNotificationsEnabled) {
-                val feeds = database.newFeedDao().selectFromIds(feedsIdsForNewItems)
+                val feeds = database.feedDao().selectFromIds(feedsIdsForNewItems)
 
                 val items =
                     syncResult.items.filter { isFeedNotificationEnabledForItem(feeds, it) }
@@ -90,7 +90,7 @@ class SyncAnalyzer(
         items: List<Item>,
         account: Account
     ): NotificationContent {
-        val feed = database.newFeedDao().selectFeed(feedId)
+        val feed = database.feedDao().selectFeed(feedId)
 
         if (feed.isNotificationEnabled) {
             val icon = feed.iconUrl?.let {
@@ -105,7 +105,7 @@ class SyncAnalyzer(
             }
 
             val (item, content) = if (items.size == 1) {
-                val item = database.newItemDao().selectByRemoteId(
+                val item = database.itemDao().selectByRemoteId(
                     items.first().remoteId!!,
                     items.first().feedId
                 )

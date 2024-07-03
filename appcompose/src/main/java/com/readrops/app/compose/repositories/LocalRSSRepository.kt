@@ -35,7 +35,7 @@ class LocalRSSRepository(
         val syncResult = SyncResult()
 
         val feeds = selectedFeeds.ifEmpty {
-            database.newFeedDao().selectFeeds(account.id)
+            database.feedDao().selectFeeds(account.id)
         }
 
         for (feed in feeds) {
@@ -94,7 +94,7 @@ class LocalRSSRepository(
         val itemsToInsert = mutableListOf<Item>()
 
         for (item in items) {
-            if (!database.newItemDao().itemExists(item.guid!!, feed.accountId)) {
+            if (!database.itemDao().itemExists(item.guid!!, feed.accountId)) {
                 if (item.description != null) {
                     item.cleanDescription = Jsoup.parse(item.description).text()
                 }
@@ -110,11 +110,11 @@ class LocalRSSRepository(
             }
         }
 
-        database.newItemDao().insert(itemsToInsert)
+        database.itemDao().insert(itemsToInsert)
     }
 
     private suspend fun insertFeed(feed: Feed): Feed {
-        require(!database.newFeedDao().feedExists(feed.url!!, account.id)) {
+        require(!database.feedDao().feedExists(feed.url!!, account.id)) {
             "Feed already exists for account ${account.accountName}"
         }
 
@@ -132,7 +132,7 @@ class LocalRSSRepository(
                 Log.d("LocalRSSRepository", "insertFeed: ${e.message}")
             }
 
-            id = database.newFeedDao().insert(this).toInt()
+            id = database.feedDao().insert(this).toInt()
         }
     }
 }

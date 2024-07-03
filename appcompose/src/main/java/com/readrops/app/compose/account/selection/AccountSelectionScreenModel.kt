@@ -21,7 +21,7 @@ class AccountSelectionScreenModel(
 
     fun accountExists(): Boolean {
         val accountCount = runBlocking {
-            database.newAccountDao().selectAccountCount()
+            database.accountDao().selectAccountCount()
         }
 
         return accountCount > 0
@@ -49,7 +49,7 @@ class AccountSelectionScreenModel(
         )
 
         screenModelScope.launch(dispatcher) {
-            database.newAccountDao().insert(account)
+            database.accountDao().insert(account)
 
             mutableState.update { NavState.GoToHomeScreen }
         }

@@ -29,11 +29,11 @@ class FeedDaoTest {
         database = Room.inMemoryDatabaseBuilder(context, Database::class.java).build()
 
         account = Account(accountType = AccountType.LOCAL).apply {
-            id = database.newAccountDao().insert(this).toInt()
+            id = database.accountDao().insert(this).toInt()
         }
 
         repeat(2) { time ->
-            database.newFolderDao().insert(
+            database.folderDao().insert(
                 Folder(
                     name = "Folder $time",
                     remoteId = "folder_$time",
@@ -43,7 +43,7 @@ class FeedDaoTest {
         }
 
         repeat(3) { time ->
-            database.newFeedDao().insert(
+            database.feedDao().insert(
                 Feed(
                     name = "Feed $time",
                     remoteId = "feed_$time",
@@ -95,8 +95,8 @@ class FeedDaoTest {
             ),
         )
 
-        database.newFeedDao().upsertFeeds(newFeeds, account)
-        val allFeeds = database.newFeedDao().selectFeeds(account.id)
+        database.feedDao().upsertFeeds(newFeeds, account)
+        val allFeeds = database.feedDao().selectFeeds(account.id)
 
         assertTrue(allFeeds.any { it.name == "New Feed 0" && it.folderId == null })
         assertTrue(allFeeds.any { it.remoteId == "feed_2" && it.folderId == 2 })

@@ -30,34 +30,34 @@ class GetFoldersWithFeedsTest {
         database = Room.inMemoryDatabaseBuilder(context, Database::class.java).build()
 
         runTest {
-            account.id = database.newAccountDao().insert(account).toInt()
+            account.id = database.accountDao().insert(account).toInt()
 
             // inserting 3 folders
             repeat(3) { time ->
-                database.newFolderDao()
+                database.folderDao()
                     .insert(Folder(name = "Folder $time", accountId = account.id))
             }
 
             // inserting 2 feeds, not linked to any folder
             repeat(2) { time ->
-                database.newFeedDao().insert(Feed(name = "Feed $time", accountId = account.id))
+                database.feedDao().insert(Feed(name = "Feed $time", accountId = account.id))
             }
 
             // inserting 2 feeds linked to first folder (Folder 0)
             repeat(2) { time ->
-                database.newFeedDao()
+                database.feedDao()
                     .insert(Feed(name = "Feed ${time + 2}", folderId = 1, accountId = account.id))
             }
 
             // inserting 3 unread items linked to first feed (Feed 0)
             repeat(3) { time ->
-                database.newItemDao()
+                database.itemDao()
                     .insert(Item(title = "Item $time", feedId = 1, pubDate = LocalDateTime.now()))
             }
 
             // insert 3 read items items linked to second feed (feed 1)
             repeat(3) { time ->
-                database.newItemDao()
+                database.itemDao()
                     .insert(
                         Item(
                             title = "Item ${time + 3}",

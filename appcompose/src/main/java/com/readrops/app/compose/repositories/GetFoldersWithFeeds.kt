@@ -20,8 +20,8 @@ class GetFoldersWithFeeds(
         val query = FeedUnreadCountQueryBuilder.build(accountId, mainFilter, useSeparateState)
 
         return combine(
-            flow = database.newFolderDao().selectFoldersAndFeeds(accountId),
-            flow2 = database.newItemDao().selectFeedUnreadItemsCount(query)
+            flow = database.folderDao().selectFoldersAndFeeds(accountId),
+            flow2 = database.itemDao().selectFeedUnreadItemsCount(query)
         ) { folders, itemCounts ->
             val foldersWithFeeds = folders.groupBy(
                 keySelector = {
@@ -63,8 +63,8 @@ class GetFoldersWithFeeds(
 
     fun getNewItemsUnreadCount(accountId: Int, useSeparateState: Boolean): Flow<Int> =
         if (useSeparateState) {
-            database.newItemDao().selectUnreadNewItemsCountByItemState(accountId)
+            database.itemDao().selectUnreadNewItemsCountByItemState(accountId)
         } else {
-            database.newItemDao().selectUnreadNewItemsCount(accountId)
+            database.itemDao().selectUnreadNewItemsCount(accountId)
         }
 }

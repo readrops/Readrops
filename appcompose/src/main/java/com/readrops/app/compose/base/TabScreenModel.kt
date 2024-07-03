@@ -33,7 +33,7 @@ abstract class TabScreenModel(
 
     init {
         screenModelScope.launch {
-            database.newAccountDao()
+            database.accountDao()
                 .selectCurrentAccount()
                 .distinctUntilChanged()
                 .collect { account ->

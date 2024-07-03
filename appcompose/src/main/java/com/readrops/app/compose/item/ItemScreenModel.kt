@@ -40,7 +40,7 @@ class ItemScreenModel(
 
     init {
         screenModelScope.launch(dispatcher) {
-            database.newAccountDao().selectCurrentAccount()
+            database.accountDao().selectCurrentAccount()
                 .collect { account ->
                     this@ItemScreenModel.account = account!!
                     repository = get { parametersOf(account) }
@@ -50,7 +50,7 @@ class ItemScreenModel(
                         separateState = account.config.useSeparateState
                     )
 
-                    database.newItemDao().selectItemById(query)
+                    database.itemDao().selectItemById(query)
                         .collect { itemWithFeed ->
                             mutableState.update {
                                 it.copy(

@@ -28,19 +28,18 @@ import com.readrops.db.entities.account.Account
 )
 @TypeConverters(Converters::class)
 abstract class Database : RoomDatabase() {
-    // new dao
 
-    abstract fun newFeedDao(): FeedDao
+    abstract fun feedDao(): FeedDao
 
-    abstract fun newItemDao(): ItemDao
+    abstract fun itemDao(): ItemDao
 
-    abstract fun newAccountDao(): AccountDao
+    abstract fun accountDao(): AccountDao
 
-    abstract fun newFolderDao(): FolderDao
+    abstract fun folderDao(): FolderDao
 
-    abstract fun newItemStateDao(): ItemStateDao
+    abstract fun itemStateDao(): ItemStateDao
 
-    abstract fun newItemStateChangeDao(): ItemStateChangeDao
+    abstract fun itemStateChangeDao(): ItemStateChangeDao
 }
 
 object MigrationFrom1To2 : Migration(1, 2) {

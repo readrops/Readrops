@@ -58,7 +58,7 @@ class LocalRSSRepositoryTest : KoinTest {
         mockServer.start()
         val url = mockServer.url("/rss")
 
-        account.id = database.newAccountDao().insert(account).toInt()
+        account.id = database.accountDao().insert(account).toInt()
         feeds = listOf(
             Feed(
                 name = "feedTest",
@@ -67,7 +67,7 @@ class LocalRSSRepositoryTest : KoinTest {
             ),
         )
 
-        database.newFeedDao().insert(feeds).apply {
+        database.feedDao().insert(feeds).apply {
             feeds.first().id = first().toInt()
         }
 
@@ -90,7 +90,7 @@ class LocalRSSRepositoryTest : KoinTest {
 
         assertTrue { result.first.items.isNotEmpty() }
         assertTrue {
-            database.newItemDao().itemExists(result.first.items.first().guid!!, account.id)
+            database.itemDao().itemExists(result.first.items.first().guid!!, account.id)
         }
     }
 
@@ -110,7 +110,7 @@ class LocalRSSRepositoryTest : KoinTest {
 
         assertTrue { result.first.items.isNotEmpty() }
         assertTrue {
-            database.newItemDao().itemExists(result.first.items.first().guid!!, account.id)
+            database.itemDao().itemExists(result.first.items.first().guid!!, account.id)
         }
     }
 }

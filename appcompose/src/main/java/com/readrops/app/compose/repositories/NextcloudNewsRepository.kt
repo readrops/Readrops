@@ -37,7 +37,7 @@ class NextcloudNewsRepository(
     ): Pair<SyncResult, ErrorResult> = throw NotImplementedError("This method can't be called here")
 
     override suspend fun synchronize(): SyncResult {
-        val itemStateChanges = database.newItemStateChangeDao()
+        val itemStateChanges = database.itemStateChangeDao()
             .selectItemStateChanges(account.id)
 
         val syncData = NextcloudNewsSyncData(
@@ -69,9 +69,9 @@ class NextcloudNewsRepository(
             insertItems(starredItems, initialSync)
 
             account.lastModified = newLastModified
-            database.newAccountDao().updateLastModified(newLastModified, account.id)
+            database.accountDao().updateLastModified(newLastModified, account.id)
 
-            database.newItemStateChangeDao().resetStateChanges(account.id)
+            database.itemStateChangeDao().resetStateChanges(account.id)
         }
     }
 
@@ -97,7 +97,7 @@ class NextcloudNewsRepository(
 
     override suspend fun updateFeed(feed: Feed) {
         val folder =
-            if (feed.folderId != null) database.newFolderDao().select(feed.folderId!!) else null
+            if (feed.folderId != null) database.folderDao().select(feed.folderId!!) else null
 
         dataSource.renameFeed(feed.name!!, feed.remoteId!!.toInt())
         dataSource.changeFeedFolder(folder?.remoteId?.toInt(), feed.remoteId!!.toInt())
@@ -114,7 +114,7 @@ class NextcloudNewsRepository(
         val folders = dataSource.createFolder(folder.name!!)
             .onEach { it.accountId = account.id }
 
-        database.newFolderDao().insert(folders)
+        database.folderDao().insert(folders)
     }
 
     override suspend fun updateFolder(folder: Folder) {
@@ -129,12 +129,12 @@ class NextcloudNewsRepository(
 
     private suspend fun insertFolders(folders: List<Folder>) {
         folders.forEach { it.accountId = account.id }
-        database.newFolderDao().upsertFolders(folders, account)
+        database.folderDao().upsertFolders(folders, account)
     }
 
     private suspend fun insertFeeds(feeds: List<Feed>): List<Long> {
         feeds.forEach { it.accountId = account.id }
-        return database.newFeedDao().upsertFeeds(feeds, account)
+        return database.feedDao().upsertFeeds(feeds, account)
     }
 
     private suspend fun insertItems(items: List<Item>, initialSync: Boolean) {
@@ -147,14 +147,14 @@ class NextcloudNewsRepository(
                 feedId = itemsFeedsIds.getValue(item.feedRemoteId)
             } else {
                 feedId =
-                    database.newFeedDao().selectRemoteFeedLocalId(item.feedRemoteId!!, account.id)
+                    database.feedDao().selectRemoteFeedLocalId(item.feedRemoteId!!, account.id)
                 itemsFeedsIds[item.feedRemoteId] = feedId
             }
 
-            if (!initialSync && feedId > 0 && database.newItemDao()
+            if (!initialSync && feedId > 0 && database.itemDao()
                     .itemExists(item.remoteId!!, feedId)
             ) {
-                database.newItemDao()
+                database.itemDao()
                     .updateReadAndStarState(item.remoteId!!, item.isRead, item.isStarred)
                 continue
             }
@@ -165,7 +165,7 @@ class NextcloudNewsRepository(
         }
 
         if (itemsToInsert.isNotEmpty()) {
-            database.newItemDao().insert(itemsToInsert)
+            database.itemDao().insert(itemsToInsert)
         }
     }
 }

@@ -42,7 +42,7 @@ class FreshRSSRepository(
     ): Pair<SyncResult, ErrorResult> = throw NotImplementedError("This method can't be called here")
 
     override suspend fun synchronize(): SyncResult {
-        val itemStateChanges = database.newItemStateChangeDao()
+        val itemStateChanges = database.itemStateChangeDao()
             .selectItemStateChanges(account.id)
 
         val syncData = FreshRSSSyncData(
@@ -76,9 +76,9 @@ class FreshRSSRepository(
             insertItemsIds(unreadIds, readIds, starredIds.toMutableList())
 
             account.lastModified = newLastModified
-            database.newAccountDao().updateLastModified(newLastModified, account.id)
+            database.accountDao().updateLastModified(newLastModified, account.id)
 
-            database.newItemStateChangeDao().resetStateChanges(account.id)
+            database.itemStateChangeDao().resetStateChanges(account.id)
         }
     }
 
@@ -125,12 +125,12 @@ class FreshRSSRepository(
 
     private suspend fun insertFeeds(feeds: List<Feed>): List<Long> {
         feeds.forEach { it.accountId = account.id }
-        return database.newFeedDao().upsertFeeds(feeds, account)
+        return database.feedDao().upsertFeeds(feeds, account)
     }
 
     private suspend fun insertFolders(folders: List<Folder>) {
         folders.forEach { it.accountId = account.id }
-        database.newFolderDao().upsertFolders(folders, account)
+        database.folderDao().upsertFolders(folders, account)
     }
 
     private suspend fun insertItems(items: List<Item>, starredItems: Boolean) {
@@ -143,7 +143,7 @@ class FreshRSSRepository(
                 feedId = itemsFeedsIds.getValue(item.feedRemoteId)
             } else {
                 feedId =
-                    database.newFeedDao().selectRemoteFeedLocalId(item.feedRemoteId!!, account.id)
+                    database.feedDao().selectRemoteFeedLocalId(item.feedRemoteId!!, account.id)
                 itemsFeedsIds[item.feedRemoteId] = feedId
             }
 
@@ -166,7 +166,7 @@ class FreshRSSRepository(
 
         if (itemsToInsert.isNotEmpty()) {
             itemsToInsert.sortWith(Item::compareTo)
-            database.newItemDao().insert(itemsToInsert)
+            database.itemDao().insert(itemsToInsert)
         }
     }
 
@@ -175,9 +175,9 @@ class FreshRSSRepository(
         readIds: List<String>,
         starredIds: MutableList<String> // TODO is it performance wise?
     ) {
-        database.newItemStateDao().deleteItemStates(account.id)
+        database.itemStateDao().deleteItemStates(account.id)
 
-        database.newItemStateDao().insert(unreadIds.map { id ->
+        database.itemStateDao().insert(unreadIds.map { id ->
             val starred = starredIds.count { starredId -> starredId == id } == 1
 
             if (starred) {
@@ -193,7 +193,7 @@ class FreshRSSRepository(
             )
         })
 
-        database.newItemStateDao().insert(readIds.map { id ->
+        database.itemStateDao().insert(readIds.map { id ->
             val starred = starredIds.count { starredId -> starredId == id } == 1
             if (starred) {
                 starredIds.remove(id)
@@ -210,7 +210,7 @@ class FreshRSSRepository(
 
         // insert starred items ids which are read
         if (starredIds.isNotEmpty()) {
-            database.newItemStateDao().insert(starredIds.map { id ->
+            database.itemStateDao().insert(starredIds.map { id ->
                 ItemState(
                     0,
                     read = true,

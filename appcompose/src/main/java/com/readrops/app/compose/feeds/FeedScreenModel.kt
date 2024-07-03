@@ -72,7 +72,7 @@ class FeedScreenModel(
         }
 
         screenModelScope.launch(context = Dispatchers.IO) {
-            database.newAccountDao()
+            database.accountDao()
                 .selectAllAccounts()
                 .collect { accounts ->
                     _addFeedDialogState.update { dialogState ->
@@ -93,7 +93,7 @@ class FeedScreenModel(
                         )
                     }
 
-                    database.newFolderDao()
+                    database.folderDao()
                         .selectFolders(account.id)
                 }
                 .collect { folders ->

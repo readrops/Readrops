@@ -58,7 +58,7 @@ class AccountScreenModel(
 
     fun deleteAccount() {
         screenModelScope.launch(Dispatchers.IO) {
-            database.newAccountDao()
+            database.accountDao()
                 .delete(currentAccount!!)
 
             _closeHome.update { true }
