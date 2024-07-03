@@ -66,7 +66,7 @@ class SyncAnalyzerTest {
                 isNotificationEnabled = i % 2 == 0
             }
 
-            database.feedDao().insert(feed).subscribe()
+            database.newFeedDao().insert(feed)
         }
     }
 
@@ -92,7 +92,7 @@ class SyncAnalyzerTest {
         assertEquals("caseOneElementEveryWhere", notificationContent.content)
         assertEquals("feed 1", notificationContent.title)
         assertTrue(notificationContent.largeIcon != null)
-        assertTrue(notificationContent.accountId!! > 0)
+        assertTrue(notificationContent.accountId > 0)
 
         database.newItemDao().delete(item)
     }

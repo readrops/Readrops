@@ -12,6 +12,7 @@ import com.readrops.db.entities.Feed
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -37,7 +38,7 @@ class LocalRSSRepositoryTest : KoinTest {
     private lateinit var feeds: List<Feed>
 
     @Before
-    fun before() {
+    fun before() = runTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         database = Room.inMemoryDatabaseBuilder(context, Database::class.java).build()
 
@@ -57,7 +58,7 @@ class LocalRSSRepositoryTest : KoinTest {
         mockServer.start()
         val url = mockServer.url("/rss")
 
-        account.id = database.accountDao().compatInsert(account).toInt()
+        account.id = database.newAccountDao().insert(account).toInt()
         feeds = listOf(
             Feed(
                 name = "feedTest",
@@ -66,17 +67,15 @@ class LocalRSSRepositoryTest : KoinTest {
             ),
         )
 
-        runBlocking {
-            database.newFeedDao().insert(feeds).run {
-                feeds.first().id = first().toInt()
-            }
+        database.newFeedDao().insert(feeds).apply {
+            feeds.first().id = first().toInt()
         }
 
         repository = LocalRSSRepository(get(), database, account)
     }
 
     @Test
-    fun synchronizeTest() = runBlocking {
+    fun synchronizeTest() = runTest {
         val stream = TestUtils.loadResource("rss_feed.xml")
 
         mockServer.enqueue(
@@ -90,7 +89,9 @@ class LocalRSSRepositoryTest : KoinTest {
         }
 
         assertTrue { result.first.items.isNotEmpty() }
-        assertTrue { database.itemDao().itemExists(result.first.items.first().guid!!, account.id) }
+        assertTrue {
+            database.newItemDao().itemExists(result.first.items.first().guid!!, account.id)
+        }
     }
 
     @Test
@@ -108,6 +109,8 @@ class LocalRSSRepositoryTest : KoinTest {
         }
 
         assertTrue { result.first.items.isNotEmpty() }
-        assertTrue { database.itemDao().itemExists(result.first.items.first().guid!!, account.id) }
+        assertTrue {
+            database.newItemDao().itemExists(result.first.items.first().guid!!, account.id)
+        }
     }
 }
