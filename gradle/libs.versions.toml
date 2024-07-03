@@ -42,7 +42,6 @@ coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", ve
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
-room-rxjava2 = { module = "androidx.room:room-rxjava2", version.ref = "room" } #TODO remove usage of this
 room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
 room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
 
@@ -50,7 +49,6 @@ koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
 koin-core = { module = "io.insert-koin:koin-core" }
 koin-android = { module = "io.insert-koin:koin-android" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose" }
-koin-android-compat = { module = "io.insert-koin:koin-android-compat" } #TODO remove usage of this
 koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin-bom" }
 koin-test-junit4 = { module = "io.insert-koin:koin-test-junit4", version.ref = "koin-bom" }
 
@@ -77,7 +75,7 @@ lifecycle = ["lifecycle-viewmodel-ktx", "lifecycle-viewmodel-compose", "lifecycl
     "lifecyle-runtime-compose"]
 coil = ["coil-core", "coil-compose"]
 coroutines = ["coroutines-core", "coroutines-android"]
-room = ["room-runtime", "room-ktx", "room-rxjava2", "room-paging"]
-koin = ["koin-bom", "koin-core", "koin-android", "koin-androidx-compose", "koin-android-compat"]
+room = ["room-runtime", "room-ktx", "room-paging"]
+koin = ["koin-bom", "koin-core", "koin-android", "koin-androidx-compose"]
 kointest = ["koin-test", "koin-test-junit4"]
 paging = ["paging-runtime", "paging-compose"]
