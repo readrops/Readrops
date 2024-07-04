@@ -1,62 +1,62 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.8.0'
+    val kotlin_version = "1.8.0"
 
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.1.1'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "org.jacoco:org.jacoco.core:0.8.7"
+        classpath("com.android.tools.build:gradle:8.1.1")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
+        classpath("org.jacoco:org.jacoco.core:0.8.7")
     }
 }
 
 allprojects {
-    apply plugin: 'jacoco'
+    //apply("jacoco")
 
     repositories {
         google()
         mavenCentral()
-        maven { url 'https://jitpack.io' }
+        maven(url = "https://jitpack.io")
     }
-    afterEvaluate {
+    /*afterEvaluate {
         tasks.withType(JavaCompile.class) {
             options.compilerArgs << "-Xmaxerrs" << "1000"
         }
-    }
+    }*/
 }
 
 ext {
-    compileSdkVersion = 34
-    minSdkVersion = 21
-    targetSdkVersion = 34
-    buildToolsVersion = "34.0.0"
+    val compileSdkVersion = 34
+    val minSdkVersion = 21
+    val targetSdkVersion = 34
+    val buildToolsVersion = "34.0.0"
 }
 
-tasks.register('clean', Delete) {
-    delete rootProject.buildDir
+tasks.register<Delete>("clean") {
+    delete(rootProject.buildDir)
 }
 
-jacoco {
+/*jacoco {
     toolVersion = "0.8.7"
 }
 
 
-tasks.register('jacocoFullReport', JacocoReport) {
-    group = 'Reporting'
+tasks.register("jacocoFullReport", JacocoReport) {
+    group = "Reporting"
     description = "Generate Jacoco coverage reports for the debug build"
 
     reports {
         html {
             enabled true
-            destination file('build/reports/jacoco/html')
+            destination file("build/reports/jacoco/html")
         }
         xml {
             enabled true
-            destination file('build/reports/jacoco/jacocoFullReport.xml')
+            destination file("build/reports/jacoco/jacocoFullReport.xml")
         }
     }
 
@@ -64,11 +64,11 @@ tasks.register('jacocoFullReport', JacocoReport) {
     dependsOn ":api:testDebugUnitTest"
     dependsOn ":db:testDebugUnitTest"
     //dependsOn ":app:connectedAndroidTest"
-    dependsOn ":db:connectedAndroidTest"
+    dependsOn ":db:connectedAndroidTest"*/
 
-    final fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', 'android/**/*.*']
+    //final fileFilter = ["**/R.class", "**/R\$*.class", "**/BuildConfig.*", "**/Manifest*.*", "android/**/*.*"]
 
-    classDirectories.setFrom files([
+/*    classDirectories.setFrom files([
             //fileTree(dir: "$project.rootDir/app/build/intermediates/javac/debug", excludes: fileFilter),
             //fileTree(dir: "$project.rootDir/app/build/tmp/kotlin-classes/debug", excludes: fileFilter),
             fileTree(dir: "$project.rootDir/api/build/intermediates/javac/debug", excludes: fileFilter),
@@ -84,10 +84,10 @@ tasks.register('jacocoFullReport', JacocoReport) {
     additionalSourceDirs.setFrom files(coverageSourceDirs)
     sourceDirectories.setFrom files(coverageSourceDirs)
     executionData.setFrom fileTree(dir: project.rootDir, includes: [
-            'app/jacoco.exec',
-            'db/jacoco.exec',
-            'api/jacoco.exec',
-            'app/build/outputs/code_coverage/debugAndroidTest/connected/*-coverage.ec',
-            'db/build/outputs/code_coverage/debugAndroidTest/connected/*-coverage.ec'
+            "app/jacoco.exec",
+            "db/jacoco.exec",
+            "api/jacoco.exec",
+            "app/build/outputs/code_coverage/debugAndroidTest/connected/*-coverage.ec",
+            "db/build/outputs/code_coverage/debugAndroidTest/connected/*-coverage.ec"
     ])
-}
+}*/
