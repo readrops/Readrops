@@ -1,4 +1,8 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+import com.android.build.gradle.AppPlugin
+import com.android.build.gradle.BaseExtension
+import com.android.build.gradle.LibraryExtension
+import com.android.build.gradle.LibraryPlugin
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 buildscript {
     val kotlin_version = "1.8.0"
@@ -7,8 +11,9 @@ buildscript {
         google()
         mavenCentral()
     }
+
     dependencies {
-        classpath("com.android.tools.build:gradle:8.1.1")
+        classpath("com.android.tools.build:gradle:8.1.4")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
         classpath("org.jacoco:org.jacoco.core:0.8.7")
     }
@@ -29,11 +34,51 @@ allprojects {
     }*/
 }
 
-ext {
-    val compileSdkVersion = 34
-    val minSdkVersion = 21
-    val targetSdkVersion = 34
-    val buildToolsVersion = "34.0.0"
+subprojects {
+    afterEvaluate {
+        tasks.withType<KotlinJvmCompile> {
+            kotlinOptions {
+                jvmTarget = JavaVersion.VERSION_17.toString()
+            }
+        }
+
+        plugins.withType<AppPlugin> {
+            configure<BaseExtension> {
+                configure(this)
+            }
+        }
+        plugins.withType<LibraryPlugin> {
+            configure<LibraryExtension> {
+                configure(this)
+            }
+        }
+    }
+
+}
+
+fun configure(extension: BaseExtension) = with(extension) {
+    compileSdkVersion(34)
+
+    defaultConfig {
+        minSdk = 21
+        targetSdk = 34
+        buildToolsVersion = "34.0.0"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+
+        isCoreLibraryDesugaringEnabled = true
+    }
+
+    lintOptions.isAbortOnError = false
+
+    /*dependencies {
+        add("coreLibraryDesugaring", libs.jdk.desugar)
+    }*/
 }
 
 tasks.register<Delete>("clean") {
@@ -66,7 +111,7 @@ tasks.register("jacocoFullReport", JacocoReport) {
     //dependsOn ":app:connectedAndroidTest"
     dependsOn ":db:connectedAndroidTest"*/
 
-    //final fileFilter = ["**/R.class", "**/R\$*.class", "**/BuildConfig.*", "**/Manifest*.*", "android/**/*.*"]
+//final fileFilter = ["**/R.class", "**/R\$*.class", "**/BuildConfig.*", "**/Manifest*.*", "android/**/*.*"]
 
 /*    classDirectories.setFrom files([
             //fileTree(dir: "$project.rootDir/app/build/intermediates/javac/debug", excludes: fileFilter),

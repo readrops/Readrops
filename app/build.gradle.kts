@@ -3,18 +3,15 @@ plugins {
     kotlin("android")
 }
 
+
 android {
     namespace = "com.readrops.app"
-    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.readrops.app"
-        minSdk = 21
-        targetSdk = 34
+
         versionCode = 15
         versionName = "2.0-beta01"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -31,17 +28,6 @@ android {
             applicationIdSuffix = ".debug"
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
-    }
-
-    compileOptions {
-        isCoreLibraryDesugaringEnabled = true
-
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    kotlinOptions {
-        jvmTarget = "17"
     }
 
     buildFeatures {

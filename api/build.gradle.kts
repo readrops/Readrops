@@ -5,15 +5,6 @@ plugins {
 
 android {
     namespace = "com.readrops.api"
-    compileSdkVersion(34)
-
-    defaultConfig {
-        minSdkVersion(21)
-        targetSdkVersion(34)
-        buildToolsVersion("34.0.0")
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
 
     sourceSets {
         getByName("androidTest") {
@@ -21,33 +12,16 @@ android {
         }
     }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = true
-            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
-        }
-
-        debug {
-            isMinifyEnabled = false
-            isTestCoverageEnabled = true
-            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
     kotlinOptions {
-        jvmTarget = "17"
         freeCompilerArgs = listOf("-Xstring-concat=inline")
     }
+
     lint {
         abortOnError = false
     }
 }
 
 dependencies {
-    //implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation(project(":db"))
 
     testImplementation("junit:junit:4.13")

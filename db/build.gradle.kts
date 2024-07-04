@@ -7,13 +7,8 @@ plugins {
 
 android {
     namespace = "com.readrops.db"
-    compileSdk = 34
 
     defaultConfig {
-        minSdk = 21
-        targetSdk = 34
-        buildToolsVersion ="34.0.0"
-
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments += mapOf(
@@ -23,7 +18,6 @@ android {
             }
         }
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -33,30 +27,6 @@ android {
         }
     }
 
-
-    buildTypes {
-        release {
-            isMinifyEnabled = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-
-        debug {
-            isMinifyEnabled = false
-            isTestCoverageEnabled = true
-            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = "17"
-    }
     lint {
         abortOnError = false
     }
