@@ -1,27 +1,27 @@
 plugins {
     id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.kapt")
-    id("org.jetbrains.kotlin.plugin.parcelize")
+    kotlin("android")
+    kotlin("kapt")
+    kotlin("plugin.parcelize")
 }
 
 android {
     namespace = "com.readrops.db"
-    compileSdkVersion(34)
+    compileSdk = 34
 
     defaultConfig {
-        minSdkVersion(21)
-        targetSdkVersion(34)
-        buildToolsVersion("34.0.0")
+        minSdk = 21
+        targetSdk = 34
+        buildToolsVersion ="34.0.0"
 
-        /*javaCompileOptions {
+        javaCompileOptions {
             annotationProcessorOptions {
-                arguments = listOf(
+                arguments += mapOf(
                     "room.incremental" to "true",
-                "room.schemaLocation" to "$projectDir/schemas".toString()
+                    "room.schemaLocation" to "$projectDir/schemas".toString()
                 )
             }
-        }*/
+        }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -29,7 +29,7 @@ android {
 
     sourceSets {
         getByName("androidTest") {
-            kotlin.srcDirs("$projectDir/schemas")
+            assets.srcDirs("$projectDir/schemas")
         }
     }
 
@@ -69,6 +69,8 @@ kapt {
         arg("room.incremental", "true")
     }
 }
+
+
 
 dependencies {
     api("androidx.core:core-ktx:1.6.0")

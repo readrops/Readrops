@@ -17,7 +17,7 @@ android {
 
     sourceSets {
         getByName("androidTest") {
-            kotlin.srcDirs("$projectDir/androidTest/assets")
+            assets.srcDirs("$projectDir/androidTest/assets")
         }
     }
 
