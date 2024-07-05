@@ -24,6 +24,8 @@ android {
 dependencies {
     implementation(project(":db"))
 
+    coreLibraryDesugaring(libs.jdk.desugar)
+
     testImplementation("junit:junit:4.13")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test:runner:1.4.0")

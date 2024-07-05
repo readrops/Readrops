@@ -43,6 +43,8 @@ kapt {
 
 
 dependencies {
+    coreLibraryDesugaring(libs.jdk.desugar)
+
     api("androidx.core:core-ktx:1.6.0")
     api("androidx.appcompat:appcompat:1.3.0")
     api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0")

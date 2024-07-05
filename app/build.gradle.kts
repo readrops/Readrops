@@ -48,6 +48,8 @@ dependencies {
     implementation(project(":api"))
     implementation(project(":db"))
 
+    coreLibraryDesugaring(libs.jdk.desugar)
+
     implementation("androidx.core:core-ktx:1.7.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.8.0")
@@ -76,7 +78,6 @@ dependencies {
 
     androidTestImplementation("com.squareup.okhttp3:mockwebserver:4.9.0")
 
-    coreLibraryDesugaring(libs.jdk.desugar)
 
     implementation(libs.encrypted.preferences)
     implementation(libs.work.manager)
