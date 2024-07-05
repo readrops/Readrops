@@ -1,5 +1,5 @@
 [versions]
-compose-bom = "2024.02.02"
+compose_bom = "2024.02.02"
 voyager = "1.0.0"
 lifecycle = "2.7.0"
 coil = "2.4.0"
@@ -8,9 +8,10 @@ room = "2.6.1"
 koin-bom = "3.5.0"
 paging = "3.2.1"
 okhttp = "4.11.0"
+retrofit = "2.9.0"
 
 [libraries]
-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose_bom" }
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
 compose-runtime = { module = "androidx.compose.runtime:runtime" }
 compose-animation = { module = "androidx.compose.animation:animation" }
@@ -58,18 +59,36 @@ paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pag
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-mockserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
 
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit-convertermoshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "retrofit" }
+
 konsumexml = "com.gitlab.mvysny.konsume-xml:konsume-xml:1.1"
 kotlinxmlbuilder = "org.redundent:kotlin-xml-builder:1.7.3" #TODO update this
 
 jdk-desugar = "com.android.tools:desugar_jdk_libs:2.0.4"
 
+jsoup = "org.jsoup:jsoup:1.16.1"
+moshi = "com.squareup.moshi:moshi:1.15.1"
+jodatime = "joda-time:joda-time:2.10.10" #TODO replace by java.time
+
+# androidx
+corektx = "androidx.core:core-ktx:1.13.1"
+appcompat = "androidx.appcompat:appcompat:1.7.0"
+material = "com.google.android.material:material:1.12.0"
+palette = "androidx.palette:palette-ktx:1.0.0"
+workmanager = "androidx.work:work-runtime-ktx:2.9.0"
 encrypted-preferences = "androidx.security:security-crypto:1.1.0-alpha06"
 
-work-manager = "androidx.work:work-runtime-ktx:2.9.0"
+# test
+junit4 = "junit:junit:4.13.2"
+ext-junit = "androidx.test.ext:junit:1.2.1"
+ext-runner = "androidx.test:runner:1.6.1"
+ext-rules = "androidx.test:rules:1.6.1"
+expressocore = "androidx.test.espresso:espresso-core:3.6.1"
 
 [bundles]
-compose = ["bom", "compose-foundation", "compose-runtime", "compose-animation",
-    "compose-ui", "compose-ui-tooling", "compose-ui-tooling-preview", "compose-material3"]
+compose = ["compose-foundation", "compose-runtime", "compose-animation",
+    "compose-ui", "compose-ui-tooling", "compose-ui-tooling-preview", "compose-material3", "compose-activity"]
 voyager = ["voyager-navigator", "voyager-screenmodel", "voyager-tab-navigator", "voyager-koin", "voyager-transitions"]
 lifecycle = ["lifecycle-viewmodel-ktx", "lifecycle-viewmodel-compose", "lifecycle-viewmodel-savedstate",
     "lifecyle-runtime-compose"]
@@ -79,3 +98,5 @@ room = ["room-runtime", "room-ktx", "room-paging"]
 koin = ["koin-bom", "koin-core", "koin-android", "koin-androidx-compose"]
 kointest = ["koin-test", "koin-test-junit4"]
 paging = ["paging-runtime", "paging-compose"]
+test = ["junit4", "ext-junit", "ext-runner", "ext-rules", "expressocore"]
+retrofit = ["retrofit", "retrofit-convertermoshi"]

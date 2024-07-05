@@ -50,18 +50,21 @@ dependencies {
 
     coreLibraryDesugaring(libs.jdk.desugar)
 
-    implementation("androidx.core:core-ktx:1.7.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.8.0")
+    implementation(libs.corektx)
+    implementation(libs.appcompat)
+    implementation(libs.material)
+    implementation(libs.palette)
+    implementation(libs.workmanager)
+    implementation(libs.encrypted.preferences)
 
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    implementation(libs.jsoup)
+    implementation(libs.jodatime)
 
+    testImplementation(libs.junit4)
+    androidTestImplementation(libs.bundles.test)
+
+    implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose)
-    implementation(libs.compose.activity)
-
-    implementation("androidx.palette:palette-ktx:1.0.0")
 
     implementation(libs.bundles.voyager)
     implementation(libs.bundles.lifecycle)
@@ -76,9 +79,5 @@ dependencies {
     implementation(libs.bundles.koin)
     androidTestImplementation(libs.bundles.kointest)
 
-    androidTestImplementation("com.squareup.okhttp3:mockwebserver:4.9.0")
-
-
-    implementation(libs.encrypted.preferences)
-    implementation(libs.work.manager)
+    androidTestImplementation(libs.okhttp.mockserver)
 }
