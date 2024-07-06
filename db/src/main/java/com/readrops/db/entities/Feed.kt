@@ -1,12 +1,13 @@
 package com.readrops.db.entities
 
-import android.os.Parcelable
 import androidx.annotation.ColorInt
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
 import com.readrops.db.entities.account.Account
-import kotlinx.parcelize.Parcelize
 
-@Parcelize
 @Entity(foreignKeys = [ForeignKey(entity = Folder::class, parentColumns = ["id"], childColumns = ["folder_id"],
         onDelete = ForeignKey.SET_NULL), ForeignKey(entity = Account::class, parentColumns = ["id"],
         childColumns = ["account_id"], onDelete = ForeignKey.CASCADE)])
@@ -28,4 +29,4 @@ data class Feed(
         @ColumnInfo(name = "notification_enabled", defaultValue = "1") var isNotificationEnabled: Boolean = false,
         @Ignore var unreadCount: Int = 0,
         @Ignore var remoteFolderId: String? = null,
-) : Parcelable
+)

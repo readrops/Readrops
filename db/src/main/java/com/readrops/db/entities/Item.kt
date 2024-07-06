@@ -1,11 +1,12 @@
 package com.readrops.db.entities
 
-import android.os.Parcelable
-import androidx.room.*
-import kotlinx.parcelize.Parcelize
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
 import org.joda.time.LocalDateTime
 
-@Parcelize
 @Entity(foreignKeys = [ForeignKey(entity = Feed::class, parentColumns = ["id"],
         childColumns = ["feed_id"], onDelete = ForeignKey.CASCADE)])
 data class Item(
@@ -26,7 +27,7 @@ data class Item(
         @ColumnInfo(name = "read_it_later") var isReadItLater: Boolean = false,
         var remoteId: String? = null,
         @Ignore var feedRemoteId: String? = null,
-) : Parcelable, Comparable<Item> {
+) : Comparable<Item> {
 
     val text
         get() = if (content != null) content else description
