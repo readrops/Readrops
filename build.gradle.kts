@@ -5,22 +5,20 @@ import com.android.build.gradle.LibraryPlugin
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 buildscript {
-    val kotlin_version = "1.9.10"
-
     repositories {
         google()
         mavenCentral()
     }
 
     dependencies {
-        classpath("com.android.tools.build:gradle:8.1.4")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
-        classpath("org.jacoco:org.jacoco.core:0.8.7")
+        classpath(libs.android.agp)
+        classpath(libs.kotlin.kgp)
+        classpath(libs.jacoco)
     }
 }
 
 plugins {
-    id("com.google.devtools.ksp") version "1.9.10-1.0.13" apply false
+    alias(libs.plugins.ksp) apply false
 }
 
 allprojects {
@@ -31,11 +29,6 @@ allprojects {
         mavenCentral()
         maven(url = "https://jitpack.io")
     }
-    /*afterEvaluate {
-        tasks.withType(JavaCompile.class) {
-            options.compilerArgs << "-Xmaxerrs" << "1000"
-        }
-    }*/
 }
 
 subprojects {

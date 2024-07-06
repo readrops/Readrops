@@ -1,2 +1,0 @@
-include ':api', ':db'
-include ':app'
