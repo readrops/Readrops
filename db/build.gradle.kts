@@ -1,23 +1,14 @@
 plugins {
     id("com.android.library")
     kotlin("android")
-    kotlin("kapt")
     kotlin("plugin.parcelize")
+    id("com.google.devtools.ksp")
 }
 
 android {
     namespace = "com.readrops.db"
 
     defaultConfig {
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments += mapOf(
-                    "room.incremental" to "true",
-                    "room.schemaLocation" to "$projectDir/schemas".toString()
-                )
-            }
-        }
-
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -32,12 +23,9 @@ android {
     }
 }
 
-// Needed for kapt starting with kotlin plugin 1.5
-kapt {
-    arguments {
-        arg("room.schemaLocation", "$projectDir/schemas")
-        arg("room.incremental", "true")
-    }
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+    arg("room.incremental", "true")
 }
 
 dependencies {
@@ -50,7 +38,7 @@ dependencies {
     androidTestImplementation(libs.bundles.test)
 
     implementation(libs.bundles.room)
-    kapt(libs.room.compiler)
+    ksp(libs.room.compiler)
     androidTestImplementation(libs.room.testing)
 
     implementation(libs.bundles.paging)

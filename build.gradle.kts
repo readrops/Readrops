@@ -5,7 +5,7 @@ import com.android.build.gradle.LibraryPlugin
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 buildscript {
-    val kotlin_version = "1.8.0"
+    val kotlin_version = "1.9.10"
 
     repositories {
         google()
@@ -17,6 +17,10 @@ buildscript {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
         classpath("org.jacoco:org.jacoco.core:0.8.7")
     }
+}
+
+plugins {
+    id("com.google.devtools.ksp") version "1.9.10-1.0.13" apply false
 }
 
 allprojects {
