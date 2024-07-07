@@ -14,6 +14,7 @@ koin-bom = "3.5.0"
 paging = "3.2.1"
 okhttp = "4.11.0"
 retrofit = "2.9.0"
+about_libraries = "11.2.2"
 
 [plugins]
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
@@ -73,6 +74,9 @@ okhttp-mockserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref
 
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-convertermoshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "retrofit" }
+
+aboutlibraries = { module = "com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin", version.ref = "about_libraries" }
+aboutlibraries-composem3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "about_libraries" }
 
 konsumexml = "com.gitlab.mvysny.konsume-xml:konsume-xml:1.1"
 kotlinxmlbuilder = "org.redundent:kotlin-xml-builder:1.7.3" #TODO update this

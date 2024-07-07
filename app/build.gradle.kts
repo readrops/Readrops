@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     kotlin("android")
+    id("com.mikepenz.aboutlibraries.plugin")
 }
 
 
@@ -80,4 +81,6 @@ dependencies {
     androidTestImplementation(libs.bundles.kointest)
 
     androidTestImplementation(libs.okhttp.mockserver)
+
+    implementation(libs.aboutlibraries.composem3)
 }

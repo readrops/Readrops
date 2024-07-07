@@ -13,6 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.readrops.app.BuildConfig
@@ -36,9 +38,12 @@ object MoreTab : Tab {
 
     @Composable
     override fun Content() {
+        val navigator = LocalNavigator.currentOrThrow
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .statusBarsPadding()
         ) {
             LargeSpacer()
@@ -70,23 +75,17 @@ object MoreTab : Tab {
                 text = stringResource(R.string.settings),
                 style = MaterialTheme.typography.titleMedium,
                 spacing = MaterialTheme.spacing.mediumSpacing,
+                padding = MaterialTheme.spacing.mediumSpacing,
                 onClick = { }
             )
 
             SelectableIconText(
-                icon = painterResource(id = R.drawable.ic_settings),
-                text = "Backup",
+                icon = painterResource(id = R.drawable.ic_library),
+                text = stringResource(id = R.string.open_source_libraries),
                 style = MaterialTheme.typography.titleMedium,
                 spacing = MaterialTheme.spacing.mediumSpacing,
-                onClick = { }
-            )
-
-            SelectableIconText(
-                icon = painterResource(id = R.drawable.ic_settings),
-                text = "Open-source libraries",
-                style = MaterialTheme.typography.titleMedium,
-                spacing = MaterialTheme.spacing.mediumSpacing,
-                onClick = { }
+                padding = MaterialTheme.spacing.mediumSpacing,
+                onClick = { navigator.push(AboutLibrariesScreen()) }
             )
         }
     }

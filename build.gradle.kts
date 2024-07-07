@@ -6,6 +6,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 buildscript {
     repositories {
+        gradlePluginPortal()
         google()
         mavenCentral()
     }
@@ -14,6 +15,7 @@ buildscript {
         classpath(libs.android.agp)
         classpath(libs.kotlin.kgp)
         classpath(libs.jacoco)
+        classpath(libs.aboutlibraries)
     }
 }
 

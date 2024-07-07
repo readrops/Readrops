@@ -174,4 +174,5 @@
     <string name="updating_account">Updating %1$s account</string>
     <string name="enable_all">Enable all</string>
     <string name="disable_all">Disable all</string>
+    <string name="open_source_libraries">Open source libraries</string>
 </resources>
