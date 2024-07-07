@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">Readrops</string>
+    <string name="app_licence">App released under the GPLv3 licence</string>
     <string name="to_read">To read</string>
     <string name="non_read_articles">Non read articles</string>
     <string name="open_nav_drawer">Open menu</string>
@@ -175,4 +176,7 @@
     <string name="enable_all">Enable all</string>
     <string name="disable_all">Disable all</string>
     <string name="open_source_libraries">Open source libraries</string>
+    <string name="make_donation">Make a donation</string>
+    <string name="app_changelog_url" translatable="false">https://github.com/readrops/Readrops/blob/develop/CHANGELOG.md</string>
+    <string name="app_issues_url" translatable="false">https://github.com/readrops/Readrops/issues</string>
 </resources>
