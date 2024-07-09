@@ -1,7 +1,6 @@
 package com.readrops.app.notifications
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -9,9 +8,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,6 +33,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.readrops.app.R
 import com.readrops.app.util.components.AndroidScreen
+import com.readrops.app.util.components.ThreeDotsMenu
 import com.readrops.app.util.theme.MediumSpacer
 import com.readrops.app.util.theme.spacing
 import com.readrops.db.entities.account.Account
@@ -72,37 +69,18 @@ class NotificationsScreen(val account: Account) : AndroidScreen() {
                         }
                     },
                     actions = {
-                        Box {
-                            IconButton(
-                                onClick = { isDropDownMenuExpanded = isDropDownMenuExpanded.not() }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.MoreVert,
-                                    contentDescription = null,
-                                )
+                        ThreeDotsMenu(
+                            items = mapOf(
+                                1 to if (state.allFeedNotificationsEnabled) {
+                                    stringResource(id = R.string.disable_all)
+                                } else {
+                                    stringResource(id = R.string.enable_all)
+                                }
+                            ),
+                            onItemClick = {
+                                screenModel.setAllFeedsNotificationsState(!state.allFeedNotificationsEnabled)
                             }
-
-                            DropdownMenu(
-                                expanded = isDropDownMenuExpanded,
-                                onDismissRequest = { isDropDownMenuExpanded = false },
-                            ) {
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = if (state.allFeedNotificationsEnabled) {
-                                                stringResource(id = R.string.disable_all)
-                                            } else {
-                                                stringResource(id = R.string.enable_all)
-                                            }
-                                        )
-                                    },
-                                    onClick = {
-                                        isDropDownMenuExpanded = false
-                                        screenModel.setAllFeedsNotificationsState(enabled = !state.allFeedNotificationsEnabled)
-                                    }
-                                )
-                            }
-                        }
+                        )
                     },
                     scrollBehavior = topAppBarScrollBehavior
                 )
@@ -121,7 +99,6 @@ class NotificationsScreen(val account: Account) : AndroidScreen() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = MaterialTheme.spacing.mediumSpacing)
-
                     ) {
                         Text(
                             text = stringResource(id = R.string.enable_notifications)

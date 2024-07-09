@@ -5,17 +5,11 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import com.readrops.app.R
+import com.readrops.app.util.components.ThreeDotsMenu
 import com.readrops.app.util.theme.MediumSpacer
 import com.readrops.app.util.theme.spacing
 import com.readrops.db.entities.Feed
@@ -46,7 +41,6 @@ fun FolderExpandableItem(
     onDeleteFolder: () -> Unit
 ) {
     var isFolderExpanded by remember { mutableStateOf(false) }
-    var isDropDownMenuExpanded by remember { mutableStateOf(false) }
 
     LaunchedEffect(isExpanded) {
         isFolderExpanded = isExpanded
@@ -94,37 +88,18 @@ fun FolderExpandableItem(
                     )
                 }
 
-                Box {
-                    IconButton(
-                        onClick = { isDropDownMenuExpanded = isDropDownMenuExpanded.not() }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = null,
-                        )
+                ThreeDotsMenu(
+                    items = mapOf(
+                        1 to stringResource(id = R.string.update),
+                        2 to stringResource(id = R.string.delete)
+                    ),
+                    onItemClick = { index ->
+                        when (index) {
+                            1 -> onUpdateFolder()
+                            else -> onDeleteFolder()
+                        }
                     }
-
-                    DropdownMenu(
-                        expanded = isDropDownMenuExpanded,
-                        onDismissRequest = { isDropDownMenuExpanded = false },
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text(text = "Update") },
-                            onClick = {
-                                isDropDownMenuExpanded = false
-                                onUpdateFolder()
-                            }
-                        )
-
-                        DropdownMenuItem(
-                            text = { Text(text = stringResource(R.string.delete)) },
-                            onClick = {
-                                isDropDownMenuExpanded = false
-                                onDeleteFolder()
-                            }
-                        )
-                    }
-                }
+                )
             }
         }
 
