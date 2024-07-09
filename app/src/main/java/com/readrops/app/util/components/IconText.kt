@@ -115,6 +115,7 @@ fun SelectableIconText(
     modifier: Modifier = Modifier,
     color: Color = LocalContentColor.current,
     tint: Color = LocalContentColor.current,
+    iconSize: Dp = style.toDp(),
     spacing: Dp = MaterialTheme.spacing.veryShortSpacing,
     padding: Dp = MaterialTheme.spacing.shortSpacing
 ) {
@@ -134,7 +135,7 @@ fun SelectableIconText(
                 painter = icon,
                 tint = tint,
                 contentDescription = null,
-                modifier = Modifier.size(style.toDp()),
+                modifier = Modifier.size(iconSize),
             )
         }
     }

@@ -19,7 +19,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
@@ -49,7 +49,7 @@ class FeedScreenModel(
     init {
         screenModelScope.launch(context = Dispatchers.IO) {
             accountEvent
-                .flatMapConcat { account ->
+                .flatMapLatest { account ->
                     _feedState.update { it.copy(displayFolderCreationButton = account.config.canCreateFolder) }
                     _updateFeedDialogState.update {
                         it.copy(
@@ -69,24 +69,26 @@ class FeedScreenModel(
                         it.copy(foldersAndFeeds = FolderAndFeedsState.LoadedState(foldersAndFeeds))
                     }
                 }
+
         }
 
         screenModelScope.launch(context = Dispatchers.IO) {
             database.accountDao()
                 .selectAllAccounts()
                 .collect { accounts ->
-                    _addFeedDialogState.update { dialogState ->
-                        dialogState.copy(
-                            accounts = accounts,
-                            selectedAccount = accounts.find { it.isCurrentAccount }!!
-                        )
+                    if (accounts.isNotEmpty()) {
+                        _addFeedDialogState.update { dialogState ->
+                            dialogState.copy(
+                                accounts = accounts,
+                                selectedAccount = accounts.find { it.isCurrentAccount }!!
+                            )
+                        }
                     }
                 }
         }
 
         screenModelScope.launch(context = Dispatchers.IO) {
-            accountEvent
-                .flatMapConcat { account ->
+            accountEvent.flatMapLatest { account ->
                     _updateFeedDialogState.update {
                         it.copy(
                             isFeedUrlReadOnly = account.config.isFeedUrlReadOnly,

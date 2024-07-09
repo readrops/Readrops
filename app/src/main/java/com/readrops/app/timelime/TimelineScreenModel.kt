@@ -31,7 +31,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -97,7 +97,7 @@ class TimelineScreenModel(
         }
 
         screenModelScope.launch(dispatcher) {
-            accountEvent.flatMapConcat {
+            accountEvent.flatMapLatest {
                 getFoldersWithFeeds.getNewItemsUnreadCount(it.id, it.config.useSeparateState)
             }.collectLatest { count ->
                 _timelineState.update {

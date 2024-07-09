@@ -15,15 +15,18 @@ import com.readrops.db.entities.Folder
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
 import com.readrops.db.filters.MainFilter
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class AccountScreenModel(
-    private val database: Database
+    private val database: Database,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : TabScreenModel(database) {
 
     private val _closeHome = MutableStateFlow(false)
@@ -33,7 +36,7 @@ class AccountScreenModel(
     val accountState = _accountState.asStateFlow()
 
     init {
-        screenModelScope.launch(Dispatchers.IO) {
+        screenModelScope.launch(dispatcher) {
             accountEvent.collect { account ->
                 _accountState.update {
                     it.copy(
@@ -41,6 +44,14 @@ class AccountScreenModel(
                     )
                 }
             }
+        }
+
+        screenModelScope.launch(dispatcher) {
+            database.accountDao().selectAllAccounts()
+                .map { it.filter { account -> !account.isCurrentAccount } }
+                .collect { accounts ->
+                    _accountState.update { it.copy(accounts = accounts) }
+                }
         }
     }
 
@@ -57,11 +68,15 @@ class AccountScreenModel(
     }
 
     fun deleteAccount() {
-        screenModelScope.launch(Dispatchers.IO) {
+        screenModelScope.launch(dispatcher) {
             database.accountDao()
                 .delete(currentAccount!!)
 
-            _closeHome.update { true }
+            if (_accountState.value.accounts.isNotEmpty()) {
+                database.accountDao().updateCurrentAccount(_accountState.value.accounts.first().id)
+            } else {
+                _closeHome.update { true }
+            }
         }
     }
 
@@ -92,7 +107,7 @@ class AccountScreenModel(
     }
 
     fun parseOPMLFile(uri: Uri, context: Context) {
-        screenModelScope.launch(Dispatchers.IO) {
+        screenModelScope.launch(dispatcher) {
             val foldersAndFeeds: Map<Folder?, List<Feed>>
 
             try {
@@ -144,6 +159,12 @@ class AccountScreenModel(
         _accountState.update { it.copy(opmlExportUri = null, opmlExportSuccess = false) }
 
     fun resetCloseHome() = _closeHome.update { false }
+
+    fun updateCurrentAccount(account: Account) {
+        screenModelScope.launch(dispatcher) {
+            database.accountDao().updateCurrentAccount(account.id)
+        }
+    }
 }
 
 @Stable
@@ -154,6 +175,7 @@ data class AccountState(
     val error: Exception? = null,
     val opmlExportSuccess: Boolean = false,
     val opmlExportUri: Uri? = null,
+    val accounts: List<Account> = emptyList()
 )
 
 sealed interface DialogState {

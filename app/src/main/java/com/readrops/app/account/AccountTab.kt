@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,11 +12,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -36,6 +34,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.koin.getScreenModel
@@ -54,9 +53,11 @@ import com.readrops.app.notifications.NotificationsScreen
 import com.readrops.app.timelime.ErrorListDialog
 import com.readrops.app.util.components.ErrorDialog
 import com.readrops.app.util.components.SelectableIconText
+import com.readrops.app.util.components.SelectableImageText
 import com.readrops.app.util.components.TwoChoicesDialog
 import com.readrops.app.util.theme.LargeSpacer
 import com.readrops.app.util.theme.MediumSpacer
+import com.readrops.app.util.theme.VeryShortSpacer
 import com.readrops.app.util.theme.spacing
 import com.readrops.db.entities.account.Account
 
@@ -231,17 +232,7 @@ object AccountTab : Tab {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(text = stringResource(R.string.account)) },
-                    actions = {
-                        IconButton(
-                            onClick = { }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = null
-                            )
-                        }
-                    }
+                    title = { Text(text = stringResource(R.string.account)) }
                 )
             },
             floatingActionButton = {
@@ -262,69 +253,119 @@ object AccountTab : Tab {
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = MaterialTheme.spacing.mediumSpacing)
                 ) {
                     Image(
-                        painter = adaptiveIconPainterResource(id = R.drawable.ic_freshrss),
+                        painter = adaptiveIconPainterResource(id = state.account.accountType!!.iconRes),
                         contentDescription = null,
                         modifier = Modifier.size(48.dp)
                     )
 
                     MediumSpacer()
 
-                    Text(
-                        text = state.account.accountName!!,
-                        style = MaterialTheme.typography.titleLarge
-                    )
+                    Column {
+                        Text(
+                            text = state.account.accountName!!,
+                            style = MaterialTheme.typography.titleLarge
+                        )
+
+                        if (state.account.displayedName != null) {
+                            VeryShortSpacer()
+
+                            Text(
+                                text = state.account.displayedName!!,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+
                 }
 
                 LargeSpacer()
 
-                SelectableIconText(
-                    icon = painterResource(id = R.drawable.ic_add_account),
-                    text = stringResource(R.string.credentials),
-                    style = MaterialTheme.typography.titleMedium,
-                    spacing = MaterialTheme.spacing.mediumSpacing,
-                    padding = MaterialTheme.spacing.mediumSpacing,
-                    onClick = {
-                        navigator.push(
-                            AccountCredentialsScreen(
-                                state.account,
-                                AccountCredentialsScreenMode.EDIT_CREDENTIALS
+                if (!state.account.isLocal) {
+                    SelectableIconText(
+                        icon = painterResource(id = R.drawable.ic_person),
+                        text = stringResource(R.string.credentials),
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal),
+                        spacing = MaterialTheme.spacing.largeSpacing,
+                        padding = MaterialTheme.spacing.mediumSpacing,
+                        tint = MaterialTheme.colorScheme.primary,
+                        iconSize = 24.dp,
+                        onClick = {
+                            navigator.push(
+                                AccountCredentialsScreen(
+                                    state.account,
+                                    AccountCredentialsScreenMode.EDIT_CREDENTIALS
+                                )
                             )
-                        )
-                    }
-                )
+                        }
+                    )
+                }
 
                 SelectableIconText(
                     icon = painterResource(id = R.drawable.ic_notifications),
                     text = stringResource(R.string.notifications),
-                    style = MaterialTheme.typography.titleMedium,
-                    spacing = MaterialTheme.spacing.mediumSpacing,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal),
+                    spacing = MaterialTheme.spacing.largeSpacing,
                     padding = MaterialTheme.spacing.mediumSpacing,
+                    tint = MaterialTheme.colorScheme.primary,
+                    iconSize = 24.dp,
                     onClick = { navigator.push(NotificationsScreen(state.account)) }
                 )
 
-                SelectableIconText(
-                    icon = painterResource(id = R.drawable.ic_import_export),
-                    text = stringResource(R.string.opml_import_export),
-                    style = MaterialTheme.typography.titleMedium,
-                    spacing = MaterialTheme.spacing.mediumSpacing,
-                    padding = MaterialTheme.spacing.mediumSpacing,
-                    onClick = { screenModel.openDialog(DialogState.OPMLChoice) }
-                )
+                if (state.account.isLocal) {
+                    SelectableIconText(
+                        icon = painterResource(id = R.drawable.ic_import_export),
+                        text = stringResource(R.string.opml_import_export),
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal),
+                        spacing = MaterialTheme.spacing.largeSpacing,
+                        padding = MaterialTheme.spacing.mediumSpacing,
+                        tint = MaterialTheme.colorScheme.primary,
+                        iconSize = 24.dp,
+                        onClick = { screenModel.openDialog(DialogState.OPMLChoice) }
+                    )
+                }
 
                 SelectableIconText(
                     icon = rememberVectorPainter(image = Icons.Default.AccountCircle),
                     text = stringResource(R.string.delete_account),
-                    style = MaterialTheme.typography.titleMedium,
-                    spacing = MaterialTheme.spacing.mediumSpacing,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal),
+                    spacing = MaterialTheme.spacing.largeSpacing,
                     padding = MaterialTheme.spacing.mediumSpacing,
                     color = MaterialTheme.colorScheme.error,
                     tint = MaterialTheme.colorScheme.error,
+                    iconSize = 24.dp,
                     onClick = { screenModel.openDialog(DialogState.DeleteAccount) }
                 )
+
+                if (state.accounts.isNotEmpty()) {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(MaterialTheme.spacing.mediumSpacing)
+                    )
+
+                    Text(
+                        text = stringResource(id = R.string.other_accounts),
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.mediumSpacing)
+                    )
+
+                    VeryShortSpacer()
+
+                    for (account in state.accounts) {
+                        SelectableImageText(
+                            image = adaptiveIconPainterResource(id = account.accountType!!.iconRes),
+                            text = account.accountName!!,
+                            style = MaterialTheme.typography.titleMedium,
+                            padding = MaterialTheme.spacing.mediumSpacing,
+                            spacing = MaterialTheme.spacing.mediumSpacing,
+                            imageSize = 24.dp,
+                            onClick = { screenModel.updateCurrentAccount(account) }
+                        )
+                    }
+                }
             }
         }
     }
