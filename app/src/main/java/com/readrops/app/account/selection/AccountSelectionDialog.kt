@@ -21,14 +21,9 @@ fun AccountSelectionDialog(
         icon = painterResource(id = R.drawable.ic_add_account),
         onDismiss = onDismiss
     ) {
-        AccountType.values().forEach { type ->
+        AccountType.entries.forEach { type ->
             SelectableImageText(
-                image = painterResource(
-                    id = if (type != AccountType.LOCAL)
-                        type.iconRes
-                    else
-                        R.drawable.ic_rss_feed_grey
-                ),
+                image = adaptiveIconPainterResource(id = type.iconRes),
                 text = stringResource(id = type.typeName),
                 style = MaterialTheme.typography.titleMedium,
                 spacing = MaterialTheme.spacing.mediumSpacing,

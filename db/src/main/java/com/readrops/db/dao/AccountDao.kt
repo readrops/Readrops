@@ -1,12 +1,22 @@
 package com.readrops.db.dao
 
 import androidx.room.Dao
+import androidx.room.Insert
 import androidx.room.Query
 import com.readrops.db.entities.account.Account
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AccountDao : BaseDao<Account> {
+
+    override suspend fun insert(entity: Account): Long {
+        val id = insertAccount(entity)
+        updateCurrentAccount(id.toInt())
+        return id
+    }
+
+    @Insert
+    suspend fun insertAccount(entity: Account): Long
 
     @Query("Select * From Account")
     fun selectAllAccounts(): Flow<List<Account>>

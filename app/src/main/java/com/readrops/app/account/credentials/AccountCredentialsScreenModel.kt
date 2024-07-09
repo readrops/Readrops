@@ -83,7 +83,6 @@ class AccountCredentialsScreenModel(
 
                     if (mode == AccountCredentialsScreenMode.NEW_CREDENTIALS) {
                         newAccount.id = database.accountDao().insert(newAccount).toInt()
-                        database.accountDao().updateCurrentAccount(newAccount.id)
 
                         get<SharedPreferences>().edit()
                             .putString(newAccount.loginKey, newAccount.login)

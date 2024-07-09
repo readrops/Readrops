@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.koin.core.component.get
 
 class AccountScreenModel(
     private val database: Database,
@@ -163,6 +164,19 @@ class AccountScreenModel(
     fun updateCurrentAccount(account: Account) {
         screenModelScope.launch(dispatcher) {
             database.accountDao().updateCurrentAccount(account.id)
+        }
+    }
+
+    fun createLocalAccount() {
+        val context = get<Context>()
+        val account = Account(
+            accountName = context.getString(AccountType.LOCAL.typeName),
+            accountType = AccountType.LOCAL,
+            isCurrentAccount = true
+        )
+
+        screenModelScope.launch(dispatcher) {
+            database.accountDao().insert(account)
         }
     }
 }

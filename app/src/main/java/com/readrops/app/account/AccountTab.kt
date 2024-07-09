@@ -60,6 +60,7 @@ import com.readrops.app.util.theme.MediumSpacer
 import com.readrops.app.util.theme.VeryShortSpacer
 import com.readrops.app.util.theme.spacing
 import com.readrops.db.entities.account.Account
+import com.readrops.db.entities.account.AccountType
 
 object AccountTab : Tab {
 
@@ -179,11 +180,21 @@ object AccountTab : Tab {
                     onValidate = { accountType ->
                         screenModel.closeDialog()
 
-                        val account = Account(
-                            accountType = accountType,
-                            accountName = context.resources.getString(accountType.typeName)
-                        )
-                        navigator.push(AccountCredentialsScreen(account, AccountCredentialsScreenMode.NEW_CREDENTIALS))
+                        if (accountType == AccountType.LOCAL) {
+                            screenModel.createLocalAccount()
+                        } else {
+                            val account = Account(
+                                accountType = accountType,
+                                accountName = context.resources.getString(accountType.typeName)
+                            )
+                            navigator.push(
+                                AccountCredentialsScreen(
+                                    account,
+                                    AccountCredentialsScreenMode.NEW_CREDENTIALS
+                                )
+                            )
+                        }
+
                     }
                 )
             }
