@@ -87,7 +87,8 @@ class FeedScreenModel(
                         _addFeedDialogState.update { dialogState ->
                             dialogState.copy(
                                 accounts = accounts,
-                                selectedAccount = accounts.find { it.isCurrentAccount }!!
+                                selectedAccount = accounts.find { it.isCurrentAccount }
+                                    ?: accounts.first()
                             )
                         }
                     }
