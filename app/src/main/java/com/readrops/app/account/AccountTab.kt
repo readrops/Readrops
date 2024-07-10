@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -51,10 +52,12 @@ import com.readrops.app.account.selection.AccountSelectionScreen
 import com.readrops.app.account.selection.adaptiveIconPainterResource
 import com.readrops.app.notifications.NotificationsScreen
 import com.readrops.app.timelime.ErrorListDialog
-import com.readrops.app.util.components.ErrorDialog
 import com.readrops.app.util.components.SelectableIconText
 import com.readrops.app.util.components.SelectableImageText
-import com.readrops.app.util.components.TwoChoicesDialog
+import com.readrops.app.util.components.ThreeDotsMenu
+import com.readrops.app.util.components.dialog.TwoChoicesDialog
+import com.readrops.app.util.components.dialog.ErrorDialog
+import com.readrops.app.util.components.dialog.TextFieldDialog
 import com.readrops.app.util.theme.LargeSpacer
 import com.readrops.app.util.theme.MediumSpacer
 import com.readrops.app.util.theme.VeryShortSpacer
@@ -87,16 +90,6 @@ object AccountTab : Tab {
             navigator.replaceAll(AccountSelectionScreen())
             screenModel.resetCloseHome()
         }
-
-        val opmlImportLauncher =
-            rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-                uri?.let { screenModel.parseOPMLFile(uri, context) }
-            }
-
-        val opmlExportLauncher =
-            rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/xml")) { uri ->
-                uri?.let { screenModel.exportOPMLFile(uri, context) }
-            }
 
         LaunchedEffect(state.error) {
             if (state.error != null) {
@@ -158,87 +151,10 @@ object AccountTab : Tab {
             }
         }
 
-        when (val dialog = state.dialog) {
-            is DialogState.DeleteAccount -> {
-                TwoChoicesDialog(
-                    title = stringResource(R.string.delete_account),
-                    text = stringResource(R.string.delete_account_question),
-                    icon = rememberVectorPainter(image = Icons.Default.Delete),
-                    confirmText = stringResource(R.string.delete),
-                    dismissText = stringResource(R.string.cancel),
-                    onDismiss = { screenModel.closeDialog() },
-                    onConfirm = {
-                        screenModel.closeDialog()
-                        screenModel.deleteAccount()
-                    }
-                )
-            }
-
-            is DialogState.NewAccount -> {
-                AccountSelectionDialog(
-                    onDismiss = { screenModel.closeDialog() },
-                    onValidate = { accountType ->
-                        screenModel.closeDialog()
-
-                        if (accountType == AccountType.LOCAL) {
-                            screenModel.createLocalAccount()
-                        } else {
-                            val account = Account(
-                                accountType = accountType,
-                                accountName = context.resources.getString(accountType.typeName)
-                            )
-                            navigator.push(
-                                AccountCredentialsScreen(
-                                    account,
-                                    AccountCredentialsScreenMode.NEW_CREDENTIALS
-                                )
-                            )
-                        }
-
-                    }
-                )
-            }
-
-            is DialogState.OPMLImport -> {
-                OPMLImportProgressDialog(
-                    currentFeed = dialog.currentFeed,
-                    feedCount = dialog.feedCount,
-                    feedMax = dialog.feedMax
-                )
-            }
-
-            is DialogState.ErrorList -> {
-                ErrorListDialog(
-                    errorResult = dialog.errorResult,
-                    onDismiss = { screenModel.closeDialog(dialog) }
-                )
-            }
-
-            is DialogState.Error -> {
-                ErrorDialog(
-                    exception = dialog.exception,
-                    onDismiss = { screenModel.closeDialog(dialog) }
-                )
-            }
-
-            is DialogState.OPMLChoice -> {
-                OPMLChoiceDialog(
-                    onChoice = {
-                        if (it == OPML.IMPORT) {
-                            opmlImportLauncher.launch(ApiUtils.OPML_MIMETYPES.toTypedArray())
-                        } else {
-                            opmlExportLauncher.launch("subscriptions.opml")
-                        }
-
-                        screenModel.closeDialog()
-                    },
-                    onDismiss = { screenModel.closeDialog() }
-                )
-
-            }
-
-            else -> {}
-        }
+        AccountDialogs(
+            state = state,
+            screenModel = screenModel
+        )
 
         Scaffold(
             topBar = {
@@ -264,34 +180,47 @@ object AccountTab : Tab {
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = MaterialTheme.spacing.mediumSpacing)
                 ) {
-                    Image(
-                        painter = adaptiveIconPainterResource(id = state.account.accountType!!.iconRes),
-                        contentDescription = null,
-                        modifier = Modifier.size(48.dp)
-                    )
-
-                    MediumSpacer()
-
-                    Column {
-                        Text(
-                            text = state.account.accountName!!,
-                            style = MaterialTheme.typography.titleLarge
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Image(
+                            painter = adaptiveIconPainterResource(id = state.account.accountType!!.iconRes),
+                            contentDescription = null,
+                            modifier = Modifier.size(48.dp)
                         )
 
-                        if (state.account.displayedName != null) {
-                            VeryShortSpacer()
+                        MediumSpacer()
 
+                        Column {
                             Text(
-                                text = state.account.displayedName!!,
-                                style = MaterialTheme.typography.bodyMedium
+                                text = state.account.accountName!!,
+                                style = MaterialTheme.typography.titleLarge
                             )
+
+                            if (state.account.displayedName != null) {
+                                VeryShortSpacer()
+
+                                Text(
+                                    text = state.account.displayedName!!,
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
                         }
                     }
 
+                    if (state.account.isLocal) {
+                        ThreeDotsMenu(
+                            items = mapOf(1 to "Rename"),
+                            onItemClick = {
+                                screenModel.openDialog(DialogState.RenameAccount(state.account.accountName!!))
+                            },
+                        )
+                    }
                 }
 
                 LargeSpacer()
@@ -378,6 +307,115 @@ object AccountTab : Tab {
                     }
                 }
             }
+        }
+    }
+
+    @Composable
+    private fun AccountDialogs(state: AccountState, screenModel: AccountScreenModel) {
+        val context = LocalContext.current
+        val navigator = LocalNavigator.currentOrThrow
+
+        val opmlImportLauncher =
+            rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+                uri?.let { screenModel.parseOPMLFile(uri, context) }
+            }
+
+        val opmlExportLauncher =
+            rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/xml")) { uri ->
+                uri?.let { screenModel.exportOPMLFile(uri, context) }
+            }
+
+        when (val dialog = state.dialog) {
+            is DialogState.DeleteAccount -> {
+                TwoChoicesDialog(
+                    title = stringResource(R.string.delete_account),
+                    text = stringResource(R.string.delete_account_question),
+                    icon = rememberVectorPainter(image = Icons.Default.Delete),
+                    confirmText = stringResource(R.string.delete),
+                    dismissText = stringResource(R.string.cancel),
+                    onDismiss = { screenModel.closeDialog() },
+                    onConfirm = {
+                        screenModel.closeDialog()
+                        screenModel.deleteAccount()
+                    }
+                )
+            }
+
+            is DialogState.NewAccount -> {
+                AccountSelectionDialog(
+                    onDismiss = { screenModel.closeDialog() },
+                    onValidate = { accountType ->
+                        screenModel.closeDialog()
+
+                        if (accountType == AccountType.LOCAL) {
+                            screenModel.createLocalAccount()
+                        } else {
+                            val account = Account(
+                                accountType = accountType,
+                                accountName = context.resources.getString(accountType.typeName)
+                            )
+                            navigator.push(
+                                AccountCredentialsScreen(
+                                    account,
+                                    AccountCredentialsScreenMode.NEW_CREDENTIALS
+                                )
+                            )
+                        }
+
+                    }
+                )
+            }
+
+            is DialogState.OPMLImport -> {
+                OPMLImportProgressDialog(
+                    currentFeed = dialog.currentFeed,
+                    feedCount = dialog.feedCount,
+                    feedMax = dialog.feedMax
+                )
+            }
+
+            is DialogState.ErrorList -> {
+                ErrorListDialog(
+                    errorResult = dialog.errorResult,
+                    onDismiss = { screenModel.closeDialog(dialog) }
+                )
+            }
+
+            is DialogState.Error -> {
+                ErrorDialog(
+                    exception = dialog.exception,
+                    onDismiss = { screenModel.closeDialog(dialog) }
+                )
+            }
+
+            is DialogState.OPMLChoice -> {
+                OPMLChoiceDialog(
+                    onChoice = {
+                        if (it == OPML.IMPORT) {
+                            opmlImportLauncher.launch(ApiUtils.OPML_MIMETYPES.toTypedArray())
+                        } else {
+                            opmlExportLauncher.launch("subscriptions.opml")
+                        }
+
+                        screenModel.closeDialog()
+                    },
+                    onDismiss = { screenModel.closeDialog() }
+                )
+            }
+
+            is DialogState.RenameAccount -> {
+                TextFieldDialog(
+                    title = stringResource(id = R.string.rename_account),
+                    icon = painterResource(id = R.drawable.ic_person),
+                    label = stringResource(id = R.string.name),
+                    state = state.renameAccountState,
+                    onValueChange = { screenModel.setAccountRenameStateName(it) },
+                    onValidate = { screenModel.renameAccount() },
+                    onDismiss = { screenModel.closeDialog() }
+                )
+            }
+
+            else -> {}
         }
     }
 }

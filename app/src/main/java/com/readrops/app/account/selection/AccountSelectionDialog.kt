@@ -6,7 +6,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.readrops.app.R
-import com.readrops.app.util.components.BaseDialog
+import com.readrops.app.util.components.dialog.BaseDialog
 import com.readrops.app.util.components.SelectableImageText
 import com.readrops.app.util.theme.spacing
 import com.readrops.db.entities.account.AccountType

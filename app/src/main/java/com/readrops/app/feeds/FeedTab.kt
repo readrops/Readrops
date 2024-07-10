@@ -50,7 +50,7 @@ import com.readrops.app.util.ErrorMessage
 import com.readrops.app.util.components.CenteredProgressIndicator
 import com.readrops.app.util.components.ErrorMessage
 import com.readrops.app.util.components.Placeholder
-import com.readrops.app.util.components.TwoChoicesDialog
+import com.readrops.app.util.components.dialog.TwoChoicesDialog
 import com.readrops.app.util.theme.spacing
 import com.readrops.db.entities.Feed
 

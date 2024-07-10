@@ -1,4 +1,4 @@
-package com.readrops.app.feeds.dialogs
+package com.readrops.app.util.components.dialog
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -9,42 +9,50 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.readrops.app.R
-import com.readrops.app.feeds.FeedScreenModel
 import com.readrops.app.util.ErrorMessage
-import com.readrops.app.util.components.dialog.BaseDialog
+import com.readrops.app.util.components.TextFieldError
 import com.readrops.app.util.theme.LargeSpacer
 
-@Composable
-fun FolderDialog(
-    updateFolder: Boolean = false,
-    viewModel: FeedScreenModel,
-    onDismiss: () -> Unit,
-    onValidate: () -> Unit
+data class TextFieldDialogState(
+    val value: String = "",
+    val textFieldError: TextFieldError? = null,
+    val exception: Exception? = null
 ) {
-    val state by viewModel.folderState.collectAsStateWithLifecycle()
+    val isTextFieldError
+        get() = textFieldError != null
+}
 
+@Composable
+fun TextFieldDialog(
+    title: String,
+    icon: Painter,
+    label: String,
+    state: TextFieldDialogState,
+    onValueChange: (String) -> Unit,
+    onValidate: () -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     BaseDialog(
-        title = stringResource(id = if (updateFolder) R.string.edit_folder else R.string.add_folder),
-        icon = painterResource(id = if (updateFolder) R.drawable.ic_folder_grey else R.drawable.ic_new_folder),
-        onDismiss = onDismiss
+        title = title,
+        icon = icon,
+        onDismiss = onDismiss,
+        modifier = modifier
     ) {
         OutlinedTextField(
-            value = state.name.orEmpty(),
-            label = {
-                Text(text = "URL")
-            },
-            onValueChange = { viewModel.setFolderName(it) },
+            value = state.value,
+            label = { Text(text = label) },
+            onValueChange = onValueChange,
             singleLine = true,
             trailingIcon = {
-                if (!state.name.isNullOrEmpty()) {
+                if (state.value.isNotEmpty()) {
                     IconButton(
-                        onClick = { viewModel.setFolderName("") }
+                        onClick = { onValueChange("") }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Clear,
@@ -54,12 +62,12 @@ fun FolderDialog(
                 }
             },
             isError = state.isTextFieldError,
-            supportingText = { Text(text = state.nameError?.errorText().orEmpty()) }
+            supportingText = { Text(text = state.textFieldError?.errorText().orEmpty()) }
         )
 
         if (state.exception != null) {
             Text(
-                text = ErrorMessage.get(state.exception!!, LocalContext.current),
+                text = ErrorMessage.get(state.exception, LocalContext.current),
                 color = MaterialTheme.colorScheme.error
             )
         }

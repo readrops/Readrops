@@ -19,7 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.readrops.app.R
 import com.readrops.app.feeds.FeedScreenModel
 import com.readrops.app.util.ErrorMessage
-import com.readrops.app.util.components.BaseDialog
+import com.readrops.app.util.components.dialog.BaseDialog
 import com.readrops.app.util.theme.LargeSpacer
 import com.readrops.app.util.theme.MediumSpacer
 

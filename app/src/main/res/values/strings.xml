@@ -181,4 +181,6 @@
     <string name="app_issues_url" translatable="false">https://github.com/readrops/Readrops/issues</string>
     <string name="other_accounts">Other accounts</string>
     <string name="update">Update</string>
+    <string name="rename_account">Rename account</string>
+    <string name="name">Name</string>
 </resources>

@@ -9,6 +9,8 @@ import com.readrops.api.opml.OPMLParser
 import com.readrops.app.base.TabScreenModel
 import com.readrops.app.repositories.ErrorResult
 import com.readrops.app.repositories.GetFoldersWithFeeds
+import com.readrops.app.util.components.TextFieldError
+import com.readrops.app.util.components.dialog.TextFieldDialogState
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
@@ -56,7 +58,13 @@ class AccountScreenModel(
         }
     }
 
-    fun openDialog(dialog: DialogState) = _accountState.update { it.copy(dialog = dialog) }
+    fun openDialog(dialog: DialogState) {
+        if (dialog is DialogState.RenameAccount) {
+            _accountState.update { it.copy(renameAccountState = TextFieldDialogState(value = dialog.name)) }
+        }
+
+        _accountState.update { it.copy(dialog = dialog) }
+    }
 
     fun closeDialog(dialog: DialogState? = null) {
         if (dialog is DialogState.ErrorList) {
@@ -82,7 +90,7 @@ class AccountScreenModel(
     }
 
     fun exportOPMLFile(uri: Uri, context: Context) {
-        screenModelScope.launch {
+        screenModelScope.launch(dispatcher) {
             val stream = context.contentResolver.openOutputStream(uri)
             if (stream == null) {
                 _accountState.update { it.copy(error = NoSuchFileException(uri.toFile())) }
@@ -179,6 +187,27 @@ class AccountScreenModel(
             database.accountDao().insert(account)
         }
     }
+
+    fun setAccountRenameStateName(name: String) = _accountState.update {
+        it.copy(
+            renameAccountState = it.renameAccountState.copy(
+                value = name,
+                textFieldError = null
+            )
+        )
+    }
+
+    fun renameAccount() = with(_accountState) {
+        if (value.renameAccountState.value.isEmpty()) {
+            update { it.copy(renameAccountState = it.renameAccountState.copy(textFieldError = TextFieldError.EmptyField)) }
+            return@with
+        }
+
+        screenModelScope.launch(dispatcher) {
+            database.accountDao().renameAccount(value.account.id, value.renameAccountState.value)
+            closeDialog()
+        }
+    }
 }
 
 @Stable
@@ -189,17 +218,20 @@ data class AccountState(
     val error: Exception? = null,
     val opmlExportSuccess: Boolean = false,
     val opmlExportUri: Uri? = null,
-    val accounts: List<Account> = emptyList()
+    val accounts: List<Account> = emptyList(),
+    val renameAccountState: TextFieldDialogState = TextFieldDialogState()
 )
 
 sealed interface DialogState {
-    object DeleteAccount : DialogState
-    object NewAccount : DialogState
+    data object DeleteAccount : DialogState
+    data object NewAccount : DialogState
     data class OPMLImport(val currentFeed: String, val feedCount: Int, val feedMax: Int) :
         DialogState
 
     data class ErrorList(val errorResult: ErrorResult) : DialogState
     data class Error(val exception: Exception) : DialogState
 
-    object OPMLChoice : DialogState
+    data object OPMLChoice : DialogState
+
+    data class RenameAccount(val name: String) : DialogState
 }

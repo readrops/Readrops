@@ -1,4 +1,4 @@
-package com.readrops.app.util.components
+package com.readrops.app.util.components.dialog
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

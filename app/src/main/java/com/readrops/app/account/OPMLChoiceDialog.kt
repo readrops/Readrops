@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.readrops.app.R
-import com.readrops.app.util.components.BaseDialog
+import com.readrops.app.util.components.dialog.BaseDialog
 import com.readrops.app.util.theme.spacing
 
 enum class OPML {

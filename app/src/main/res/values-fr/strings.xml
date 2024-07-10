@@ -172,4 +172,6 @@
     <string name="make_donation">Faire une donation</string>
     <string name="other_accounts">Autres comptes</string>
     <string name="update">Mettre à jour</string>
+    <string name="rename_account">Renommer le compte</string>
+    <string name="name">Nom</string>
 </resources>
