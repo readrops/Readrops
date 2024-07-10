@@ -9,11 +9,13 @@ import com.readrops.app.R
 import com.readrops.app.base.TabScreenModel
 import com.readrops.app.repositories.GetFoldersWithFeeds
 import com.readrops.app.util.components.TextFieldError
+import com.readrops.app.util.components.dialog.TextFieldDialogState
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.account.Account
 import com.readrops.db.filters.MainFilter
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,7 +33,8 @@ class FeedScreenModel(
     database: Database,
     private val getFoldersWithFeeds: GetFoldersWithFeeds,
     private val localRSSDataSource: LocalRSSDataSource,
-    private val context: Context
+    private val context: Context,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : TabScreenModel(database), KoinComponent {
 
     private val _feedState = MutableStateFlow(FeedState())
@@ -43,11 +46,11 @@ class FeedScreenModel(
     private val _updateFeedDialogState = MutableStateFlow(UpdateFeedDialogState())
     val updateFeedDialogState = _updateFeedDialogState.asStateFlow()
 
-    private val _folderState = MutableStateFlow(FolderState())
+    private val _folderState = MutableStateFlow(TextFieldDialogState())
     val folderState = _folderState.asStateFlow()
 
     init {
-        screenModelScope.launch(context = Dispatchers.IO) {
+        screenModelScope.launch(dispatcher) {
             accountEvent
                 .flatMapLatest { account ->
                     _feedState.update { it.copy(displayFolderCreationButton = account.config.canCreateFolder) }
@@ -57,7 +60,11 @@ class FeedScreenModel(
                         )
                     }
 
-                    getFoldersWithFeeds.get(account.id, MainFilter.ALL, account.config.useSeparateState)
+                    getFoldersWithFeeds.get(
+                        account.id,
+                        MainFilter.ALL,
+                        account.config.useSeparateState
+                    )
                 }
                 .catch { throwable ->
                     _feedState.update {
@@ -72,7 +79,7 @@ class FeedScreenModel(
 
         }
 
-        screenModelScope.launch(context = Dispatchers.IO) {
+        screenModelScope.launch(dispatcher) {
             database.accountDao()
                 .selectAllAccounts()
                 .collect { accounts ->
@@ -87,17 +94,16 @@ class FeedScreenModel(
                 }
         }
 
-        screenModelScope.launch(context = Dispatchers.IO) {
+        screenModelScope.launch(dispatcher) {
             accountEvent.flatMapLatest { account ->
-                    _updateFeedDialogState.update {
-                        it.copy(
-                            isFeedUrlReadOnly = account.config.isFeedUrlReadOnly,
-                        )
-                    }
-
-                    database.folderDao()
-                        .selectFolders(account.id)
+                _updateFeedDialogState.update {
+                    it.copy(
+                        isFeedUrlReadOnly = account.config.isFeedUrlReadOnly,
+                    )
                 }
+
+                database.folderDao().selectFolders(account.id)
+            }
                 .collect { folders ->
                     _updateFeedDialogState.update {
                         it.copy(
@@ -131,18 +137,21 @@ class FeedScreenModel(
                     )
                 }
             }
+
             is DialogState.AddFolder, is DialogState.UpdateFolder -> {
                 _folderState.update {
                     it.copy(
-                        folder = Folder(),
-                        nameError = null,
+                        value = "",
+                        textFieldError = null,
                         exception = null
                     )
                 }
             }
+
             is DialogState.UpdateFeed -> {
                 _updateFeedDialogState.update { it.copy(exception = null) }
             }
+
             else -> {}
         }
 
@@ -165,7 +174,7 @@ class FeedScreenModel(
         if (state is DialogState.UpdateFolder) {
             _folderState.update {
                 it.copy(
-                    folder = state.folder
+                    value = state.folder.name.orEmpty()
                 )
             }
         }
@@ -174,7 +183,7 @@ class FeedScreenModel(
     }
 
     fun deleteFeed(feed: Feed) {
-        screenModelScope.launch(Dispatchers.IO) {
+        screenModelScope.launch(dispatcher) {
             try {
                 repository?.deleteFeed(feed)
             } catch (e: Exception) {
@@ -184,7 +193,7 @@ class FeedScreenModel(
     }
 
     fun deleteFolder(folder: Folder) {
-        screenModelScope.launch(Dispatchers.IO) {
+        screenModelScope.launch(dispatcher) {
             try {
                 repository?.deleteFolder(folder)
             } catch (e: Exception) {
@@ -228,7 +237,7 @@ class FeedScreenModel(
                 return
             }
 
-            else -> screenModelScope.launch(Dispatchers.IO) {
+            else -> screenModelScope.launch(dispatcher) {
                 try {
                     if (localRSSDataSource.isUrlRSSResource(url)) {
                         insertFeeds(listOf(Feed(url = url)))
@@ -329,7 +338,7 @@ class FeedScreenModel(
             else -> {
                 _updateFeedDialogState.update { it.copy(exception = null) }
 
-                screenModelScope.launch(Dispatchers.IO) {
+                screenModelScope.launch(dispatcher) {
                     with(_updateFeedDialogState.value) {
                         try {
                             repository?.updateFeed(
@@ -362,28 +371,26 @@ class FeedScreenModel(
 
     fun setFolderName(name: String) = _folderState.update {
         it.copy(
-            folder = it.folder.copy(name = name),
-            nameError = null,
+            value = name,
+            textFieldError = null,
         )
     }
 
     fun folderValidate(updateFolder: Boolean = false) {
-        val name = _folderState.value.name.orEmpty()
+        val name = _folderState.value.value
 
         if (name.isEmpty()) {
-            _folderState.update { it.copy(nameError = TextFieldError.EmptyField) }
-
+            _folderState.update { it.copy(textFieldError = TextFieldError.EmptyField) }
             return
         }
 
-        screenModelScope.launch(Dispatchers.IO) {
+        screenModelScope.launch(dispatcher) {
             try {
                 if (updateFolder) {
-                    repository?.updateFolder(_folderState.value.folder)
+                    val folder = (_feedState.value.dialog as DialogState.UpdateFolder).folder
+                    repository?.updateFolder(folder.copy(name = name))
                 } else {
-                    repository?.addFolder(_folderState.value.folder.apply {
-                        accountId = currentAccount!!.id
-                    })
+                    repository?.addFolder(Folder(name = name, accountId = currentAccount!!.id))
                 }
             } catch (e: Exception) {
                 _folderState.update { it.copy(exception = e) }
