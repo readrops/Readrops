@@ -29,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.readrops.app.BuildConfig
 import com.readrops.app.R
 import com.readrops.app.account.credentials.AccountCredentialsScreen
 import com.readrops.app.account.credentials.AccountCredentialsScreenMode
@@ -36,6 +37,7 @@ import com.readrops.app.home.HomeScreen
 import com.readrops.app.util.components.AndroidScreen
 import com.readrops.app.util.components.SelectableImageText
 import com.readrops.app.util.theme.LargeSpacer
+import com.readrops.app.util.theme.MediumSpacer
 import com.readrops.app.util.theme.ShortSpacer
 import com.readrops.app.util.theme.spacing
 import com.readrops.db.entities.account.Account
@@ -58,9 +60,17 @@ class AccountSelectionScreen : AndroidScreen() {
 
             is NavState.GoToAccountCredentialsScreen -> {
                 val accountType = (state as NavState.GoToAccountCredentialsScreen).accountType
-                val account = Account(accountType = accountType, accountName = stringResource(id = accountType.typeName))
+                val account = Account(
+                    accountType = accountType,
+                    accountName = stringResource(id = accountType.typeName)
+                )
 
-                navigator.push(AccountCredentialsScreen(account, AccountCredentialsScreenMode.NEW_CREDENTIALS))
+                navigator.push(
+                    AccountCredentialsScreen(
+                        account,
+                        AccountCredentialsScreenMode.NEW_CREDENTIALS
+                    )
+                )
                 screenModel.resetNavState()
             }
 
@@ -68,57 +78,103 @@ class AccountSelectionScreen : AndroidScreen() {
         }
 
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(MaterialTheme.spacing.mediumSpacing)
+            modifier = Modifier.fillMaxSize()
         ) {
-            Image(
-                painter = adaptiveIconPainterResource(id = R.mipmap.ic_launcher),
-                contentDescription = null,
-                modifier = Modifier.size(64.dp)
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f)
+                    .padding(MaterialTheme.spacing.mediumSpacing)
+            ) {
+                Image(
+                    painter = adaptiveIconPainterResource(id = R.mipmap.ic_launcher),
+                    contentDescription = null,
+                    modifier = Modifier.size(64.dp)
+                )
 
-            ShortSpacer()
+                ShortSpacer()
 
-            Text(
-                text = stringResource(id = R.string.app_name),
-                style = MaterialTheme.typography.headlineLarge
-            )
+                Text(
+                    text = stringResource(id = R.string.app_name),
+                    style = MaterialTheme.typography.headlineLarge
+                )
 
-            LargeSpacer()
+                LargeSpacer()
 
-            Card {
-                Column(
-                    modifier = Modifier.padding(MaterialTheme.spacing.largeSpacing)
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.choose_account),
-                        style = MaterialTheme.typography.labelLarge
-                    )
-
-                    ShortSpacer()
-
-                    AccountType.values().forEach { accountType ->
-                        SelectableImageText(
-                            image = adaptiveIconPainterResource(id = accountType.iconRes),
-                            text = stringResource(id = accountType.typeName),
-                            style = MaterialTheme.typography.titleLarge,
-                            onClick = { screenModel.createAccount(accountType) },
-                            spacing = MaterialTheme.spacing.shortSpacing,
+                Card {
+                    Column(
+                        modifier = Modifier.padding(MaterialTheme.spacing.largeSpacing)
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.choose_account),
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
                         )
-                    }
 
-                    SelectableImageText(
-                        image = adaptiveIconPainterResource(id = R.mipmap.ic_launcher),
-                        text = stringResource(id = R.string.opml_import),
-                        style = MaterialTheme.typography.titleLarge,
-                        onClick = { },
-                        spacing = MaterialTheme.spacing.shortSpacing,
-                    )
+                        MediumSpacer()
+
+                        Text(
+                            text = stringResource(id = R.string.local),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+
+                        SelectableImageText(
+                            image = adaptiveIconPainterResource(id = R.mipmap.ic_launcher),
+                            text = stringResource(id = AccountType.LOCAL.typeName),
+                            style = MaterialTheme.typography.bodyLarge,
+                            spacing = MaterialTheme.spacing.mediumSpacing,
+                            padding = MaterialTheme.spacing.mediumSpacing,
+                            imageSize = 24.dp,
+                            onClick = { screenModel.createAccount(AccountType.LOCAL) }
+                        )
+
+                        SelectableImageText(
+                            image = adaptiveIconPainterResource(id = R.mipmap.ic_launcher),
+                            text = stringResource(id = R.string.opml_import),
+                            style = MaterialTheme.typography.bodyLarge,
+                            spacing = MaterialTheme.spacing.mediumSpacing,
+                            padding = MaterialTheme.spacing.mediumSpacing,
+                            imageSize = 24.dp,
+                            onClick = { }
+                        )
+
+                        MediumSpacer()
+
+                        Text(
+                            text = "External",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+
+                        ShortSpacer()
+
+                        AccountType.entries.filter { it != AccountType.LOCAL }
+                            .forEach { accountType ->
+                                SelectableImageText(
+                                    image = adaptiveIconPainterResource(id = accountType.iconRes),
+                                    text = stringResource(id = accountType.typeName),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    imageSize = 24.dp,
+                                    spacing = MaterialTheme.spacing.mediumSpacing,
+                                    padding = MaterialTheme.spacing.mediumSpacing,
+                                    onClick = { screenModel.createAccount(accountType) }
+                                )
+                            }
+
+
+                    }
                 }
             }
+
+            Text(
+                text = "v${BuildConfig.VERSION_NAME}",
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(bottom = MaterialTheme.spacing.largeSpacing)
+            )
         }
     }
 }
