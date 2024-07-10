@@ -1,5 +1,6 @@
 package com.readrops.app.util.components.dialog
 
+import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
@@ -18,7 +19,10 @@ fun ErrorDialog(
         icon = painterResource(id = R.drawable.ic_error),
         onDismiss = onDismiss
     ) {
-        Text(text = ErrorMessage.get(exception, LocalContext.current))
+        Text(
+            text = ErrorMessage.get(exception, LocalContext.current),
+            color = AlertDialogDefaults.textContentColor
+        )
     }
 }
 

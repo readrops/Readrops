@@ -33,8 +33,7 @@ fun TwoChoicesDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss
-            ) {
+            TextButton(onClick = onDismiss) {
                 Text(text = dismissText)
             }
         },
