@@ -75,6 +75,7 @@ fun FolderExpandableItem(
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_folder_grey),
+                        tint = MaterialTheme.colorScheme.primary,
                         contentDescription = folder.name
                     )
 
@@ -82,7 +83,7 @@ fun FolderExpandableItem(
 
                     Text(
                         text = folder.name!!,
-                        style = MaterialTheme.typography.headlineSmall,
+                        style = MaterialTheme.typography.bodyLarge,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
