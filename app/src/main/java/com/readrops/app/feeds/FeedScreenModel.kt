@@ -144,13 +144,14 @@ class FeedScreenModel(
                     it.copy(
                         value = "",
                         textFieldError = null,
-                        exception = null
+                        exception = null,
+                        isLoading = false
                     )
                 }
             }
 
             is DialogState.UpdateFeed -> {
-                _updateFeedDialogState.update { it.copy(exception = null) }
+                _updateFeedDialogState.update { it.copy(exception = null, isLoading = false) }
             }
 
             else -> {}
@@ -337,7 +338,7 @@ class FeedScreenModel(
             }
 
             else -> {
-                _updateFeedDialogState.update { it.copy(exception = null) }
+                _updateFeedDialogState.update { it.copy(exception = null, isLoading = true) }
 
                 screenModelScope.launch(dispatcher) {
                     with(_updateFeedDialogState.value) {
@@ -355,12 +356,12 @@ class FeedScreenModel(
                                 )
                             )
                         } catch (e: Exception) {
-                            _updateFeedDialogState.update { it.copy(exception = e) }
+                            _updateFeedDialogState.update { it.copy(exception = e, isLoading = false) }
                             return@launch
                         }
                     }
 
-                    closeDialog()
+                    closeDialog(_feedState.value.dialog)
                 }
             }
         }
@@ -378,10 +379,16 @@ class FeedScreenModel(
     }
 
     fun folderValidate(updateFolder: Boolean = false) {
+        _folderState.update { it.copy(isLoading = true) }
         val name = _folderState.value.value
 
         if (name.isEmpty()) {
-            _folderState.update { it.copy(textFieldError = TextFieldError.EmptyField) }
+            _folderState.update {
+                it.copy(
+                    textFieldError = TextFieldError.EmptyField,
+                    isLoading = false
+                )
+            }
             return
         }
 
@@ -394,11 +401,11 @@ class FeedScreenModel(
                     repository?.addFolder(Folder(name = name, accountId = currentAccount!!.id))
                 }
             } catch (e: Exception) {
-                _folderState.update { it.copy(exception = e) }
+                _folderState.update { it.copy(exception = e, isLoading = false) }
                 return@launch
             }
 
-            closeDialog(DialogState.AddFolder)
+            closeDialog(_feedState.value.dialog)
         }
     }
 

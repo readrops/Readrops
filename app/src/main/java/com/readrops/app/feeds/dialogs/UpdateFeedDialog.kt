@@ -8,7 +8,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -19,6 +18,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.readrops.app.R
 import com.readrops.app.feeds.FeedScreenModel
 import com.readrops.app.util.ErrorMessage
+import com.readrops.app.util.components.LoadingTextButton
 import com.readrops.app.util.components.dialog.BaseDialog
 import com.readrops.app.util.theme.LargeSpacer
 import com.readrops.app.util.theme.MediumSpacer
@@ -133,10 +133,10 @@ fun UpdateFeedDialog(
 
         LargeSpacer()
 
-        TextButton(
+        LoadingTextButton(
+            text = stringResource(R.string.validate),
+            isLoading = state.isLoading,
             onClick = { viewModel.updateFeedDialogValidate() },
-        ) {
-            Text(text = stringResource(R.string.validate))
-        }
+        )
     }
 }

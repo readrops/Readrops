@@ -50,7 +50,8 @@ data class UpdateFeedDialogState(
     val folders: List<Folder> = listOf(),
     val isAccountDropDownExpanded: Boolean = false,
     val isFeedUrlReadOnly: Boolean = true,
-    val exception: Exception? = null
+    val exception: Exception? = null,
+    val isLoading: Boolean = false
 ) {
     val isFeedNameError
         get() = feedNameError != null
@@ -59,14 +60,4 @@ data class UpdateFeedDialogState(
         get() = feedUrlError != null
 
     val hasFolders = folders.isNotEmpty()
-}
-
-data class FolderState(
-    val folder: Folder = Folder(),
-    val nameError: TextFieldError? = null,
-    val exception: Exception? = null
-) {
-    val name = folder.name
-
-    val isTextFieldError = nameError != null
 }

@@ -7,7 +7,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
@@ -15,13 +14,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.readrops.app.R
 import com.readrops.app.util.ErrorMessage
+import com.readrops.app.util.components.LoadingTextButton
 import com.readrops.app.util.components.TextFieldError
 import com.readrops.app.util.theme.LargeSpacer
 
 data class TextFieldDialogState(
     val value: String = "",
     val textFieldError: TextFieldError? = null,
-    val exception: Exception? = null
+    val exception: Exception? = null,
+    val isLoading: Boolean = false
 ) {
     val isTextFieldError
         get() = textFieldError != null
@@ -36,12 +37,12 @@ fun TextFieldDialog(
     onValueChange: (String) -> Unit,
     onValidate: () -> Unit,
     onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     BaseDialog(
         title = title,
         icon = icon,
-        onDismiss = onDismiss,
+        onDismiss = {  if (!state.isLoading) onDismiss() },
         modifier = modifier
     ) {
         OutlinedTextField(
@@ -74,10 +75,10 @@ fun TextFieldDialog(
 
         LargeSpacer()
 
-        TextButton(
+        LoadingTextButton(
+            text = stringResource(R.string.validate),
+            isLoading = state.isLoading,
             onClick = { onValidate() },
-        ) {
-            Text(text = stringResource(R.string.validate))
-        }
+        )
     }
 }
