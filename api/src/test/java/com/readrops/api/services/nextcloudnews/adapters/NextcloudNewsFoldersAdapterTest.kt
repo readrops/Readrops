@@ -10,10 +10,10 @@ import okio.Buffer
 import org.junit.Assert.assertThrows
 import org.junit.Test
 
-class NextNewsFoldersAdapterTest {
+class NextcloudNewsFoldersAdapterTest {
 
     private val adapter = Moshi.Builder()
-            .add(NextNewsFoldersAdapter())
+            .add(NextcloudNewsFoldersAdapter())
             .build()
             .adapter<List<Folder>>(Types.newParameterizedType(List::class.java, Folder::class.java))
 

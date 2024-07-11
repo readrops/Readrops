@@ -6,7 +6,7 @@ import com.readrops.api.localfeed.XmlAdapter
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.extensions.nonNullText
 
-class NextNewsUserAdapter : XmlAdapter<String> {
+class NextcloudNewsUserAdapter : XmlAdapter<String> {
 
     override fun fromXml(konsumer: Konsumer): String {
         var displayName: String? = null

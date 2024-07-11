@@ -24,7 +24,7 @@ import kotlin.test.assertTrue
 
 class FreshRSSDataSourceTest : KoinTest {
 
-    private lateinit var freshRSSDataSource: NewFreshRSSDataSource
+    private lateinit var freshRSSDataSource: FreshRSSDataSource
     private val mockServer = MockWebServer()
 
     @get:Rule
@@ -36,7 +36,7 @@ class FreshRSSDataSourceTest : KoinTest {
                         .client(get())
                         .addConverterFactory(MoshiConverterFactory.create(get(named("freshrssMoshi"))))
                         .build()
-                        .create(NewFreshRSSService::class.java)
+                        .create(FreshRSSService::class.java)
             }
         })
     }
@@ -44,7 +44,7 @@ class FreshRSSDataSourceTest : KoinTest {
     @Before
     fun before() {
         mockServer.start(8080)
-        freshRSSDataSource = NewFreshRSSDataSource(get())
+        freshRSSDataSource = FreshRSSDataSource(get())
     }
 
     @After
@@ -122,13 +122,13 @@ class FreshRSSDataSourceTest : KoinTest {
                 .setResponseCode(HttpURLConnection.HTTP_OK)
                 .setBody(Buffer().readFrom(stream)))
 
-        val items = freshRSSDataSource.getItems(listOf(NewFreshRSSDataSource.GOOGLE_READ, NewFreshRSSDataSource.GOOGLE_STARRED), 100, 21343321321321)
+        val items = freshRSSDataSource.getItems(listOf(FreshRSSDataSource.GOOGLE_READ, FreshRSSDataSource.GOOGLE_STARRED), 100, 21343321321321)
         assertTrue { items.size == 2 }
 
         val request = mockServer.takeRequest()
 
         with(request.requestUrl!!) {
-            assertEquals(listOf(NewFreshRSSDataSource.GOOGLE_READ, NewFreshRSSDataSource.GOOGLE_STARRED), queryParameterValues("xt"))
+            assertEquals(listOf(FreshRSSDataSource.GOOGLE_READ, FreshRSSDataSource.GOOGLE_STARRED), queryParameterValues("xt"))
             assertEquals("100", queryParameter("n"))
             assertEquals("21343321321321", queryParameter("ot"))
 
@@ -157,13 +157,13 @@ class FreshRSSDataSourceTest : KoinTest {
                 .setResponseCode(HttpURLConnection.HTTP_OK)
                 .setBody(Buffer().readFrom(stream)))
 
-        val ids = freshRSSDataSource.getItemsIds(NewFreshRSSDataSource.GOOGLE_READ, NewFreshRSSDataSource.GOOGLE_READING_LIST, 100)
+        val ids = freshRSSDataSource.getItemsIds(FreshRSSDataSource.GOOGLE_READ, FreshRSSDataSource.GOOGLE_READING_LIST, 100)
         assertTrue { ids.size == 5 }
 
         val request = mockServer.takeRequest()
         with(request.requestUrl!!) {
-            assertEquals(NewFreshRSSDataSource.GOOGLE_READ, queryParameter("xt"))
-            assertEquals(NewFreshRSSDataSource.GOOGLE_READING_LIST, queryParameter("s"))
+            assertEquals(FreshRSSDataSource.GOOGLE_READ, queryParameter("xt"))
+            assertEquals(FreshRSSDataSource.GOOGLE_READING_LIST, queryParameter("s"))
             assertEquals("100", queryParameter("n"))
         }
     }
@@ -178,7 +178,7 @@ class FreshRSSDataSourceTest : KoinTest {
 
         with(request.body.readUtf8()) {
             assertTrue { contains("T=token") }
-            assertTrue { contains("s=${URLEncoder.encode("${NewFreshRSSDataSource.FEED_PREFIX}https://feed.url", "UTF-8")}") }
+            assertTrue { contains("s=${URLEncoder.encode("${FreshRSSDataSource.FEED_PREFIX}https://feed.url", "UTF-8")}") }
             assertTrue { contains("ac=subscribe") }
         }
     }
@@ -193,7 +193,7 @@ class FreshRSSDataSourceTest : KoinTest {
 
         with(request.body.readUtf8()) {
             assertTrue { contains("T=token") }
-            assertTrue { contains("s=${URLEncoder.encode("${NewFreshRSSDataSource.FEED_PREFIX}https://feed.url", "UTF-8")}") }
+            assertTrue { contains("s=${URLEncoder.encode("${FreshRSSDataSource.FEED_PREFIX}https://feed.url", "UTF-8")}") }
             assertTrue { contains("ac=unsubscribe") }
         }
     }
@@ -208,7 +208,7 @@ class FreshRSSDataSourceTest : KoinTest {
 
         with(request.body.readUtf8()) {
             assertTrue { contains("T=token") }
-            assertTrue { contains("s=${URLEncoder.encode("${NewFreshRSSDataSource.FEED_PREFIX}https://feed.url", "UTF-8")}") }
+            assertTrue { contains("s=${URLEncoder.encode("${FreshRSSDataSource.FEED_PREFIX}https://feed.url", "UTF-8")}") }
             assertTrue { contains("t=title") }
             assertTrue { contains("a=folderId") }
             assertTrue { contains("ac=edit") }
@@ -225,7 +225,7 @@ class FreshRSSDataSourceTest : KoinTest {
 
         with(request.body.readUtf8()) {
             assertTrue { contains("T=token") }
-            assertTrue { contains("a=${URLEncoder.encode("${NewFreshRSSDataSource.FOLDER_PREFIX}folder", "UTF-8")}") }
+            assertTrue { contains("a=${URLEncoder.encode("${FreshRSSDataSource.FOLDER_PREFIX}folder", "UTF-8")}") }
         }
     }
 
@@ -240,7 +240,7 @@ class FreshRSSDataSourceTest : KoinTest {
         with(request.body.readUtf8()) {
             assertTrue { contains("T=token") }
             assertTrue { contains("s=folderId") }
-            assertTrue { contains("dest=${URLEncoder.encode("${NewFreshRSSDataSource.FOLDER_PREFIX}folder", "UTF-8")}") }
+            assertTrue { contains("dest=${URLEncoder.encode("${FreshRSSDataSource.FOLDER_PREFIX}folder", "UTF-8")}") }
         }
     }
 

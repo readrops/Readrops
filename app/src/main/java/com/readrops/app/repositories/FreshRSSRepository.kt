@@ -4,7 +4,7 @@ import com.readrops.api.services.Credentials
 import com.readrops.api.services.SyncResult
 import com.readrops.api.services.SyncType
 import com.readrops.api.services.freshrss.FreshRSSSyncData
-import com.readrops.api.services.freshrss.NewFreshRSSDataSource
+import com.readrops.api.services.freshrss.FreshRSSDataSource
 import com.readrops.api.utils.AuthInterceptor
 import com.readrops.app.util.Utils
 import com.readrops.db.Database
@@ -19,7 +19,7 @@ import org.koin.core.component.KoinComponent
 class FreshRSSRepository(
     database: Database,
     account: Account,
-    private val dataSource: NewFreshRSSDataSource,
+    private val dataSource: FreshRSSDataSource,
 ) : BaseRepository(database, account), KoinComponent {
 
     override suspend fun login(account: Account) {
@@ -113,7 +113,7 @@ class FreshRSSRepository(
 
     override suspend fun updateFolder(folder: Folder) {
         dataSource.updateFolder(account.writeToken!!, folder.remoteId!!, folder.name!!)
-        folder.remoteId = NewFreshRSSDataSource.FOLDER_PREFIX + folder.name
+        folder.remoteId = FreshRSSDataSource.FOLDER_PREFIX + folder.name
 
         super.updateFolder(folder)
     }

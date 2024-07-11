@@ -9,10 +9,10 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 
-class NextNewsFeedsAdapterTest {
+class NextcloudNewsFeedsAdapterTest {
 
     private val adapter = Moshi.Builder()
-            .add(NextNewsFeedsAdapter())
+            .add(NextcloudNewsFeedsAdapter())
             .build()
             .adapter<List<Feed>>(Types.newParameterizedType(List::class.java, Feed::class.java))
 

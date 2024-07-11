@@ -11,7 +11,7 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-interface NewNextcloudNewsService {
+interface NextcloudNewsService {
 
     @GET("folders")
     suspend fun getFolders(): List<Folder>

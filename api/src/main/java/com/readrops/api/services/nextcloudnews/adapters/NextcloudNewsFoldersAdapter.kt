@@ -8,7 +8,7 @@ import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.ToJson
 
-class NextNewsFoldersAdapter {
+class NextcloudNewsFoldersAdapter {
 
     @ToJson
     fun toJson(folders: List<Folder>): String = ""

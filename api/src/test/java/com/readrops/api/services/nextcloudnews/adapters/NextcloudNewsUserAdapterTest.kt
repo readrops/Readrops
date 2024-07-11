@@ -5,9 +5,9 @@ import com.readrops.api.TestUtils
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class NextNewsUserAdapterTest {
+class NextcloudNewsUserAdapterTest {
 
-    private val adapter = NextNewsUserAdapter()
+    private val adapter = NextcloudNewsUserAdapter()
 
     @Test
     fun validXmlTest() {

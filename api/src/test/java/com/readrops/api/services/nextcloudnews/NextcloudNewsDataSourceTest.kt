@@ -25,7 +25,7 @@ import kotlin.test.assertTrue
 
 class NextcloudNewsDataSourceTest : KoinTest {
 
-    private lateinit var nextcloudNewsDataSource: NewNextcloudNewsDataSource
+    private lateinit var nextcloudNewsDataSource: NextcloudNewsDataSource
     private val mockServer = MockWebServer()
     private val moshi = Moshi.Builder()
         .build()
@@ -39,7 +39,7 @@ class NextcloudNewsDataSourceTest : KoinTest {
                     .client(get())
                     .addConverterFactory(MoshiConverterFactory.create(get(named("nextcloudNewsMoshi"))))
                     .build()
-                    .create(NewNextcloudNewsService::class.java)
+                    .create(NextcloudNewsService::class.java)
             }
         })
     }
@@ -47,7 +47,7 @@ class NextcloudNewsDataSourceTest : KoinTest {
     @Before
     fun before() {
         mockServer.start(8080)
-        nextcloudNewsDataSource = NewNextcloudNewsDataSource(get())
+        nextcloudNewsDataSource = NextcloudNewsDataSource(get())
     }
 
     @After
@@ -93,7 +93,7 @@ class NextcloudNewsDataSourceTest : KoinTest {
         val stream = TestUtils.loadResource("services/nextcloudnews/adapters/items.json")
         mockServer.enqueueStream(stream)
 
-        val items = nextcloudNewsDataSource.getItems(NewNextcloudNewsDataSource.ItemQueryType.ALL.value, false, 10)
+        val items = nextcloudNewsDataSource.getItems(NextcloudNewsDataSource.ItemQueryType.ALL.value, false, 10)
         val request = mockServer.takeRequest()
 
         assertTrue { items.size == 3 }
@@ -110,7 +110,7 @@ class NextcloudNewsDataSourceTest : KoinTest {
         mockServer.enqueueStream(stream)
 
         val items =
-            nextcloudNewsDataSource.getNewItems(1512, NewNextcloudNewsDataSource.ItemQueryType.ALL)
+            nextcloudNewsDataSource.getNewItems(1512, NextcloudNewsDataSource.ItemQueryType.ALL)
         val request = mockServer.takeRequest()
 
         assertTrue { items.size == 3 }

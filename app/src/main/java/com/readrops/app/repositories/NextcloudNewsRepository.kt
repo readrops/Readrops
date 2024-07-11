@@ -3,7 +3,7 @@ package com.readrops.app.repositories
 import com.readrops.api.services.Credentials
 import com.readrops.api.services.SyncResult
 import com.readrops.api.services.SyncType
-import com.readrops.api.services.nextcloudnews.NewNextcloudNewsDataSource
+import com.readrops.api.services.nextcloudnews.NextcloudNewsDataSource
 import com.readrops.api.services.nextcloudnews.NextcloudNewsSyncData
 import com.readrops.api.utils.AuthInterceptor
 import com.readrops.app.util.Utils
@@ -24,7 +24,7 @@ import org.koin.core.component.get
 class NextcloudNewsRepository(
     database: Database,
     account: Account,
-    private val dataSource: NewNextcloudNewsDataSource,
+    private val dataSource: NextcloudNewsDataSource,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseRepository(database, account), KoinComponent {
 

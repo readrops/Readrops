@@ -9,10 +9,10 @@ import okio.Buffer
 import org.joda.time.LocalDateTime
 import org.junit.Test
 
-class NextNewsItemsAdapterTest {
+class NextcloudNewsItemsAdapterTest {
 
     private val adapter = Moshi.Builder()
-            .add(Types.newParameterizedType(List::class.java, Item::class.java), NextNewsItemsAdapter())
+            .add(Types.newParameterizedType(List::class.java, Item::class.java), NextcloudNewsItemsAdapter())
             .build()
             .adapter<List<Item>>(Types.newParameterizedType(List::class.java, Item::class.java))
 

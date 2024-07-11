@@ -11,7 +11,7 @@ import com.squareup.moshi.JsonReader
 import com.squareup.moshi.ToJson
 import java.net.URI
 
-class NextNewsFeedsAdapter {
+class NextcloudNewsFeedsAdapter {
 
     @ToJson
     fun toJson(feeds: List<Feed>): String = ""

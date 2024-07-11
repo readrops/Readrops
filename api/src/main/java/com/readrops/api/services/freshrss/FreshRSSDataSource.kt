@@ -12,7 +12,7 @@ import okhttp3.MultipartBody
 import java.io.StringReader
 import java.util.Properties
 
-class NewFreshRSSDataSource(private val service: NewFreshRSSService) {
+class FreshRSSDataSource(private val service: FreshRSSService) {
 
     suspend fun login(login: String, password: String): String {
         val requestBody = MultipartBody.Builder()

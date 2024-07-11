@@ -12,7 +12,7 @@ import com.squareup.moshi.JsonWriter
 import org.joda.time.DateTimeZone
 import org.joda.time.LocalDateTime
 
-class NextNewsItemsAdapter : JsonAdapter<List<Item>>() {
+class NextcloudNewsItemsAdapter : JsonAdapter<List<Item>>() {
 
     override fun toJson(writer: JsonWriter, value: List<Item>?) {
         // no need of this

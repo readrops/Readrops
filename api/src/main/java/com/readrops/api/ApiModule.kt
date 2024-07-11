@@ -2,18 +2,18 @@ package com.readrops.api
 
 import com.readrops.api.localfeed.LocalRSSDataSource
 import com.readrops.api.services.Credentials
-import com.readrops.api.services.freshrss.NewFreshRSSDataSource
-import com.readrops.api.services.freshrss.NewFreshRSSService
+import com.readrops.api.services.freshrss.FreshRSSDataSource
+import com.readrops.api.services.freshrss.FreshRSSService
 import com.readrops.api.services.freshrss.adapters.FreshRSSFeedsAdapter
 import com.readrops.api.services.freshrss.adapters.FreshRSSFoldersAdapter
 import com.readrops.api.services.freshrss.adapters.FreshRSSItemsAdapter
 import com.readrops.api.services.freshrss.adapters.FreshRSSItemsIdsAdapter
 import com.readrops.api.services.freshrss.adapters.FreshRSSUserInfoAdapter
-import com.readrops.api.services.nextcloudnews.NewNextcloudNewsDataSource
-import com.readrops.api.services.nextcloudnews.NewNextcloudNewsService
-import com.readrops.api.services.nextcloudnews.adapters.NextNewsFeedsAdapter
-import com.readrops.api.services.nextcloudnews.adapters.NextNewsFoldersAdapter
-import com.readrops.api.services.nextcloudnews.adapters.NextNewsItemsAdapter
+import com.readrops.api.services.nextcloudnews.NextcloudNewsDataSource
+import com.readrops.api.services.nextcloudnews.NextcloudNewsService
+import com.readrops.api.services.nextcloudnews.adapters.NextcloudNewsFeedsAdapter
+import com.readrops.api.services.nextcloudnews.adapters.NextcloudNewsFoldersAdapter
+import com.readrops.api.services.nextcloudnews.adapters.NextcloudNewsItemsAdapter
 import com.readrops.api.utils.AuthInterceptor
 import com.readrops.api.utils.ErrorInterceptor
 import com.readrops.db.entities.Item
@@ -46,7 +46,7 @@ val apiModule = module {
 
     //region freshrss
 
-    factory { params -> NewFreshRSSDataSource(get(parameters = { params })) }
+    factory { params -> FreshRSSDataSource(get(parameters = { params })) }
 
     factory { (credentials: Credentials) ->
         Retrofit.Builder()
@@ -54,7 +54,7 @@ val apiModule = module {
             .client(get())
             .addConverterFactory(MoshiConverterFactory.create(get(named("freshrssMoshi"))))
             .build()
-            .create(NewFreshRSSService::class.java)
+            .create(FreshRSSService::class.java)
     }
 
     single(named("freshrssMoshi")) {
@@ -71,7 +71,7 @@ val apiModule = module {
 
     //region nextcloud news
 
-    factory { params -> NewNextcloudNewsDataSource(get(parameters = { params })) }
+    factory { params -> NextcloudNewsDataSource(get(parameters = { params })) }
 
     factory { (credentials: Credentials) ->
         Retrofit.Builder()
@@ -79,14 +79,14 @@ val apiModule = module {
                 .client(get())
                 .addConverterFactory(MoshiConverterFactory.create(get(named("nextcloudNewsMoshi"))))
                 .build()
-                .create(NewNextcloudNewsService::class.java)
+                .create(NextcloudNewsService::class.java)
     }
 
     single(named("nextcloudNewsMoshi")) {
         Moshi.Builder()
-                .add(NextNewsFeedsAdapter())
-                .add(NextNewsFoldersAdapter())
-                .add(Types.newParameterizedType(List::class.java, Item::class.java), NextNewsItemsAdapter())
+                .add(NextcloudNewsFeedsAdapter())
+                .add(NextcloudNewsFoldersAdapter())
+                .add(Types.newParameterizedType(List::class.java, Item::class.java), NextcloudNewsItemsAdapter())
                 .build()
     }
 

@@ -13,7 +13,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
 
-interface NewFreshRSSService {
+interface FreshRSSService {
 
     @POST("accounts/ClientLogin")
     suspend fun login(@Body body: RequestBody?): ResponseBody

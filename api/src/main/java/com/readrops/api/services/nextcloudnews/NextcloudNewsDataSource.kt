@@ -3,7 +3,7 @@ package com.readrops.api.services.nextcloudnews
 import com.gitlab.mvysny.konsumexml.konsumeXml
 import com.readrops.api.services.SyncResult
 import com.readrops.api.services.SyncType
-import com.readrops.api.services.nextcloudnews.adapters.NextNewsUserAdapter
+import com.readrops.api.services.nextcloudnews.adapters.NextcloudNewsUserAdapter
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
@@ -15,7 +15,7 @@ import kotlinx.coroutines.awaitAll
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-class NewNextcloudNewsDataSource(private val service: NewNextcloudNewsService) {
+class NextcloudNewsDataSource(private val service: NextcloudNewsService) {
 
     suspend fun login(client: OkHttpClient, account: Account): String {
         val request = Request.Builder()
@@ -26,7 +26,7 @@ class NewNextcloudNewsDataSource(private val service: NewNextcloudNewsService) {
         val response = client.newCall(request)
             .execute()
 
-        val displayName = NextNewsUserAdapter().fromXml(response.body!!.byteStream().konsumeXml())
+        val displayName = NextcloudNewsUserAdapter().fromXml(response.body!!.byteStream().konsumeXml())
         response.close()
 
         return displayName
