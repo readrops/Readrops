@@ -199,6 +199,7 @@ object FeedTab : Tab {
                                                     )
                                                 },
                                                 onLongClick = { onFeedLongClick(feed) },
+                                                displayDivider = false
                                             )
                                         }
                                     }

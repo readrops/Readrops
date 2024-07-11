@@ -30,18 +30,27 @@ fun FeedItem(
     feed: Feed,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
+    displayDivider: Boolean = true
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .padding(start = MaterialTheme.spacing.mediumSpacing)
+            .then(
+                if (displayDivider) {
+                    Modifier.padding(start = MaterialTheme.spacing.mediumSpacing)
+                } else {
+                    Modifier
+                }
+            )
             .combinedClickable(
                 onClick = onClick,
                 onLongClick = onLongClick
             )
     ) {
-        VerticalDivider()
+        if (displayDivider) {
+            VerticalDivider()
+        }
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
