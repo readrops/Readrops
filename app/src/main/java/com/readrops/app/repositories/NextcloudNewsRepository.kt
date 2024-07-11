@@ -12,6 +12,11 @@ import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.withContext
 import org.joda.time.DateTime
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -19,7 +24,8 @@ import org.koin.core.component.get
 class NextcloudNewsRepository(
     database: Database,
     account: Account,
-    private val dataSource: NewNextcloudNewsDataSource
+    private val dataSource: NewNextcloudNewsDataSource,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseRepository(database, account), KoinComponent {
 
     override suspend fun login(account: Account) {
@@ -95,12 +101,14 @@ class NextcloudNewsRepository(
         return errors
     }
 
-    override suspend fun updateFeed(feed: Feed) {
+    override suspend fun updateFeed(feed: Feed) = withContext(dispatcher) {
         val folder =
             if (feed.folderId != null) database.folderDao().select(feed.folderId!!) else null
 
-        dataSource.renameFeed(feed.name!!, feed.remoteId!!.toInt())
-        dataSource.changeFeedFolder(folder?.remoteId?.toInt(), feed.remoteId!!.toInt())
+        listOf(
+            async { dataSource.renameFeed(feed.name!!, feed.remoteId!!.toInt()) },
+            async { dataSource.changeFeedFolder(folder?.remoteId?.toInt(), feed.remoteId!!.toInt()) }
+        ).awaitAll()
 
         super.updateFeed(feed)
     }

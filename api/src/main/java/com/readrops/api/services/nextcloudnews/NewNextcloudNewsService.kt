@@ -52,10 +52,10 @@ interface NewNextcloudNewsService {
     @DELETE("feeds/{feedId}")
     suspend fun deleteFeed(@Path("feedId") feedId: Int)
 
-    @PUT("feeds/{feedId}/move")
+    @POST("feeds/{feedId}/move")
     suspend fun changeFeedFolder(@Path("feedId") feedId: Int, @Body folderIdMap: Map<String, Int?>)
 
-    @PUT("feeds/{feedId}/rename")
+    @POST("feeds/{feedId}/rename")
     suspend fun renameFeed(@Path("feedId") feedId: Int, @Body feedTitleMap: Map<String, String>)
 
     @POST("folders")
