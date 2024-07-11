@@ -1,12 +1,16 @@
 package com.readrops.app.feeds
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.util.Patterns
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.readrops.api.localfeed.LocalRSSDataSource
+import com.readrops.api.services.Credentials
+import com.readrops.api.utils.AuthInterceptor
 import com.readrops.api.utils.HtmlParser
 import com.readrops.app.R
 import com.readrops.app.base.TabScreenModel
+import com.readrops.app.repositories.BaseRepository
 import com.readrops.app.repositories.GetFoldersWithFeeds
 import com.readrops.app.util.components.TextFieldError
 import com.readrops.app.util.components.dialog.TextFieldDialogState
@@ -26,6 +30,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
+import org.koin.core.parameter.parametersOf
 import java.net.UnknownHostException
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -134,7 +139,8 @@ class FeedScreenModel(
                     it.copy(
                         url = "",
                         error = null,
-                        exception = null
+                        exception = null,
+                        isLoading = false
                     )
                 }
             }
@@ -240,6 +246,8 @@ class FeedScreenModel(
             }
 
             else -> screenModelScope.launch(dispatcher) {
+                _addFeedDialogState.update { it.copy(exception = null, isLoading = true) }
+
                 try {
                     if (localRSSDataSource.isUrlRSSResource(url)) {
                         insertFeeds(listOf(Feed(url = url)))
@@ -248,7 +256,7 @@ class FeedScreenModel(
 
                         if (rssUrls.isEmpty()) {
                             _addFeedDialogState.update {
-                                it.copy(error = TextFieldError.NoRSSFeed)
+                                it.copy(error = TextFieldError.NoRSSFeed, isLoading = false)
                             }
                         } else {
                             insertFeeds(rssUrls.map { Feed(url = it.url) })
@@ -256,8 +264,19 @@ class FeedScreenModel(
                     }
                 } catch (e: Exception) {
                     when (e) {
-                        is UnknownHostException -> _addFeedDialogState.update { it.copy(error = TextFieldError.UnreachableUrl) }
-                        else -> _addFeedDialogState.update { it.copy(error = TextFieldError.NoRSSFeed) }
+                        is UnknownHostException -> _addFeedDialogState.update {
+                            it.copy(
+                                error = TextFieldError.UnreachableUrl,
+                                isLoading = false
+                            )
+                        }
+
+                        else -> _addFeedDialogState.update {
+                            it.copy(
+                                error = TextFieldError.NoRSSFeed,
+                                isLoading = false
+                            )
+                        }
                     }
                 }
             }
@@ -265,15 +284,34 @@ class FeedScreenModel(
     }
 
     private suspend fun insertFeeds(feeds: List<Feed>) {
-        val errors = repository?.insertNewFeeds(
+        val selectedAccount = _addFeedDialogState.value.selectedAccount
+
+        if (!selectedAccount.isLocal) {
+            get<SharedPreferences>().apply {
+                selectedAccount.login = getString(selectedAccount.loginKey, null)
+                selectedAccount.password = getString(selectedAccount.passwordKey, null)
+            }
+            get<AuthInterceptor>().apply {
+                credentials = Credentials.toCredentials(selectedAccount)
+            }
+        }
+
+        val repository = get<BaseRepository> { parametersOf(selectedAccount) }
+
+        val errors = repository.insertNewFeeds(
             newFeeds = feeds,
-            onUpdate = { /* no need of this here */ }
-        )!!
+            onUpdate = { /* TODO */ }
+        )
 
         if (errors.isEmpty()) {
             closeDialog(DialogState.AddFeed)
         } else {
-            _addFeedDialogState.update { it.copy(exception = errors.values.first()) }
+            _addFeedDialogState.update {
+                it.copy(
+                    exception = errors.values.first(),
+                    isLoading = false
+                )
+            }
         }
     }
 
@@ -356,7 +394,12 @@ class FeedScreenModel(
                                 )
                             )
                         } catch (e: Exception) {
-                            _updateFeedDialogState.update { it.copy(exception = e, isLoading = false) }
+                            _updateFeedDialogState.update {
+                                it.copy(
+                                    exception = e,
+                                    isLoading = false
+                                )
+                            }
                             return@launch
                         }
                     }

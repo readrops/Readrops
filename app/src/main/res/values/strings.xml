@@ -183,4 +183,5 @@
     <string name="update">Update</string>
     <string name="rename_account">Rename account</string>
     <string name="name">Name</string>
+    <string name="url">URL</string>
 </resources>

@@ -236,7 +236,7 @@ object FeedTab : Tab {
         when (val dialog = state.dialog) {
             is DialogState.AddFeed -> {
                 AddFeedDialog(
-                    viewModel = screenModel,
+                    screenModel = screenModel,
                     onDismiss = {
                         screenModel.closeDialog(DialogState.AddFeed)
                     },

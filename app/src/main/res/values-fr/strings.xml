@@ -174,4 +174,5 @@
     <string name="update">Mettre à jour</string>
     <string name="rename_account">Renommer le compte</string>
     <string name="name">Nom</string>
+    <string name="url">URL</string>
 </resources>

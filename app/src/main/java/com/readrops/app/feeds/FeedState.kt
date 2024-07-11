@@ -14,8 +14,8 @@ data class FeedState(
 )
 
 sealed interface DialogState {
-    object AddFeed : DialogState
-    object AddFolder : DialogState
+    data object AddFeed : DialogState
+    data object AddFolder : DialogState
     class DeleteFeed(val feed: Feed) : DialogState
     class DeleteFolder(val folder: Folder) : DialogState
     class UpdateFeed(val feed: Feed, val folder: Folder?) : DialogState
@@ -24,7 +24,7 @@ sealed interface DialogState {
 }
 
 sealed class FolderAndFeedsState {
-    object InitialState : FolderAndFeedsState()
+    data object InitialState : FolderAndFeedsState()
     data class ErrorState(val exception: Exception) : FolderAndFeedsState()
     data class LoadedState(val values: Map<Folder?, List<Feed>>) : FolderAndFeedsState()
 }
@@ -34,7 +34,8 @@ data class AddFeedDialogState(
     val selectedAccount: Account = Account(accountName = ""),
     val accounts: List<Account> = listOf(),
     val error: TextFieldError? = null,
-    val exception: Exception? = null
+    val exception: Exception? = null,
+    val isLoading: Boolean = false
 ) {
     val isError: Boolean get() = error != null
 }
