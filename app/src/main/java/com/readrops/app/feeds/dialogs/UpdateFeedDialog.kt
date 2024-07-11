@@ -78,19 +78,19 @@ fun UpdateFeedDialog(
         MediumSpacer()
 
         ExposedDropdownMenuBox(
-            expanded = state.isAccountDropDownExpanded && state.hasFolders,
-            onExpandedChange = { viewModel.setAccountDropDownState(state.isAccountDropDownExpanded.not()) }
+            expanded = state.isFolderDropDownExpanded && state.hasFolders,
+            onExpandedChange = { viewModel.setFolderDropDownState(state.isFolderDropDownExpanded.not()) }
         ) {
             ExposedDropdownMenu(
-                expanded = state.isAccountDropDownExpanded && state.hasFolders,
-                onDismissRequest = { viewModel.setAccountDropDownState(false) }
+                expanded = state.isFolderDropDownExpanded && state.hasFolders,
+                onDismissRequest = { viewModel.setFolderDropDownState(false) }
             ) {
                 for (folder in state.folders) {
                     DropdownMenuItem(
                         text = { Text(text = folder.name!!) },
                         onClick = {
                             viewModel.setSelectedFolder(folder)
-                            viewModel.setAccountDropDownState(false)
+                            viewModel.setFolderDropDownState(false)
                         },
                         leadingIcon = {
                             Icon(
@@ -108,7 +108,7 @@ fun UpdateFeedDialog(
                 enabled = state.hasFolders,
                 onValueChange = {},
                 trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = state.isAccountDropDownExpanded)
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = state.isFolderDropDownExpanded)
                 },
                 leadingIcon = {
                     if (state.selectedFolder != null) {

@@ -35,7 +35,8 @@ data class AddFeedDialogState(
     val accounts: List<Account> = listOf(),
     val error: TextFieldError? = null,
     val exception: Exception? = null,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val isAccountDropDownExpanded: Boolean = false
 ) {
     val isError: Boolean get() = error != null
 }
@@ -49,7 +50,7 @@ data class UpdateFeedDialogState(
     val feedUrlError: TextFieldError? = null,
     val selectedFolder: Folder? = null,
     val folders: List<Folder> = listOf(),
-    val isAccountDropDownExpanded: Boolean = false,
+    val isFolderDropDownExpanded: Boolean = false,
     val isFeedUrlReadOnly: Boolean = true,
     val exception: Exception? = null,
     val isLoading: Boolean = false

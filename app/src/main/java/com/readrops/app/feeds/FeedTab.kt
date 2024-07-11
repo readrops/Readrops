@@ -231,15 +231,18 @@ object FeedTab : Tab {
     private fun FeedDialogs(state: FeedState, screenModel: FeedScreenModel) {
         val uriHandler = LocalUriHandler.current
 
+        val addFeedDialogState by screenModel.addFeedDialogState.collectAsStateWithLifecycle()
         val folderState by screenModel.folderState.collectAsStateWithLifecycle()
 
         when (val dialog = state.dialog) {
             is DialogState.AddFeed -> {
                 AddFeedDialog(
-                    screenModel = screenModel,
-                    onDismiss = {
-                        screenModel.closeDialog(DialogState.AddFeed)
-                    },
+                    state = addFeedDialogState,
+                    onValueChange = { screenModel.setAddFeedDialogURL(it) },
+                    onExpandChange = { screenModel.setAccountDropDownExpanded(it)  },
+                    onAccountClick = { screenModel.setAddFeedDialogSelectedAccount(it) },
+                    onValidate = { screenModel.addFeedDialogValidate() },
+                    onDismiss = { screenModel.closeDialog(DialogState.AddFeed) },
                 )
             }
 

@@ -222,7 +222,11 @@ class FeedScreenModel(
     }
 
     fun setAddFeedDialogSelectedAccount(account: Account) {
-        _addFeedDialogState.update { it.copy(selectedAccount = account) }
+        _addFeedDialogState.update { it.copy(selectedAccount = account, isAccountDropDownExpanded = false) }
+    }
+
+    fun setAccountDropDownExpanded(isExpanded: Boolean) {
+        _addFeedDialogState.update { it.copy(isAccountDropDownExpanded = isExpanded) }
     }
 
     fun addFeedDialogValidate() {
@@ -319,9 +323,9 @@ class FeedScreenModel(
 
     //region Update feed
 
-    fun setAccountDropDownState(isExpanded: Boolean) {
+    fun setFolderDropDownState(isExpanded: Boolean) {
         _updateFeedDialogState.update {
-            it.copy(isAccountDropDownExpanded = isExpanded)
+            it.copy(isFolderDropDownExpanded = isExpanded)
         }
     }
 
