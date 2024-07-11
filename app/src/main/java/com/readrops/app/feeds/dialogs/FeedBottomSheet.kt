@@ -11,8 +11,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -67,7 +67,7 @@ fun FeedModalBottomSheet(
                 Column {
                     Text(
                         text = feed.name!!,
-                        style = MaterialTheme.typography.headlineSmall,
+                        style = MaterialTheme.typography.titleLarge,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -77,8 +77,8 @@ fun FeedModalBottomSheet(
 
                         Text(
                             text = feed.description!!,
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.85f),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -88,10 +88,8 @@ fun FeedModalBottomSheet(
 
             MediumSpacer()
 
-            Divider(
-                modifier = Modifier.padding(
-                    horizontal = MaterialTheme.spacing.mediumSpacing
-                )
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = MaterialTheme.spacing.mediumSpacing)
             )
 
             MediumSpacer()
@@ -103,7 +101,7 @@ fun FeedModalBottomSheet(
             )
 
             BottomSheetOption(
-                text = "Update",
+                text = stringResource(id = R.string.update),
                 icon = Icons.Default.Create,
                 onClick = onUpdate
             )
@@ -146,7 +144,8 @@ fun BottomSheetOption(
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = text
+                contentDescription = text,
+                tint = MaterialTheme.colorScheme.primary
             )
 
             MediumSpacer()
