@@ -63,8 +63,9 @@ class TimelineScreenModel(
                     it.copy(
                         itemState = Pager(
                             config = PagingConfig(
-                                pageSize = 10,
-                                prefetchDistance = 10
+                                initialLoadSize = 50,
+                                pageSize = 50,
+                                prefetchDistance = 15
                             ),
                             pagingSourceFactory = {
                                 database.itemDao().selectAll(query)

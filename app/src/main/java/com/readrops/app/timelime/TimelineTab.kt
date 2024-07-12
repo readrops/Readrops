@@ -396,7 +396,7 @@ object TimelineTab : Tab {
 
 
 fun <T : Any> LazyPagingItems<T>.isLoading(): Boolean {
-    return loadState.append is LoadState.Loading //|| loadState.refresh is LoadState.Loading
+    return loadState.refresh is LoadState.Loading
 }
 
 fun <T : Any> LazyPagingItems<T>.isError(): Boolean {
