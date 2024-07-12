@@ -136,7 +136,7 @@ fun DrawerDefaultItems(
     )
 
     NavigationDrawerItem(
-        label = { Text("New articles ($unreadNewItemsCount)") },
+        label = { Text("${stringResource(id = R.string.new_articles)} (${stringResource(id = R.string.unread, unreadNewItemsCount)})") },
         icon = {
             Icon(
                 painter = painterResource(id = R.drawable.ic_new),

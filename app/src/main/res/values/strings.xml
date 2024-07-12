@@ -45,8 +45,8 @@
     <string name="read_later">To read later</string>
     <string name="show_read_articles">Show read articles</string>
     <string name="filter">Filter</string>
-    <string name="unread">Mark as non read</string>
-    <string name="read">Mark as read</string>
+    <string name="mark_unread">Mark as non read</string>
+    <string name="mark_read">Mark as read</string>
     <string name="select_all">Select all</string>
     <string name="account_url">Account url</string>
     <string name="account_name">Account name</string>
@@ -184,4 +184,5 @@
     <string name="rename_account">Rename account</string>
     <string name="name">Name</string>
     <string name="url">URL</string>
+    <string name="unread">%1$d unread</string>
 </resources>

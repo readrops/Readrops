@@ -42,8 +42,8 @@
     <string name="read_later">Baca nanti</string>
     <string name="show_read_articles">Tampilkan artikel dibaca</string>
     <string name="filter">Filter</string>
-    <string name="unread">Tandai belum dibaca</string>
-    <string name="read">Tandai dibaca</string>
+    <string name="mark_unread">Tandai belum dibaca</string>
+    <string name="mark_read">Tandai dibaca</string>
     <string name="select_all">Pilih semua</string>
     <string name="account_url">Url akun</string>
     <string name="account_name">Nama akun</string>

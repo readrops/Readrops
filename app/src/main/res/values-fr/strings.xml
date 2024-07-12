@@ -42,8 +42,8 @@
     <string name="read_later">À lire plus tard</string>
     <string name="show_read_articles">Afficher les articles lus</string>
     <string name="filter">Filtrer</string>
-    <string name="unread">Marquer comme non lu</string>
-    <string name="read">Marquer comme lu</string>
+    <string name="mark_unread">Marquer comme non lu</string>
+    <string name="mark_read">Marquer comme lu</string>
     <string name="select_all">Tout sélectionner</string>
     <string name="account_url">URL du compte</string>
     <string name="account_name">Nom du compte</string>
@@ -175,4 +175,5 @@
     <string name="rename_account">Renommer le compte</string>
     <string name="name">Nom</string>
     <string name="url">URL</string>
+    <string name="unread">%1$d non-lu(s)</string>
 </resources>
