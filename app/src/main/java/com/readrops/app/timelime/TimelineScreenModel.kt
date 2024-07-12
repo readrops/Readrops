@@ -162,7 +162,7 @@ class TimelineScreenModel(
             )
         }
 
-        _timelineState.update { it.copy(isRefreshing = true) }
+        _timelineState.update { it.copy(isRefreshing = true, hideReadAllFAB = true) }
 
         val results = repository?.synchronize(
             selectedFeeds = selectedFeeds,
@@ -180,6 +180,7 @@ class TimelineScreenModel(
             it.copy(
                 isRefreshing = false,
                 endSynchronizing = true,
+                hideReadAllFAB = false,
                 localSyncErrors = if (results!!.second.isNotEmpty()) results.second else null
             )
         }
@@ -359,7 +360,8 @@ data class TimelineState(
     val foldersAndFeeds: Map<Folder?, List<Feed>> = emptyMap(),
     val itemState: Flow<PagingData<ItemWithFeed>> = emptyFlow(),
     val dialog: DialogState? = null,
-    val isAccountLocal: Boolean = false
+    val isAccountLocal: Boolean = false,
+    val hideReadAllFAB: Boolean = false
 ) {
 
     val showSubtitle = filters.subFilter != SubFilter.ALL

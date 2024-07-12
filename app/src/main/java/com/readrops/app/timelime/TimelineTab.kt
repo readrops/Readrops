@@ -289,19 +289,21 @@ object TimelineTab : Tab {
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) },
                 floatingActionButton = {
-                    FloatingActionButton(
-                        onClick = {
-                            if (state.filters.mainFilter == MainFilter.ALL) {
-                                viewModel.openDialog(DialogState.ConfirmDialog)
-                            } else {
-                                viewModel.setAllItemsRead()
+                    if (!state.hideReadAllFAB) {
+                        FloatingActionButton(
+                            onClick = {
+                                if (state.filters.mainFilter == MainFilter.ALL) {
+                                    viewModel.openDialog(DialogState.ConfirmDialog)
+                                } else {
+                                    viewModel.setAllItemsRead()
+                                }
                             }
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_done_all),
+                                contentDescription = null
+                            )
                         }
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_done_all),
-                            contentDescription = null
-                        )
                     }
                 },
             ) { paddingValues ->
