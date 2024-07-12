@@ -18,7 +18,7 @@
     <string name="add_feed_unknownhost_error">Site inconnu</string>
     <string name="by_author">par %1$s</string>
     <string name="read_time">%1$s min</string>
-    <string name="read_time_lower_than_1">Moins d\'une minute</string>
+    <string name="read_time_lower_than_1">&lt; 1 min</string>
     <string name="read_time_one_minute">1 min</string>
     <string name="share_article">Partager l\'article</string>
     <string name="open_url">Ouvrir le lien</string>

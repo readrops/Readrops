@@ -356,8 +356,9 @@ object TimelineTab : Tab {
                                                 onShare = {
                                                     viewModel.shareItem(itemWithFeed.item, context)
                                                 },
-                                                compactLayout = true
+                                                size = TimelineItemSize.LARGE
                                             )
+
                                         }
                                     }
                                 }
