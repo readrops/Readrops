@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
@@ -26,6 +27,7 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.readrops.app.BuildConfig
 import com.readrops.app.R
 import com.readrops.app.account.selection.adaptiveIconPainterResource
+import com.readrops.app.more.preferences.PreferencesScreen
 import com.readrops.app.util.components.IconText
 import com.readrops.app.util.components.SelectableIconText
 import com.readrops.app.util.openUrl
@@ -33,8 +35,10 @@ import com.readrops.app.util.theme.LargeSpacer
 import com.readrops.app.util.theme.MediumSpacer
 import com.readrops.app.util.theme.ShortSpacer
 import com.readrops.app.util.theme.spacing
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
-object MoreTab : Tab {
+object MoreTab : Tab, KoinComponent {
 
     override val options: TabOptions
         @Composable
@@ -127,32 +131,35 @@ object MoreTab : Tab {
                 }
             }
 
-            LargeSpacer()
+            MediumSpacer()
 
             SelectableIconText(
                 icon = painterResource(id = R.drawable.ic_settings),
                 text = stringResource(R.string.settings),
-                style = MaterialTheme.typography.titleMedium,
-                spacing = MaterialTheme.spacing.mediumSpacing,
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal),
+                spacing = MaterialTheme.spacing.largeSpacing,
                 padding = MaterialTheme.spacing.mediumSpacing,
-                onClick = { }
+                tint = MaterialTheme.colorScheme.primary,
+                onClick = { navigator.push(PreferencesScreen(get())) }
             )
 
             SelectableIconText(
                 icon = painterResource(id = R.drawable.ic_library),
                 text = stringResource(id = R.string.open_source_libraries),
-                style = MaterialTheme.typography.titleMedium,
-                spacing = MaterialTheme.spacing.mediumSpacing,
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal),
+                spacing = MaterialTheme.spacing.largeSpacing,
                 padding = MaterialTheme.spacing.mediumSpacing,
+                tint = MaterialTheme.colorScheme.primary,
                 onClick = { navigator.push(AboutLibrariesScreen()) }
             )
 
             SelectableIconText(
                 icon = painterResource(id = R.drawable.ic_donation),
                 text = stringResource(id = R.string.make_donation),
-                style = MaterialTheme.typography.titleMedium,
-                spacing = MaterialTheme.spacing.mediumSpacing,
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal),
+                spacing = MaterialTheme.spacing.largeSpacing,
                 padding = MaterialTheme.spacing.mediumSpacing,
+                tint = MaterialTheme.colorScheme.primary,
                 onClick = { }
             )
         }

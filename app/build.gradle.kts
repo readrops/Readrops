@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.palette)
     implementation(libs.workmanager)
     implementation(libs.encrypted.preferences)
+    implementation(libs.datastore)
 
     implementation(libs.jsoup)
     implementation(libs.jodatime)
