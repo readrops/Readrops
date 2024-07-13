@@ -177,4 +177,7 @@
     <string name="url">URL</string>
     <string name="unread">%1$d non-lu(s)</string>
     <string name="preferences">Paramètres</string>
+    <string name="item_view">Vue article</string>
+    <string name="timeline">Timeline</string>
+    <string name="hide_feeds_subtitle">Les flux sans nouveaux articles disparaîtront du menu tiroir</string>
 </resources>

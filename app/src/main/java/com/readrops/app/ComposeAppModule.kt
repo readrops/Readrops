@@ -15,6 +15,7 @@ import com.readrops.app.account.credentials.AccountCredentialsScreenModel
 import com.readrops.app.account.selection.AccountSelectionScreenModel
 import com.readrops.app.feeds.FeedScreenModel
 import com.readrops.app.item.ItemScreenModel
+import com.readrops.app.more.preferences.PreferencesScreenModel
 import com.readrops.app.notifications.NotificationsScreenModel
 import com.readrops.app.repositories.BaseRepository
 import com.readrops.app.repositories.FreshRSSRepository
@@ -50,6 +51,8 @@ val composeAppModule = module {
     }
 
     factory { (account: Account) -> NotificationsScreenModel(account, get()) }
+
+    factory { PreferencesScreenModel(get()) }
 
     single { GetFoldersWithFeeds(get()) }
 

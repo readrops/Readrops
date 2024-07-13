@@ -186,4 +186,7 @@
     <string name="url">URL</string>
     <string name="unread">%1$d unread</string>
     <string name="preferences">Preferences</string>
+    <string name="item_view">Article view</string>
+    <string name="timeline">Timeline</string>
+    <string name="hide_feeds_subtitle">Feeds with no left unread items will be hidden in the drawer</string>
 </resources>

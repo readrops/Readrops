@@ -36,7 +36,6 @@ import com.readrops.app.util.theme.MediumSpacer
 import com.readrops.app.util.theme.ShortSpacer
 import com.readrops.app.util.theme.spacing
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
 
 object MoreTab : Tab, KoinComponent {
 
@@ -140,7 +139,7 @@ object MoreTab : Tab, KoinComponent {
                 spacing = MaterialTheme.spacing.largeSpacing,
                 padding = MaterialTheme.spacing.mediumSpacing,
                 tint = MaterialTheme.colorScheme.primary,
-                onClick = { navigator.push(PreferencesScreen(get())) }
+                onClick = { navigator.push(PreferencesScreen()) }
             )
 
             SelectableIconText(

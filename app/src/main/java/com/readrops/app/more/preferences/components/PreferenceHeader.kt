@@ -15,6 +15,9 @@ fun PreferenceHeader(
         text = text,
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.secondary,
-        modifier = Modifier.padding(MaterialTheme.spacing.shortSpacing)
+        modifier = Modifier.padding(
+            horizontal = MaterialTheme.spacing.mediumSpacing,
+            vertical = MaterialTheme.spacing.shortSpacing
+        )
     )
 }

@@ -8,13 +8,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.readrops.app.util.Preference
 import kotlinx.coroutines.launch
 
 @Composable
 fun <T> ListPreferenceWidget(
     preference: Preference<T>,
+    selectedKey: T,
     entries: Map<T, String>,
     title: String,
     modifier: Modifier = Modifier,
@@ -22,7 +22,6 @@ fun <T> ListPreferenceWidget(
 ) {
     val coroutineScope = rememberCoroutineScope()
     var showDialog by remember { mutableStateOf(false) }
-    val selectedKey by preference.flow.collectAsStateWithLifecycle(initialValue = preference.default)
 
     if (showDialog) {
         val values = remember {
