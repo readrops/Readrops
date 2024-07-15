@@ -44,7 +44,7 @@ val composeAppModule = module {
 
     factory { AccountScreenModel(get()) }
 
-    factory { (itemId: Int) -> ItemScreenModel(get(), itemId) }
+    factory { (itemId: Int) -> ItemScreenModel(get(), itemId, get()) }
 
     factory { (accountType: Account, mode: AccountCredentialsScreenMode) ->
         AccountCredentialsScreenModel(accountType, mode, get())

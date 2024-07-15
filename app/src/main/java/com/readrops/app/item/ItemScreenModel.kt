@@ -13,6 +13,7 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import coil.imageLoader
 import coil.request.ImageRequest
 import com.readrops.app.repositories.BaseRepository
+import com.readrops.app.util.Preferences
 import com.readrops.db.Database
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
@@ -31,6 +32,7 @@ import java.io.FileOutputStream
 class ItemScreenModel(
     private val database: Database,
     private val itemId: Int,
+    private val preferences: Preferences,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : StateScreenModel<ItemState>(ItemState()), KoinComponent {
 
@@ -62,6 +64,20 @@ class ItemScreenModel(
                                 )
                             }
                         }
+                }
+        }
+
+        screenModelScope.launch(dispatcher) {
+            preferences.openLinksWith.flow
+                .collect { value ->
+                    mutableState.update {
+                        it.copy(
+                            openInExternalBrowser = when (value) {
+                                "external_navigator" -> true
+                                else -> false
+                            }
+                        )
+                    }
                 }
         }
     }
@@ -158,5 +174,6 @@ data class ItemState(
     val itemWithFeed: ItemWithFeed? = null,
     val bottomBarState: BottomBarState = BottomBarState(),
     val imageDialogUrl: String? = null,
-    val fileDownloadedEvent: Boolean = false
+    val fileDownloadedEvent: Boolean = false,
+    val openInExternalBrowser: Boolean = false
 )
