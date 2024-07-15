@@ -12,6 +12,7 @@ import com.readrops.app.base.TabScreenModel
 import com.readrops.app.repositories.ErrorResult
 import com.readrops.app.repositories.GetFoldersWithFeeds
 import com.readrops.app.sync.SyncWorker
+import com.readrops.app.util.Preferences
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
@@ -40,6 +41,7 @@ import kotlinx.coroutines.launch
 class TimelineScreenModel(
     private val database: Database,
     private val getFoldersWithFeeds: GetFoldersWithFeeds,
+    private val preferences: Preferences,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : TabScreenModel(database) {
 
@@ -105,6 +107,20 @@ class TimelineScreenModel(
                     it.copy(unreadNewItemsCount = count)
                 }
             }
+        }
+
+        screenModelScope.launch(dispatcher) {
+            preferences.timelineItemSize.flow
+                .collect { itemSize ->
+                    _timelineState.update {
+                        it.copy(
+                            itemSize = when (itemSize) {
+                                "compact" -> TimelineItemSize.COMPACT
+                                "regular" -> TimelineItemSize.REGULAR
+                                else -> TimelineItemSize.LARGE
+                            }
+                        ) }
+                }
         }
     }
 
@@ -362,7 +378,8 @@ data class TimelineState(
     val itemState: Flow<PagingData<ItemWithFeed>> = emptyFlow(),
     val dialog: DialogState? = null,
     val isAccountLocal: Boolean = false,
-    val hideReadAllFAB: Boolean = false
+    val hideReadAllFAB: Boolean = false,
+    val itemSize: TimelineItemSize = TimelineItemSize.LARGE
 ) {
 
     val showSubtitle = filters.subFilter != SubFilter.ALL

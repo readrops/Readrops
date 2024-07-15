@@ -36,7 +36,7 @@ import org.koin.dsl.module
 
 val composeAppModule = module {
 
-    factory { TimelineScreenModel(get(), get()) }
+    factory { TimelineScreenModel(get(), get(), get()) }
 
     factory { FeedScreenModel(get(), get(), get(), androidContext()) }
 

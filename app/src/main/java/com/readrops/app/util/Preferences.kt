@@ -54,6 +54,12 @@ class Preferences(
         key = stringPreferencesKey("open_links_with"),
         default = "navigator_view"
     )
+
+    val timelineItemSize = Preference(
+        dataStore = dataStore,
+        key = stringPreferencesKey("timeline_item_size"),
+        default = "large"
+    )
 }
 
 

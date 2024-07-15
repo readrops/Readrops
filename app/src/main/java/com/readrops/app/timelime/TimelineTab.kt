@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -87,7 +88,8 @@ object TimelineTab : Tab {
         val lazyListState = rememberLazyListState()
         val pullToRefreshState = rememberPullToRefreshState()
         val snackbarHostState = remember { SnackbarHostState() }
-        val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+        val topAppBarScrollBehavior =
+            TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
         LaunchedEffect(state.isRefreshing) {
             if (state.isRefreshing) {
@@ -337,7 +339,12 @@ object TimelineTab : Tab {
                                 LazyColumn(
                                     state = lazyListState,
                                     contentPadding = PaddingValues(vertical = MaterialTheme.spacing.shortSpacing),
-                                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.shortSpacing)
+                                    verticalArrangement = Arrangement.spacedBy(
+                                        if (state.itemSize == TimelineItemSize.COMPACT) {
+                                            0.dp
+                                        } else
+                                            MaterialTheme.spacing.shortSpacing
+                                    )
                                 ) {
                                     items(
                                         count = items.itemCount,
@@ -358,7 +365,7 @@ object TimelineTab : Tab {
                                                 onShare = {
                                                     viewModel.shareItem(itemWithFeed.item, context)
                                                 },
-                                                size = TimelineItemSize.LARGE
+                                                size = state.itemSize
                                             )
 
                                         }

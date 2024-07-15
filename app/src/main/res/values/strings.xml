@@ -189,4 +189,8 @@
     <string name="item_view">Article view</string>
     <string name="timeline">Timeline</string>
     <string name="hide_feeds_subtitle">Feeds with no left unread items will be hidden in the drawer</string>
+    <string name="compact">Compact</string>
+    <string name="regular">Regular</string>
+    <string name="large">Large</string>
+    <string name="item_size">Item size</string>
 </resources>

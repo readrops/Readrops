@@ -19,24 +19,29 @@ class PreferencesScreenModel(
 
     init {
         screenModelScope.launch(dispatcher) {
-            combine(
+            val flows = listOf(
                 preferences.theme.flow,
                 preferences.backgroundSynchronization.flow,
                 preferences.scrollRead.flow,
                 preferences.hideReadFeeds.flow,
-                preferences.openLinksWith.flow
-            ) { (theme, backgroundSync, scrollRead, hideReadFeeds, openLinksWith) ->
+                preferences.openLinksWith.flow,
+                preferences.timelineItemSize.flow
+            )
+
+            combine(
+                flows
+            ) { list ->
                 PreferencesScreenState.Loaded(
-                    themePref = (theme as String) to preferences.theme,
-                    backgroundSyncPref = (backgroundSync as String) to preferences.backgroundSynchronization,
-                    scrollReadPref = (scrollRead as Boolean) to preferences.scrollRead,
-                    hideReadFeeds = (hideReadFeeds as Boolean) to preferences.hideReadFeeds,
-                    openLinksWith = (openLinksWith as String) to preferences.openLinksWith
+                    themePref = (list[0] as String) to preferences.theme,
+                    backgroundSyncPref = (list[1] as String) to preferences.backgroundSynchronization,
+                    scrollReadPref = (list[2] as Boolean) to preferences.scrollRead,
+                    hideReadFeeds = (list[3] as Boolean) to preferences.hideReadFeeds,
+                    openLinksWith = (list[4] as String) to preferences.openLinksWith,
+                    timelineItemSize = (list[5] as String) to preferences.timelineItemSize
                 )
             }.collect { theme ->
                 mutableState.update { theme }
             }
-
         }
     }
 
@@ -51,7 +56,8 @@ sealed class PreferencesScreenState {
         val backgroundSyncPref: PreferenceState<String>,
         val scrollReadPref: PreferenceState<Boolean>,
         val hideReadFeeds: PreferenceState<Boolean>,
-        val openLinksWith: PreferenceState<String>
+        val openLinksWith: PreferenceState<String>,
+        val timelineItemSize: PreferenceState<String>
     ) : PreferencesScreenState()
 
 }

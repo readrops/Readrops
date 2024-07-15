@@ -180,4 +180,8 @@
     <string name="item_view">Vue article</string>
     <string name="timeline">Timeline</string>
     <string name="hide_feeds_subtitle">Les flux sans nouveaux articles disparaîtront du menu tiroir</string>
+    <string name="compact">Compact</string>
+    <string name="regular">Normal</string>
+    <string name="large">Large</string>
+    <string name="item_size">Taille des items</string>
 </resources>

@@ -98,6 +98,18 @@ class PreferencesScreen : AndroidScreen() {
 
                             PreferenceHeader(text = stringResource(id = R.string.timeline))
 
+                            ListPreferenceWidget(
+                                preference = loadedState.timelineItemSize.second,
+                                selectedKey = loadedState.timelineItemSize.first,
+                                entries = mapOf(
+                                    "compact" to stringResource(id = R.string.compact),
+                                    "regular" to stringResource(id = R.string.regular),
+                                    "large" to stringResource(id = R.string.large)
+                                ),
+                                title = stringResource(id = R.string.item_size),
+                                onValueChange = {}
+                            )
+
                             SwitchPreferenceWidget(
                                 preference = loadedState.hideReadFeeds.second,
                                 isChecked = loadedState.hideReadFeeds.first,
