@@ -1,5 +1,6 @@
 package com.readrops.app
 
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,6 +10,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.surfaceColorAtElevation
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.toArgb
 import cafe.adriel.voyager.navigator.CurrentScreen
 import cafe.adriel.voyager.navigator.Navigator
@@ -16,7 +19,11 @@ import cafe.adriel.voyager.navigator.NavigatorDisposeBehavior
 import com.readrops.app.account.selection.AccountSelectionScreen
 import com.readrops.app.account.selection.AccountSelectionScreenModel
 import com.readrops.app.home.HomeScreen
+import com.readrops.app.util.Preferences
 import com.readrops.app.util.theme.ReadropsTheme
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import org.koin.androidx.compose.KoinAndroidContext
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.core.component.KoinComponent
@@ -31,9 +38,22 @@ class MainActivity : ComponentActivity(), KoinComponent {
         val screenModel = get<AccountSelectionScreenModel>()
         val accountExists = screenModel.accountExists()
 
+        val preferences = get<Preferences>()
+
+        val darkFlag = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        val initialUseDarkTheme = runBlocking {
+            useDarkTheme(preferences.theme.flow.first(), darkFlag)
+        }
+
         setContent {
             KoinAndroidContext {
-                ReadropsTheme {
+                val useDarkTheme by preferences.theme.flow
+                    .map { mode -> useDarkTheme(mode, darkFlag) }
+                    .collectAsState(initial = initialUseDarkTheme)
+
+                ReadropsTheme(
+                    useDarkTheme = useDarkTheme
+                ) {
                     val navigationBarElevation = NavigationBarDefaults.Elevation
 
                     enableEdgeToEdge(
@@ -57,6 +77,14 @@ class MainActivity : ComponentActivity(), KoinComponent {
                     }
                 }
             }
+        }
+    }
+
+    private fun useDarkTheme(mode: String, darkFlag: Int): Boolean {
+        return when (mode) {
+            "light" -> false
+            "dark" -> true
+            else -> darkFlag == Configuration.UI_MODE_NIGHT_YES
         }
     }
 }
