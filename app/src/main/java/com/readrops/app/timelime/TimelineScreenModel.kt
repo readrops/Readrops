@@ -79,7 +79,9 @@ class TimelineScreenModel(
                                 }
                             }
                             .cachedIn(screenModelScope),
-                        isAccountLocal = account.isLocal
+                        isAccountLocal = account.isLocal,
+                        lastFirstVisibleItemIndex = 0,
+                        scrollToTop = true
                     )
                 }
 
@@ -110,16 +112,21 @@ class TimelineScreenModel(
         }
 
         screenModelScope.launch(dispatcher) {
-            preferences.timelineItemSize.flow
-                .collect { itemSize ->
+            combine(
+                preferences.timelineItemSize.flow,
+                preferences.scrollRead.flow
+            ) { itemSize, scrollRead -> itemSize to scrollRead }
+                .collect { (itemSize, scrollRead) ->
                     _timelineState.update {
                         it.copy(
                             itemSize = when (itemSize) {
                                 "compact" -> TimelineItemSize.COMPACT
                                 "regular" -> TimelineItemSize.REGULAR
                                 else -> TimelineItemSize.LARGE
-                            }
-                        ) }
+                            },
+                            markReadOnScroll = scrollRead
+                        )
+                    }
                 }
         }
     }
@@ -137,7 +144,7 @@ class TimelineScreenModel(
                             _timelineState.update {
                                 it.copy(
                                     isRefreshing = false,
-                                    endSynchronizing = true
+                                    scrollToTop = true
                                 )
                             }
                         }
@@ -196,7 +203,7 @@ class TimelineScreenModel(
         _timelineState.update {
             it.copy(
                 isRefreshing = false,
-                endSynchronizing = true,
+                scrollToTop = true,
                 hideReadAllFAB = false,
                 localSyncErrors = if (results!!.second.isNotEmpty()) results.second else null
             )
@@ -351,12 +358,16 @@ class TimelineScreenModel(
         }
     }
 
-    fun resetEndSynchronizing() {
-        _timelineState.update { it.copy(endSynchronizing = false) }
+    fun resetScrollToTop() {
+        _timelineState.update { it.copy(scrollToTop = false) }
     }
 
     fun resetSyncError() {
         _timelineState.update { it.copy(syncError = null) }
+    }
+
+    fun updateLastFirstVisibleItemIndex(index: Int) {
+        _timelineState.update { it.copy(lastFirstVisibleItemIndex = index) }
     }
 }
 
@@ -368,7 +379,7 @@ data class TimelineState(
     val unreadNewItemsCount: Int = 0,
     val feedCount: Int = 0,
     val feedMax: Int = 0,
-    val endSynchronizing: Boolean = false,
+    val scrollToTop: Boolean = false,
     val localSyncErrors: ErrorResult? = null,
     val syncError: Exception? = null,
     val filters: QueryFilters = QueryFilters(),
@@ -379,7 +390,9 @@ data class TimelineState(
     val dialog: DialogState? = null,
     val isAccountLocal: Boolean = false,
     val hideReadAllFAB: Boolean = false,
-    val itemSize: TimelineItemSize = TimelineItemSize.LARGE
+    val itemSize: TimelineItemSize = TimelineItemSize.LARGE,
+    val lastFirstVisibleItemIndex: Int = 0,
+    val markReadOnScroll: Boolean = false
 ) {
 
     val showSubtitle = filters.subFilter != SubFilter.ALL
@@ -388,7 +401,7 @@ data class TimelineState(
 }
 
 sealed interface DialogState {
-    object ConfirmDialog : DialogState
-    object FilterSheet : DialogState
+    data object ConfirmDialog : DialogState
+    data object FilterSheet : DialogState
     class ErrorList(val errorResult: ErrorResult) : DialogState
 }

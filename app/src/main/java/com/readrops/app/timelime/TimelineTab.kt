@@ -34,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -64,6 +65,7 @@ import com.readrops.app.util.theme.spacing
 import com.readrops.db.filters.ListSortType
 import com.readrops.db.filters.MainFilter
 import com.readrops.db.filters.SubFilter
+import kotlinx.coroutines.flow.filter
 
 
 object TimelineTab : Tab {
@@ -81,15 +83,16 @@ object TimelineTab : Tab {
         val navigator = LocalNavigator.currentOrThrow
         val context = LocalContext.current
 
-        val viewModel = getScreenModel<TimelineScreenModel>()
-        val state by viewModel.timelineState.collectAsStateWithLifecycle()
+        val screenModel = getScreenModel<TimelineScreenModel>()
+        val state by screenModel.timelineState.collectAsStateWithLifecycle()
         val items = state.itemState.collectAsLazyPagingItems()
 
         val lazyListState = rememberLazyListState()
         val pullToRefreshState = rememberPullToRefreshState()
         val snackbarHostState = remember { SnackbarHostState() }
+        val topAppBarState = rememberTopAppBarState()
         val topAppBarScrollBehavior =
-            TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+            TopAppBarDefaults.pinnedScrollBehavior(topAppBarState)
 
         LaunchedEffect(state.isRefreshing) {
             if (state.isRefreshing) {
@@ -103,14 +106,15 @@ object TimelineTab : Tab {
         // so we need to listen to the internal state change to trigger the refresh
         LaunchedEffect(pullToRefreshState.isRefreshing) {
             if (pullToRefreshState.isRefreshing && !state.isRefreshing) {
-                viewModel.refreshTimeline(context)
+                screenModel.refreshTimeline(context)
             }
         }
 
-        LaunchedEffect(state.endSynchronizing) {
-            if (state.endSynchronizing) {
-                lazyListState.animateScrollToItem(0)
-                viewModel.resetEndSynchronizing()
+        LaunchedEffect(state.scrollToTop) {
+            if (state.scrollToTop) {
+                lazyListState.scrollToItem(0)
+                screenModel.resetScrollToTop()
+                topAppBarState.contentOffset = 0f
             }
         }
 
@@ -118,9 +122,9 @@ object TimelineTab : Tab {
             initialValue = DrawerValue.Closed,
             confirmStateChange = {
                 if (it == DrawerValue.Closed) {
-                    viewModel.closeDrawer()
+                    screenModel.closeDrawer()
                 } else {
-                    viewModel.openDrawer()
+                    screenModel.openDrawer()
                 }
 
                 true
@@ -129,7 +133,7 @@ object TimelineTab : Tab {
 
         BackHandler(
             enabled = state.isDrawerOpen,
-            onBack = { viewModel.closeDrawer() }
+            onBack = { screenModel.closeDrawer() }
         )
 
         LaunchedEffect(state.isDrawerOpen) {
@@ -152,10 +156,10 @@ object TimelineTab : Tab {
                 )
 
                 if (action == SnackbarResult.ActionPerformed) {
-                    viewModel.openDialog(DialogState.ErrorList(state.localSyncErrors!!))
+                    screenModel.openDialog(DialogState.ErrorList(state.localSyncErrors!!))
                 } else {
                     // remove errors from state
-                    viewModel.closeDialog(DialogState.ErrorList(state.localSyncErrors!!))
+                    screenModel.closeDialog(DialogState.ErrorList(state.localSyncErrors!!))
                 }
             }
         }
@@ -163,7 +167,7 @@ object TimelineTab : Tab {
         LaunchedEffect(state.syncError) {
             if (state.syncError != null) {
                 snackbarHostState.showSnackbar(ErrorMessage.get(state.syncError!!, context))
-                viewModel.resetSyncError()
+                screenModel.resetSyncError()
             }
         }
 
@@ -175,10 +179,10 @@ object TimelineTab : Tab {
                     icon = painterResource(id = R.drawable.ic_rss_feed_grey),
                     confirmText = "Validate",
                     dismissText = "Cancel",
-                    onDismiss = { viewModel.closeDialog() },
+                    onDismiss = { screenModel.closeDialog() },
                     onConfirm = {
-                        viewModel.closeDialog()
-                        viewModel.setAllItemsRead()
+                        screenModel.closeDialog()
+                        screenModel.setAllItemsRead()
                     }
                 )
             }
@@ -187,24 +191,24 @@ object TimelineTab : Tab {
                 FilterBottomSheet(
                     filters = state.filters,
                     onSetShowReadItemsState = {
-                        viewModel.setShowReadItemsState(!state.filters.showReadItems)
+                        screenModel.setShowReadItemsState(!state.filters.showReadItems)
                     },
                     onSetSortTypeState = {
-                        viewModel.setSortTypeState(
+                        screenModel.setSortTypeState(
                             if (state.filters.sortType == ListSortType.NEWEST_TO_OLDEST)
                                 ListSortType.OLDEST_TO_NEWEST
                             else
                                 ListSortType.NEWEST_TO_OLDEST
                         )
                     },
-                    onDismiss = { viewModel.closeDialog() }
+                    onDismiss = { screenModel.closeDialog() }
                 )
             }
 
             is DialogState.ErrorList -> {
                 ErrorListDialog(
                     errorResult = dialog.errorResult,
-                    onDismiss = { viewModel.closeDialog(dialog) }
+                    onDismiss = { screenModel.closeDialog(dialog) }
                 )
             }
 
@@ -217,13 +221,13 @@ object TimelineTab : Tab {
                 TimelineDrawer(
                     state = state,
                     onClickDefaultItem = {
-                        viewModel.updateDrawerDefaultItem(it)
+                        screenModel.updateDrawerDefaultItem(it)
                     },
                     onFolderClick = {
-                        viewModel.updateDrawerFolderSelection(it)
+                        screenModel.updateDrawerFolderSelection(it)
                     },
                     onFeedClick = {
-                        viewModel.updateDrawerFeedSelection(it)
+                        screenModel.updateDrawerFeedSelection(it)
                     }
                 )
             }
@@ -259,7 +263,7 @@ object TimelineTab : Tab {
                         },
                         navigationIcon = {
                             IconButton(
-                                onClick = { viewModel.openDrawer() }
+                                onClick = { screenModel.openDrawer() }
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Menu,
@@ -269,7 +273,7 @@ object TimelineTab : Tab {
                         },
                         actions = {
                             IconButton(
-                                onClick = { viewModel.openDialog(DialogState.FilterSheet) }
+                                onClick = { screenModel.openDialog(DialogState.FilterSheet) }
                             ) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_filter_list),
@@ -278,7 +282,7 @@ object TimelineTab : Tab {
                             }
 
                             IconButton(
-                                onClick = { viewModel.refreshTimeline(context) }
+                                onClick = { screenModel.refreshTimeline(context) }
                             ) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_sync),
@@ -295,9 +299,9 @@ object TimelineTab : Tab {
                         FloatingActionButton(
                             onClick = {
                                 if (state.filters.mainFilter == MainFilter.ALL) {
-                                    viewModel.openDialog(DialogState.ConfirmDialog)
+                                    screenModel.openDialog(DialogState.ConfirmDialog)
                                 } else {
-                                    viewModel.setAllItemsRead()
+                                    screenModel.setAllItemsRead()
                                 }
                             }
                         ) {
@@ -336,9 +340,28 @@ object TimelineTab : Tab {
 
                         else -> {
                             if (items.itemCount > 0) {
+                                LaunchedEffect(Unit) {
+                                    snapshotFlow { lazyListState.firstVisibleItemIndex }
+                                        .filter { it > state.lastFirstVisibleItemIndex }
+                                        .collect {
+                                            val item = items[state.lastFirstVisibleItemIndex]!!.item
+                                            if (!item.isRead && state.markReadOnScroll) {
+                                                screenModel.setItemRead(item)
+                                            }
+
+                                            screenModel.updateLastFirstVisibleItemIndex(it)
+                                        }
+                                }
+
                                 LazyColumn(
                                     state = lazyListState,
-                                    contentPadding = PaddingValues(vertical = MaterialTheme.spacing.shortSpacing),
+                                    contentPadding = PaddingValues(
+                                        vertical = if (state.itemSize == TimelineItemSize.COMPACT) {
+                                            0.dp
+                                        } else {
+                                            MaterialTheme.spacing.shortSpacing
+                                        }
+                                    ),
                                     verticalArrangement = Arrangement.spacedBy(
                                         if (state.itemSize == TimelineItemSize.COMPACT) {
                                             0.dp
@@ -356,14 +379,14 @@ object TimelineTab : Tab {
                                             TimelineItem(
                                                 itemWithFeed = itemWithFeed,
                                                 onClick = {
-                                                    viewModel.setItemRead(itemWithFeed.item)
+                                                    screenModel.setItemRead(itemWithFeed.item)
                                                     navigator.push(ItemScreen(itemWithFeed.item.id))
                                                 },
                                                 onFavorite = {
-                                                    viewModel.updateStarState(itemWithFeed.item)
+                                                    screenModel.updateStarState(itemWithFeed.item)
                                                 },
                                                 onShare = {
-                                                    viewModel.shareItem(itemWithFeed.item, context)
+                                                    screenModel.shareItem(itemWithFeed.item, context)
                                                 },
                                                 size = state.itemSize
                                             )
