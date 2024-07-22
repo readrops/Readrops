@@ -2,8 +2,12 @@ package com.readrops.db.dao
 
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.RawQuery
 import androidx.room.Transaction
+import androidx.sqlite.db.SupportSQLiteQuery
+import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
+import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
 import com.readrops.db.pojo.FolderWithFeed
 import kotlinx.coroutines.flow.Flow
@@ -11,20 +15,9 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface FolderDao : BaseDao<Folder> {
 
-    @Query("""
-        Select Feed.id As feedId, Feed.name As feedName, Feed.icon_url As feedIcon, Feed.url As feedUrl, 
-            Feed.siteUrl As feedSiteUrl, Feed.description as feedDescription, Feed.remoteId as feedRemoteId, Folder.id As folderId, 
-            Folder.name As folderName, Feed.account_id as accountId, Folder.remoteId as folderRemoteId 
-            From Feed Left Join Folder On Folder.id = Feed.folder_id
-            Where Feed.folder_id is NULL OR Feed.folder_id is NOT NULL And Feed.id is NULL Or Feed.id is NOT NULL And Feed.account_id = :accountId Group By Feed.id 
-        UNION ALL
-        Select Feed.id As feedId, Feed.name As feedName, Feed.icon_url As feedIcon, Feed.url As feedUrl, 
-            Feed.siteUrl As feedSiteUrl, Feed.description as feedDescription, Feed.remoteId as feedRemoteId, Folder.id As folderId, 
-            Folder.name As folderName, Folder.account_id as accountId, Folder.remoteId as folderRemoteId 
-            From Folder Left Join Feed On Folder.id = Feed.folder_id
-            Where  Feed.id is NULL And Folder.account_id = :accountId
-    """)
-    fun selectFoldersAndFeeds(accountId: Int): Flow<List<FolderWithFeed>>
+    // TODO react to Item changes when this table is not part of the query might be a perf issue
+    @RawQuery(observedEntities = [Folder::class, Feed::class, Item::class])
+    fun selectFoldersAndFeeds(query: SupportSQLiteQuery): Flow<List<FolderWithFeed>>
 
     @Query("Select * From Folder Where account_id = :accountId")
     fun selectFolders(accountId: Int): Flow<List<Folder>>

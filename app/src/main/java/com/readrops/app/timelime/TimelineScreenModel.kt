@@ -85,11 +85,15 @@ class TimelineScreenModel(
                     )
                 }
 
-                getFoldersWithFeeds.get(
-                    account.id,
-                    filters.mainFilter,
-                    account.config.useSeparateState
-                )
+                preferences.hideReadFeeds.flow
+                    .flatMapLatest { hideReadFeeds ->
+                        getFoldersWithFeeds.get(
+                            accountId = account.id,
+                            mainFilter = filters.mainFilter,
+                            useSeparateState = account.config.useSeparateState,
+                            hideReadFeeds = hideReadFeeds
+                        )
+                    }
                     .collect { foldersAndFeeds ->
                         _timelineState.update {
                             it.copy(
