@@ -48,6 +48,11 @@ class TimelineScreenModel(
     private val _timelineState = MutableStateFlow(TimelineState())
     val timelineState = _timelineState.asStateFlow()
 
+    // separate this from main Timeline state for performances
+    // as it will be very often updated
+    private val _listIndexState = MutableStateFlow(0)
+    val listIndexState = _listIndexState.asStateFlow()
+
     private val filters = MutableStateFlow(_timelineState.value.filters)
 
     init {
@@ -80,10 +85,11 @@ class TimelineScreenModel(
                             }
                             .cachedIn(screenModelScope),
                         isAccountLocal = account.isLocal,
-                        lastFirstVisibleItemIndex = 0,
                         scrollToTop = true
                     )
                 }
+
+                _listIndexState.update { 0 }
 
                 preferences.hideReadFeeds.flow
                     .flatMapLatest { hideReadFeeds ->
@@ -371,7 +377,7 @@ class TimelineScreenModel(
     }
 
     fun updateLastFirstVisibleItemIndex(index: Int) {
-        _timelineState.update { it.copy(lastFirstVisibleItemIndex = index) }
+        _listIndexState.update { index }
     }
 }
 
@@ -395,7 +401,6 @@ data class TimelineState(
     val isAccountLocal: Boolean = false,
     val hideReadAllFAB: Boolean = false,
     val itemSize: TimelineItemSize = TimelineItemSize.LARGE,
-    val lastFirstVisibleItemIndex: Int = 0,
     val markReadOnScroll: Boolean = false
 ) {
 

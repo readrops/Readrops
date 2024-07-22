@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -65,6 +66,7 @@ import com.readrops.app.util.theme.spacing
 import com.readrops.db.filters.ListSortType
 import com.readrops.db.filters.MainFilter
 import com.readrops.db.filters.SubFilter
+import com.readrops.db.pojo.ItemWithFeed
 import kotlinx.coroutines.flow.filter
 
 
@@ -340,18 +342,12 @@ object TimelineTab : Tab {
 
                         else -> {
                             if (items.itemCount > 0) {
-                                LaunchedEffect(Unit) {
-                                    snapshotFlow { lazyListState.firstVisibleItemIndex }
-                                        .filter { it > state.lastFirstVisibleItemIndex }
-                                        .collect {
-                                            val item = items[state.lastFirstVisibleItemIndex]!!.item
-                                            if (!item.isRead && state.markReadOnScroll) {
-                                                screenModel.setItemRead(item)
-                                            }
-
-                                            screenModel.updateLastFirstVisibleItemIndex(it)
-                                        }
-                                }
+                                MarkItemsRead(
+                                    lazyListState = lazyListState,
+                                    items = items,
+                                    markReadOnScroll = state.markReadOnScroll,
+                                    screenModel = screenModel
+                                )
 
                                 LazyColumn(
                                     state = lazyListState,
@@ -420,6 +416,48 @@ object TimelineTab : Tab {
                     }
                 }
             }
+        }
+    }
+
+    @Composable
+    private fun MarkItemsRead(
+        lazyListState: LazyListState,
+        items: LazyPagingItems<ItemWithFeed>,
+        markReadOnScroll: Boolean,
+        screenModel: TimelineScreenModel
+    ) {
+        val lastFirstVisibleItemIndex by screenModel.listIndexState.collectAsStateWithLifecycle()
+
+        LaunchedEffect(Unit) {
+            snapshotFlow { lazyListState.firstVisibleItemIndex }
+                .filter {
+                    if (it < lastFirstVisibleItemIndex) {
+                        screenModel.updateLastFirstVisibleItemIndex(it)
+                    }
+
+                    it > lastFirstVisibleItemIndex
+                }
+                .collect { newLastFirstVisibleItemIndex ->
+                    if (newLastFirstVisibleItemIndex - lastFirstVisibleItemIndex > 1) {
+                        val difference = newLastFirstVisibleItemIndex - lastFirstVisibleItemIndex
+
+                        for (subCount in 0 until difference) {
+                            val item = items[lastFirstVisibleItemIndex + subCount]?.item
+
+                            if (item != null && !item.isRead && markReadOnScroll) {
+                                screenModel.setItemRead(item)
+                            }
+                        }
+                    } else {
+                        val item = items[lastFirstVisibleItemIndex]?.item
+
+                        if (item != null && !item.isRead && markReadOnScroll) {
+                            screenModel.setItemRead(item)
+                        }
+                    }
+
+                    screenModel.updateLastFirstVisibleItemIndex(newLastFirstVisibleItemIndex)
+                }
         }
     }
 }
