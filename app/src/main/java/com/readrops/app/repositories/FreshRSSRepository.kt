@@ -3,8 +3,8 @@ package com.readrops.app.repositories
 import com.readrops.api.services.Credentials
 import com.readrops.api.services.SyncResult
 import com.readrops.api.services.SyncType
-import com.readrops.api.services.freshrss.FreshRSSSyncData
 import com.readrops.api.services.freshrss.FreshRSSDataSource
+import com.readrops.api.services.freshrss.FreshRSSSyncData
 import com.readrops.api.utils.AuthInterceptor
 import com.readrops.app.util.Utils
 import com.readrops.db.Database
@@ -38,7 +38,7 @@ class FreshRSSRepository(
 
     override suspend fun synchronize(
         selectedFeeds: List<Feed>,
-        onUpdate: (Feed) -> Unit
+        onUpdate: suspend (Feed) -> Unit
     ): Pair<SyncResult, ErrorResult> = throw NotImplementedError("This method can't be called here")
 
     override suspend fun synchronize(): SyncResult {
@@ -86,7 +86,7 @@ class FreshRSSRepository(
         newFeeds: List<Feed>,
         onUpdate: (Feed) -> Unit
     ): ErrorResult {
-        val errors = mutableMapOf<Feed, Exception>()
+        val errors = hashMapOf<Feed, Exception>()
 
         for (newFeed in newFeeds) {
             onUpdate(newFeed)

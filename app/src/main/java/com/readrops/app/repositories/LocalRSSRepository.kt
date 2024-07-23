@@ -29,9 +29,9 @@ class LocalRSSRepository(
 
     override suspend fun synchronize(
         selectedFeeds: List<Feed>,
-        onUpdate: (Feed) -> Unit
+        onUpdate: suspend (Feed) -> Unit
     ): Pair<SyncResult, ErrorResult> {
-        val errors = mutableMapOf<Feed, Exception>()
+        val errors = hashMapOf<Feed, Exception>()
         val syncResult = SyncResult()
 
         val feeds = selectedFeeds.ifEmpty {
@@ -73,7 +73,7 @@ class LocalRSSRepository(
         newFeeds: List<Feed>,
         onUpdate: (Feed) -> Unit
     ): ErrorResult = withContext(Dispatchers.IO) {
-        val errors = mutableMapOf<Feed, Exception>()
+        val errors = hashMapOf<Feed, Exception>()
 
         for (newFeed in newFeeds) {
             onUpdate(newFeed)

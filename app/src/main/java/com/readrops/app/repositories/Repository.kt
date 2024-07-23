@@ -8,7 +8,7 @@ import com.readrops.db.entities.Item
 import com.readrops.db.entities.ItemState
 import com.readrops.db.entities.account.Account
 
-typealias ErrorResult = Map<Feed, Exception>
+typealias ErrorResult = HashMap<Feed, Exception>
 
 interface Repository {
 
@@ -26,7 +26,7 @@ interface Repository {
      */
     suspend fun synchronize(
         selectedFeeds: List<Feed>,
-        onUpdate: (Feed) -> Unit
+        onUpdate: suspend (Feed) -> Unit
     ): Pair<SyncResult, ErrorResult>
 
     /**
@@ -206,7 +206,7 @@ abstract class BaseRepository(
         foldersAndFeeds: Map<Folder?, List<Feed>>,
         onUpdate: (Feed) -> Unit
     ): ErrorResult {
-        val errors = mutableMapOf<Feed, Exception>()
+        val errors = hashMapOf<Feed, Exception>()
 
         for ((folder, feeds) in foldersAndFeeds) {
             if (folder != null) {

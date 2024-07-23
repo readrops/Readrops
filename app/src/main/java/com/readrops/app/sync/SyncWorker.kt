@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
+import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -16,8 +17,11 @@ import com.readrops.api.services.SyncResult
 import com.readrops.app.R
 import com.readrops.app.ReadropsApp
 import com.readrops.app.repositories.BaseRepository
+import com.readrops.app.repositories.ErrorResult
 import com.readrops.app.util.FeedColors
+import com.readrops.app.util.putSerializable
 import com.readrops.db.Database
+import com.readrops.db.entities.account.Account
 import kotlinx.coroutines.flow.first
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -34,7 +38,7 @@ class SyncWorker(
     @SuppressLint("MissingPermission")
     override suspend fun doWork(): Result {
         val sharedPreferences = get<SharedPreferences>()
-        var result = Result.success(workDataOf(END_SYNC_KEY to true))
+        var workResult = Result.success(workDataOf(END_SYNC_KEY to true))
 
         try {
             require(notificationManager.areNotificationsEnabled())
@@ -47,11 +51,18 @@ class SyncWorker(
                     .setStyle(NotificationCompat.BigTextStyle())
                     .setOnlyAlertOnce(true)
 
-            val accounts = database.accountDao().selectAllAccounts().first()
+            val accountId = inputData.getInt(ACCOUNT_ID_KEY, 0)
+            val accounts = if (accountId == 0) {
+                database.accountDao().selectAllAccounts().first()
+            } else {
+                listOf(database.accountDao().select(accountId))
+            }
 
             for (account in accounts) {
-                account.login = sharedPreferences.getString(account.loginKey, null)
-                account.password = sharedPreferences.getString(account.passwordKey, null)
+                if (!account.isLocal) {
+                    account.login = sharedPreferences.getString(account.loginKey, null)
+                    account.password = sharedPreferences.getString(account.passwordKey, null)
+                }
 
                 val repository = get<BaseRepository> { parametersOf(account) }
 
@@ -63,21 +74,81 @@ class SyncWorker(
                 )
                 notificationManager.notify(SYNC_NOTIFICATION_ID, notificationBuilder.build())
 
-                val syncResult = repository.synchronize()
-                fetchFeedColors(syncResult, notificationBuilder)
+                if (account.isLocal) {
+                    val result = refreshLocalAccount(repository, account)
+
+                    if (result.second.isNotEmpty()) {
+                        workResult = Result.success(
+                            workDataOf(END_SYNC_KEY to true)
+                                .putSerializable(LOCAL_SYNC_ERRORS_KEY, result.second)
+                        )
+                    }
+                } else {
+                    val syncResult = repository.synchronize()
+                    fetchFeedColors(syncResult, notificationBuilder)
+                }
             }
         } catch (e: Exception) {
             Log.e(TAG, "${e.message}")
-            result = Result.failure(workDataOf(SYNC_FAILURE_KEY to true))
+            workResult = Result.failure(
+                workDataOf(SYNC_FAILURE_KEY to true)
+                    .putSerializable(SYNC_FAILURE_EXCEPTION_KEY, e)
+            )
         } finally {
             notificationManager.cancel(SYNC_NOTIFICATION_ID)
+        }
+
+        return workResult
+    }
+
+    private suspend fun refreshLocalAccount(
+        repository: BaseRepository,
+        account: Account
+    ): Pair<SyncResult, ErrorResult> {
+        val feedId = inputData.getInt(FEED_ID_KEY, 0)
+        val folderId = inputData.getInt(FOLDER_ID_KEY, 0)
+
+        val feeds = when {
+            feedId > 0 -> listOf(database.feedDao().selectFeed(feedId))
+            folderId > 0 -> database.feedDao().selectFeedsByFolder(folderId)
+            else -> listOf()
+        }
+
+        var feedCount = 0
+        val feedMax = if (feeds.isNotEmpty()) {
+            feeds.size
+        } else {
+            database.feedDao().selectFeedCount(account.id)
+        }
+
+        val result = repository.synchronize(
+            selectedFeeds = feeds,
+            onUpdate = { feed ->
+                setProgress(
+                    workDataOf(
+                        FEED_NAME_KEY to feed.name,
+                        FEED_MAX_KEY to feedMax,
+                        FEED_COUNT_KEY to ++feedCount
+                    )
+                )
+            }
+        )
+
+        if (result.second.isNotEmpty()) {
+            Log.e(
+                TAG,
+                "refreshing local account ${account.accountName}: ${result.second.size} errors"
+            )
         }
 
         return result
     }
 
     @SuppressLint("MissingPermission")
-    private suspend fun fetchFeedColors(syncResult: SyncResult, notificationBuilder: NotificationCompat.Builder) {
+    private suspend fun fetchFeedColors(
+        syncResult: SyncResult,
+        notificationBuilder: NotificationCompat.Builder
+    ) {
         notificationBuilder.setContentTitle(applicationContext.getString(R.string.get_feeds_colors))
 
         for ((index, feedId) in syncResult.newFeedIds.withIndex()) {
@@ -88,7 +159,8 @@ class SyncWorker(
             notificationManager.notify(SYNC_NOTIFICATION_ID, notificationBuilder.build())
 
             try {
-                val color = FeedColors.getFeedColor(syncResult.feeds.first { it.id == feedId.toInt() }.iconUrl!!)
+                val color =
+                    FeedColors.getFeedColor(syncResult.feeds.first { it.id == feedId.toInt() }.iconUrl!!)
                 database.feedDao().updateFeedColor(feedId.toInt(), color)
             } catch (e: Exception) {
                 Log.e(TAG, "$feedName: ${e.message}")
@@ -104,10 +176,19 @@ class SyncWorker(
 
         const val END_SYNC_KEY = "END_SYNC"
         const val SYNC_FAILURE_KEY = "SYNC_FAILURE"
+        const val SYNC_FAILURE_EXCEPTION_KEY = "SYNC_FAILURE_EXCEPTION"
+        const val ACCOUNT_ID_KEY = "ACCOUNT_ID"
+        const val FEED_ID_KEY = "FEED_ID"
+        const val FOLDER_ID_KEY = "FOLDER_ID"
+        const val FEED_NAME_KEY = "FEED_NAME"
+        const val FEED_MAX_KEY = "FEED_MAX"
+        const val FEED_COUNT_KEY = "FEED_COUNT"
+        const val LOCAL_SYNC_ERRORS_KEY = "LOCAL_SYNC_ERRORS"
 
-        suspend fun startNow(context: Context, onUpdate: (WorkInfo) -> Unit) {
+        suspend fun startNow(context: Context, data: Data, onUpdate: (WorkInfo) -> Unit) {
             val request = OneTimeWorkRequestBuilder<SyncWorker>()
                 .addTag(TAG)
+                .setInputData(data)
                 .build()
 
             WorkManager.getInstance(context).apply {

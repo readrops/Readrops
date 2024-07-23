@@ -7,12 +7,14 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.work.workDataOf
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.readrops.app.base.TabScreenModel
 import com.readrops.app.repositories.ErrorResult
 import com.readrops.app.repositories.GetFoldersWithFeeds
 import com.readrops.app.sync.SyncWorker
 import com.readrops.app.util.Preferences
+import com.readrops.app.util.getSerializable
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
@@ -141,82 +143,68 @@ class TimelineScreenModel(
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun refreshTimeline(context: Context) {
         screenModelScope.launch(dispatcher) {
-            if (currentAccount!!.isLocal) {
-                refreshLocalAccount()
+            val filterPair = with(filters.value) {
+                 when (subFilter) {
+                    SubFilter.FEED -> SyncWorker.FEED_ID_KEY to filterFeedId
+                    SubFilter.FOLDER -> SyncWorker.FOLDER_ID_KEY to filterFolderId
+                    else -> null
+                }
+            }
+            val accountPair = SyncWorker.ACCOUNT_ID_KEY to currentAccount!!.id
+
+            val workData = if (filterPair != null) {
+                workDataOf(filterPair, accountPair)
             } else {
-                _timelineState.update { it.copy(isRefreshing = true) }
+                workDataOf(accountPair)
+            }
 
-                SyncWorker.startNow(context) { data ->
-                    when {
-                        data.outputData.getBoolean(SyncWorker.END_SYNC_KEY, false) -> {
-                            _timelineState.update {
-                                it.copy(
-                                    isRefreshing = false,
-                                    scrollToTop = true
-                                )
-                            }
+            if (!currentAccount!!.isLocal) {
+                _timelineState.update {
+                    it.copy(isRefreshing = true)
+                }
+            }
+
+            SyncWorker.startNow(context, workData) { workInfo ->
+                when {
+                    workInfo.outputData.getBoolean(SyncWorker.END_SYNC_KEY, false) -> {
+                        val errors = workInfo.outputData.getSerializable(SyncWorker.LOCAL_SYNC_ERRORS_KEY) as ErrorResult?
+
+                        _timelineState.update {
+                            it.copy(
+                                isRefreshing = false,
+                                hideReadAllFAB = false,
+                                scrollToTop = true,
+                                localSyncErrors = errors?.ifEmpty { null }
+                            )
                         }
+                    }
+                    workInfo.outputData.getBoolean(SyncWorker.SYNC_FAILURE_KEY, false) -> {
+                        val error = workInfo.outputData.getSerializable(SyncWorker.SYNC_FAILURE_EXCEPTION_KEY) as Exception?
 
-                        data.outputData.getBoolean(SyncWorker.SYNC_FAILURE_KEY, false) -> {
-                            _timelineState.update {
-                                it.copy(
-                                    syncError = Exception(), // TODO see how to improve this
-                                    isRefreshing = false
-                                )
-                            }
+                        _timelineState.update {
+                            it.copy(
+                                syncError = error,
+                                isRefreshing = false,
+                                hideReadAllFAB = false
+                            )
+                        }
+                    }
+                    workInfo.progress.getString(SyncWorker.FEED_NAME_KEY) != null -> {
+                        _timelineState.update {
+                            it.copy(
+                                isRefreshing = true,
+                                hideReadAllFAB = true,
+                                currentFeed = workInfo.progress.getString(SyncWorker.FEED_NAME_KEY) ?: "",
+                                feedCount = workInfo.progress.getInt(SyncWorker.FEED_COUNT_KEY, 0),
+                                feedMax = workInfo.progress.getInt(SyncWorker.FEED_MAX_KEY, 0)
+                            )
                         }
                     }
                 }
             }
-        }
-    }
-
-    private suspend fun refreshLocalAccount() {
-        val selectedFeeds = when (filters.value.subFilter) {
-            SubFilter.FEED -> listOf(
-                database.feedDao().selectFeed(filters.value.filterFeedId)
-            )
-
-            SubFilter.FOLDER -> database.feedDao()
-                .selectFeedsByFolder(filters.value.filterFolderId)
-
-            else -> listOf()
-        }
-
-
-        _timelineState.update {
-            it.copy(
-                feedCount = 0,
-                feedMax = if (selectedFeeds.isNotEmpty())
-                    selectedFeeds.size
-                else
-                    database.feedDao().selectFeedCount(currentAccount!!.id)
-            )
-        }
-
-        _timelineState.update { it.copy(isRefreshing = true, hideReadAllFAB = true) }
-
-        val results = repository?.synchronize(
-            selectedFeeds = selectedFeeds,
-            onUpdate = { feed ->
-                _timelineState.update {
-                    it.copy(
-                        currentFeed = feed.name!!,
-                        feedCount = it.feedCount + 1
-                    )
-                }
-            }
-        )
-
-        _timelineState.update {
-            it.copy(
-                isRefreshing = false,
-                scrollToTop = true,
-                hideReadAllFAB = false,
-                localSyncErrors = if (results!!.second.isNotEmpty()) results.second else null
-            )
         }
     }
 

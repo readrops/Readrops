@@ -39,7 +39,7 @@ class NextcloudNewsRepository(
 
     override suspend fun synchronize(
         selectedFeeds: List<Feed>,
-        onUpdate: (Feed) -> Unit
+        onUpdate: suspend (Feed) -> Unit
     ): Pair<SyncResult, ErrorResult> = throw NotImplementedError("This method can't be called here")
 
     override suspend fun synchronize(): SyncResult {
@@ -85,7 +85,7 @@ class NextcloudNewsRepository(
         newFeeds: List<Feed>,
         onUpdate: (Feed) -> Unit
     ): ErrorResult {
-        val errors = mutableMapOf<Feed, Exception>()
+        val errors = hashMapOf<Feed, Exception>()
 
         for (newFeed in newFeeds) {
             onUpdate(newFeed)

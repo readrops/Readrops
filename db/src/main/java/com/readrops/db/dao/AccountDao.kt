@@ -18,6 +18,9 @@ interface AccountDao : BaseDao<Account> {
     @Insert
     suspend fun insertAccount(entity: Account): Long
 
+    @Query("Select * From Account Where id = :accountId")
+    suspend fun select(accountId: Int): Account
+
     @Query("Select * From Account")
     fun selectAllAccounts(): Flow<List<Account>>
 
