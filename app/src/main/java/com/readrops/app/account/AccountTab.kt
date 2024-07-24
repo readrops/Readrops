@@ -51,13 +51,14 @@ import com.readrops.app.account.selection.AccountSelectionDialog
 import com.readrops.app.account.selection.AccountSelectionScreen
 import com.readrops.app.account.selection.adaptiveIconPainterResource
 import com.readrops.app.notifications.NotificationsScreen
+import com.readrops.app.repositories.ErrorResult
 import com.readrops.app.timelime.ErrorListDialog
 import com.readrops.app.util.components.SelectableIconText
 import com.readrops.app.util.components.SelectableImageText
 import com.readrops.app.util.components.ThreeDotsMenu
-import com.readrops.app.util.components.dialog.TwoChoicesDialog
 import com.readrops.app.util.components.dialog.ErrorDialog
 import com.readrops.app.util.components.dialog.TextFieldDialog
+import com.readrops.app.util.components.dialog.TwoChoicesDialog
 import com.readrops.app.util.theme.LargeSpacer
 import com.readrops.app.util.theme.MediumSpacer
 import com.readrops.app.util.theme.VeryShortSpacer
@@ -376,7 +377,7 @@ object AccountTab : Tab {
 
             is DialogState.ErrorList -> {
                 ErrorListDialog(
-                    errorResult = dialog.errorResult,
+                    errorResult = dialog.errorResult as ErrorResult, // cast needed by assembleRelease
                     onDismiss = { screenModel.closeDialog(dialog) }
                 )
             }
