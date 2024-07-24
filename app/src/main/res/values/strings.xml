@@ -194,4 +194,7 @@
     <string name="large">Large</string>
     <string name="item_size">Item size</string>
     <string name="background_sync_already_running">A background synchronization is already running</string>
+    <string name="disable_battery_optimization">Disable battery optimization</string>
+    <string name="disable_battery_optimization_subtitle">Can help with background synchronization not being killed by the system</string>
+    <string name="battery_optimization_already_disabled">Battery optimization already disabled for this app</string>
 </resources>

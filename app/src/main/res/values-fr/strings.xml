@@ -185,4 +185,7 @@
     <string name="large">Large</string>
     <string name="item_size">Taille des items</string>
     <string name="background_sync_already_running">Une synchronisation en arrière-plan est déjà en cours</string>
+    <string name="disable_battery_optimization">Désactiver l\'optimisation de la batterie</string>
+    <string name="disable_battery_optimization_subtitle">Peut aider à éviter que le système n\'empêche la synchronisation d\'arrière-plan</string>
+    <string name="battery_optimization_already_disabled">L\'optimisation de la batterie est déjà optimisée pour cette appli</string>
 </resources>
