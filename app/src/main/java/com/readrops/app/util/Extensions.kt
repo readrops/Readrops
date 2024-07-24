@@ -23,3 +23,7 @@ fun Data.putSerializable(key: String, parcelable: Serializable): Data {
 }
 
 fun Data.getSerializable(key: String): Serializable? = serializables[key]
+
+fun Data.clearSerializables() {
+    serializables.clear()
+}

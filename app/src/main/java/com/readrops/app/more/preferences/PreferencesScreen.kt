@@ -14,6 +14,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.koin.getScreenModel
@@ -23,6 +24,7 @@ import com.readrops.app.R
 import com.readrops.app.more.preferences.components.ListPreferenceWidget
 import com.readrops.app.more.preferences.components.PreferenceHeader
 import com.readrops.app.more.preferences.components.SwitchPreferenceWidget
+import com.readrops.app.sync.SyncWorker
 import com.readrops.app.util.components.AndroidScreen
 import com.readrops.app.util.components.CenteredProgressIndicator
 
@@ -33,6 +35,7 @@ class PreferencesScreen : AndroidScreen() {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
+        val context = LocalContext.current
         val screenModel = getScreenModel<PreferencesScreenModel>()
 
         val state by screenModel.state.collectAsStateWithLifecycle()
@@ -93,7 +96,7 @@ class PreferencesScreen : AndroidScreen() {
                                     "24" to stringResource(id = R.string.every_day)
                                 ),
                                 title = stringResource(id = R.string.auto_synchro),
-                                onValueChange = {}
+                                onValueChange = { SyncWorker.startPeriodically(context, it) }
                             )
 
                             PreferenceHeader(text = stringResource(id = R.string.timeline))

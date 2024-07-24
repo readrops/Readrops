@@ -14,6 +14,7 @@ import com.readrops.app.repositories.ErrorResult
 import com.readrops.app.repositories.GetFoldersWithFeeds
 import com.readrops.app.sync.SyncWorker
 import com.readrops.app.util.Preferences
+import com.readrops.app.util.clearSerializables
 import com.readrops.app.util.getSerializable
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
@@ -171,6 +172,7 @@ class TimelineScreenModel(
                 when {
                     workInfo.outputData.getBoolean(SyncWorker.END_SYNC_KEY, false) -> {
                         val errors = workInfo.outputData.getSerializable(SyncWorker.LOCAL_SYNC_ERRORS_KEY) as ErrorResult?
+                        workInfo.outputData.clearSerializables()
 
                         _timelineState.update {
                             it.copy(
@@ -183,6 +185,7 @@ class TimelineScreenModel(
                     }
                     workInfo.outputData.getBoolean(SyncWorker.SYNC_FAILURE_KEY, false) -> {
                         val error = workInfo.outputData.getSerializable(SyncWorker.SYNC_FAILURE_EXCEPTION_KEY) as Exception?
+                        workInfo.outputData.clearSerializables()
 
                         _timelineState.update {
                             it.copy(

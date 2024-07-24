@@ -193,4 +193,5 @@
     <string name="regular">Regular</string>
     <string name="large">Large</string>
     <string name="item_size">Item size</string>
+    <string name="background_sync_already_running">A background synchronization is already running</string>
 </resources>

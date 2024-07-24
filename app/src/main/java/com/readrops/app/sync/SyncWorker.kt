@@ -3,17 +3,27 @@ package com.readrops.app.sync
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationCompat.Builder
 import androidx.core.app.NotificationManagerCompat
+import androidx.work.BackoffPolicy
+import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.Data
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import com.readrops.api.services.Credentials
 import com.readrops.api.services.SyncResult
+import com.readrops.api.utils.AuthInterceptor
 import com.readrops.app.R
 import com.readrops.app.ReadropsApp
 import com.readrops.app.repositories.BaseRepository
@@ -25,7 +35,10 @@ import com.readrops.db.entities.account.Account
 import kotlinx.coroutines.flow.first
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
+import org.koin.core.component.inject
 import org.koin.core.parameter.parametersOf
+import java.util.concurrent.TimeUnit
+
 
 class SyncWorker(
     appContext: Context,
@@ -33,63 +46,47 @@ class SyncWorker(
 ) : CoroutineWorker(appContext, params), KoinComponent {
 
     private val notificationManager = NotificationManagerCompat.from(appContext)
-    private val database = get<Database>()
+    private val database by inject<Database>()
 
+    // TODO handle notification permission for Android 14+ (or 15?)
     @SuppressLint("MissingPermission")
     override suspend fun doWork(): Result {
-        val sharedPreferences = get<SharedPreferences>()
-        var workResult = Result.success(workDataOf(END_SYNC_KEY to true))
+        val workManager = WorkManager.getInstance(applicationContext)
 
+        val infos = workManager.getWorkInfosByTagFlow(TAG).first()
+        if (infos.any { it.state == WorkInfo.State.RUNNING && it.id != id }) {
+            return if (tags.contains(WORK_MANUAL)) {
+                Result.failure(
+                    workDataOf(
+                        SYNC_FAILURE_KEY to true,
+                    )
+                        .putSerializable(
+                            SYNC_FAILURE_EXCEPTION_KEY,
+                            Exception(applicationContext.getString(R.string.background_sync_already_running))
+                        )
+                )
+            } else {
+                Result.retry()
+            }
+        }
+
+        var workResult: Result
         try {
             require(notificationManager.areNotificationsEnabled())
 
             val notificationBuilder =
-                NotificationCompat.Builder(applicationContext, ReadropsApp.SYNC_CHANNEL_ID)
+                Builder(applicationContext, ReadropsApp.SYNC_CHANNEL_ID)
                     .setProgress(0, 0, true)
-                    .setSmallIcon(R.drawable.ic_notifications) // TODO use better icon
+                    .setLargeIcon(BitmapFactory.decodeResource(applicationContext.resources, R.mipmap.ic_launcher_round))
+                    .setSmallIcon(R.drawable.ic_sync)
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT) // for Android 7.1 and earlier
                     .setStyle(NotificationCompat.BigTextStyle())
+                    .setOngoing(true)
                     .setOnlyAlertOnce(true)
 
-            val accountId = inputData.getInt(ACCOUNT_ID_KEY, 0)
-            val accounts = if (accountId == 0) {
-                database.accountDao().selectAllAccounts().first()
-            } else {
-                listOf(database.accountDao().select(accountId))
-            }
-
-            for (account in accounts) {
-                if (!account.isLocal) {
-                    account.login = sharedPreferences.getString(account.loginKey, null)
-                    account.password = sharedPreferences.getString(account.passwordKey, null)
-                }
-
-                val repository = get<BaseRepository> { parametersOf(account) }
-
-                notificationBuilder.setContentTitle(
-                    applicationContext.resources.getString(
-                        R.string.updating_account,
-                        account.accountName
-                    )
-                )
-                notificationManager.notify(SYNC_NOTIFICATION_ID, notificationBuilder.build())
-
-                if (account.isLocal) {
-                    val result = refreshLocalAccount(repository, account)
-
-                    if (result.second.isNotEmpty()) {
-                        workResult = Result.success(
-                            workDataOf(END_SYNC_KEY to true)
-                                .putSerializable(LOCAL_SYNC_ERRORS_KEY, result.second)
-                        )
-                    }
-                } else {
-                    val syncResult = repository.synchronize()
-                    fetchFeedColors(syncResult, notificationBuilder)
-                }
-            }
+            workResult = refreshAccounts(notificationBuilder)
         } catch (e: Exception) {
-            Log.e(TAG, "${e.message}")
+            Log.e(TAG, "${e::class.simpleName}: ${e.message} ${e.printStackTrace()}")
             workResult = Result.failure(
                 workDataOf(SYNC_FAILURE_KEY to true)
                     .putSerializable(SYNC_FAILURE_EXCEPTION_KEY, e)
@@ -101,9 +98,59 @@ class SyncWorker(
         return workResult
     }
 
+    @SuppressLint("MissingPermission")
+    private suspend fun refreshAccounts(notificationBuilder: Builder): Result {
+        val sharedPreferences = get<SharedPreferences>()
+        var workResult = Result.success(workDataOf(END_SYNC_KEY to true))
+
+        val accountId = inputData.getInt(ACCOUNT_ID_KEY, 0)
+        val accounts = if (accountId == 0) {
+            database.accountDao().selectAllAccounts().first()
+        } else {
+            listOf(database.accountDao().select(accountId))
+        }
+
+        for (account in accounts) {
+            if (!account.isLocal) {
+                account.login = sharedPreferences.getString(account.loginKey, null)
+                account.password = sharedPreferences.getString(account.passwordKey, null)
+            }
+
+            val repository = get<BaseRepository> { parametersOf(account) }
+
+            notificationBuilder.setContentTitle(
+                applicationContext.resources.getString(
+                    R.string.updating_account,
+                    account.accountName
+                )
+            )
+            notificationManager.notify(SYNC_NOTIFICATION_ID, notificationBuilder.build())
+
+            if (account.isLocal) {
+                val result = refreshLocalAccount(repository, account, notificationBuilder)
+
+                if (result.second.isNotEmpty()) {
+                    workResult = Result.success(
+                        workDataOf(END_SYNC_KEY to true)
+                            .putSerializable(LOCAL_SYNC_ERRORS_KEY, result.second)
+                    )
+                }
+            } else {
+                get<AuthInterceptor>().credentials = Credentials.toCredentials(account)
+
+                val syncResult = repository.synchronize()
+                fetchFeedColors(syncResult, notificationBuilder)
+            }
+        }
+
+        return workResult
+    }
+
+    @SuppressLint("MissingPermission")
     private suspend fun refreshLocalAccount(
         repository: BaseRepository,
-        account: Account
+        account: Account,
+        notificationBuilder: Builder
     ): Pair<SyncResult, ErrorResult> {
         val feedId = inputData.getInt(FEED_ID_KEY, 0)
         val folderId = inputData.getInt(FOLDER_ID_KEY, 0)
@@ -124,11 +171,15 @@ class SyncWorker(
         val result = repository.synchronize(
             selectedFeeds = feeds,
             onUpdate = { feed ->
+                notificationBuilder.setContentText(feed.name)
+                    .setProgress(feedMax, ++feedCount, false)
+                notificationManager.notify(SYNC_NOTIFICATION_ID, notificationBuilder.build())
+
                 setProgress(
                     workDataOf(
                         FEED_NAME_KEY to feed.name,
                         FEED_MAX_KEY to feedMax,
-                        FEED_COUNT_KEY to ++feedCount
+                        FEED_COUNT_KEY to feedCount
                     )
                 )
             }
@@ -147,7 +198,7 @@ class SyncWorker(
     @SuppressLint("MissingPermission")
     private suspend fun fetchFeedColors(
         syncResult: SyncResult,
-        notificationBuilder: NotificationCompat.Builder
+        notificationBuilder: Builder
     ) {
         notificationBuilder.setContentTitle(applicationContext.getString(R.string.get_feeds_colors))
 
@@ -171,6 +222,9 @@ class SyncWorker(
     companion object {
         private val TAG: String = SyncWorker::class.java.simpleName
 
+        private val WORK_AUTO = "$TAG-auto"
+        private val WORK_MANUAL = "$TAG-manual"
+
         private const val SYNC_NOTIFICATION_ID = 2
         private const val SYNC_RESULT_NOTIFICATION_ID = 3
 
@@ -188,13 +242,59 @@ class SyncWorker(
         suspend fun startNow(context: Context, data: Data, onUpdate: (WorkInfo) -> Unit) {
             val request = OneTimeWorkRequestBuilder<SyncWorker>()
                 .addTag(TAG)
+                .addTag(WORK_MANUAL)
                 .setInputData(data)
                 .build()
 
             WorkManager.getInstance(context).apply {
-                enqueue(request)
+                enqueueUniqueWork(WORK_MANUAL, ExistingWorkPolicy.KEEP, request)
                 getWorkInfoByIdFlow(request.id)
-                    .collect { workInfo -> onUpdate(workInfo) }
+                    .collect { workInfo ->
+                        if (workInfo != null) {
+                            onUpdate(workInfo)
+                        }
+                    }
+            }
+        }
+
+        fun startPeriodically(context: Context, period: String) {
+            val workManager = WorkManager.getInstance(context)
+
+            val interval = when (period) {
+                "0.30" -> 30L to TimeUnit.MINUTES
+                "1" -> 1L to TimeUnit.HOURS
+                "2" -> 2L to TimeUnit.HOURS
+                "3" -> 3L to TimeUnit.HOURS
+                "6" -> 6L to TimeUnit.HOURS
+                "12" -> 12L to TimeUnit.HOURS
+                "24" -> 1L to TimeUnit.DAYS
+                else -> null
+            }
+
+            val constraints = Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build()
+
+            if (interval != null) {
+                val request = PeriodicWorkRequest.Builder(
+                    SyncWorker::class.java,
+                    interval.first,
+                    interval.second
+                )
+                    .addTag(TAG)
+                    .addTag(WORK_AUTO)
+                    .setConstraints(constraints)
+                    .setInitialDelay(interval.first, interval.second)
+                    .setBackoffCriteria(BackoffPolicy.LINEAR, interval.first, interval.second)
+                    .build()
+
+                workManager.enqueueUniquePeriodicWork(
+                    WORK_AUTO,
+                    ExistingPeriodicWorkPolicy.UPDATE,
+                    request
+                )
+            } else {
+                workManager.cancelAllWorkByTag(WORK_AUTO)
             }
         }
     }
