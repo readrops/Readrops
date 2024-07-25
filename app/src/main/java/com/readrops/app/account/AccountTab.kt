@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.koin.getScreenModel
@@ -133,8 +134,8 @@ object AccountTab : Tab {
         LaunchedEffect(state.opmlExportSuccess) {
             if (state.opmlExportSuccess) {
                 val action = snackbarHostState.showSnackbar(
-                    message = "OPML export success",
-                    actionLabel = "Open file"
+                    message = context.getString(R.string.opml_export_success), 
+                    actionLabel = context.resources.getString(R.string.open)
                 )
 
                 if (action == SnackbarResult.ActionPerformed) {
@@ -184,10 +185,11 @@ object AccountTab : Tab {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = MaterialTheme.spacing.mediumSpacing)
+                        .padding(start = MaterialTheme.spacing.mediumSpacing)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
                     ) {
                         Image(
                             painter = adaptiveIconPainterResource(id = state.account.accountType!!.iconRes),
@@ -200,7 +202,9 @@ object AccountTab : Tab {
                         Column {
                             Text(
                                 text = state.account.accountName!!,
-                                style = MaterialTheme.typography.titleLarge
+                                style = MaterialTheme.typography.titleLarge,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
 
                             if (state.account.displayedName != null) {
@@ -208,7 +212,9 @@ object AccountTab : Tab {
 
                                 Text(
                                     text = state.account.displayedName!!,
-                                    style = MaterialTheme.typography.bodyMedium
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
                                 )
                             }
                         }
@@ -216,7 +222,7 @@ object AccountTab : Tab {
 
                     if (state.account.isLocal) {
                         ThreeDotsMenu(
-                            items = mapOf(1 to "Rename"),
+                            items = mapOf(1 to stringResource(id = R.string.rename_account)),
                             onItemClick = {
                                 screenModel.openDialog(DialogState.RenameAccount(state.account.accountName!!))
                             },
