@@ -2,6 +2,7 @@ package com.readrops.app.notifications
 
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
+import com.readrops.app.util.Preferences
 import com.readrops.db.Database
 import com.readrops.db.entities.account.Account
 import com.readrops.db.pojo.FeedWithFolder
@@ -13,6 +14,7 @@ import kotlinx.coroutines.launch
 class NotificationsScreenModel(
     private val account: Account,
     private val database: Database,
+    private val preferences: Preferences,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : StateScreenModel<NotificationsState>(NotificationsState(isNotificationsEnabled = account.isNotificationsEnabled)) {
 
@@ -28,6 +30,13 @@ class NotificationsScreenModel(
             database.feedDao().selectFeedsWithFolderName(account.id)
                 .collect { feedsWithFolder ->
                     mutableState.update { it.copy(feedsWithFolder = feedsWithFolder) }
+                }
+        }
+
+        screenModelScope.launch(dispatcher) {
+            preferences.backgroundSynchronization.flow
+                .collect { sync ->
+                    mutableState.update { it.copy(isBackGroundSyncEnabled = sync != "manual") }
                 }
         }
     }
@@ -50,11 +59,23 @@ class NotificationsScreenModel(
         }
     }
 
+    fun setBackgroundSyncDialogState(visible: Boolean) {
+        when {
+            visible && !state.value.isBackGroundSyncEnabled -> {
+                mutableState.update { it.copy(showBackgroundSyncDialog = visible) }
+            }
+            !visible -> {
+                mutableState.update { it.copy(showBackgroundSyncDialog = visible) }
+            }
+        }
+    }
 }
 
 data class NotificationsState(
     val isNotificationsEnabled: Boolean = false,
-    val feedsWithFolder: List<FeedWithFolder> = emptyList()
+    val feedsWithFolder: List<FeedWithFolder> = emptyList(),
+    val showBackgroundSyncDialog: Boolean = false,
+    val isBackGroundSyncEnabled: Boolean = false
 ) {
 
     val allFeedNotificationsEnabled

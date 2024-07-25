@@ -20,20 +20,20 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.readrops.app.R
+import com.readrops.app.more.preferences.PreferencesScreen
 import com.readrops.app.util.components.AndroidScreen
 import com.readrops.app.util.components.ThreeDotsMenu
+import com.readrops.app.util.components.dialog.TwoChoicesDialog
 import com.readrops.app.util.theme.MediumSpacer
 import com.readrops.app.util.theme.spacing
 import com.readrops.db.entities.account.Account
@@ -47,12 +47,25 @@ class NotificationsScreen(val account: Account) : AndroidScreen() {
         val navigator = LocalNavigator.currentOrThrow
         val screenModel = getScreenModel<NotificationsScreenModel> { parametersOf(account) }
 
-        var isDropDownMenuExpanded by remember { mutableStateOf(false) }
-
         val state by screenModel.state.collectAsStateWithLifecycle()
 
         val topAppBarScrollBehavior =
             TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+
+        if (state.showBackgroundSyncDialog) {
+            TwoChoicesDialog(
+                title = stringResource(id = R.string.auto_synchro_disabled),
+                text = stringResource(id = R.string.enable_auto_synchro_text),
+                icon = painterResource(id = R.drawable.ic_sync),
+                confirmText = stringResource(id = R.string.open),
+                dismissText = stringResource(id = R.string.cancel),
+                onDismiss = { screenModel.setBackgroundSyncDialogState(false) },
+                onConfirm = {
+                    screenModel.setBackgroundSyncDialogState(false)
+                    navigator.push(PreferencesScreen())
+                }
+            )
+        }
 
         Scaffold(
             topBar = {
@@ -106,7 +119,13 @@ class NotificationsScreen(val account: Account) : AndroidScreen() {
 
                         Switch(
                             checked = state.isNotificationsEnabled,
-                            onCheckedChange = { screenModel.setAccountNotificationsState(it) }
+                            onCheckedChange = {
+                                screenModel.setAccountNotificationsState(it)
+
+                                if (it) {
+                                    screenModel.setBackgroundSyncDialogState(true)
+                                }
+                            }
                         )
                     }
 

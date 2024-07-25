@@ -50,7 +50,7 @@ val composeAppModule = module {
         AccountCredentialsScreenModel(accountType, mode, get())
     }
 
-    factory { (account: Account) -> NotificationsScreenModel(account, get()) }
+    factory { (account: Account) -> NotificationsScreenModel(account, get(), get()) }
 
     factory { PreferencesScreenModel(get()) }
 
