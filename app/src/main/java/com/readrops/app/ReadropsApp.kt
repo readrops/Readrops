@@ -24,7 +24,7 @@ open class ReadropsApp : Application(), KoinComponent, ImageLoaderFactory {
             androidLogger(Level.ERROR)
             androidContext(this@ReadropsApp)
 
-            modules(apiModule, dbModule, composeAppModule)
+            modules(apiModule, dbModule, appModule)
         }
 
         createNotificationChannels()
