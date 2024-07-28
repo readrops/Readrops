@@ -16,7 +16,7 @@ import org.koin.core.component.KoinComponent
 
 data class NotificationContent(
     val title: String? = null,
-    val content: String? = null,
+    val text: String? = null,
     val largeIcon: Bitmap? = null,
     val item: Item? = null,
     val color: Int = 0,
@@ -65,7 +65,7 @@ class SyncAnalyzer(
                     feedsIdsForNewItems.size > 1 && itemCount > 1 -> {
                         NotificationContent(
                             title = account.accountName!!,
-                            content = context.getString(R.string.new_items, itemCount.toString()),
+                            text = context.getString(R.string.new_items, itemCount.toString()),
                             largeIcon = ContextCompat.getDrawable(
                                 context,
                                 account.accountType!!.iconRes
@@ -105,7 +105,7 @@ class SyncAnalyzer(
                 target.drawable?.toBitmap()
             }
 
-            val (item, content) = if (items.size == 1) {
+            val (item, text) = if (items.size == 1) {
                 val item = items.first()
                 item to item.title
             } else {
@@ -114,8 +114,8 @@ class SyncAnalyzer(
 
             return NotificationContent(
                 title = feed.name,
+                text = text,
                 largeIcon = icon,
-                content = content,
                 item = item,
                 color = feed.backgroundColor,
                 accountId = account.id

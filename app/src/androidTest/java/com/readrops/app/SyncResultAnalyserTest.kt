@@ -19,6 +19,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.test.assertNull
 
 @RunWith(AndroidJUnit4::class)
 class SyncAnalyzerTest {
@@ -26,6 +27,9 @@ class SyncAnalyzerTest {
     private lateinit var database: Database
     private lateinit var syncAnalyzer: SyncAnalyzer
     private val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
+
+    private val nullContentException =
+        NullPointerException("Notification content shouldn't be null")
 
     private val account1 = Account(
         accountName = "test account 1",
@@ -87,12 +91,13 @@ class SyncAnalyzerTest {
         database.itemDao().insert(item)
 
         val syncResult = SyncResult(items = listOf(item))
-        val notificationContent = syncAnalyzer.getNotificationContent(mapOf(account1 to syncResult))
 
-        assertEquals("caseOneElementEveryWhere", notificationContent.content)
-        assertEquals("feed 1", notificationContent.title)
-        assertTrue(notificationContent.largeIcon != null)
-        assertTrue(notificationContent.accountId > 0)
+        syncAnalyzer.getNotificationContent(mapOf(account1 to syncResult))?.let { content ->
+            assertEquals("caseOneElementEveryWhere", content.text)
+            assertEquals("feed 1", content.title)
+            assertTrue(content.largeIcon != null)
+            assertTrue(content.accountId > 0)
+        } ?: throw nullContentException
 
         database.itemDao().delete(item)
     }
@@ -100,14 +105,14 @@ class SyncAnalyzerTest {
     @Test
     fun testTwoItemsOneFeed() = runTest {
         val item = Item(title = "caseTwoItemsOneFeed", feedId = 1)
-
         val syncResult = SyncResult(items = listOf(item, item, item))
-        val notificationContent = syncAnalyzer.getNotificationContent(mapOf(account1 to syncResult))
 
-        assertEquals(context.getString(R.string.new_items, 3), notificationContent.content)
-        assertEquals("feed 1", notificationContent.title)
-        assertTrue(notificationContent.largeIcon != null)
-        assertTrue(notificationContent.accountId > 0)
+        syncAnalyzer.getNotificationContent(mapOf(account1 to syncResult))?.let { content ->
+            assertEquals(context.getString(R.string.new_items, 3), content.text)
+            assertEquals("feed 1", content.title)
+            assertTrue(content.largeIcon != null)
+            assertTrue(content.accountId > 0)
+        } ?: throw nullContentException
     }
 
     @Test
@@ -116,12 +121,13 @@ class SyncAnalyzerTest {
         val item2 = Item(feedId = 3)
 
         val syncResult = SyncResult(items = listOf(item, item2))
-        val notificationContent = syncAnalyzer.getNotificationContent(mapOf(account1 to syncResult))
 
-        assertEquals(context.getString(R.string.new_items, 2), notificationContent.content)
-        assertEquals(account1.accountName, notificationContent.title)
-        assertTrue(notificationContent.largeIcon != null)
-        assertTrue(notificationContent.accountId > 0)
+        syncAnalyzer.getNotificationContent(mapOf(account1 to syncResult))?.let { content ->
+            assertEquals(context.getString(R.string.new_items, 2), content.text)
+            assertEquals(account1.accountName, content.title)
+            assertTrue(content.largeIcon != null)
+            assertTrue(content.accountId > 0)
+        } ?: throw nullContentException
     }
 
     @Test
@@ -133,9 +139,9 @@ class SyncAnalyzerTest {
         val syncResult2 = SyncResult(items = listOf(item, item2))
         val syncResults = mapOf(account1 to syncResult, account3 to syncResult2)
 
-        val notificationContent = syncAnalyzer.getNotificationContent(syncResults)
-
-        assertEquals(context.getString(R.string.new_items, 4), notificationContent.title)
+        syncAnalyzer.getNotificationContent(syncResults)?.let { content ->
+            assertEquals(context.getString(R.string.new_items, 4), content.title)
+        } ?: throw nullContentException
     }
 
     @Test
@@ -144,11 +150,9 @@ class SyncAnalyzerTest {
         val item2 = Item(title = "testAccountNotificationsDisabled2", feedId = 1)
 
         val syncResult = SyncResult(items = listOf(item1, item2))
-        val notificationContent = syncAnalyzer.getNotificationContent(mapOf(account2 to syncResult))
 
-        assert(notificationContent.title == null)
-        assert(notificationContent.content == null)
-        assert(notificationContent.largeIcon == null)
+        val content = syncAnalyzer.getNotificationContent(mapOf(account2 to syncResult))
+        assertNull(content)
     }
 
     @Test
@@ -157,11 +161,8 @@ class SyncAnalyzerTest {
         val item2 = Item(title = "testAccountNotificationsDisabled2", feedId = 2)
 
         val syncResult = SyncResult(items = listOf(item1, item2))
-        val notificationContent = syncAnalyzer.getNotificationContent(mapOf(account1 to syncResult))
-
-        assert(notificationContent.title == null)
-        assert(notificationContent.content == null)
-        assert(notificationContent.largeIcon == null)
+        val content = syncAnalyzer.getNotificationContent(mapOf(account1 to syncResult))
+        assertNull(content)
     }
 
     @Test
@@ -190,18 +191,18 @@ class SyncAnalyzerTest {
 
         val syncResults = mapOf(account1 to syncResult1, account2 to syncResult2)
 
-        val notificationContent = syncAnalyzer.getNotificationContent(syncResults)
-
-        assertEquals("testTwoAccountsWithOneAccountNotificationsEnabled", notificationContent.content)
-        assertEquals("feed 1", notificationContent.title)
-        assertTrue(notificationContent.largeIcon != null)
-        assertTrue(notificationContent.item != null)
+        syncAnalyzer.getNotificationContent(syncResults)?.let { content ->
+            assertEquals("testTwoAccountsWithOneAccountNotificationsEnabled", content.text)
+            assertEquals("feed 1", content.title)
+            assertTrue(content.largeIcon != null)
+            assertTrue(content.item != null)
+        } ?: throw nullContentException
 
         database.itemDao().delete(item1)
     }
 
     @Test
-    fun testTwoAccountsWithOneFeedNotificationEnabled() = runTest{
+    fun testTwoAccountsWithOneFeedNotificationEnabled() = runTest {
         val item1 = Item(
             title = "testTwoAccountsWithOneAccountNotificationsEnabled",
             feedId = 1,
@@ -225,12 +226,13 @@ class SyncAnalyzerTest {
         val syncResult2 = SyncResult(items = listOf(item2, item3))
 
         val syncResults = mapOf(account1 to syncResult1, account2 to syncResult2)
-        val notificationContent = syncAnalyzer.getNotificationContent(syncResults)
 
-        assertEquals("testTwoAccountsWithOneAccountNotificationsEnabled", notificationContent.content)
-        assertEquals("feed 1", notificationContent.title)
-        assertTrue(notificationContent.largeIcon != null)
-        assertTrue(notificationContent.item != null)
+        syncAnalyzer.getNotificationContent(syncResults)?.let { content ->
+            assertEquals("testTwoAccountsWithOneAccountNotificationsEnabled", content.text)
+            assertEquals("feed 1", content.title)
+            assertTrue(content.largeIcon != null)
+            assertTrue(content.item != null)
+        } ?: throw nullContentException
 
         database.itemDao().delete(item1)
     }
@@ -258,13 +260,13 @@ class SyncAnalyzerTest {
         database.itemDao().insert(item1)
 
         val syncResult = SyncResult(items = listOf(item1, item2, item3))
-        val notificationContent = syncAnalyzer.getNotificationContent(mapOf(account1 to syncResult))
-
-        assertEquals("testTwoAccountsWithOneAccountNotificationsEnabled", notificationContent.content)
-        assertEquals("feed 1", notificationContent.title)
-        assertTrue(notificationContent.largeIcon != null)
-        assertTrue(notificationContent.item != null)
-        assertTrue(notificationContent.accountId > 0)
+        syncAnalyzer.getNotificationContent(mapOf(account1 to syncResult))?.let { content ->
+            assertEquals("testTwoAccountsWithOneAccountNotificationsEnabled", content.text)
+            assertEquals("feed 1", content.title)
+            assertTrue(content.largeIcon != null)
+            assertTrue(content.item != null)
+            assertTrue(content.accountId > 0)
+        } ?: throw nullContentException
 
         database.itemDao().delete(item1)
     }

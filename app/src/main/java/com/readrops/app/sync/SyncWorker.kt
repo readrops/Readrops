@@ -252,8 +252,8 @@ class SyncWorker(
 
             val notificationBuilder = Builder(applicationContext, ReadropsApp.SYNC_CHANNEL_ID)
                 .setContentTitle(notificationContent.title)
-                .setContentText(notificationContent.content)
-                .setStyle(NotificationCompat.BigTextStyle().bigText(notificationContent.content))
+                .setContentText(notificationContent.text)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(notificationContent.text))
                 .setSmallIcon(R.drawable.ic_notifications)
                 .setColor(notificationContent.color)
                 .setContentIntent(
