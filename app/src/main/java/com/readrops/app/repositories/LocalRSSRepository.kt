@@ -24,8 +24,7 @@ class LocalRSSRepository(
     account: Account
 ) : BaseRepository(database, account), KoinComponent {
 
-    override suspend fun login(account: Account) { /* useless here */
-    }
+    override suspend fun login(account: Account) { /* useless here */ }
 
     override suspend fun synchronize(
         selectedFeeds: List<Feed>,
@@ -52,14 +51,12 @@ class LocalRSSRepository(
             try {
                 val pair = dataSource.queryRSSResource(feed.url!!, headers.build())
 
-                pair?.let {
-                    insertNewItems(it.second, feed)
-                    syncResult.items = it.second
+                pair?.let { // temporary
+                    syncResult.items += insertNewItems(it.second, feed)
                 }
             } catch (e: Exception) {
                 errors[feed] = e
             }
-
         }
 
         return Pair(syncResult, errors)
@@ -89,9 +86,8 @@ class LocalRSSRepository(
         return@withContext errors
     }
 
-    private suspend fun insertNewItems(items: List<Item>, feed: Feed) {
-        items.sortedWith(Item::compareTo) // TODO Check if ordering is useful in this situation
-        val itemsToInsert = mutableListOf<Item>()
+    private suspend fun insertNewItems(items: List<Item>, feed: Feed): List<Item> {
+        val newItems = mutableListOf<Item>()
 
         for (item in items) {
             if (!database.itemDao().itemExists(item.guid!!, feed.accountId)) {
@@ -106,14 +102,19 @@ class LocalRSSRepository(
                 }
 
                 item.feedId = feed.id
-                itemsToInsert += item
+                newItems += item
             }
         }
 
-        database.itemDao().insert(itemsToInsert)
+        database.itemDao().insert(newItems)
+            .zip(newItems)
+            .forEach { (id, item) -> item.id = id.toInt() }
+
+        return newItems
     }
 
     private suspend fun insertFeed(feed: Feed): Feed {
+        // TODO better handle this case
         require(!database.feedDao().feedExists(feed.url!!, account.id)) {
             "Feed already exists for account ${account.accountName}"
         }

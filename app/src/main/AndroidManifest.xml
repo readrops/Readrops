@@ -24,9 +24,12 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <receiver android:name=".sync.SyncBroadcastReceiver" android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

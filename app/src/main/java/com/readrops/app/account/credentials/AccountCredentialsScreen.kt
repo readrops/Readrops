@@ -71,7 +71,7 @@ class AccountCredentialsScreen(
 
         if (state.exitScreen) {
             if (mode == AccountCredentialsScreenMode.NEW_CREDENTIALS) {
-                navigator.replaceAll(HomeScreen())
+                navigator.replaceAll(HomeScreen)
             } else {
                 navigator.pop()
             }

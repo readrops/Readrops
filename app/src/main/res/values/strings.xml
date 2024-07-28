@@ -198,4 +198,5 @@
     <string name="disable_battery_optimization_subtitle">Can help with background synchronization not being killed by the system</string>
     <string name="battery_optimization_already_disabled">Battery optimization already disabled for this app</string>
     <string name="opml_export_success">OPML export success</string>
+    <string name="add_to_favorite">Add to favorites</string>
 </resources>

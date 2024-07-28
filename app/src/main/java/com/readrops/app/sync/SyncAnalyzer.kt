@@ -19,6 +19,7 @@ data class NotificationContent(
     val content: String? = null,
     val largeIcon: Bitmap? = null,
     val item: Item? = null,
+    val color: Int = 0,
     val accountId: Int = 0
 )
 
@@ -27,24 +28,24 @@ class SyncAnalyzer(
     val database: Database
 ) : KoinComponent {
 
-    suspend fun getNotificationContent(syncResults: Map<Account, SyncResult>): NotificationContent {
+    suspend fun getNotificationContent(syncResults: Map<Account, SyncResult>): NotificationContent? {
         return if (newItemsInMultipleAccounts(syncResults)) { // new items from several accounts
             val feeds = database.feedDao().selectFromIds(getFeedsIdsForNewItems(syncResults))
 
             var itemCount = 0
-            syncResults.values.forEach { syncResult ->
+            for (syncResult in syncResults.values) {
                 itemCount += syncResult.items.filter {
                     isFeedNotificationEnabledForItem(feeds, it)
                 }.size
             }
 
-            NotificationContent(title = context.getString(R.string.new_items, itemCount.toString()))
-        } else { // new items from only one account
-            getContentFromOneAccount(syncResults)
+            NotificationContent(title = context.getString(R.string.new_items, "$itemCount"))
+        } else { // new items from a single account
+            getSingleAccountContent(syncResults)
         }
     }
 
-    private suspend fun getContentFromOneAccount(syncResults: Map<Account, SyncResult>): NotificationContent {
+    private suspend fun getSingleAccountContent(syncResults: Map<Account, SyncResult>): NotificationContent? {
         val syncResultMap = syncResults.filterValues { it.items.isNotEmpty() }
 
         if (syncResultMap.values.isNotEmpty()) {
@@ -59,8 +60,8 @@ class SyncAnalyzer(
                     syncResult.items.filter { isFeedNotificationEnabledForItem(feeds, it) }
                 val itemCount = items.size
 
-                // new items from several feeds from one account
                 return when {
+                    // multiple new items from several feeds
                     feedsIdsForNewItems.size > 1 && itemCount > 1 -> {
                         NotificationContent(
                             title = account.accountName!!,
@@ -72,24 +73,24 @@ class SyncAnalyzer(
                             accountId = account.id
                         )
                     }
-                    // new items from only one feed from one account
+                    // multiple new items from a single feed
                     feedsIdsForNewItems.size == 1 ->
-                        oneFeedCase(feedsIdsForNewItems.first(), syncResult.items, account)
-
-                    itemCount == 1 -> oneFeedCase(items.first().feedId, items, account)
-                    else -> NotificationContent()
+                        singleFeedCase(feedsIdsForNewItems.first(), syncResult.items, account)
+                    // only one new item from a single feed
+                    itemCount == 1 -> singleFeedCase(items.first().feedId, items, account)
+                    else -> null
                 }
             }
         }
 
-        return NotificationContent()
+        return null
     }
 
-    private suspend fun oneFeedCase(
+    private suspend fun singleFeedCase(
         feedId: Int,
         items: List<Item>,
         account: Account
-    ): NotificationContent {
+    ): NotificationContent? {
         val feed = database.feedDao().selectFeed(feedId)
 
         if (feed.isNotificationEnabled) {
@@ -101,15 +102,11 @@ class SyncAnalyzer(
                             .build()
                     )
 
-                target.drawable!!.toBitmap()
+                target.drawable?.toBitmap()
             }
 
             val (item, content) = if (items.size == 1) {
-                val item = database.itemDao().selectByRemoteId(
-                    items.first().remoteId!!,
-                    items.first().feedId
-                )
-
+                val item = items.first()
                 item to item.title
             } else {
                 null to context.getString(R.string.new_items, items.size.toString())
@@ -120,11 +117,12 @@ class SyncAnalyzer(
                 largeIcon = icon,
                 content = content,
                 item = item,
+                color = feed.backgroundColor,
                 accountId = account.id
             )
         }
 
-        return NotificationContent()
+        return null
     }
 
     private fun newItemsInMultipleAccounts(syncResults: Map<Account, SyncResult>): Boolean {

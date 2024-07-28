@@ -88,7 +88,7 @@ class AccountSelectionScreen : AndroidScreen() {
         when (state.navState) {
             is NavState.GoToHomeScreen -> {
                 // using replace makes the app crash due to a screen key conflict
-                navigator.replaceAll(HomeScreen())
+                navigator.replaceAll(HomeScreen)
             }
 
             is NavState.GoToAccountCredentialsScreen -> {

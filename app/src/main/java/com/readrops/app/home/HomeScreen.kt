@@ -1,6 +1,5 @@
 package com.readrops.app.home
 
-import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
@@ -20,28 +19,41 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.CurrentTab
+import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
 import com.readrops.app.R
 import com.readrops.app.account.AccountTab
 import com.readrops.app.feeds.FeedTab
+import com.readrops.app.item.ItemScreen
 import com.readrops.app.more.MoreTab
 import com.readrops.app.timelime.TimelineTab
 import com.readrops.app.util.components.AndroidScreen
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 
-class HomeScreen : AndroidScreen() {
+object HomeScreen : AndroidScreen() {
 
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+    private val itemChannel = Channel<Int>()
+    private val tabChannel = Channel<Tab>()
+
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
-
         val scaffoldInsets = WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal)
+
+        LaunchedEffect(Unit) {
+            itemChannel.receiveAsFlow()
+                .collect {
+                    navigator.push(ItemScreen(it))
+                }
+        }
 
         TabNavigator(
             tab = TimelineTab
@@ -101,6 +113,18 @@ class HomeScreen : AndroidScreen() {
                     },
                     contentWindowInsets = scaffoldInsets
                 ) { paddingValues ->
+                    LaunchedEffect(Unit) {
+                        tabChannel.receiveAsFlow()
+                            .collect {
+                                tabNavigator.current = TimelineTab
+                            }
+                    }
+
+                    BackHandler(
+                        enabled = tabNavigator.current != TimelineTab,
+                        onBack = { tabNavigator.current = TimelineTab }
+                    )
+
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -109,13 +133,16 @@ class HomeScreen : AndroidScreen() {
                     ) {
                         CurrentTab()
                     }
-
-                    BackHandler(
-                        enabled = tabNavigator.current != TimelineTab,
-                        onBack = { tabNavigator.current = TimelineTab }
-                    )
                 }
             }
         }
+    }
+
+    suspend fun openItemScreen(itemId: Int) {
+        itemChannel.send(itemId)
+    }
+
+    suspend fun openTab(tab: Tab) {
+        tabChannel.send(tab)
     }
 }

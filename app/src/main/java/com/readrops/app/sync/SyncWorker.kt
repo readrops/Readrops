@@ -1,11 +1,13 @@
 package com.readrops.app.sync
 
 import android.annotation.SuppressLint
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationCompat.Action
 import androidx.core.app.NotificationCompat.Builder
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.BackoffPolicy
@@ -24,6 +26,7 @@ import androidx.work.workDataOf
 import com.readrops.api.services.Credentials
 import com.readrops.api.services.SyncResult
 import com.readrops.api.utils.AuthInterceptor
+import com.readrops.app.MainActivity
 import com.readrops.app.R
 import com.readrops.app.ReadropsApp
 import com.readrops.app.repositories.BaseRepository
@@ -51,11 +54,13 @@ class SyncWorker(
     // TODO handle notification permission for Android 14+ (or 15?)
     @SuppressLint("MissingPermission")
     override suspend fun doWork(): Result {
-        val workManager = WorkManager.getInstance(applicationContext)
+        val isManual = tags.contains(WORK_MANUAL)
 
-        val infos = workManager.getWorkInfosByTagFlow(TAG).first()
+        val infos = WorkManager.getInstance(applicationContext)
+            .getWorkInfosByTagFlow(TAG).first()
+
         if (infos.any { it.state == WorkInfo.State.RUNNING && it.id != id }) {
-            return if (tags.contains(WORK_MANUAL)) {
+            return if (isManual) {
                 Result.failure(
                     workDataOf(
                         SYNC_FAILURE_KEY to true,
@@ -70,41 +75,45 @@ class SyncWorker(
             }
         }
 
-        var workResult: Result
-        try {
-            require(notificationManager.areNotificationsEnabled())
+        val notificationBuilder = Builder(applicationContext, ReadropsApp.SYNC_CHANNEL_ID)
+            .setProgress(0, 0, true)
+            .setSmallIcon(R.drawable.ic_sync)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT) // for Android 7.1 and earlier
+            .setOngoing(true)
+            .setOnlyAlertOnce(true)
 
-            val notificationBuilder =
-                Builder(applicationContext, ReadropsApp.SYNC_CHANNEL_ID)
-                    .setProgress(0, 0, true)
-                    .setLargeIcon(BitmapFactory.decodeResource(applicationContext.resources, R.mipmap.ic_launcher_round))
-                    .setSmallIcon(R.drawable.ic_sync)
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT) // for Android 7.1 and earlier
-                    .setStyle(NotificationCompat.BigTextStyle())
-                    .setOngoing(true)
-                    .setOnlyAlertOnce(true)
+        return try {
+            val (workResult, syncResults) = refreshAccounts(notificationBuilder)
+            notificationManager.cancel(SYNC_NOTIFICATION_ID)
 
-            workResult = refreshAccounts(notificationBuilder)
+            if (!isManual) {
+                displaySyncResults(syncResults)
+            }
+
+            workResult
         } catch (e: Exception) {
             Log.e(TAG, "${e::class.simpleName}: ${e.message} ${e.printStackTrace()}")
-            workResult = Result.failure(
-                workDataOf(SYNC_FAILURE_KEY to true)
-                    .putSerializable(SYNC_FAILURE_EXCEPTION_KEY, e)
-            )
-        } finally {
-            notificationManager.cancel(SYNC_NOTIFICATION_ID)
-        }
 
-        return workResult
+            notificationManager.cancel(SYNC_NOTIFICATION_ID)
+            if (isManual) {
+                Result.failure(
+                    workDataOf(SYNC_FAILURE_KEY to true)
+                        .putSerializable(SYNC_FAILURE_EXCEPTION_KEY, e)
+                )
+            } else {
+                Result.failure()
+            }
+        }
     }
 
     @SuppressLint("MissingPermission")
-    private suspend fun refreshAccounts(notificationBuilder: Builder): Result {
+    private suspend fun refreshAccounts(notificationBuilder: Builder): Pair<Result, Map<Account, SyncResult>> {
         val sharedPreferences = get<SharedPreferences>()
         var workResult = Result.success(workDataOf(END_SYNC_KEY to true))
+        val syncResults = mutableMapOf<Account, SyncResult>()
 
-        val accountId = inputData.getInt(ACCOUNT_ID_KEY, 0)
-        val accounts = if (accountId == 0) {
+        val accountId = inputData.getInt(ACCOUNT_ID_KEY, -1)
+        val accounts = if (accountId == -1) {
             database.accountDao().selectAllAccounts().first()
         } else {
             listOf(database.accountDao().select(accountId))
@@ -129,21 +138,25 @@ class SyncWorker(
             if (account.isLocal) {
                 val result = refreshLocalAccount(repository, account, notificationBuilder)
 
-                if (result.second.isNotEmpty()) {
+                if (result.second.isNotEmpty() && tags.contains(WORK_MANUAL)) {
                     workResult = Result.success(
                         workDataOf(END_SYNC_KEY to true)
                             .putSerializable(LOCAL_SYNC_ERRORS_KEY, result.second)
                     )
                 }
+
+                syncResults[account] = result.first
             } else {
                 get<AuthInterceptor>().credentials = Credentials.toCredentials(account)
 
                 val syncResult = repository.synchronize()
                 fetchFeedColors(syncResult, notificationBuilder)
+
+                syncResults[account] = syncResult
             }
         }
 
-        return workResult
+        return workResult to syncResults
     }
 
     @SuppressLint("MissingPermission")
@@ -172,6 +185,7 @@ class SyncWorker(
             selectedFeeds = feeds,
             onUpdate = { feed ->
                 notificationBuilder.setContentText(feed.name)
+                    .setStyle(NotificationCompat.BigTextStyle().bigText(feed.name))
                     .setProgress(feedMax, ++feedCount, false)
                 notificationManager.notify(SYNC_NOTIFICATION_ID, notificationBuilder.build())
 
@@ -206,6 +220,7 @@ class SyncWorker(
             val feedName = syncResult.feeds.first { it.id == feedId.toInt() }.name
 
             notificationBuilder.setContentText(feedName)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(feedName))
                 .setProgress(syncResult.newFeedIds.size, index + 1, false)
             notificationManager.notify(SYNC_NOTIFICATION_ID, notificationBuilder.build())
 
@@ -219,6 +234,98 @@ class SyncWorker(
         }
     }
 
+    @SuppressLint("MissingPermission")
+    private suspend fun displaySyncResults(syncResults: Map<Account, SyncResult>) {
+        val notificationContent = SyncAnalyzer(applicationContext, database)
+            .getNotificationContent(syncResults)
+
+        if (notificationContent != null) {
+            val intent = Intent(applicationContext, MainActivity::class.java).apply {
+                if (notificationContent.accountId > 0) {
+                    putExtra(ACCOUNT_ID_KEY, notificationContent.accountId)
+                }
+
+                if (notificationContent.item != null) {
+                    putExtra(ITEM_ID_KEY, notificationContent.item.id)
+                }
+            }
+
+            val notificationBuilder = Builder(applicationContext, ReadropsApp.SYNC_CHANNEL_ID)
+                .setContentTitle(notificationContent.title)
+                .setContentText(notificationContent.content)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(notificationContent.content))
+                .setSmallIcon(R.drawable.ic_notifications)
+                .setColor(notificationContent.color)
+                .setContentIntent(
+                    PendingIntent.getActivity(
+                        applicationContext,
+                        0,
+                        intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
+                )
+                .setAutoCancel(true)
+
+            notificationContent.item?.let { item ->
+                val itemId = item.id
+
+                notificationBuilder
+                    .addAction(getMarkReadAction(itemId))
+                    .addAction(getMarkFavoriteAction(itemId))
+            }
+
+            notificationContent.largeIcon?.let { notificationBuilder.setLargeIcon(it) }
+            notificationManager.notify(SYNC_RESULT_NOTIFICATION_ID, notificationBuilder.build())
+        }
+    }
+
+    private fun getMarkReadAction(itemId: Int): Action {
+        val intent = Intent(applicationContext, SyncBroadcastReceiver::class.java).apply {
+            action = SyncBroadcastReceiver.ACTION_MARK_READ
+            putExtra(ITEM_ID_KEY, itemId)
+        }
+
+        val pendingIntent =
+            PendingIntent.getBroadcast(
+                applicationContext,
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+
+
+        return Action.Builder(
+            R.drawable.ic_done_all,
+            applicationContext.getString(R.string.mark_read),
+            pendingIntent
+        )
+            .setAllowGeneratedReplies(false)
+            .build()
+    }
+
+    private fun getMarkFavoriteAction(itemId: Int): Action {
+        val intent = Intent(applicationContext, SyncBroadcastReceiver::class.java).apply {
+            action = SyncBroadcastReceiver.ACTION_SET_FAVORITE
+            putExtra(ITEM_ID_KEY, itemId)
+        }
+
+        val pendingIntent =
+            PendingIntent.getBroadcast(
+                applicationContext,
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+
+        return Action.Builder(
+            R.drawable.ic_favorite_border,
+            applicationContext.getString(R.string.add_to_favorite),
+            pendingIntent
+        )
+            .setAllowGeneratedReplies(false)
+            .build()
+    }
+
     companion object {
         private val TAG: String = SyncWorker::class.java.simpleName
 
@@ -226,13 +333,14 @@ class SyncWorker(
         private val WORK_MANUAL = "$TAG-manual"
 
         private const val SYNC_NOTIFICATION_ID = 2
-        private const val SYNC_RESULT_NOTIFICATION_ID = 3
+        const val SYNC_RESULT_NOTIFICATION_ID = 3
 
         const val END_SYNC_KEY = "END_SYNC"
         const val SYNC_FAILURE_KEY = "SYNC_FAILURE"
         const val SYNC_FAILURE_EXCEPTION_KEY = "SYNC_FAILURE_EXCEPTION"
         const val ACCOUNT_ID_KEY = "ACCOUNT_ID"
         const val FEED_ID_KEY = "FEED_ID"
+        const val ITEM_ID_KEY = "ITEM_ID"
         const val FOLDER_ID_KEY = "FOLDER_ID"
         const val FEED_NAME_KEY = "FEED_NAME"
         const val FEED_MAX_KEY = "FEED_MAX"
