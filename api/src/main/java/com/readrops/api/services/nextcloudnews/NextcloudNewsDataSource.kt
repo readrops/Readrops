@@ -1,7 +1,7 @@
 package com.readrops.api.services.nextcloudnews
 
 import com.gitlab.mvysny.konsumexml.konsumeXml
-import com.readrops.api.services.SyncResult
+import com.readrops.api.services.DataSourceResult
 import com.readrops.api.services.SyncType
 import com.readrops.api.services.nextcloudnews.adapters.NextcloudNewsUserAdapter
 import com.readrops.db.entities.Feed
@@ -32,10 +32,10 @@ class NextcloudNewsDataSource(private val service: NextcloudNewsService) {
         return displayName
     }
 
-    suspend fun synchronize(syncType: SyncType, syncData: NextcloudNewsSyncData): SyncResult =
+    suspend fun synchronize(syncType: SyncType, syncData: NextcloudNewsSyncData): DataSourceResult =
         with(CoroutineScope(Dispatchers.IO)) {
             return if (syncType == SyncType.INITIAL_SYNC) {
-                SyncResult().apply {
+                DataSourceResult().apply {
                     listOf(
                         async { folders = getFolders() },
                         async { feeds = getFeeds() },
@@ -52,7 +52,7 @@ class NextcloudNewsDataSource(private val service: NextcloudNewsService) {
                     async { setItemsStarState(syncData) },
                 ).awaitAll()
 
-                SyncResult().apply {
+                DataSourceResult().apply {
                     listOf(
                         async { folders = getFolders() },
                         async { feeds = getFeeds() },

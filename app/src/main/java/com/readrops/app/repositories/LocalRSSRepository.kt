@@ -2,7 +2,6 @@ package com.readrops.app.repositories
 
 import android.util.Log
 import com.readrops.api.localfeed.LocalRSSDataSource
-import com.readrops.api.services.SyncResult
 import com.readrops.api.utils.ApiUtils
 import com.readrops.api.utils.HtmlParser
 import com.readrops.app.util.FeedColors
@@ -31,7 +30,7 @@ class LocalRSSRepository(
         onUpdate: suspend (Feed) -> Unit
     ): Pair<SyncResult, ErrorResult> {
         val errors = hashMapOf<Feed, Exception>()
-        val syncResult = SyncResult()
+        val newItems = mutableListOf<Item>()
 
         val feeds = selectedFeeds.ifEmpty {
             database.feedDao().selectFeeds(account.id)
@@ -51,15 +50,13 @@ class LocalRSSRepository(
             try {
                 val pair = dataSource.queryRSSResource(feed.url!!, headers.build())
 
-                pair?.let { // temporary
-                    syncResult.items += insertNewItems(it.second, feed)
-                }
+                pair?.let { newItems.addAll(insertNewItems(it.second, feed)) }
             } catch (e: Exception) {
                 errors[feed] = e
             }
         }
 
-        return Pair(syncResult, errors)
+        return Pair(SyncResult(items = newItems), errors)
     }
 
     override suspend fun synchronize(): SyncResult =

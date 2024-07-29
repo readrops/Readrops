@@ -1,6 +1,5 @@
 package com.readrops.app.repositories
 
-import com.readrops.api.services.SyncResult
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
@@ -9,6 +8,11 @@ import com.readrops.db.entities.ItemState
 import com.readrops.db.entities.account.Account
 
 typealias ErrorResult = HashMap<Feed, Exception>
+
+data class SyncResult(
+    val items: List<Item> = listOf(),
+    val feeds: List<Feed> = listOf()
+)
 
 interface Repository {
 
@@ -21,7 +25,7 @@ interface Repository {
      * Global synchronization for the local account.
      * @param selectedFeeds feeds to be updated, will fetch all account feeds if list is empty
      * @param onUpdate notify each feed update
-     * @return the result of the synchronization used by notifications
+     * @return newly inserted items and feeds used by background synchronization and notifications,
      * and errors per feed if occurred to be transmitted to the user
      */
     suspend fun synchronize(
@@ -32,7 +36,7 @@ interface Repository {
     /**
      * Global synchronization for remote accounts. Unlike the local account, remote accounts
      * won't benefit from synchronization status and granular synchronization
-     * @return the result of the synchronization
+     * @return the result of the synchronization: newly inserted items and feeds
      */
     suspend fun synchronize(): SyncResult
 

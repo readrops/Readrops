@@ -1,7 +1,6 @@
 package com.readrops.app.repositories
 
 import com.readrops.api.services.Credentials
-import com.readrops.api.services.SyncResult
 import com.readrops.api.services.SyncType
 import com.readrops.api.services.freshrss.FreshRSSDataSource
 import com.readrops.api.services.freshrss.FreshRSSSyncData
@@ -66,11 +65,11 @@ class FreshRSSRepository(
 
         val newLastModified = DateTime.now().millis / 1000L
 
-        return dataSource.synchronize(syncType, syncData, account.writeToken!!).apply {
+        return dataSource.synchronize(syncType, syncData, account.writeToken!!).run {
             insertFolders(folders)
-            newFeedIds = insertFeeds(feeds)
+            val newFeeds = insertFeeds(feeds)
 
-            insertItems(items, false)
+            val newItems = insertItems(items, false)
             insertItems(starredItems, true)
 
             insertItemsIds(unreadIds, readIds, starredIds.toMutableList())
@@ -79,6 +78,11 @@ class FreshRSSRepository(
             database.accountDao().updateLastModified(newLastModified, account.id)
 
             database.itemStateChangeDao().resetStateChanges(account.id)
+
+            SyncResult(
+                items = newItems,
+                feeds = newFeeds
+            )
         }
     }
 
@@ -123,7 +127,7 @@ class FreshRSSRepository(
         super.deleteFolder(folder)
     }
 
-    private suspend fun insertFeeds(feeds: List<Feed>): List<Long> {
+    private suspend fun insertFeeds(feeds: List<Feed>): List<Feed> {
         feeds.forEach { it.accountId = account.id }
         return database.feedDao().upsertFeeds(feeds, account)
     }
@@ -133,8 +137,8 @@ class FreshRSSRepository(
         database.folderDao().upsertFolders(folders, account)
     }
 
-    private suspend fun insertItems(items: List<Item>, starredItems: Boolean) {
-        val itemsToInsert = arrayListOf<Item>()
+    private suspend fun insertItems(items: List<Item>, starredItems: Boolean): List<Item> {
+        val newItems = arrayListOf<Item>()
         val itemsFeedsIds = mutableMapOf<String?, Int>()
 
         for (item in items) {
@@ -157,17 +161,21 @@ class FreshRSSRepository(
             // as the API exclusion filter doesn't seem to work
             if (!starredItems) {
                 if (!item.isStarred) {
-                    itemsToInsert.add(item)
+                    newItems.add(item)
                 }
             } else {
-                itemsToInsert.add(item)
+                newItems.add(item)
             }
         }
 
-        if (itemsToInsert.isNotEmpty()) {
-            itemsToInsert.sortWith(Item::compareTo)
-            database.itemDao().insert(itemsToInsert)
+        if (newItems.isNotEmpty()) {
+            newItems.sortWith(Item::compareTo)
+            database.itemDao().insert(newItems)
+                .zip(newItems)
+                .forEach { (id, item) -> item.id = id.toInt() }
         }
+
+        return newItems
     }
 
     private suspend fun insertItemsIds(

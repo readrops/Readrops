@@ -26,7 +26,7 @@ data class Feed(
         @ColumnInfo(name = "folder_id", index = true) var folderId: Int? = null,
         var remoteId: String? = null,
         @ColumnInfo(name = "account_id", index = true) var accountId: Int = 0,
-        @ColumnInfo(name = "notification_enabled", defaultValue = "1") var isNotificationEnabled: Boolean = false,
+        @ColumnInfo(name = "notification_enabled", defaultValue = "1") var isNotificationEnabled: Boolean = true,
         @Ignore var unreadCount: Int = 0,
         @Ignore var remoteFolderId: String? = null,
 )

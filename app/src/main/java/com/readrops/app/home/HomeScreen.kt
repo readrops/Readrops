@@ -116,7 +116,7 @@ object HomeScreen : AndroidScreen() {
                     LaunchedEffect(Unit) {
                         tabChannel.receiveAsFlow()
                             .collect {
-                                tabNavigator.current = TimelineTab
+                                tabNavigator.current = it
                             }
                     }
 

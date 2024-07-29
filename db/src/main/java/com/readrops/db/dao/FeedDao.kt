@@ -75,10 +75,10 @@ abstract class FeedDao : BaseDao<Feed> {
      *
      * @param feeds   feeds to insert or update
      * @param account owner of the feeds
-     * @return the list of the inserted feeds ids
+     * @return newly inserted feeds
      */
     @Transaction
-    open suspend fun upsertFeeds(feeds: List<Feed>, account: Account): List<Long> {
+    open suspend fun upsertFeeds(feeds: List<Feed>, account: Account): List<Feed> {
         val localFeedIds = selectFeedRemoteIds(account.id)
 
         val feedsToInsert = feeds.filter { feed -> localFeedIds.none { localFeedId -> feed.remoteId == localFeedId } }
@@ -99,10 +99,13 @@ abstract class FeedDao : BaseDao<Feed> {
             deleteByIds(feedsToDelete, account.id)
         }
 
-        return if (feedsToInsert.isNotEmpty()) {
-            insert(feedsToInsert).apply {
-                feedsToInsert.zip(this).forEach { (feed, id) -> feed.id = id.toInt() }
-            }
-        } else listOf()
+        if (feedsToInsert.isNotEmpty()) {
+            insert(feedsToInsert)
+                .zip(feedsToInsert)
+                .forEach { (id, feed) -> feed.id = id.toInt() }
+
+        }
+
+        return feedsToInsert
     }
 }

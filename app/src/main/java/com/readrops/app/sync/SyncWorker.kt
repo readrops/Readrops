@@ -24,13 +24,13 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.readrops.api.services.Credentials
-import com.readrops.api.services.SyncResult
 import com.readrops.api.utils.AuthInterceptor
 import com.readrops.app.MainActivity
 import com.readrops.app.R
 import com.readrops.app.ReadropsApp
 import com.readrops.app.repositories.BaseRepository
 import com.readrops.app.repositories.ErrorResult
+import com.readrops.app.repositories.SyncResult
 import com.readrops.app.util.FeedColors
 import com.readrops.app.util.putSerializable
 import com.readrops.db.Database
@@ -213,23 +213,23 @@ class SyncWorker(
     private suspend fun fetchFeedColors(
         syncResult: SyncResult,
         notificationBuilder: Builder
-    ) {
+    ) = with(syncResult) {
         notificationBuilder.setContentTitle(applicationContext.getString(R.string.get_feeds_colors))
 
-        for ((index, feedId) in syncResult.newFeedIds.withIndex()) {
-            val feedName = syncResult.feeds.first { it.id == feedId.toInt() }.name
+        for ((index, feed) in feeds.withIndex()) {
+            notificationBuilder.setContentText(feed.name)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(feed.name))
+                .setProgress(feeds.size, index + 1, false)
 
-            notificationBuilder.setContentText(feedName)
-                .setStyle(NotificationCompat.BigTextStyle().bigText(feedName))
-                .setProgress(syncResult.newFeedIds.size, index + 1, false)
             notificationManager.notify(SYNC_NOTIFICATION_ID, notificationBuilder.build())
 
             try {
-                val color =
-                    FeedColors.getFeedColor(syncResult.feeds.first { it.id == feedId.toInt() }.iconUrl!!)
-                database.feedDao().updateFeedColor(feedId.toInt(), color)
+                if (feed.iconUrl != null) {
+                    val color = FeedColors.getFeedColor(feed.iconUrl!!)
+                    database.feedDao().updateFeedColor(feed.id, color)
+                }
             } catch (e: Exception) {
-                Log.e(TAG, "$feedName: ${e.message}")
+                Log.e(TAG, "${feed.name}: ${e.message}")
             }
         }
     }

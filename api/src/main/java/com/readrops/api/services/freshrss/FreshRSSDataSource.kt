@@ -1,6 +1,6 @@
 package com.readrops.api.services.freshrss
 
-import com.readrops.api.services.SyncResult
+import com.readrops.api.services.DataSourceResult
 import com.readrops.api.services.SyncType
 import com.readrops.api.services.freshrss.adapters.FreshRSSUserInfo
 import com.readrops.db.entities.Item
@@ -38,9 +38,9 @@ class FreshRSSDataSource(private val service: FreshRSSService) {
         syncType: SyncType,
         syncData: FreshRSSSyncData,
         writeToken: String
-    ): SyncResult = with(CoroutineScope(Dispatchers.IO)) {
+    ): DataSourceResult = with(CoroutineScope(Dispatchers.IO)) {
         return if (syncType == SyncType.INITIAL_SYNC) {
-            SyncResult().apply {
+            DataSourceResult().apply {
                 listOf(
                     async { folders = getFolders() },
                     async { feeds = getFeeds() },
@@ -54,7 +54,7 @@ class FreshRSSDataSource(private val service: FreshRSSService) {
 
             }
         } else {
-            SyncResult().apply {
+            DataSourceResult().apply {
                 listOf(
                     async { setItemsReadState(syncData, writeToken) },
                     async { setItemsStarState(syncData, writeToken) },

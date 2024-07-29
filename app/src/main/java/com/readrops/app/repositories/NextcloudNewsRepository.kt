@@ -1,7 +1,6 @@
 package com.readrops.app.repositories
 
 import com.readrops.api.services.Credentials
-import com.readrops.api.services.SyncResult
 import com.readrops.api.services.SyncType
 import com.readrops.api.services.nextcloudnews.NextcloudNewsDataSource
 import com.readrops.api.services.nextcloudnews.NextcloudNewsSyncData
@@ -66,18 +65,23 @@ class NextcloudNewsRepository(
 
         val newLastModified = DateTime.now().millis / 1000L
 
-        return dataSource.synchronize(syncType, syncData).apply {
+        return dataSource.synchronize(syncType, syncData).run {
             insertFolders(folders)
-            newFeedIds = insertFeeds(feeds)
+            val newFeeds = insertFeeds(feeds)
 
             val initialSync = syncType == SyncType.INITIAL_SYNC
-            insertItems(items, initialSync)
+            val newItems = insertItems(items, initialSync)
             insertItems(starredItems, initialSync)
 
             account.lastModified = newLastModified
             database.accountDao().updateLastModified(newLastModified, account.id)
 
             database.itemStateChangeDao().resetStateChanges(account.id)
+
+            SyncResult(
+                items = newItems,
+                feeds = newFeeds
+            )
         }
     }
 
@@ -140,13 +144,13 @@ class NextcloudNewsRepository(
         database.folderDao().upsertFolders(folders, account)
     }
 
-    private suspend fun insertFeeds(feeds: List<Feed>): List<Long> {
+    private suspend fun insertFeeds(feeds: List<Feed>): List<Feed> {
         feeds.forEach { it.accountId = account.id }
         return database.feedDao().upsertFeeds(feeds, account)
     }
 
-    private suspend fun insertItems(items: List<Item>, initialSync: Boolean) {
-        val itemsToInsert = arrayListOf<Item>()
+    private suspend fun insertItems(items: List<Item>, initialSync: Boolean): List<Item> {
+        val newItems = arrayListOf<Item>()
         val itemsFeedsIds = mutableMapOf<String?, Int>()
 
         for (item in items) {
@@ -159,9 +163,8 @@ class NextcloudNewsRepository(
                 itemsFeedsIds[item.feedRemoteId] = feedId
             }
 
-            if (!initialSync && feedId > 0 && database.itemDao()
-                    .itemExists(item.remoteId!!, feedId)
-            ) {
+            // TODO itemExists request isn't the right one for this case
+            if (!initialSync && feedId > 0 && database.itemDao().itemExists(item.remoteId!!, feedId)) {
                 database.itemDao()
                     .updateReadAndStarState(item.remoteId!!, item.isRead, item.isStarred)
                 continue
@@ -169,11 +172,15 @@ class NextcloudNewsRepository(
 
             item.feedId = feedId
             item.readTime = Utils.readTimeFromString(item.content.orEmpty())
-            itemsToInsert += item
+            newItems += item
         }
 
-        if (itemsToInsert.isNotEmpty()) {
-            database.itemDao().insert(itemsToInsert)
+        if (newItems.isNotEmpty()) {
+            database.itemDao().insert(newItems)
+                .zip(newItems)
+                .forEach { (id, item) -> item.id = id.toInt() }
         }
+
+        return newItems
     }
 }

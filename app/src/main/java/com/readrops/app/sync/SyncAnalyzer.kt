@@ -6,8 +6,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import coil.imageLoader
 import coil.request.ImageRequest
-import com.readrops.api.services.SyncResult
 import com.readrops.app.R
+import com.readrops.app.repositories.SyncResult
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Item
@@ -40,46 +40,48 @@ class SyncAnalyzer(
             }
 
             NotificationContent(title = context.getString(R.string.new_items, "$itemCount"))
-        } else { // new items from a single account
-            getSingleAccountContent(syncResults)
+        } else {
+            // new items from a single account
+            return if (syncResults.isNotEmpty()) {
+                getSingleAccountContent(syncResults.keys.first(), syncResults.values.first())
+            } else {
+                null
+            }
         }
     }
 
-    private suspend fun getSingleAccountContent(syncResults: Map<Account, SyncResult>): NotificationContent? {
-        val syncResultMap = syncResults.filterValues { it.items.isNotEmpty() }
+    private suspend fun getSingleAccountContent(
+        account: Account,
+        syncResult: SyncResult
+    ): NotificationContent? {
+        val feedsIdsForNewItems = getFeedsIdsForNewItems(syncResult)
 
-        if (syncResultMap.values.isNotEmpty()) {
-            val account = syncResultMap.keys.first()
-            val syncResult = syncResultMap.values.first()
-            val feedsIdsForNewItems = getFeedsIdsForNewItems(syncResult)
+        if (account.isNotificationsEnabled) {
+            val feeds = database.feedDao().selectFromIds(feedsIdsForNewItems)
 
-            if (account.isNotificationsEnabled) {
-                val feeds = database.feedDao().selectFromIds(feedsIdsForNewItems)
+            val items =
+                syncResult.items.filter { isFeedNotificationEnabledForItem(feeds, it) }
+            val itemCount = items.size
 
-                val items =
-                    syncResult.items.filter { isFeedNotificationEnabledForItem(feeds, it) }
-                val itemCount = items.size
-
-                return when {
-                    // multiple new items from several feeds
-                    feedsIdsForNewItems.size > 1 && itemCount > 1 -> {
-                        NotificationContent(
-                            title = account.accountName!!,
-                            text = context.getString(R.string.new_items, itemCount.toString()),
-                            largeIcon = ContextCompat.getDrawable(
-                                context,
-                                account.accountType!!.iconRes
-                            )!!.toBitmap(),
-                            accountId = account.id
-                        )
-                    }
-                    // multiple new items from a single feed
-                    feedsIdsForNewItems.size == 1 ->
-                        singleFeedCase(feedsIdsForNewItems.first(), syncResult.items, account)
-                    // only one new item from a single feed
-                    itemCount == 1 -> singleFeedCase(items.first().feedId, items, account)
-                    else -> null
+            return when {
+                // multiple new items from several feeds
+                feedsIdsForNewItems.size > 1 && itemCount > 1 -> {
+                    NotificationContent(
+                        title = account.accountName!!,
+                        text = context.getString(R.string.new_items, itemCount.toString()),
+                        largeIcon = ContextCompat.getDrawable(
+                            context,
+                            account.accountType!!.iconRes
+                        )!!.toBitmap(),
+                        accountId = account.id
+                    )
                 }
+                // multiple new items from a single feed
+                feedsIdsForNewItems.size == 1 ->
+                    singleFeedCase(feedsIdsForNewItems.first(), syncResult.items, account)
+                // only one new item from a single feed
+                itemCount == 1 -> singleFeedCase(items.first().feedId, items, account)
+                else -> null
             }
         }
 

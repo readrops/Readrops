@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.readrops.api.services.SyncResult
+import com.readrops.app.repositories.SyncResult
 import com.readrops.app.sync.SyncAnalyzer
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
