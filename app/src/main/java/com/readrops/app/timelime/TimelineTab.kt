@@ -1,6 +1,10 @@
 package com.readrops.app.timelime
 
+import android.Manifest
+import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -79,6 +83,7 @@ object TimelineTab : Tab {
             title = "Timeline",
         )
 
+    @SuppressLint("InlinedApi")
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
@@ -93,8 +98,19 @@ object TimelineTab : Tab {
         val pullToRefreshState = rememberPullToRefreshState()
         val snackbarHostState = remember { SnackbarHostState() }
         val topAppBarState = rememberTopAppBarState()
-        val topAppBarScrollBehavior =
-            TopAppBarDefaults.pinnedScrollBehavior(topAppBarState)
+        val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(topAppBarState)
+
+        val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {
+            screenModel.disableDisplayNotificationsPermission()
+        }
+
+        LaunchedEffect(state.displayNotificationsPermission) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU
+                && state.displayNotificationsPermission
+            ) {
+                launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
 
         LaunchedEffect(state.isRefreshing) {
             if (state.isRefreshing) {
@@ -382,7 +398,10 @@ object TimelineTab : Tab {
                                                     screenModel.updateStarState(itemWithFeed.item)
                                                 },
                                                 onShare = {
-                                                    screenModel.shareItem(itemWithFeed.item, context)
+                                                    screenModel.shareItem(
+                                                        itemWithFeed.item,
+                                                        context
+                                                    )
                                                 },
                                                 size = state.itemSize
                                             )

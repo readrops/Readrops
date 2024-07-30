@@ -14,12 +14,12 @@ import org.koin.core.component.inject
 
 class SyncBroadcastReceiver : BroadcastReceiver(), KoinComponent {
 
+    private val notificationManager by inject<NotificationManagerCompat>()
     private val database by inject<Database>()
 
     @OptIn(DelicateCoroutinesApi::class)
     override fun onReceive(context: Context, intent: Intent) {
-        NotificationManagerCompat.from(context)
-            .cancel(SyncWorker.SYNC_RESULT_NOTIFICATION_ID)
+        notificationManager.cancel(SyncWorker.SYNC_RESULT_NOTIFICATION_ID)
 
         when (intent.action) {
             ACTION_MARK_READ -> {

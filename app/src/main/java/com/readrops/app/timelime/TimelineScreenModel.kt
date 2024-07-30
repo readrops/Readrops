@@ -127,9 +127,10 @@ class TimelineScreenModel(
         screenModelScope.launch(dispatcher) {
             combine(
                 preferences.timelineItemSize.flow,
-                preferences.scrollRead.flow
-            ) { itemSize, scrollRead -> itemSize to scrollRead }
-                .collect { (itemSize, scrollRead) ->
+                preferences.scrollRead.flow,
+                preferences.displayNotificationsPermission.flow
+            ) { a, b, c -> Triple(a, b, c) }
+                .collect { (itemSize, scrollRead, notificationPermission) ->
                     _timelineState.update {
                         it.copy(
                             itemSize = when (itemSize) {
@@ -137,7 +138,8 @@ class TimelineScreenModel(
                                 "regular" -> TimelineItemSize.REGULAR
                                 else -> TimelineItemSize.LARGE
                             },
-                            markReadOnScroll = scrollRead
+                            markReadOnScroll = scrollRead,
+                            displayNotificationsPermission = notificationPermission
                         )
                     }
                 }
@@ -370,6 +372,12 @@ class TimelineScreenModel(
     fun updateLastFirstVisibleItemIndex(index: Int) {
         _listIndexState.update { index }
     }
+
+    fun disableDisplayNotificationsPermission() {
+        screenModelScope.launch {
+            preferences.displayNotificationsPermission.write(false)
+        }
+    }
 }
 
 @Stable
@@ -392,7 +400,8 @@ data class TimelineState(
     val isAccountLocal: Boolean = false,
     val hideReadAllFAB: Boolean = false,
     val itemSize: TimelineItemSize = TimelineItemSize.LARGE,
-    val markReadOnScroll: Boolean = false
+    val markReadOnScroll: Boolean = false,
+    val displayNotificationsPermission: Boolean = false
 ) {
 
     val showSubtitle = filters.subFilter != SubFilter.ALL

@@ -1,6 +1,7 @@
 package com.readrops.app
 
 import android.content.Context
+import androidx.core.app.NotificationManagerCompat
 import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.preferences.SharedPreferencesMigration
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
@@ -50,13 +51,11 @@ val appModule = module {
         AccountCredentialsScreenModel(accountType, mode, get())
     }
 
-    factory { (account: Account) -> NotificationsScreenModel(account, get(), get()) }
+    factory { (account: Account) -> NotificationsScreenModel(account, get(), get(), get()) }
 
     factory { PreferencesScreenModel(get()) }
 
     single { GetFoldersWithFeeds(get()) }
-
-    // repositories
 
     factory<BaseRepository> { (account: Account) ->
         when (account.accountType) {
@@ -101,4 +100,6 @@ val appModule = module {
     single { DataStorePreferences(get()) }
 
     single { Preferences(get()) }
+
+    single { NotificationManagerCompat.from(get()) }
 }

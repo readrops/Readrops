@@ -48,11 +48,9 @@ class SyncWorker(
     params: WorkerParameters
 ) : CoroutineWorker(appContext, params), KoinComponent {
 
-    private val notificationManager = NotificationManagerCompat.from(appContext)
+    private val notificationManager by inject<NotificationManagerCompat>()
     private val database by inject<Database>()
 
-    // TODO handle notification permission for Android 14+ (or 15?)
-    @SuppressLint("MissingPermission")
     override suspend fun doWork(): Result {
         val isManual = tags.contains(WORK_MANUAL)
 
@@ -106,7 +104,6 @@ class SyncWorker(
         }
     }
 
-    @SuppressLint("MissingPermission")
     private suspend fun refreshAccounts(notificationBuilder: Builder): Pair<Result, Map<Account, SyncResult>> {
         val sharedPreferences = get<SharedPreferences>()
         var workResult = Result.success(workDataOf(END_SYNC_KEY to true))
@@ -133,7 +130,10 @@ class SyncWorker(
                     account.accountName
                 )
             )
-            notificationManager.notify(SYNC_NOTIFICATION_ID, notificationBuilder.build())
+
+            if (notificationManager.areNotificationsEnabled()) {
+                notificationManager.notify(SYNC_NOTIFICATION_ID, notificationBuilder.build())
+            }
 
             if (account.isLocal) {
                 val result = refreshLocalAccount(repository, account, notificationBuilder)
@@ -209,7 +209,6 @@ class SyncWorker(
         return result
     }
 
-    @SuppressLint("MissingPermission")
     private suspend fun fetchFeedColors(
         syncResult: SyncResult,
         notificationBuilder: Builder
@@ -221,7 +220,9 @@ class SyncWorker(
                 .setStyle(NotificationCompat.BigTextStyle().bigText(feed.name))
                 .setProgress(feeds.size, index + 1, false)
 
-            notificationManager.notify(SYNC_NOTIFICATION_ID, notificationBuilder.build())
+            if (notificationManager.areNotificationsEnabled()) {
+                notificationManager.notify(SYNC_NOTIFICATION_ID, notificationBuilder.build())
+            }
 
             try {
                 if (feed.iconUrl != null) {
@@ -234,7 +235,6 @@ class SyncWorker(
         }
     }
 
-    @SuppressLint("MissingPermission")
     private suspend fun displaySyncResults(syncResults: Map<Account, SyncResult>) {
         val notificationContent = SyncAnalyzer(applicationContext, database)
             .getNotificationContent(syncResults)
@@ -275,7 +275,10 @@ class SyncWorker(
             }
 
             notificationContent.largeIcon?.let { notificationBuilder.setLargeIcon(it) }
-            notificationManager.notify(SYNC_RESULT_NOTIFICATION_ID, notificationBuilder.build())
+
+            if (notificationManager.areNotificationsEnabled()) {
+                notificationManager.notify(SYNC_RESULT_NOTIFICATION_ID, notificationBuilder.build())
+            }
         }
     }
 

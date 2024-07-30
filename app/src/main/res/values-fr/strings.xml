@@ -190,4 +190,6 @@
     <string name="battery_optimization_already_disabled">L\'optimisation de la batterie est déjà optimisée pour cette appli</string>
     <string name="opml_export_success">Export OPML réussi</string>
     <string name="add_to_favorite">Ajouter aux favoris</string>
+    <string name="grant_access_notifications">Autoriser l\'accès aux notifications</string>
+    <string name="system_notifications_disabled">Les notfications système sont désactivées. Cliquez ici pour les activer</string>
 </resources>

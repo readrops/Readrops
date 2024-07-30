@@ -1,5 +1,6 @@
 package com.readrops.app.notifications
 
+import androidx.core.app.NotificationManagerCompat
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.readrops.app.util.Preferences
@@ -15,14 +16,15 @@ class NotificationsScreenModel(
     private val account: Account,
     private val database: Database,
     private val preferences: Preferences,
+    private val notificationManager: NotificationManagerCompat,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : StateScreenModel<NotificationsState>(NotificationsState(isNotificationsEnabled = account.isNotificationsEnabled)) {
+) : StateScreenModel<NotificationsState>(NotificationsState(areAccountNotificationsEnabled = account.isNotificationsEnabled)) {
 
     init {
         screenModelScope.launch(dispatcher) {
             database.accountDao().selectAccountNotificationsState(account.id)
                 .collect { isNotificationsEnabled ->
-                    mutableState.update { it.copy(isNotificationsEnabled = isNotificationsEnabled) }
+                    mutableState.update { it.copy(areAccountNotificationsEnabled = isNotificationsEnabled) }
                 }
         }
 
@@ -69,13 +71,18 @@ class NotificationsScreenModel(
             }
         }
     }
+
+    fun refreshNotificationManager() {
+        mutableState.update { it.copy(areNotificationsEnabled = notificationManager.areNotificationsEnabled()) }
+    }
 }
 
 data class NotificationsState(
-    val isNotificationsEnabled: Boolean = false,
+    val areAccountNotificationsEnabled: Boolean = false,
     val feedsWithFolder: List<FeedWithFolder> = emptyList(),
     val showBackgroundSyncDialog: Boolean = false,
-    val isBackGroundSyncEnabled: Boolean = false
+    val isBackGroundSyncEnabled: Boolean = false,
+    val areNotificationsEnabled: Boolean = false
 ) {
 
     val allFeedNotificationsEnabled

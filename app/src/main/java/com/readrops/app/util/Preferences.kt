@@ -60,6 +60,12 @@ class Preferences(
         key = stringPreferencesKey("timeline_item_size"),
         default = "large"
     )
+
+    val displayNotificationsPermission = Preference(
+        dataStore = dataStore,
+        key = booleanPreferencesKey("display_notification_permission"),
+        default = true
+    )
 }
 
 
