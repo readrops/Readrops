@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.os.Build
 import coil.ImageLoader
 import coil.ImageLoaderFactory
+import coil.disk.DiskCache
 import com.readrops.api.apiModule
 import com.readrops.db.dbModule
 import org.koin.android.ext.koin.androidContext
@@ -33,6 +34,12 @@ open class ReadropsApp : Application(), KoinComponent, ImageLoaderFactory {
     override fun newImageLoader(): ImageLoader {
         return ImageLoader.Builder(this)
             .okHttpClient { get() }
+            .diskCache {
+                DiskCache.Builder()
+                    .directory(this.cacheDir.resolve("image_cache"))
+                    .maxSizePercent(0.05)
+                    .build()
+            }
             .crossfade(true)
             .build()
     }
