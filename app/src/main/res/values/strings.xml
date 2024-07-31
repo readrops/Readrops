@@ -201,4 +201,7 @@
     <string name="add_to_favorite">Add to favorites</string>
     <string name="grant_access_notifications">Grant access to Notifications</string>
     <string name="system_notifications_disabled">System notifications are currently disabled. Click here to enable them</string>
+    <string name="show_notifications_background_sync">Show notifications after background synchronization</string>
+    <string name="background_sync_new_articles">Be alerted of new articles after background synchronization</string>
+    <string name="no_article">No article</string>
 </resources>

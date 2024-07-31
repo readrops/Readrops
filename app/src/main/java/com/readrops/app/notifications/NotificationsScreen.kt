@@ -6,8 +6,6 @@ import android.content.Intent
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,7 +25,6 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -45,8 +42,11 @@ import com.readrops.app.R
 import com.readrops.app.more.preferences.PreferencesScreen
 import com.readrops.app.more.preferences.components.BasePreference
 import com.readrops.app.util.components.AndroidScreen
+import com.readrops.app.util.components.CenteredProgressIndicator
+import com.readrops.app.util.components.Placeholder
 import com.readrops.app.util.components.ThreeDotsMenu
 import com.readrops.app.util.components.dialog.TwoChoicesDialog
+import com.readrops.app.util.theme.LargeSpacer
 import com.readrops.app.util.theme.MediumSpacer
 import com.readrops.app.util.theme.spacing
 import com.readrops.db.entities.account.Account
@@ -68,9 +68,10 @@ class NotificationsScreen(val account: Account) : AndroidScreen() {
             TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
         val permissionState = rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS)
-        val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
-            screenModel.refreshNotificationManager()
-        }
+        val launcher =
+            rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
+                screenModel.refreshNotificationManager()
+            }
 
         LaunchedEffect(permissionState.status) {
             if (permissionState.status.isGranted) {
@@ -108,18 +109,25 @@ class NotificationsScreen(val account: Account) : AndroidScreen() {
                         }
                     },
                     actions = {
-                        ThreeDotsMenu(
-                            items = mapOf(
-                                1 to if (state.allFeedNotificationsEnabled) {
-                                    stringResource(id = R.string.disable_all)
-                                } else {
-                                    stringResource(id = R.string.enable_all)
-                                }
-                            ),
-                            onItemClick = {
-                                screenModel.setAllFeedsNotificationsState(!state.allFeedNotificationsEnabled)
+                        if (state.feedsWithFolderState is FeedsWithFolderState.Loaded) {
+                            val loadedState =
+                                state.feedsWithFolderState as FeedsWithFolderState.Loaded
+
+                            if (loadedState.feedsWithFolder.isNotEmpty()) {
+                                ThreeDotsMenu(
+                                    items = mapOf(
+                                        1 to if (loadedState.allFeedNotificationsEnabled) {
+                                            stringResource(id = R.string.disable_all)
+                                        } else {
+                                            stringResource(id = R.string.enable_all)
+                                        }
+                                    ),
+                                    onItemClick = {
+                                        screenModel.setAllFeedsNotificationsState(!loadedState.allFeedNotificationsEnabled)
+                                    }
+                                )
                             }
-                        )
+                        }
                     },
                     scrollBehavior = topAppBarScrollBehavior
                 )
@@ -155,28 +163,29 @@ class NotificationsScreen(val account: Account) : AndroidScreen() {
                 }
 
                 item {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = MaterialTheme.spacing.mediumSpacing)
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.enable_notifications)
-                        )
+                    BasePreference(
+                        title = stringResource(R.string.show_notifications_background_sync),
+                        subtitle = stringResource(R.string.background_sync_new_articles),
+                        onClick = {
+                            screenModel.setAccountNotificationsState(!state.areAccountNotificationsEnabled)
 
-                        Switch(
-                            checked = state.areAccountNotificationsEnabled,
-                            onCheckedChange = {
-                                screenModel.setAccountNotificationsState(it)
-
-                                if (it) {
-                                    screenModel.setBackgroundSyncDialogState(true)
-                                }
+                            if (state.areAccountNotificationsEnabled.not()) {
+                                screenModel.setBackgroundSyncDialogState(true)
                             }
-                        )
-                    }
+                        },
+                        rightComponent = {
+                            Switch(
+                                checked = state.areAccountNotificationsEnabled,
+                                onCheckedChange = {
+                                    screenModel.setAccountNotificationsState(it)
+
+                                    if (it) {
+                                        screenModel.setBackgroundSyncDialogState(true)
+                                    }
+                                }
+                            )
+                        }
+                    )
 
                     MediumSpacer()
 
@@ -187,26 +196,56 @@ class NotificationsScreen(val account: Account) : AndroidScreen() {
                     )
                 }
 
-                items(
-                    items = state.feedsWithFolder,
-                    key = { it.feed.id }
-                ) { feedWithFolder ->
-                    NotificationItem(
-                        feedName = feedWithFolder.feed.name!!,
-                        iconUrl = feedWithFolder.feed.iconUrl,
-                        folderName = feedWithFolder.folderName,
-                        checked = feedWithFolder.feed.isNotificationEnabled,
-                        enabled = state.areAccountNotificationsEnabled,
-                        onCheckChange = {
-                            if (state.areAccountNotificationsEnabled) {
-                                screenModel.setFeedNotificationsState(feedWithFolder.feed.id, it)
+                when (state.feedsWithFolderState) {
+                    is FeedsWithFolderState.Loaded -> {
+                        val feedsWithFolder =
+                            (state.feedsWithFolderState as FeedsWithFolderState.Loaded).feedsWithFolder
+
+                        if (feedsWithFolder.isNotEmpty()) {
+                            items(
+                                items = (state.feedsWithFolderState as FeedsWithFolderState.Loaded).feedsWithFolder,
+                                key = { it.feed.id }
+                            ) { feedWithFolder ->
+                                NotificationItem(
+                                    feedName = feedWithFolder.feed.name!!,
+                                    iconUrl = feedWithFolder.feed.iconUrl,
+                                    folderName = feedWithFolder.folderName,
+                                    checked = feedWithFolder.feed.isNotificationEnabled,
+                                    enabled = state.areAccountNotificationsEnabled,
+                                    onCheckChange = {
+                                        if (state.areAccountNotificationsEnabled) {
+                                            screenModel.setFeedNotificationsState(
+                                                feedWithFolder.feed.id,
+                                                it
+                                            )
+                                        }
+                                    }
+                                )
+                            }
+                        } else {
+                            item {
+                                LargeSpacer()
+
+                                Placeholder(
+                                    text = stringResource(id = R.string.no_feed),
+                                    painter = painterResource(id = R.drawable.ic_rss_feed_grey),
+                                )
                             }
                         }
-                    )
+                    }
+
+                    FeedsWithFolderState.Loading -> {
+                        item {
+                            repeat(4) {
+                                LargeSpacer()
+                            }
+
+                            CenteredProgressIndicator()
+                        }
+                    }
                 }
             }
         }
-
     }
 }
 

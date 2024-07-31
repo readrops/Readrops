@@ -427,8 +427,8 @@ object TimelineTab : Tab {
                                 )
 
                                 Placeholder(
-                                    text = stringResource(R.string.no_item),
-                                    painter = painterResource(R.drawable.ic_rss_feed_grey)
+                                    text = stringResource(R.string.no_article),
+                                    painter = painterResource(R.drawable.ic_timeline),
                                 )
                             }
                         }

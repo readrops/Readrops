@@ -10,19 +10,23 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.readrops.app.util.theme.ShortSpacer
-import com.readrops.app.util.toDp
 
 
 @Composable
 fun CenteredColumn(
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         content()
     }
@@ -32,19 +36,26 @@ fun CenteredColumn(
 fun Placeholder(
     text: String,
     painter: Painter,
+    modifier: Modifier = Modifier,
+    textStyle: TextStyle = MaterialTheme.typography.titleLarge,
+    iconSize: Dp = 48.dp,
+    tint: Color = MaterialTheme.colorScheme.primary
 ) {
-    CenteredColumn {
+    CenteredColumn(
+        modifier = modifier
+    ) {
         Icon(
             painter = painter,
+            tint = tint,
             contentDescription = null,
-            modifier = Modifier.size(MaterialTheme.typography.displayMedium.toDp() * 1.5f)
+            modifier = Modifier.size(iconSize)
         )
 
         ShortSpacer()
 
         Text(
             text = text,
-            style = MaterialTheme.typography.displaySmall
+            style = textStyle
         )
     }
 }

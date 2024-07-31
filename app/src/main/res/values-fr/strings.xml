@@ -192,4 +192,7 @@
     <string name="add_to_favorite">Ajouter aux favoris</string>
     <string name="grant_access_notifications">Autoriser l\'accès aux notifications</string>
     <string name="system_notifications_disabled">Les notfications système sont désactivées. Cliquez ici pour les activer</string>
+    <string name="show_notifications_background_sync">Afficher les notifications après la synchronisation en arrière-plan</string>
+    <string name="background_sync_new_articles">Soyez prévenus des nouveaux articles après la synchronisation en arrière-plan</string>
+    <string name="no_article">Aucun article</string>
 </resources>

@@ -18,7 +18,12 @@ class NotificationsScreenModel(
     private val preferences: Preferences,
     private val notificationManager: NotificationManagerCompat,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : StateScreenModel<NotificationsState>(NotificationsState(areAccountNotificationsEnabled = account.isNotificationsEnabled)) {
+) : StateScreenModel<NotificationsState>(
+    NotificationsState(
+        areNotificationsEnabled = notificationManager.areNotificationsEnabled(),
+        areAccountNotificationsEnabled = account.isNotificationsEnabled
+    )
+) {
 
     init {
         screenModelScope.launch(dispatcher) {
@@ -31,7 +36,11 @@ class NotificationsScreenModel(
         screenModelScope.launch(dispatcher) {
             database.feedDao().selectFeedsWithFolderName(account.id)
                 .collect { feedsWithFolder ->
-                    mutableState.update { it.copy(feedsWithFolder = feedsWithFolder) }
+                    mutableState.update {
+                        it.copy(
+                            feedsWithFolderState = FeedsWithFolderState.Loaded(feedsWithFolder)
+                        )
+                    }
                 }
         }
 
@@ -79,12 +88,18 @@ class NotificationsScreenModel(
 
 data class NotificationsState(
     val areAccountNotificationsEnabled: Boolean = false,
-    val feedsWithFolder: List<FeedWithFolder> = emptyList(),
+    val feedsWithFolderState: FeedsWithFolderState = FeedsWithFolderState.Loading,
     val showBackgroundSyncDialog: Boolean = false,
     val isBackGroundSyncEnabled: Boolean = false,
     val areNotificationsEnabled: Boolean = false
-) {
+)
 
-    val allFeedNotificationsEnabled
-        get() = feedsWithFolder.none { !it.feed.isNotificationEnabled }
+sealed class FeedsWithFolderState {
+    data object Loading : FeedsWithFolderState()
+
+    data class Loaded(val feedsWithFolder: List<FeedWithFolder>) : FeedsWithFolderState() {
+
+        val allFeedNotificationsEnabled
+            get() = feedsWithFolder.none { !it.feed.isNotificationEnabled }
+    }
 }

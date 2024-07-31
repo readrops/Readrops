@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.readrops.app.R
 import com.readrops.app.util.theme.MediumSpacer
-import com.readrops.app.util.theme.VeryShortSpacer
 import com.readrops.app.util.theme.spacing
 
 @Composable
@@ -62,13 +61,10 @@ fun NotificationItem(
                     text = feedName,
                     style = MaterialTheme.typography.bodyLarge,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-
-                    )
+                    overflow = TextOverflow.Ellipsis
+                )
 
                 if (folderName != null) {
-                    VeryShortSpacer()
-
                     Text(
                         text = folderName,
                         style = MaterialTheme.typography.bodyMedium,
