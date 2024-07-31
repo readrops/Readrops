@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -29,7 +28,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -38,6 +36,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.readrops.api.utils.DateUtils
 import com.readrops.app.R
+import com.readrops.app.util.components.FeedIcon
 import com.readrops.app.util.theme.ShortSpacer
 import com.readrops.app.util.theme.spacing
 import com.readrops.db.pojo.ItemWithFeed
@@ -258,12 +257,9 @@ fun TimelineItemHeader(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.weight(1f)
         ) {
-            AsyncImage(
-                model = feedIconUrl,
-                error = painterResource(id = R.drawable.ic_rss_feed_grey),
-                placeholder = painterResource(R.drawable.ic_rss_feed_grey),
-                contentDescription = feedName,
-                modifier = Modifier.size(24.dp)
+            FeedIcon(
+                iconUrl = feedIconUrl,
+                name = feedName
             )
 
             ShortSpacer()

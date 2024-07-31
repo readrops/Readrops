@@ -22,9 +22,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import com.readrops.app.R
 import com.readrops.app.timelime.TimelineState
+import com.readrops.app.util.components.FeedIcon
 import com.readrops.app.util.theme.spacing
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
@@ -96,12 +96,9 @@ fun TimelineDrawer(
                                 )
                             },
                             icon = {
-                                AsyncImage(
-                                    model = feed.iconUrl,
-                                    contentDescription = feed.name,
-                                    error = painterResource(id = R.drawable.ic_rss_feed_grey),
-                                    placeholder = painterResource(id = R.drawable.ic_folder_grey),
-                                    modifier = Modifier.size(24.dp)
+                                FeedIcon(
+                                    iconUrl = feed.iconUrl,
+                                    name = feed.name!!
                                 )
                             },
                             badge = { Text(feed.unreadCount.toString()) },
@@ -136,7 +133,16 @@ fun DrawerDefaultItems(
     )
 
     NavigationDrawerItem(
-        label = { Text("${stringResource(id = R.string.new_articles)} (${stringResource(id = R.string.unread, unreadNewItemsCount)})") },
+        label = {
+            Text(
+                "${stringResource(id = R.string.new_articles)} (${
+                    stringResource(
+                        id = R.string.unread,
+                        unreadNewItemsCount
+                    )
+                })"
+            )
+        },
         icon = {
             Icon(
                 painter = painterResource(id = R.drawable.ic_new),

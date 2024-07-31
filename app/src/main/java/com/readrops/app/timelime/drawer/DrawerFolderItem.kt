@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -29,11 +28,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import com.readrops.app.R
+import com.readrops.app.util.components.FeedIcon
 import com.readrops.app.util.theme.DrawerSpacing
 import com.readrops.db.entities.Feed
 
@@ -122,12 +119,9 @@ fun DrawerFolderItem(
                         )
                     },
                     icon = {
-                        AsyncImage(
-                            model = feed.iconUrl,
-                            contentDescription = feed.name,
-                            error = painterResource(id = R.drawable.ic_rss_feed_grey),
-                            placeholder = painterResource(id = R.drawable.ic_folder_grey),
-                            modifier = Modifier.size(24.dp)
+                        FeedIcon(
+                            iconUrl = feed.iconUrl,
+                            name = feed.name!!
                         )
                     },
                     badge = { Text(feed.unreadCount.toString()) },
