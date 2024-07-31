@@ -122,7 +122,7 @@ class AccountSelectionScreen : AndroidScreen() {
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f)
-                    .padding(MaterialTheme.spacing.mediumSpacing)
+                        .padding(MaterialTheme.spacing.mediumSpacing)
                 ) {
                     Image(
                         painter = adaptiveIconPainterResource(id = R.mipmap.ic_launcher),
@@ -144,7 +144,8 @@ class AccountSelectionScreen : AndroidScreen() {
                             Text(
                                 text = stringResource(id = R.string.choose_account),
                                 style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier.align(Alignment.CenterHorizontally)
+                                modifier = Modifier
+                                    .align(Alignment.CenterHorizontally)
                                     .padding(top = MaterialTheme.spacing.mediumSpacing)
                             )
 
@@ -179,7 +180,7 @@ class AccountSelectionScreen : AndroidScreen() {
                             MediumSpacer()
 
                             Text(
-                                text = "External",
+                                text = stringResource(R.string.external),
                                 style = MaterialTheme.typography.bodyMedium,
                                 modifier = Modifier.padding(start = MaterialTheme.spacing.mediumSpacing)
                             )

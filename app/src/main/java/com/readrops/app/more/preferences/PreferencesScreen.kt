@@ -168,7 +168,7 @@ class PreferencesScreen : AndroidScreen() {
                             SwitchPreferenceWidget(
                                 preference = loadedState.scrollReadPref.second,
                                 isChecked = loadedState.scrollReadPref.first,
-                                title = stringResource(id = R.string.mark_items_read)
+                                title = stringResource(id = R.string.mark_items_read_on_scroll)
                             )
 
                             PreferenceHeader(text = stringResource(id = R.string.item_view))

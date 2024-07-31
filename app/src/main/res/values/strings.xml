@@ -146,7 +146,7 @@
     <string name="theme_value_dark" translatable="false">dark</string>
     <string name="theme_value_system" translatable="false">system</string>
     <string name="hide_feeds">Hide feeds without new items</string>
-    <string name="mark_items_read">Mark items read on scroll</string>
+    <string name="mark_items_read_on_scroll">Mark items read on scroll</string>
     <string name="new_articles">New articles</string>
     <string name="filters">Filters</string>
     <plurals name="error_occurred">
@@ -204,4 +204,17 @@
     <string name="show_notifications_background_sync">Show notifications after background synchronization</string>
     <string name="background_sync_new_articles">Be alerted of new articles after background synchronization</string>
     <string name="no_article">No article</string>
+    <string name="not_valid_url">Input is not a valid URL</string>
+    <string name="field_cant_be_empty">Field can\'t be empty</string>
+    <string name="no_rss_feed_found">No RSS feed found</string>
+    <string name="not_valid_rss_feed">The provided URL is not a valid RSS feed</string>
+    <string name="error_occurred">An error occurred</string>
+    <string name="more">More</string>
+    <string name="show_oldest_articles_first">Show oldest articles first</string>
+    <string name="delete_feed_question">Do you want to delete feed %1$s?</string>
+    <string name="delete_folder_question">Do you want to delete folder %1$s? All linked feeds will also be deleted.</string>
+    <string name="update_color">Update color</string>
+    <string name="external">External</string>
+    <string name="mark_all_articles_read">Mark all articles as read</string>
+    <string name="mark_all_articles_read_question">Do you really want to mark all items as read?</string>
 </resources>

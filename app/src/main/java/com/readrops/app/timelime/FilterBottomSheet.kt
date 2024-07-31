@@ -75,7 +75,7 @@ fun FilterBottomSheet(
                 ShortSpacer()
 
                 Text(
-                    text = "Show oldest items first"
+                    text = stringResource(R.string.show_oldest_articles_first)
                 )
             }
 

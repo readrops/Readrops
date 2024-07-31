@@ -42,6 +42,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -351,8 +352,11 @@ fun SimpleTitle(
 
         ShortSpacer()
 
-        val readTime =
-            if (item.readTime < 1) "< 1 min" else "${item.readTime.roundToInt()} mins"
+        val readTime = if (item.readTime > 1) {
+            stringResource(id = R.string.read_time, item.readTime.roundToInt())
+        } else {
+            stringResource(id = R.string.read_time_lower_than_1)
+        }
         Text(
             text = "${DateUtils.formattedDate(item.pubDate!!)} · $readTime",
             style = MaterialTheme.typography.labelMedium,

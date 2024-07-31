@@ -249,7 +249,7 @@ object FeedTab : Tab {
             is DialogState.DeleteFeed -> {
                 TwoChoicesDialog(
                     title = stringResource(R.string.delete_feed),
-                    text = "Do you want to delete feed ${dialog.feed.name}?",
+                    text = stringResource(R.string.delete_feed_question, dialog.feed.name!!),
                     icon = rememberVectorPainter(image = Icons.Default.Delete),
                     confirmText = stringResource(R.string.delete),
                     dismissText = stringResource(R.string.cancel),
@@ -299,7 +299,7 @@ object FeedTab : Tab {
             is DialogState.DeleteFolder -> {
                 TwoChoicesDialog(
                     title = stringResource(R.string.delete_folder),
-                    text = "Do you want to delete folder ${dialog.folder.name}?",
+                    text = stringResource(R.string.delete_folder_question, dialog.folder.name!!),
                     icon = rememberVectorPainter(image = Icons.Default.Delete),
                     confirmText = stringResource(R.string.delete),
                     dismissText = stringResource(R.string.cancel),

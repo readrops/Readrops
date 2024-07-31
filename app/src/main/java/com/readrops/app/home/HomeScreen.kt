@@ -71,7 +71,7 @@ object HomeScreen : AndroidScreen() {
                                         contentDescription = null
                                     )
                                 },
-                                label = { Text("Timeline") }
+                                label = { Text(stringResource(id = R.string.timeline)) }
                             )
 
                             NavigationBarItem(
@@ -107,7 +107,7 @@ object HomeScreen : AndroidScreen() {
                                         contentDescription = null,
                                     )
                                 },
-                                label = { Text("More") }
+                                label = { Text(stringResource(id = R.string.more)) }
                             )
                         }
                     },

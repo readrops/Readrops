@@ -1,24 +1,25 @@
 package com.readrops.app.util.components
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.readrops.app.R
 
 
 sealed class TextFieldError {
-    object EmptyField : TextFieldError()
-    object BadUrl : TextFieldError()
-    object UnreachableUrl : TextFieldError()
-    object NoRSSFeed : TextFieldError()
-    object NoRSSUrl : TextFieldError()
+    data object EmptyField : TextFieldError()
+    data object BadUrl : TextFieldError()
+    data object UnreachableUrl : TextFieldError()
+    data object NoRSSFeed : TextFieldError()
+    data object NoRSSUrl : TextFieldError()
 
     @Composable
     fun errorText(): String =
-        // TODO replace by string resources
         when (this) {
-            BadUrl -> "Input is not a valid URL"
-            EmptyField -> "Field can't be empty"
-            NoRSSFeed -> "No RSS feed found"
-            NoRSSUrl -> "The provided URL is not a valid RSS feed"
-            UnreachableUrl -> "Unreachable URL"
+            BadUrl -> stringResource(R.string.not_valid_url)
+            EmptyField -> stringResource(R.string.field_cant_be_empty)
+            NoRSSFeed -> stringResource(R.string.no_rss_feed_found)
+            NoRSSUrl -> stringResource(R.string.not_valid_rss_feed)
+            UnreachableUrl -> stringResource(R.string.unreachable_url)
         }
 }
 

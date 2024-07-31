@@ -80,7 +80,7 @@ object TimelineTab : Tab {
         @Composable
         get() = TabOptions(
             index = 1u,
-            title = "Timeline",
+            title = stringResource(id = R.string.timeline),
         )
 
     @SuppressLint("InlinedApi")
@@ -192,11 +192,11 @@ object TimelineTab : Tab {
         when (val dialog = state.dialog) {
             is DialogState.ConfirmDialog -> {
                 TwoChoicesDialog(
-                    title = "Mark all items as read",
-                    text = "Do you really want to mark all items as read?",
+                    title = stringResource(R.string.mark_all_articles_read),
+                    text = stringResource(R.string.mark_all_articles_read_question),
                     icon = painterResource(id = R.drawable.ic_rss_feed_grey),
-                    confirmText = "Validate",
-                    dismissText = "Cancel",
+                    confirmText = stringResource(id = R.string.validate),
+                    dismissText = stringResource(id = R.string.cancel),
                     onDismiss = { screenModel.closeDialog() },
                     onConfirm = {
                         screenModel.closeDialog()

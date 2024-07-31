@@ -107,7 +107,7 @@ fun FeedModalBottomSheet(
             )
 
             BottomSheetOption(
-                text = "Update color",
+                text = stringResource(R.string.update_color),
                 icon = ImageVector.vectorResource(R.drawable.ic_color),
                 onClick = onUpdateColor
             )

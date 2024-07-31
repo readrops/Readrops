@@ -43,7 +43,7 @@ object MoreTab : Tab, KoinComponent {
         @Composable
         get() = TabOptions(
             index = 4u,
-            title = "More"
+            title = stringResource(R.string.more)
         )
 
 

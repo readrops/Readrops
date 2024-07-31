@@ -140,7 +140,7 @@
     <string name="app_description">App distribuée sous la licence GPLv3</string>
     <string name="system">Thème du système</string>
     <string name="hide_feeds">Cacher les flux sans nouveaux items</string>
-    <string name="mark_items_read">Marquer les items comme lus pendant le défilement</string>
+    <string name="mark_items_read_on_scroll">Marquer les items comme lus pendant le défilement</string>
     <string name="filters">Filtres</string>
     <plurals name="error_occurred">
         <item quantity="one">Une erreur s\'est produite</item>
@@ -195,4 +195,17 @@
     <string name="show_notifications_background_sync">Afficher les notifications après la synchronisation en arrière-plan</string>
     <string name="background_sync_new_articles">Soyez prévenus des nouveaux articles après la synchronisation en arrière-plan</string>
     <string name="no_article">Aucun article</string>
+    <string name="not_valid_url">La saisie n\'est pas une URL valide</string>
+    <string name="field_cant_be_empty">Le champ ne peut pas être vide</string>
+    <string name="no_rss_feed_found">Aucun flux RSS trouvé</string>
+    <string name="not_valid_rss_feed">L\'URL fournie n\'est pas un flux RSS valide</string>
+    <string name="error_occurred">Une erreur est survenue</string>
+    <string name="more">Plus</string>
+    <string name="show_oldest_articles_first">Afficher les articles les plus anciens en premier</string>
+    <string name="delete_feed_question">Voulez-vous supprimer le flux %1$s ?</string>
+    <string name="delete_folder_question">Voulez-vous supprimer le dossier %1$s ? Tous les flux associés seront également supprimés.</string>
+    <string name="update_color">Modifier la couleur</string>
+    <string name="external">Externe</string>
+    <string name="mark_all_articles_read">Marquer les articles comme lus</string>
+    <string name="mark_all_articles_read_question">Voulez-vous vraiment marquer tous les articles comme lus ?</string>
 </resources>
