@@ -208,4 +208,9 @@
     <string name="external">Externe</string>
     <string name="mark_all_articles_read">Marquer les articles comme lus</string>
     <string name="mark_all_articles_read_question">Voulez-vous vraiment marquer tous les articles comme lus ?</string>
+    <string name="readrops_crashed">Readrops a planté.</string>
+    <string name="crash_message">Si vous voyez ceci, cela signifie que l\'application a rencontré une erreur inattendue. Si cela est possible, merci de bien vouloir signaler cette erreur sur Github.</string>
+    <string name="report_error_github">Signaler l\'erreur sur Github</string>
+    <string name="copy_error_clipboard">Copier l\'erreur dans le presse-papier</string>
+    <string name="copied">Copié !</string>
 </resources>

@@ -24,7 +24,9 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <receiver android:name=".sync.SyncBroadcastReceiver" android:exported="false" />
+        <receiver
+            android:name=".sync.SyncBroadcastReceiver"
+            android:exported="false" />
 
         <activity
             android:name=".MainActivity"
@@ -38,7 +40,13 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".util.CrashActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:finishOnTaskLaunch="true"
+            android:launchMode="singleInstance"
+            android:theme="@style/Theme.Readrops" />
     </application>
-
 
 </manifest>

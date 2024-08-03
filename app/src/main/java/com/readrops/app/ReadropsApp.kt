@@ -3,12 +3,14 @@ package com.readrops.app
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationManagerCompat
 import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.disk.DiskCache
 import com.readrops.api.apiModule
+import com.readrops.app.util.CrashActivity
 import com.readrops.db.dbModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -16,11 +18,23 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
+import kotlin.system.exitProcess
 
 open class ReadropsApp : Application(), KoinComponent, ImageLoaderFactory {
 
     override fun onCreate() {
         super.onCreate()
+
+        Thread.setDefaultUncaughtExceptionHandler { _, throwable ->
+            val intent = Intent(this, CrashActivity::class.java).apply {
+                putExtra(CrashActivity.THROWABLE_KEY, throwable)
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            }
+
+            startActivity(intent)
+            exitProcess(0)
+        }
 
         startKoin {
             androidLogger(Level.ERROR)

@@ -217,4 +217,9 @@
     <string name="external">External</string>
     <string name="mark_all_articles_read">Mark all articles as read</string>
     <string name="mark_all_articles_read_question">Do you really want to mark all items as read?</string>
+    <string name="readrops_crashed">Readrops crashed.</string>
+    <string name="crash_message">I you see this, it means the app ran into an unexpected error. Please if you can, report the error on Github.</string>
+    <string name="report_error_github">Report the error on Github</string>
+    <string name="copy_error_clipboard">Copy error to clipboard</string>
+    <string name="copied">Copied!</string>
 </resources>
