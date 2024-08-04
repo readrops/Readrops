@@ -5,7 +5,7 @@ import com.gitlab.mvysny.konsumexml.Names
 import com.gitlab.mvysny.konsumexml.allChildrenAutoIgnore
 import com.readrops.api.localfeed.XmlAdapter
 import com.readrops.api.localfeed.XmlAdapter.Companion.AUTHORS_MAX
-import com.readrops.api.utils.*
+import com.readrops.api.utils.DateUtils
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.extensions.nonNullText
 import com.readrops.api.utils.extensions.nullableText
@@ -40,7 +40,7 @@ class RSS1ItemAdapter : XmlAdapter<Item> {
             if (item.pubDate == null) item.pubDate = LocalDateTime.now()
             if (item.link == null) item.link = about
                     ?: throw ParseException("RSS1 link or about element is required")
-            item.guid = item.link
+            item.remoteId = item.link
 
             if (authors.filterNotNull().isNotEmpty()) item.author = authors.filterNotNull()
                     .joinToString(limit = AUTHORS_MAX)

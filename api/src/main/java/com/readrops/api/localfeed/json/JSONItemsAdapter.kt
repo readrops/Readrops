@@ -33,7 +33,7 @@ class JSONItemsAdapter : JsonAdapter<List<Item>>() {
                 while (hasNext()) {
                     with(item) {
                         when (selectName(names)) {
-                            0 -> guid = nextNonEmptyString()
+                            0 -> remoteId = nextNonEmptyString()
                             1 -> link = nextNonEmptyString()
                             2 -> title = nextNonEmptyString()
                             3 -> contentHtml = nextNullableString()

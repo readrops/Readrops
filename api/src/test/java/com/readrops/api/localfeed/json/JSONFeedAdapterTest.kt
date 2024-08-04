@@ -9,7 +9,6 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import junit.framework.TestCase
 import junit.framework.TestCase.assertEquals
-import junit.framework.TestCase.assertTrue
 import okio.Buffer
 import org.junit.Assert.assertThrows
 import org.junit.Test
@@ -40,7 +39,7 @@ class JSONFeedAdapterTest {
 
         with(items[0]) {
             assertEquals(items.size, 10)
-            assertEquals(guid, "http://flyingmeat.com/blog/archives/2017/9/acorn_and_10.13.html")
+            assertEquals(remoteId, "http://flyingmeat.com/blog/archives/2017/9/acorn_and_10.13.html")
             assertEquals(title, "Acorn and 10.13")
             assertEquals(link, "http://flyingmeat.com/blog/archives/2017/9/acorn_and_10.13.html")
             assertEquals(pubDate, DateUtils.parse("2017-09-25T14:27:27-07:00"))

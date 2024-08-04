@@ -25,7 +25,6 @@ class NextcloudNewsItemsAdapterTest {
 
         with(item) {
             assertEquals(remoteId, "3443")
-            assertEquals(guid, "3059047a572cd9cd5d0bf645faffd077")
             assertEquals(link, "http://grulja.wordpress.com/2013/04/29/plasma-nm-after-the-solid-sprint/")
             assertEquals(title, "Plasma-nm after the solid sprint")
             assertEquals(author, "Jan Grulich (grulja)")

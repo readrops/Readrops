@@ -90,7 +90,7 @@ class LocalRSSRepositoryTest : KoinTest {
 
         assertTrue { result.first.items.isNotEmpty() }
         assertTrue {
-            database.itemDao().itemExists(result.first.items.first().guid!!, account.id)
+            database.itemDao().itemExists(result.first.items.first().remoteId!!, account.id)
         }
     }
 
@@ -110,7 +110,7 @@ class LocalRSSRepositoryTest : KoinTest {
 
         assertTrue { result.first.items.isNotEmpty() }
         assertTrue {
-            database.itemDao().itemExists(result.first.items.first().guid!!, account.id)
+            database.itemDao().itemExists(result.first.items.first().remoteId!!, account.id)
         }
     }
 }

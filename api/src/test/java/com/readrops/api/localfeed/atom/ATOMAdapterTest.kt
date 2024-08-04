@@ -9,7 +9,6 @@ import junit.framework.TestCase.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.lang.Exception
 
 class ATOMAdapterTest {
 
@@ -37,7 +36,7 @@ class ATOMAdapterTest {
             assertEquals(pubDate, DateUtils.parse("2020-09-06T21:09:59Z"))
             assertEquals(author, "Shinokuni")
             assertEquals(description, "Summary")
-            assertEquals(guid, "tag:github.com,2008:Grit::Commit/c15f093a1bc4211e85f8d1817c9073e307afe5ac")
+            assertEquals(remoteId, "tag:github.com,2008:Grit::Commit/c15f093a1bc4211e85f8d1817c9073e307afe5ac")
             TestCase.assertNotNull(content)
         }
     }

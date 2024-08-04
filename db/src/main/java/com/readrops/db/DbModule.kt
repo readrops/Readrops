@@ -7,7 +7,7 @@ val dbModule = module {
 
     single(createdAtStart = true) {
         Room.databaseBuilder(get(), Database::class.java, "readrops-db")
-            .addMigrations(MigrationFrom1To2, MigrationFrom2To3)
+            .addMigrations(MigrationFrom1To2, MigrationFrom2To3, MigrationFrom3To4)
             .build()
     }
 }

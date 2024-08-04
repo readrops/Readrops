@@ -4,7 +4,7 @@ import com.gitlab.mvysny.konsumexml.Konsumer
 import com.gitlab.mvysny.konsumexml.Names
 import com.gitlab.mvysny.konsumexml.allChildrenAutoIgnore
 import com.readrops.api.localfeed.XmlAdapter
-import com.readrops.api.utils.*
+import com.readrops.api.utils.DateUtils
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.extensions.nonNullText
 import com.readrops.api.utils.extensions.nullableText
@@ -22,7 +22,7 @@ class ATOMItemAdapter : XmlAdapter<Item> {
                 konsumer.allChildrenAutoIgnore(names) {
                     when (tagName) {
                         "title" -> title = nonNullText()
-                        "id" -> guid = nullableText()
+                        "id" -> remoteId = nullableText()
                         "updated" -> pubDate = DateUtils.parse(nullableText())
                         "link" -> parseLink(this, this@apply)
                         "author" -> allChildrenAutoIgnore("name") { author = nullableText() }
@@ -35,7 +35,7 @@ class ATOMItemAdapter : XmlAdapter<Item> {
 
             validateItem(item)
             if (item.pubDate == null) item.pubDate = LocalDateTime.now()
-            if (item.guid == null) item.guid = item.link
+            if (item.remoteId == null) item.remoteId = item.link
 
             item
         } catch (e: Exception) {

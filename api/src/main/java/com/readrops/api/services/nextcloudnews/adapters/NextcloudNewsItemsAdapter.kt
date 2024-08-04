@@ -1,11 +1,11 @@
 package com.readrops.api.services.nextcloudnews.adapters
 
 import android.annotation.SuppressLint
-import com.readrops.db.entities.Item
 import com.readrops.api.utils.ApiUtils
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.extensions.nextNonEmptyString
 import com.readrops.api.utils.extensions.nextNullableString
+import com.readrops.db.entities.Item
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
@@ -49,7 +49,6 @@ class NextcloudNewsItemsAdapter : JsonAdapter<List<Item>>() {
                             8 -> feedRemoteId = reader.nextInt().toString()
                             9 -> isRead = !reader.nextBoolean() // the negation is important here
                             10 -> isStarred = reader.nextBoolean()
-                            11 -> guid = reader.nextNullableString()
                             else -> reader.skipValue()
                         }
                     }
@@ -73,6 +72,6 @@ class NextcloudNewsItemsAdapter : JsonAdapter<List<Item>>() {
 
     companion object {
         val NAMES: JsonReader.Options = JsonReader.Options.of("id", "url", "title", "author",
-                "pubDate", "body", "enclosureMime", "enclosureLink", "feedId", "unread", "starred", "guidHash")
+                "pubDate", "body", "enclosureMime", "enclosureLink", "feedId", "unread", "starred")
     }
 }
