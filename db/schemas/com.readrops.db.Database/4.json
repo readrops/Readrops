@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "6a1403979efe044075bf2f30a47a9e08",
+    "identityHash": "1cd84a05829477201803f5f27275fe29",
     "entities": [
       {
         "tableName": "Feed",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT, `description` TEXT, `url` TEXT, `siteUrl` TEXT, `lastUpdated` TEXT, `text_color` INTEGER NOT NULL, `background_color` INTEGER NOT NULL, `icon_url` TEXT, `etag` TEXT, `last_modified` TEXT, `folder_id` INTEGER, `remoteId` TEXT, `account_id` INTEGER NOT NULL, `notification_enabled` INTEGER NOT NULL DEFAULT 1, FOREIGN KEY(`folder_id`) REFERENCES `Folder`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`account_id`) REFERENCES `Account`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT, `description` TEXT, `url` TEXT, `siteUrl` TEXT, `last_updated` TEXT, `color` INTEGER NOT NULL, `icon_url` TEXT, `etag` TEXT, `last_modified` TEXT, `folder_id` INTEGER, `remote_id` TEXT, `account_id` INTEGER NOT NULL, `notification_enabled` INTEGER NOT NULL DEFAULT 1, FOREIGN KEY(`folder_id`) REFERENCES `Folder`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`account_id`) REFERENCES `Account`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -40,19 +40,13 @@
           },
           {
             "fieldPath": "lastUpdated",
-            "columnName": "lastUpdated",
+            "columnName": "last_updated",
             "affinity": "TEXT",
             "notNull": false
           },
           {
-            "fieldPath": "textColor",
-            "columnName": "text_color",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "backgroundColor",
-            "columnName": "background_color",
+            "fieldPath": "color",
+            "columnName": "color",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -82,7 +76,7 @@
           },
           {
             "fieldPath": "remoteId",
-            "columnName": "remoteId",
+            "columnName": "remote_id",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -526,7 +520,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6a1403979efe044075bf2f30a47a9e08')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1cd84a05829477201803f5f27275fe29')"
     ]
   }
 }

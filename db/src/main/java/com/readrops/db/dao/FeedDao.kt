@@ -39,22 +39,22 @@ abstract class FeedDao : BaseDao<Feed> {
     @Query("Select count(*) from Feed Where account_id = :accountId")
     abstract suspend fun selectFeedCount(accountId: Int): Int
 
-    @Query("Select remoteId From Feed Where account_id = :accountId")
+    @Query("Select remote_id From Feed Where account_id = :accountId")
     abstract suspend fun selectFeedRemoteIds(accountId: Int): MutableList<String>
 
     @Query("Select id From Folder Where remoteId = :remoteId And account_id = :accountId")
     abstract suspend fun selectRemoteFolderLocalId(remoteId: String, accountId: Int): Int
 
-    @Query("Select id From Feed Where remoteId = :remoteId And account_id = :accountId")
+    @Query("Select id From Feed Where remote_id = :remoteId And account_id = :accountId")
     abstract suspend fun selectRemoteFeedLocalId(remoteId: String, accountId: Int): Int
 
-    @Query("Update Feed set name = :name, folder_id = :folderId Where remoteId = :remoteFeedId And account_id = :accountId")
+    @Query("Update Feed set name = :name, folder_id = :folderId Where remote_id = :remoteFeedId And account_id = :accountId")
     abstract fun updateFeedNameAndFolder(remoteFeedId: String, accountId: Int, name: String, folderId: Int?)
 
-    @Query("Delete from Feed Where remoteId in (:ids) And account_id = :accountId")
+    @Query("Delete from Feed Where remote_id in (:ids) And account_id = :accountId")
     abstract fun deleteByIds(ids: List<String>, accountId: Int)
 
-    @Query("Update Feed set background_color = :color Where id = :feedId")
+    @Query("Update Feed set color = :color Where id = :feedId")
     abstract fun updateFeedColor(feedId: Int, color: Int)
 
     @Query("""Select Feed.*, Folder.name as folder_name From Feed Left Join Folder On Feed.folder_id = Folder.id 

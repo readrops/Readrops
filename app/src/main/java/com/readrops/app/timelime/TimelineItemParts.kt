@@ -62,7 +62,7 @@ fun RegularTimelineItem(
             TimelineItemHeader(
                 feedName = itemWithFeed.feedName,
                 feedIconUrl = itemWithFeed.feedIconUrl,
-                feedColor = itemWithFeed.bgColor,
+                feedColor = itemWithFeed.color,
                 folderName = itemWithFeed.folder?.name,
                 date = itemWithFeed.item.pubDate!!,
                 duration = itemWithFeed.item.readTime,
@@ -80,7 +80,7 @@ fun RegularTimelineItem(
             TimelineItemBadge(
                 date = itemWithFeed.item.pubDate!!,
                 duration = itemWithFeed.item.readTime,
-                color = itemWithFeed.bgColor
+                color = itemWithFeed.color
             )
         }
     }
@@ -111,7 +111,7 @@ fun CompactTimelineItem(
             TimelineItemHeader(
                 feedName = itemWithFeed.feedName,
                 feedIconUrl = itemWithFeed.feedIconUrl,
-                feedColor = itemWithFeed.bgColor,
+                feedColor = itemWithFeed.color,
                 folderName = itemWithFeed.folder?.name,
                 onFavorite = onFavorite,
                 onShare = onShare,
@@ -162,7 +162,7 @@ fun LargeTimelineItem(
                     TimelineItemHeader(
                         feedName = itemWithFeed.feedName,
                         feedIconUrl = itemWithFeed.feedIconUrl,
-                        feedColor = itemWithFeed.bgColor,
+                        feedColor = itemWithFeed.color,
                         folderName = itemWithFeed.folder?.name,
                         date = itemWithFeed.item.pubDate!!,
                         duration = itemWithFeed.item.readTime,
@@ -176,7 +176,7 @@ fun LargeTimelineItem(
                     TimelineItemBadge(
                         date = itemWithFeed.item.pubDate!!,
                         duration = itemWithFeed.item.readTime,
-                        color = itemWithFeed.bgColor
+                        color = itemWithFeed.color
                     )
 
                     ShortSpacer()

@@ -130,8 +130,8 @@ class ItemScreen(
             val itemWithFeed = state.itemWithFeed!!
             val item = itemWithFeed.item
 
-            val accentColor = if (itemWithFeed.bgColor != 0) {
-                Color(itemWithFeed.bgColor)
+            val accentColor = if (itemWithFeed.color != 0) {
+                Color(itemWithFeed.color)
             } else {
                 primaryColor
             }
@@ -203,8 +203,8 @@ class ItemScreen(
                                 if (item.imageLink != null) {
                                     BackgroundTitle(itemWithFeed = itemWithFeed)
                                 } else {
-                                    val tintColor = if (itemWithFeed.bgColor != 0) {
-                                        Color(itemWithFeed.bgColor)
+                                    val tintColor = if (itemWithFeed.color != 0) {
+                                        Color(itemWithFeed.color)
                                     } else {
                                         MaterialTheme.colorScheme.onBackground
                                     }
@@ -249,8 +249,8 @@ fun BackgroundTitle(
     itemWithFeed: ItemWithFeed,
 ) {
     val onScrimColor = Color.White.copy(alpha = 0.85f)
-    val accentColor = if (itemWithFeed.bgColor != 0) {
-        Color(itemWithFeed.bgColor)
+    val accentColor = if (itemWithFeed.color != 0) {
+        Color(itemWithFeed.color)
     } else {
         onScrimColor
     }

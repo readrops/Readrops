@@ -13,7 +13,7 @@ object FoldersAndFeedsQueryBuilder {
         "Feed.url As feedUrl",
         "Feed.siteUrl As feedSiteUrl",
         "Feed.description as feedDescription",
-        "Feed.remoteId as feedRemoteId",
+        "Feed.remote_id as feedRemoteId",
         "Folder.id As folderId",
         "Folder.name As folderName",
         "Feed.account_id as accountId",

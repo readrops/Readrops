@@ -83,6 +83,17 @@ object MigrationFrom3To4 : Migration(3, 4) {
         db.execSQL("DROP TABLE IF EXISTS `Item`")
         db.execSQL("ALTER TABLE `_new_Item` RENAME TO `Item`")
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_Item_feed_id` ON `Item` (`feed_id`)")
+
+        // remove text_color
+        // rename background_color to color
+        // rename remoteId to remote_id
+        // rename lastUpdated to last_updated
+        db.execSQL("CREATE TABLE IF NOT EXISTS `_new_Feed` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT, `description` TEXT, `url` TEXT, `siteUrl` TEXT, `last_updated` TEXT, `color` INTEGER NOT NULL, `icon_url` TEXT, `etag` TEXT, `last_modified` TEXT, `folder_id` INTEGER, `remote_id` TEXT, `account_id` INTEGER NOT NULL, `notification_enabled` INTEGER NOT NULL DEFAULT 1, FOREIGN KEY(`folder_id`) REFERENCES `Folder`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`account_id`) REFERENCES `Account`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )")
+        db.execSQL("INSERT INTO `_new_Feed` (`id`, `name`, `description`, `url`, `siteUrl`, `last_updated`, `color`, `icon_url`, `etag`, `last_modified`, `folder_id`, `remote_id`, `account_id`, `notification_enabled`) SELECT `id`, `name`, `description`, `url`, `siteUrl`, `lastUpdated`, `background_color`, `icon_url`, `etag`, `last_modified`, `folder_id`, `remoteId`, `account_id`, `notification_enabled` FROM `Feed`")
+        db.execSQL("DROP TABLE IF EXISTS `Feed`")
+        db.execSQL("ALTER TABLE `_new_Feed` RENAME TO `Feed`")
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_Feed_folder_id` ON `Feed` (`folder_id`)")
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_Feed_account_id` ON `Feed` (`account_id`)")
     }
 
 }

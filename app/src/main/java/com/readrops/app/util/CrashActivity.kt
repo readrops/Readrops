@@ -3,6 +3,7 @@ package com.readrops.app.util
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
@@ -54,9 +55,17 @@ class CrashActivity : ComponentActivity() {
 
         val throwable = intent.getSerializableExtra(THROWABLE_KEY) as Throwable?
 
+        val stackTrace = try {
+            throwable?.stackTraceToString()
+
+        } catch (e: Exception) {
+            Log.e("CrashActivity", "Unable to get crash exception")
+            null
+        }
+
         setContent {
             ReadropsTheme {
-                CrashScreen(throwable?.stackTraceToString().orEmpty())
+                CrashScreen(stackTrace.orEmpty())
             }
         }
     }

@@ -124,7 +124,7 @@ class LocalRSSRepository(
 
             try {
                 iconUrl = HtmlParser.getFaviconLink(siteUrl!!, get()).also { feedUrl ->
-                    feedUrl?.let { backgroundColor = FeedColors.getFeedColor(it) }
+                    feedUrl?.let { color = FeedColors.getFeedColor(it) }
                 }
             } catch (e: Exception) {
                 Log.d("LocalRSSRepository", "insertFeed: ${e.message}")

@@ -6,10 +6,24 @@ import androidx.sqlite.db.SupportSQLiteQueryBuilder
 object ItemSelectionQueryBuilder {
 
     private val COLUMNS = arrayOf(
-        "Item.id", "Item.remoteId", "title", "Item.description", "content",
-        "link", "pub_date", "image_link", "author", "Item.read", "text_color", "icon_url",
-        "background_color", "read_time", "Feed.name", "Feed.id as feedId", "siteUrl",
-        "Folder.id as folder_id", "Folder.name as folder_name"
+        "Item.id",
+        "Item.remote_id",
+        "title",
+        "Item.description",
+        "content",
+        "link",
+        "pub_date",
+        "image_link",
+        "author",
+        "Item.read",
+        "icon_url",
+        "color",
+        "read_time",
+        "Feed.name",
+        "Feed.id as feedId",
+        "siteUrl",
+        "Folder.id as folder_id",
+        "Folder.name as folder_name"
     )
 
     private val SEPARATE_STATE_COLUMNS =
@@ -19,7 +33,7 @@ object ItemSelectionQueryBuilder {
         "Item Inner Join Feed On Item.feed_id = Feed.id Left Join Folder on Folder.id = Feed.folder_id"
 
     private const val SEPARATE_STATE_JOIN =
-        " Left Join ItemState On ItemState.remote_id = Item.remoteId"
+        " Left Join ItemState On ItemState.remote_id = Item.remote_id"
 
     /**
      * @param separateState Indicates if item state must be retrieved from ItemState table

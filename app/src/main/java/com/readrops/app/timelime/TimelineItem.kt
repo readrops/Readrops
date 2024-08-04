@@ -67,7 +67,6 @@ private val itemWithFeed = ItemWithFeed(
     ),
     feedName = "feed name",
     color = 0,
-    bgColor = 0,
     feedId = 0,
     feedIconUrl = "",
     websiteUrl = "",

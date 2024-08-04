@@ -119,7 +119,7 @@ class SyncAnalyzer(
                 text = text,
                 largeIcon = icon,
                 item = item,
-                color = feed.backgroundColor,
+                color = feed.color,
                 accountId = account.id
             )
         }
