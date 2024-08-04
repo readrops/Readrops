@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "7059fa306ee4013c51c8a521e04e3e31",
+    "identityHash": "6a1403979efe044075bf2f30a47a9e08",
     "entities": [
       {
         "tableName": "Feed",
@@ -153,7 +153,7 @@
       },
       {
         "tableName": "Item",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT, `description` TEXT, `clean_description` TEXT, `link` TEXT, `image_link` TEXT, `author` TEXT, `pub_date` INTEGER, `content` TEXT, `feed_id` INTEGER NOT NULL, `read_time` REAL NOT NULL, `read` INTEGER NOT NULL, `starred` INTEGER NOT NULL, `read_it_later` INTEGER NOT NULL, `remoteId` TEXT, FOREIGN KEY(`feed_id`) REFERENCES `Feed`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT, `description` TEXT, `clean_description` TEXT, `link` TEXT, `image_link` TEXT, `author` TEXT, `pub_date` INTEGER, `content` TEXT, `feed_id` INTEGER NOT NULL, `read_time` REAL NOT NULL, `read` INTEGER NOT NULL, `starred` INTEGER NOT NULL, `remote_id` TEXT, FOREIGN KEY(`feed_id`) REFERENCES `Feed`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -234,14 +234,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "isReadItLater",
-            "columnName": "read_it_later",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
             "fieldPath": "remoteId",
-            "columnName": "remoteId",
+            "columnName": "remote_id",
             "affinity": "TEXT",
             "notNull": false
           }
@@ -532,7 +526,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7059fa306ee4013c51c8a521e04e3e31')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6a1403979efe044075bf2f30a47a9e08')"
     ]
   }
 }

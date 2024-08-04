@@ -50,7 +50,7 @@ class MigrationsTest {
         }
 
         helper.runMigrationsAndValidate(dbName, 4, true, MigrationFrom3To4).apply {
-            val remoteId = compileStatement("Select remoteId From Item").simpleQueryForString()
+            val remoteId = compileStatement("Select remote_id From Item").simpleQueryForString()
             assertEquals("guid", remoteId)
         }
     }

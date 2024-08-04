@@ -10,13 +10,12 @@ object ItemsQueryBuilder {
 
     private val COLUMNS = arrayOf(
         "Item.id",
-        "Item.remoteId",
+        "Item.remote_id",
         "title",
         "clean_description",
         "image_link",
         "pub_date",
         "link",
-        "read_it_later",
         "Feed.name",
         "text_color",
         "background_color",
@@ -39,7 +38,7 @@ object ItemsQueryBuilder {
             LEFT JOIN Folder on Feed.folder_id = Folder.id """.trimIndent()
 
     private const val SEPARATE_STATE_JOIN =
-        "LEFT JOIN ItemState On Item.remoteId = ItemState.remote_id"
+        "LEFT JOIN ItemState On Item.remote_id = ItemState.remote_id"
 
     private const val ORDER_BY_ASC = "pub_date DESC"
 
@@ -78,31 +77,31 @@ object ItemsQueryBuilder {
 
     private fun buildWhereClause(queryFilters: QueryFilters, separateState: Boolean): String =
         StringBuilder(500).run {
-            append("Feed.account_id = ${queryFilters.accountId} And ")
+            append("Feed.account_id = ${queryFilters.accountId} ")
 
             if (!queryFilters.showReadItems) {
                 if (separateState)
-                    append("ItemState.read = 0 And ")
+                    append("And ItemState.read = 0 ")
                 else
-                    append("Item.read = 0 And ")
+                    append("And Item.read = 0 ")
             }
 
             when (queryFilters.mainFilter) {
                 MainFilter.STARS -> {
                     if (separateState) {
-                        append("ItemState.starred = 1 And read_it_later = 0 ")
+                        append("And ItemState.starred = 1 ")
                     } else {
-                        append("starred = 1 And read_it_later = 0 ")
+                        append("And starred = 1 ")
                     }
                 }
 
                 MainFilter.NEW -> append("DateTime(Round(pub_date / 1000), 'unixepoch') Between DateTime(DateTime(\"now\"), \"-24 hour\") And DateTime(\"now\") ")
-                else -> append("read_it_later = 0 ")
+                else -> {}
             }
 
             when (queryFilters.subFilter) {
-                SubFilter.FEED -> append("And feed_id = ${queryFilters.filterFeedId} And read_it_later = 0")
-                SubFilter.FOLDER -> append("And folder_id = ${queryFilters.filterFolderId} And read_it_later = 0")
+                SubFilter.FEED -> append("And feed_id = ${queryFilters.filterFeedId} ")
+                SubFilter.FOLDER -> append("And folder_id = ${queryFilters.filterFolderId} ")
                 else -> {}
             }
 

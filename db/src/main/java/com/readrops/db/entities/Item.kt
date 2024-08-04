@@ -31,8 +31,7 @@ data class Item(
     @ColumnInfo(name = "read_time") var readTime: Double = 0.0,
     @ColumnInfo(name = "read") var isRead: Boolean = false,
     @ColumnInfo(name = "starred") var isStarred: Boolean = false,
-    @ColumnInfo(name = "read_it_later") var isReadItLater: Boolean = false,
-    var remoteId: String? = null,
+    @ColumnInfo(name = "remote_id") var remoteId: String? = null,
     @Ignore var feedRemoteId: String? = null,
 ) : Comparable<Item> {
 

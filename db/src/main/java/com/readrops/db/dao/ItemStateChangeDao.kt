@@ -14,9 +14,9 @@ interface ItemStateChangeDao: BaseDao<ItemStateChange> {
 
     @Query("Select case When ItemState.remote_id is NULL Or ItemState.read = 1 Then 1 else 0 End read,  " +
             "case When ItemState.remote_id is NULL Or ItemState.starred = 1 Then 1 else 0 End starred," +
-            "ItemStateChange.read_change, ItemStateChange.star_change, Item.remoteId " +
+            "ItemStateChange.read_change, ItemStateChange.star_change, Item.remote_id " +
             "From ItemStateChange Inner Join Item On ItemStateChange.id = Item.id " +
-            "Left Join ItemState On ItemState.remote_id = Item.remoteId Where ItemStateChange.account_id = :accountId")
+            "Left Join ItemState On ItemState.remote_id = Item.remote_id Where ItemStateChange.account_id = :accountId")
     suspend fun selectItemStateChanges(accountId: Int): List<ItemReadStarState>
 
     @Query("Select Case When :itemId In (Select id From ItemStateChange Where read_change = 1) Then 1 Else 0 End")
@@ -82,13 +82,13 @@ interface ItemStateChangeDao: BaseDao<ItemStateChange> {
     @Query("Select read From ItemState Where remote_id = :remoteId And account_id = :accountId")
     suspend fun selectItemReadState(remoteId: String, accountId: Int): Boolean
 
-    @Query("Select read From Item Inner Join Feed On Item.feed_id = Feed.id Where Item.remoteId = :remoteId And account_id = :accountId")
+    @Query("Select read From Item Inner Join Feed On Item.feed_id = Feed.id Where Item.remote_id = :remoteId And account_id = :accountId")
     suspend fun selectStandardItemReadState(remoteId: String, accountId: Int): Boolean
 
     @Query("Select starred From ItemState Where remote_id = :remoteId And account_id = :accountId")
     suspend fun selectItemStarState(remoteId: String, accountId: Int): Boolean
 
-    @Query("Select starred From Item Inner Join Feed On Item.feed_id = Feed.id Where Item.remoteId = :remoteId And account_id = :accountId")
+    @Query("Select starred From Item Inner Join Feed On Item.feed_id = Feed.id Where Item.remote_id = :remoteId And account_id = :accountId")
     suspend fun selectStandardItemStarState(remoteId: String, accountId: Int): Boolean
 
     @Query("Update ItemStateChange set read_change = :readChange Where id = :id")

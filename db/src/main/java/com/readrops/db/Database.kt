@@ -74,10 +74,12 @@ object MigrationFrom3To4 : Migration(3, 4) {
         db.execSQL("ALTER TABLE `_new_ItemState` RENAME TO `ItemState`")
         db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_ItemState_remote_id_account_id` ON `ItemState` (`remote_id`, `account_id`)")
 
-        // remove guid, use remoteId local accounts
+        // remove guid, use remoteId for all accounts
+        // remove read_it_later field
+        // rename remoteId to remote_id
         db.execSQL("Update Item set remoteId = guid Where remoteId is NULL")
-        db.execSQL("CREATE TABLE IF NOT EXISTS `_new_Item` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT, `description` TEXT, `clean_description` TEXT, `link` TEXT, `image_link` TEXT, `author` TEXT, `pub_date` INTEGER, `content` TEXT, `feed_id` INTEGER NOT NULL, `read_time` REAL NOT NULL, `read` INTEGER NOT NULL, `starred` INTEGER NOT NULL, `read_it_later` INTEGER NOT NULL, `remoteId` TEXT, FOREIGN KEY(`feed_id`) REFERENCES `Feed`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )")
-        db.execSQL("INSERT INTO `_new_Item`(`id`, `title`, `description`, `clean_description`, `link`, `image_link`, `author`, `pub_date`, `content`, `feed_id`, `read_time`, `read`, `starred`, `read_it_later`, `remoteId`) SELECT `id`, `title`, `description`, `clean_description`, `link`, `image_link`, `author`, `pub_date`, `content`, `feed_id`, `read_time`, `read`, `starred`, `read_it_later`, `remoteId` FROM `Item`")
+        db.execSQL("CREATE TABLE IF NOT EXISTS `_new_Item` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT, `description` TEXT, `clean_description` TEXT, `link` TEXT, `image_link` TEXT, `author` TEXT, `pub_date` INTEGER, `content` TEXT, `feed_id` INTEGER NOT NULL, `read_time` REAL NOT NULL, `read` INTEGER NOT NULL, `starred` INTEGER NOT NULL, `remote_id` TEXT, FOREIGN KEY(`feed_id`) REFERENCES `Feed`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )")
+        db.execSQL("INSERT INTO `_new_Item`(`id`, `title`, `description`, `clean_description`, `link`, `image_link`, `author`, `pub_date`, `content`, `feed_id`, `read_time`, `read`, `starred`, `remote_id`) SELECT `id`, `title`, `description`, `clean_description`, `link`, `image_link`, `author`, `pub_date`, `content`, `feed_id`, `read_time`, `read`, `starred`, `remoteId` FROM `Item`")
         db.execSQL("DROP TABLE IF EXISTS `Item`")
         db.execSQL("ALTER TABLE `_new_Item` RENAME TO `Item`")
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_Item_feed_id` ON `Item` (`feed_id`)")

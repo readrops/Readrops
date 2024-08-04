@@ -28,7 +28,7 @@ abstract class ItemDao : BaseDao<Item> {
     @Query("Update Item Set starred = :starred Where id = :itemId")
     abstract suspend fun updateStarState(itemId: Int, starred: Boolean)
 
-    @Query("Update Item set read = :read, starred = :starred Where remoteId = :remoteId")
+    @Query("Update Item set read = :read, starred = :starred Where remote_id = :remoteId")
     abstract suspend fun updateReadAndStarState(remoteId: String, read: Boolean, starred: Boolean)
 
     @Query("Update Item set read = 1 Where feed_id IN (Select id From Feed Where account_id = :accountId)")
@@ -55,7 +55,7 @@ abstract class ItemDao : BaseDao<Item> {
         Between DateTime(DateTime("now"), "-24 hour") And DateTime("now")""")
     abstract fun selectUnreadNewItemsCount(accountId: Int): Flow<Int>
 
-    @Query("""Select count(*) From ItemState Inner Join Item On Item.remoteId = ItemState.remote_id 
+    @Query("""Select count(*) From ItemState Inner Join Item On Item.remote_id = ItemState.remote_id 
         Where ItemState.read = 0 and account_id = :accountId And DateTime(Round(Item.pub_date / 1000), 'unixepoch') 
         Between DateTime(DateTime("now"), "-24 hour") And DateTime("now")""")
     abstract fun selectUnreadNewItemsCountByItemState(accountId: Int): Flow<Int>
@@ -64,6 +64,6 @@ abstract class ItemDao : BaseDao<Item> {
     abstract fun selectFeedUnreadItemsCount(query: SupportSQLiteQuery):
             Flow<Map<@MapColumn(columnName = "feed_id") Int, @MapColumn(columnName = "item_count") Int>>
 
-    @Query("Select case When :remoteId In (Select Item.remoteId From Item Inner Join Feed on Item.feed_id = Feed.id and account_id = :accountId) Then 1 else 0 end")
+    @Query("Select case When :remoteId In (Select Item.remote_id From Item Inner Join Feed on Item.feed_id = Feed.id and account_id = :accountId) Then 1 else 0 end")
     abstract suspend fun itemExists(remoteId: String, accountId: Int): Boolean
 }

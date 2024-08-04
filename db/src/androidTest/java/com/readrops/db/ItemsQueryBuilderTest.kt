@@ -42,7 +42,6 @@ class ItemsQueryBuilderTest {
 
         with(query.sql) {
             assertTrue(contains("Feed.account_id = 1"))
-            assertTrue(contains("read_it_later = 0"))
             assertTrue(contains("pub_date DESC"))
 
             assertFalse(contains("read = 0 And"))
@@ -58,7 +57,7 @@ class ItemsQueryBuilderTest {
         val query = ItemsQueryBuilder.buildItemsQuery(queryFilters)
         database.query(query)
 
-        assertTrue(query.sql.contains("feed_id = 15 And read_it_later = 0"))
+        assertTrue(query.sql.contains("feed_id = 15"))
     }
 
     @Test
@@ -68,7 +67,7 @@ class ItemsQueryBuilderTest {
         val query = ItemsQueryBuilder.buildItemsQuery(queryFilters)
         database.query(query)
 
-        assertTrue(query.sql.contains("starred = 1 And read_it_later = 0"))
+        assertTrue(query.sql.contains("starred = 1"))
     }
 
     @Test
@@ -78,7 +77,7 @@ class ItemsQueryBuilderTest {
         val query = ItemsQueryBuilder.buildItemsQuery(queryFilters)
         database.query(query)
 
-        assertTrue(query.sql.contains("folder_id = ${queryFilters.filterFolderId} And read_it_later = 0"))
+        assertTrue(query.sql.contains("folder_id = ${queryFilters.filterFolderId}"))
     }
 
     @Test
@@ -90,7 +89,7 @@ class ItemsQueryBuilderTest {
         database.query(query)
 
         with(query.sql) {
-            assertTrue(contains("read = 0 And "))
+            assertTrue(contains("read = 0"))
             assertTrue(contains("pub_date ASC"))
         }
 
@@ -106,7 +105,7 @@ class ItemsQueryBuilderTest {
         with(query.sql) {
             assertFalse(contains("read, starred"))
             assertTrue(contains("ItemState.read = 0 And "))
-            assertTrue(contains("ItemState.starred = 1 And read_it_later = 0"))
+            assertTrue(contains("ItemState.starred = 1"))
         }
     }
 
