@@ -42,8 +42,6 @@ dependencies {
 
     implementation(libs.bundles.paging)
 
-    implementation(libs.jodatime)
-
     implementation(libs.bundles.koin)
     testImplementation(libs.bundles.kointest)
 

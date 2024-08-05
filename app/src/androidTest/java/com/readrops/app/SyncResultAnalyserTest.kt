@@ -12,7 +12,7 @@ import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
 import kotlinx.coroutines.test.runTest
-import org.joda.time.LocalDateTime
+import java.time.LocalDateTime
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue

@@ -1,10 +1,10 @@
 package com.readrops.api.localfeed.json
 
 import com.readrops.api.TestUtils
-import com.readrops.api.utils.DateUtils
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Item
+import com.readrops.db.util.DateUtils
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import junit.framework.TestCase

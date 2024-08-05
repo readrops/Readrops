@@ -12,7 +12,6 @@ import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.ItemState
 import com.readrops.db.entities.account.Account
-import org.joda.time.DateTime
 import org.koin.core.component.KoinComponent
 
 class FreshRSSRepository(
@@ -63,7 +62,7 @@ class FreshRSSRepository(
             syncType = SyncType.INITIAL_SYNC
         }
 
-        val newLastModified = DateTime.now().millis / 1000L
+        val newLastModified = System.currentTimeMillis() / 1000L
 
         return dataSource.synchronize(syncType, syncData, account.writeToken!!).run {
             insertFolders(folders)

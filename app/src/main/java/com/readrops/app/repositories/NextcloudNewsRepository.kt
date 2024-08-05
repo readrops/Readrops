@@ -16,7 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
-import org.joda.time.DateTime
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
@@ -63,7 +62,7 @@ class NextcloudNewsRepository(
             SyncType.INITIAL_SYNC
         }
 
-        val newLastModified = DateTime.now().millis / 1000L
+        val newLastModified = System.currentTimeMillis() / 1000L
 
         return dataSource.synchronize(syncType, syncData).run {
             insertFolders(folders)
@@ -163,7 +162,6 @@ class NextcloudNewsRepository(
                 itemsFeedsIds[item.feedRemoteId] = feedId
             }
 
-            // TODO itemExists request isn't the right one for this case
             if (!initialSync && feedId > 0 && database.itemDao().itemExists(item.remoteId!!, feedId)) {
                 database.itemDao()
                     .updateReadAndStarState(item.remoteId!!, item.isRead, item.isStarred)

@@ -6,11 +6,10 @@ import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.extensions.nextNonEmptyString
 import com.readrops.api.utils.extensions.nextNullableString
 import com.readrops.db.entities.Item
+import com.readrops.db.util.DateUtils
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
-import org.joda.time.DateTimeZone
-import org.joda.time.LocalDateTime
 
 class FreshRSSItemsAdapter : JsonAdapter<List<Item>>() {
 
@@ -46,8 +45,7 @@ class FreshRSSItemsAdapter : JsonAdapter<List<Item>>() {
                 with(item) {
                     when (reader.selectName(NAMES)) {
                         0 -> remoteId = reader.nextNonEmptyString()
-                        1 -> pubDate = LocalDateTime(reader.nextLong() * 1000L,
-                                DateTimeZone.getDefault())
+                        1 -> pubDate = DateUtils.fromEpochSeconds(reader.nextLong())
                         2 -> title = reader.nextNonEmptyString()
                         3 -> content = getContent(reader)
                         4 -> link = getLink(reader)

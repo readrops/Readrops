@@ -47,5 +47,4 @@ dependencies {
 
     implementation(libs.moshi)
     implementation(libs.jsoup)
-    implementation(libs.jodatime)
 }

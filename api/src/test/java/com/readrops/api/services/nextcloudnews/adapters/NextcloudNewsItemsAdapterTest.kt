@@ -2,11 +2,11 @@ package com.readrops.api.services.nextcloudnews.adapters
 
 import com.readrops.api.TestUtils
 import com.readrops.db.entities.Item
+import com.readrops.db.util.DateUtils
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import junit.framework.TestCase.assertEquals
 import okio.Buffer
-import org.joda.time.LocalDateTime
 import org.junit.Test
 
 class NextcloudNewsItemsAdapterTest {
@@ -32,7 +32,7 @@ class NextcloudNewsItemsAdapterTest {
             assertEquals(feedRemoteId, "67")
             assertEquals(isRead, false)
             assertEquals(isStarred, false)
-            assertEquals(pubDate, LocalDateTime(1367270544000))
+            assertEquals(pubDate, DateUtils.fromEpochSeconds(1367270544))
             assertEquals(imageLink, null)
         }
 

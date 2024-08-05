@@ -82,11 +82,10 @@ aboutlibraries-composem3 = { module = "com.mikepenz:aboutlibraries-compose-m3", 
 konsumexml = "com.gitlab.mvysny.konsume-xml:konsume-xml:1.1"
 kotlinxmlbuilder = "org.redundent:kotlin-xml-builder:1.7.3" #TODO update this
 
-jdk-desugar = "com.android.tools:desugar_jdk_libs:2.0.4"
+jdk-desugar = "com.android.tools:desugar_jdk_libs_nio:2.0.4"
 
 jsoup = "org.jsoup:jsoup:1.16.1"
 moshi = "com.squareup.moshi:moshi:1.15.1"
-jodatime = "joda-time:joda-time:2.10.10" #TODO replace by java.time
 
 # androidx
 corektx = "androidx.core:core-ktx:1.13.1"

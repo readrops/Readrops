@@ -61,7 +61,6 @@ dependencies {
     implementation(libs.browser)
 
     implementation(libs.jsoup)
-    implementation(libs.jodatime)
 
     testImplementation(libs.junit4)
     androidTestImplementation(libs.bundles.test)

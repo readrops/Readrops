@@ -7,13 +7,13 @@ import com.gitlab.mvysny.konsumexml.allChildrenAutoIgnore
 import com.readrops.api.localfeed.XmlAdapter
 import com.readrops.api.localfeed.XmlAdapter.Companion.AUTHORS_MAX
 import com.readrops.api.utils.ApiUtils
-import com.readrops.api.utils.DateUtils
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.extensions.nonNullText
 import com.readrops.api.utils.extensions.nullableText
 import com.readrops.api.utils.extensions.nullableTextRecursively
 import com.readrops.db.entities.Item
-import org.joda.time.LocalDateTime
+import com.readrops.db.util.DateUtils
+import java.time.LocalDateTime
 
 class RSS2ItemAdapter : XmlAdapter<Item> {
 

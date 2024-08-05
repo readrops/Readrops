@@ -13,7 +13,7 @@ import com.readrops.db.entities.account.AccountType
 import com.readrops.db.filters.MainFilter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import org.joda.time.LocalDateTime
+import java.time.LocalDateTime
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertTrue

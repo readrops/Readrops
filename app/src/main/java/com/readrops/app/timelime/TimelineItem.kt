@@ -6,7 +6,7 @@ import com.readrops.app.util.DefaultPreview
 import com.readrops.app.util.theme.ReadropsTheme
 import com.readrops.db.entities.Folder
 import com.readrops.db.pojo.ItemWithFeed
-import org.joda.time.LocalDateTime
+import java.time.LocalDateTime
 
 enum class TimelineItemSize {
     COMPACT,

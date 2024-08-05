@@ -6,11 +6,10 @@ import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.extensions.nextNonEmptyString
 import com.readrops.api.utils.extensions.nextNullableString
 import com.readrops.db.entities.Item
+import com.readrops.db.util.DateUtils
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
-import org.joda.time.DateTimeZone
-import org.joda.time.LocalDateTime
 
 class NextcloudNewsItemsAdapter : JsonAdapter<List<Item>>() {
 
@@ -42,7 +41,7 @@ class NextcloudNewsItemsAdapter : JsonAdapter<List<Item>>() {
                             1 -> link = reader.nextNullableString()
                             2 -> title = reader.nextNonEmptyString()
                             3 -> author = reader.nextNullableString()
-                            4 -> pubDate = LocalDateTime(reader.nextLong() * 1000L, DateTimeZone.getDefault())
+                            4 -> pubDate = DateUtils.fromEpochSeconds(reader.nextLong())
                             5 -> content = reader.nextNullableString()
                             6 -> enclosureMime = reader.nextNullableString()
                             7 -> enclosureLink = reader.nextNullableString()

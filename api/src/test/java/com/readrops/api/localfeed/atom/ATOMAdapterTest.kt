@@ -2,8 +2,8 @@ package com.readrops.api.localfeed.atom
 
 import com.gitlab.mvysny.konsumexml.konsumeXml
 import com.readrops.api.TestUtils
-import com.readrops.api.utils.DateUtils
 import com.readrops.api.utils.exceptions.ParseException
+import com.readrops.db.util.DateUtils
 import junit.framework.TestCase
 import junit.framework.TestCase.assertEquals
 import org.junit.Assert.assertThrows

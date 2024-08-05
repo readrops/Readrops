@@ -17,6 +17,7 @@ import com.readrops.db.entities.Item
 import com.readrops.db.entities.ItemState
 import com.readrops.db.entities.ItemStateChange
 import com.readrops.db.entities.account.Account
+import com.readrops.db.util.Converters
 
 @Database(
     entities = [Feed::class, Item::class, Folder::class, Account::class,

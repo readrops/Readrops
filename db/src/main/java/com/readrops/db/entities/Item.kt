@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import org.joda.time.LocalDateTime
+import java.time.LocalDateTime
 
 @Entity(
     foreignKeys = [

@@ -1,24 +1,24 @@
-package com.readrops.db
+package com.readrops.db.util
 
 import androidx.room.TypeConverter
 import com.readrops.db.entities.account.AccountType
-import org.joda.time.LocalDateTime
+import java.time.LocalDateTime
 
 class Converters {
 
     @TypeConverter
     fun fromTimeStamp(value: Long): LocalDateTime {
-        return LocalDateTime(value)
+        return DateUtils.fromEpochSeconds(value / 1000L)
     }
 
     @TypeConverter
     fun fromLocalDateTime(localDateTime: LocalDateTime): Long {
-        return localDateTime.toDateTime().millis
+        return localDateTime.toInstant(DateUtils.defaultOffset).toEpochMilli()
     }
 
     @TypeConverter
     fun fromAccountTypeCode(ordinal: Int): AccountType {
-        return AccountType.values()[ordinal]
+        return AccountType.entries[ordinal]
     }
 
     @TypeConverter

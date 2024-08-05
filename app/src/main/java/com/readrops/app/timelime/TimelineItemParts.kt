@@ -34,13 +34,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.readrops.api.utils.DateUtils
 import com.readrops.app.R
 import com.readrops.app.util.components.FeedIcon
 import com.readrops.app.util.theme.ShortSpacer
 import com.readrops.app.util.theme.spacing
 import com.readrops.db.pojo.ItemWithFeed
-import org.joda.time.LocalDateTime
+import com.readrops.db.util.DateUtils
+import java.time.LocalDateTime
 import kotlin.math.roundToInt
 
 @Composable

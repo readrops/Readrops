@@ -52,7 +52,6 @@ import androidx.core.view.children
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.koin.getScreenModel
 import coil.compose.AsyncImage
-import com.readrops.api.utils.DateUtils
 import com.readrops.app.R
 import com.readrops.app.item.view.ItemNestedScrollView
 import com.readrops.app.item.view.ItemWebView
@@ -63,6 +62,7 @@ import com.readrops.app.util.theme.MediumSpacer
 import com.readrops.app.util.theme.ShortSpacer
 import com.readrops.app.util.theme.spacing
 import com.readrops.db.pojo.ItemWithFeed
+import com.readrops.db.util.DateUtils
 import org.koin.core.parameter.parametersOf
 import kotlin.math.roundToInt
 
