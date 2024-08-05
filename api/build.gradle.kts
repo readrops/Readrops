@@ -31,8 +31,9 @@ dependencies {
     implementation(libs.coroutines.core)
     testImplementation(libs.coroutines.test)
 
+    implementation(platform(libs.koin.bom))
     implementation(libs.bundles.koin)
-    testImplementation(libs.bundles.kointest)
+    androidTestImplementation(libs.bundles.kointest)
 
     implementation(libs.konsumexml)
     implementation(libs.kotlinxmlbuilder)

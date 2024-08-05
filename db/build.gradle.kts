@@ -42,8 +42,9 @@ dependencies {
 
     implementation(libs.bundles.paging)
 
+    implementation(platform(libs.koin.bom))
     implementation(libs.bundles.koin)
-    testImplementation(libs.bundles.kointest)
+    androidTestImplementation(libs.bundles.kointest)
 
     implementation(libs.bundles.coroutines)
     androidTestImplementation(libs.coroutines.test)

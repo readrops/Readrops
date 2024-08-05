@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     kotlin("android")
+    alias(libs.plugins.compose.compiler)
     id("com.mikepenz.aboutlibraries.plugin")
 }
 
@@ -25,8 +26,10 @@ android {
             isMinifyEnabled = false
             isShrinkResources = false
 
-            isTestCoverageEnabled = true
             applicationIdSuffix = ".debug"
+            enableUnitTestCoverage = true
+            enableAndroidTestCoverage = true
+
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
     }
@@ -34,10 +37,6 @@ android {
     buildFeatures {
         buildConfig = true
         compose = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
 
     lint {
@@ -78,8 +77,12 @@ dependencies {
     implementation(libs.bundles.room)
     implementation(libs.bundles.paging)
 
+    implementation(platform(libs.koin.bom))
     implementation(libs.bundles.koin)
-    androidTestImplementation(libs.bundles.kointest)
+    //androidTestImplementation(libs.bundles.kointest)
+    // I don't know why but those dependencies are unreachable when accessed directly from version catalog
+    androidTestImplementation("io.insert-koin:koin-test:${libs.versions.koin.bom.get()}")
+    androidTestImplementation("io.insert-koin:koin-test-junit4:${libs.versions.koin.bom.get()}")
 
     androidTestImplementation(libs.okhttp.mockserver)
 

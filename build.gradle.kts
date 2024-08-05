@@ -1,8 +1,10 @@
+
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.LibraryPlugin
-import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 
 buildscript {
     repositories {
@@ -21,6 +23,7 @@ buildscript {
 
 plugins {
     alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.compose.compiler) apply false
 }
 
 allprojects {
@@ -35,9 +38,9 @@ allprojects {
 
 subprojects {
     afterEvaluate {
-        tasks.withType<KotlinJvmCompile> {
-            kotlinOptions {
-                jvmTarget = JavaVersion.VERSION_17.toString()
+        with(extensions.getByType<KotlinAndroidProjectExtension>()) {
+            compilerOptions {
+                jvmTarget = JvmTarget.JVM_17
             }
         }
 
@@ -81,7 +84,7 @@ fun configure(extension: BaseExtension) = with(extension) {
 }
 
 tasks.register<Delete>("clean") {
-    delete(rootProject.buildDir)
+    delete(rootProject.layout.buildDirectory)
 }
 
 /*jacoco {
