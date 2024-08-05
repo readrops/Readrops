@@ -6,14 +6,14 @@ compose_compiler = "1.5.3"
 compose_bom = "2024.02.02"
 
 voyager = "1.0.0"
-lifecycle = "2.7.0"
-coil = "2.4.0"
-coroutines = "1.8.0"
+lifecycle = "2.8.4"
+coil = "2.7.0"
+coroutines = "1.8.1"
 room = "2.6.1"
-koin-bom = "3.5.0"
-paging = "3.3.0"
-okhttp = "4.11.0"
-retrofit = "2.9.0"
+koin-bom = "3.5.6"
+paging = "3.3.1"
+okhttp = "4.12.0"
+retrofit = "2.11.0"
 about_libraries = "11.2.2"
 
 [plugins]
@@ -84,7 +84,7 @@ kotlinxmlbuilder = "org.redundent:kotlin-xml-builder:1.7.3" #TODO update this
 
 jdk-desugar = "com.android.tools:desugar_jdk_libs_nio:2.0.4"
 
-jsoup = "org.jsoup:jsoup:1.16.1"
+jsoup = "org.jsoup:jsoup:1.18.1"
 moshi = "com.squareup.moshi:moshi:1.15.1"
 
 # androidx
