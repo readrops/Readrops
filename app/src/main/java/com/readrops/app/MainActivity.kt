@@ -101,16 +101,21 @@ class MainActivity : ComponentActivity(), KoinComponent {
     }
 
     private suspend fun handleIntent(intent: Intent) {
-        if (intent.hasExtra(SyncWorker.ACCOUNT_ID_KEY)) {
-            val accountId = intent.getIntExtra(SyncWorker.ACCOUNT_ID_KEY, -1)
-            get<Database>().accountDao()
-                .updateCurrentAccount(accountId)
+        when {
+            intent.hasExtra(SyncWorker.ACCOUNT_ID_KEY) -> {
+                val accountId = intent.getIntExtra(SyncWorker.ACCOUNT_ID_KEY, -1)
+                get<Database>().accountDao()
+                    .updateCurrentAccount(accountId)
 
-            HomeScreen.openTab(TimelineTab)
+                HomeScreen.openTab(TimelineTab)
 
-            if (intent.hasExtra(SyncWorker.ITEM_ID_KEY)) {
-                val itemId = intent.getIntExtra(SyncWorker.ITEM_ID_KEY, -1)
-                HomeScreen.openItemScreen(itemId)
+                if (intent.hasExtra(SyncWorker.ITEM_ID_KEY)) {
+                    val itemId = intent.getIntExtra(SyncWorker.ITEM_ID_KEY, -1)
+                    HomeScreen.openItemScreen(itemId)
+                }
+            }
+            intent.action != null && intent.action == Intent.ACTION_SEND -> {
+                HomeScreen.openAddFeedDialog(intent.getStringExtra(Intent.EXTRA_TEXT).orEmpty())
             }
         }
     }

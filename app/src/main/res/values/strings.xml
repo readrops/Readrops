@@ -229,4 +229,5 @@
     <string name="bitcoin_copy_address">Bitcoin (copy address)</string>
     <string name="litecoin_copy_address">Litecoin (copy address)</string>
     <string name="donation_text">I you find my work useful and you would like to support me, you can consider making me a donation.</string>
+    <string name="add_feed">Add feed</string>
 </resources>

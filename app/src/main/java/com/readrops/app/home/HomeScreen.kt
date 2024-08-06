@@ -145,4 +145,9 @@ object HomeScreen : AndroidScreen() {
     suspend fun openTab(tab: Tab) {
         tabChannel.send(tab)
     }
+
+    suspend fun openAddFeedDialog(url: String) {
+        tabChannel.send(FeedTab)
+        FeedTab.openAddFeedDialog(url)
+    }
 }

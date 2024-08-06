@@ -1,5 +1,6 @@
 package com.readrops.app.feeds
 
+import android.util.Patterns
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -53,8 +54,12 @@ import com.readrops.app.util.components.dialog.TextFieldDialog
 import com.readrops.app.util.components.dialog.TwoChoicesDialog
 import com.readrops.app.util.theme.spacing
 import com.readrops.db.entities.Feed
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 
 object FeedTab : Tab {
+
+    private val addFeedDialogChannel = Channel<String>()
 
     override val options: TabOptions
         @Composable
@@ -82,6 +87,15 @@ object FeedTab : Tab {
                 snackbarHostState.showSnackbar(ErrorMessage.get(state.exception!!, context))
                 screenModel.resetException()
             }
+        }
+
+        LaunchedEffect(Unit) {
+            addFeedDialogChannel.receiveAsFlow()
+                .collect { url ->
+                    if (Patterns.WEB_URL.matcher(url).matches()) {
+                        screenModel.openDialog(DialogState.AddFeed(url))
+                    }
+                }
         }
 
         FeedDialogs(
@@ -131,7 +145,7 @@ object FeedTab : Tab {
                     }
 
                     FloatingActionButton(
-                        onClick = { screenModel.openDialog(DialogState.AddFeed) }
+                        onClick = { screenModel.openDialog(DialogState.AddFeed()) }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
@@ -239,10 +253,10 @@ object FeedTab : Tab {
                 AddFeedDialog(
                     state = addFeedDialogState,
                     onValueChange = { screenModel.setAddFeedDialogURL(it) },
-                    onExpandChange = { screenModel.setAccountDropDownExpanded(it)  },
+                    onExpandChange = { screenModel.setAccountDropDownExpanded(it) },
                     onAccountClick = { screenModel.setAddFeedDialogSelectedAccount(it) },
                     onValidate = { screenModel.addFeedDialogValidate() },
-                    onDismiss = { screenModel.closeDialog(DialogState.AddFeed) },
+                    onDismiss = { screenModel.closeDialog(DialogState.AddFeed()) },
                 )
             }
 
@@ -325,6 +339,9 @@ object FeedTab : Tab {
 
             null -> {}
         }
+    }
 
+    suspend fun openAddFeedDialog(url: String) {
+        addFeedDialogChannel.send(url)
     }
 }

@@ -167,24 +167,31 @@ class FeedScreenModel(
     }
 
     fun openDialog(state: DialogState) {
-        if (state is DialogState.UpdateFeed) {
-            _updateFeedDialogState.update {
-                it.copy(
-                    feedId = state.feed.id,
-                    feedName = state.feed.name!!,
-                    feedUrl = state.feed.url!!,
-                    selectedFolder = state.folder ?: it.folders.find { folder -> folder.id == 0 },
-                    feedRemoteId = state.feed.remoteId
-                )
+        when (state) {
+            is DialogState.UpdateFeed -> {
+                _updateFeedDialogState.update {
+                    it.copy(
+                        feedId = state.feed.id,
+                        feedName = state.feed.name!!,
+                        feedUrl = state.feed.url!!,
+                        selectedFolder = state.folder ?: it.folders.find { folder -> folder.id == 0 },
+                        feedRemoteId = state.feed.remoteId
+                    )
+                }
             }
-        }
-
-        if (state is DialogState.UpdateFolder) {
-            _folderState.update {
-                it.copy(
-                    value = state.folder.name.orEmpty()
-                )
+            is DialogState.UpdateFolder -> {
+                _folderState.update {
+                    it.copy(
+                        value = state.folder.name.orEmpty()
+                    )
+                }
             }
+            is DialogState.AddFeed -> {
+                _addFeedDialogState.update {
+                    it.copy(url = state.url.orEmpty())
+                }
+            }
+            else -> {}
         }
 
         _feedState.update { it.copy(dialog = state) }
@@ -308,7 +315,7 @@ class FeedScreenModel(
         )
 
         if (errors.isEmpty()) {
-            closeDialog(DialogState.AddFeed)
+            closeDialog(_feedState.value.dialog)
         } else {
             _addFeedDialogState.update {
                 it.copy(

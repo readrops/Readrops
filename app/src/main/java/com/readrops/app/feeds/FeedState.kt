@@ -14,7 +14,7 @@ data class FeedState(
 )
 
 sealed interface DialogState {
-    data object AddFeed : DialogState
+    data class AddFeed(val url: String? = null) : DialogState
     data object AddFolder : DialogState
     class DeleteFeed(val feed: Feed) : DialogState
     class DeleteFolder(val folder: Folder) : DialogState
