@@ -1,6 +1,7 @@
 package com.readrops.api.services
 
 import com.readrops.api.services.fever.FeverCredentials
+import com.readrops.api.services.fever.FeverService
 import com.readrops.api.services.freshrss.FreshRSSCredentials
 import com.readrops.api.services.freshrss.FreshRSSService
 import com.readrops.api.services.nextcloudnews.NextcloudNewsCredentials
@@ -27,7 +28,7 @@ abstract class Credentials(val authorization: String?, val url: String) {
             return when (accountType) {
                 AccountType.FRESHRSS -> FreshRSSService.END_POINT
                 AccountType.NEXTCLOUD_NEWS -> NextcloudNewsService.END_POINT
-                AccountType.FEVER -> ""
+                AccountType.FEVER -> FeverService.END_POINT
                 else -> throw IllegalArgumentException("Unknown account type")
             }
         }

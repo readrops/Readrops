@@ -14,10 +14,6 @@ object ApiUtils {
     const val LAST_MODIFIED_HEADER = "Last-Modified"
     const val IF_MODIFIED_HEADER = "If-Modified-Since"
 
-    const val HTTP_UNPROCESSABLE = 422
-    const val HTTP_NOT_FOUND = 404
-    const val HTTP_CONFLICT = 409
-
     val OPML_MIMETYPES = listOf("application/xml", "text/xml", "text/x-opml")
 
     private const val RSS_CONTENT_TYPE_REGEX = "([^;]+)"

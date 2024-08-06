@@ -27,7 +27,7 @@ object FeedUnreadCountQueryBuilder {
             )
         } else {
             SimpleSQLiteQuery(
-                """Select feed_id, count(*) AS item_count From ItemState Inner Join Item On ItemState.remote_id = Item.remoteId 
+                """Select feed_id, count(*) AS item_count From ItemState Inner Join Item On ItemState.remote_id = Item.remote_id 
             Where ItemState.read = 0 And account_id = $accountId $filter Group By feed_id""".trimIndent())
         }
 

@@ -2,35 +2,33 @@ package com.readrops.api.services.fever
 
 import com.readrops.api.services.SyncType
 import com.readrops.api.services.fever.adapters.FeverAPIAdapter
-import com.readrops.api.utils.exceptions.LoginException
+import com.readrops.api.utils.ApiUtils
 import com.readrops.db.entities.Item
 import com.squareup.moshi.Moshi
 import okhttp3.MultipartBody
 
 class FeverDataSource(private val service: FeverService) {
 
-    suspend fun login(body: MultipartBody) {
-        val response = service.login(body)
+    suspend fun login(login: String, password: String): Boolean {
+        val response = service.login(getFeverRequestBody(login, password))
 
         val adapter = Moshi.Builder()
-                .add(Boolean::class.java, FeverAPIAdapter())
-                .build()
-                .adapter(Boolean::class.java)
+            .add(Boolean::class.java, FeverAPIAdapter())
+            .build()
+            .adapter(Boolean::class.java)
 
-        val authenticated = adapter.fromJson(response.source())!!
-
-        // Error handling is shit, but it will stay like that until the UI
-        // and the other data sources/repositories are rewritten in Kotlin
-        if (!authenticated) {
-            throw LoginException("Login failed. Please check your credentials")
-        }
+        return adapter.fromJson(response.source())!!
     }
 
-    suspend fun sync(syncType: SyncType, syncData: FeverSyncData, body: MultipartBody): FeverSyncResult {
+    suspend fun synchronize(
+        syncType: SyncType,
+        syncData: FeverSyncData,
+        body: MultipartBody
+    ): FeverSyncResult {
         if (syncType == SyncType.INITIAL_SYNC) {
             val unreadIds = service.getUnreadItemsIds(body)
-                    .reversed()
-                    .subList(0, MAX_ITEMS_IDS)
+                .reversed()
+                .subList(0, MAX_ITEMS_IDS)
 
             var lastId = unreadIds.first()
             val items = arrayListOf<Item>()
@@ -42,13 +40,13 @@ class FeverDataSource(private val service: FeverService) {
             }
 
             return FeverSyncResult(
-                    feverFeeds = service.getFeeds(body),
-                    folders = service.getFolders(body),
-                    items = items,
-                    unreadIds = unreadIds,
-                    starredIds = service.getStarredItemsIds(body),
-                    favicons = listOf(),
-                    sinceId = unreadIds.first().toLong(),
+                feverFeeds = service.getFeeds(body),
+                folders = service.getFolders(body),
+                items = items,
+                unreadIds = unreadIds,
+                starredIds = service.getStarredItemsIds(body),
+                favicons = listOf(),
+                sinceId = unreadIds.first().toLong(),
             )
         } else {
             val items = arrayListOf<Item>()
@@ -63,19 +61,31 @@ class FeverDataSource(private val service: FeverService) {
             }
 
             return FeverSyncResult(
-                    feverFeeds = service.getFeeds(body),
-                    folders = service.getFolders(body),
-                    items = items,
-                    unreadIds = service.getUnreadItemsIds(body),
-                    starredIds = service.getStarredItemsIds(body),
-                    favicons = listOf(),
-                    sinceId = if (items.isNotEmpty()) items.first().remoteId!!.toLong() else sinceId.toLong(),
+                feverFeeds = service.getFeeds(body),
+                folders = service.getFolders(body),
+                items = items,
+                unreadIds = service.getUnreadItemsIds(body),
+                starredIds = service.getStarredItemsIds(body),
+                favicons = listOf(),
+                sinceId = if (items.isNotEmpty()) items.first().remoteId!!.toLong() else sinceId.toLong(),
             )
         }
     }
 
-    suspend fun setItemState(body: MultipartBody, action: String, id: String) =
-            service.updateItemState(body, action, id)
+    suspend fun setItemState(login: String, password: String, action: String, id: String) {
+        val body = getFeverRequestBody(login, password)
+
+        service.updateItemState(body, action, id)
+    }
+
+    private fun getFeverRequestBody(login: String, password: String): MultipartBody {
+        val credentials = ApiUtils.md5hash("$login:$password")
+
+        return MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("api_key", credentials)
+            .build()
+    }
 
     companion object {
         private const val MAX_ITEMS_IDS = 5000
@@ -85,12 +95,12 @@ class FeverDataSource(private val service: FeverService) {
 
 sealed class ItemAction(val value: String) {
     sealed class ReadStateAction(value: String) : ItemAction(value) {
-        object ReadAction : ReadStateAction("read")
-        object UnreadAction : ReadStateAction("unread")
+        data object ReadAction : ReadStateAction("read")
+        data object UnreadAction : ReadStateAction("unread")
     }
 
     sealed class StarStateAction(value: String) : ItemAction(value) {
-        object StarAction : StarStateAction("saved")
-        object UnstarAction : StarStateAction("unsaved")
+        data object StarAction : StarStateAction("saved")
+        data object UnstarAction : StarStateAction("unsaved")
     }
 }

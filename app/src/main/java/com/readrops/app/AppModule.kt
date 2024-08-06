@@ -19,6 +19,7 @@ import com.readrops.app.item.ItemScreenModel
 import com.readrops.app.more.preferences.PreferencesScreenModel
 import com.readrops.app.notifications.NotificationsScreenModel
 import com.readrops.app.repositories.BaseRepository
+import com.readrops.app.repositories.FeverRepository
 import com.readrops.app.repositories.FreshRSSRepository
 import com.readrops.app.repositories.GetFoldersWithFeeds
 import com.readrops.app.repositories.LocalRSSRepository
@@ -61,13 +62,23 @@ val appModule = module {
         when (account.accountType) {
             AccountType.LOCAL -> LocalRSSRepository(get(), get(), account)
             AccountType.FRESHRSS -> FreshRSSRepository(
-                get(), account,
-                get(parameters = { parametersOf(Credentials.toCredentials(account)) })
+                database = get(),
+                account = account,
+                dataSource = get(parameters = { parametersOf(Credentials.toCredentials(account)) })
             )
+
             AccountType.NEXTCLOUD_NEWS -> NextcloudNewsRepository(
-                get(), account,
-                get(parameters = { parametersOf(Credentials.toCredentials(account)) })
+                database = get(),
+                account = account,
+                dataSource = get(parameters = { parametersOf(Credentials.toCredentials(account)) })
             )
+
+            AccountType.FEVER -> FeverRepository(
+                database = get(),
+                account = account,
+                feverDataSource = get(parameters = { parametersOf(Credentials.toCredentials(account)) })
+            )
+
             else -> throw IllegalArgumentException("Unknown account type")
         }
     }
@@ -91,7 +102,7 @@ val appModule = module {
             corruptionHandler = ReplaceFileCorruptionHandler(
                 produceNewData = { emptyPreferences() }
             ),
-            migrations = listOf(SharedPreferencesMigration(get(),"settings")),
+            migrations = listOf(SharedPreferencesMigration(get(), "settings")),
             scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
             produceFile = { get<Context>().preferencesDataStoreFile("settings") }
         )

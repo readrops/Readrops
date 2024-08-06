@@ -38,4 +38,8 @@ interface FeverService {
     suspend fun updateItemState(@Body body: MultipartBody, @Query("as") action: String,
                                 @Query("id") id: String)
 
+    companion object {
+        const val END_POINT = "/api/fever.php/"
+    }
+
 }

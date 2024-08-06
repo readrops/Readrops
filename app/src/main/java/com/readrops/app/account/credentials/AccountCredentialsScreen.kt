@@ -41,6 +41,7 @@ import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.readrops.app.R
+import com.readrops.app.account.selection.adaptiveIconPainterResource
 import com.readrops.app.home.HomeScreen
 import com.readrops.app.util.ErrorMessage
 import com.readrops.app.util.components.AndroidScreen
@@ -115,7 +116,7 @@ class AccountCredentialsScreen(
                         .verticalScroll(rememberScrollState())
                 ) {
                     Image(
-                        painter = painterResource(id = account.accountType!!.iconRes),
+                        painter = adaptiveIconPainterResource(id = account.accountType!!.iconRes),
                         contentDescription = null,
                         modifier = Modifier.size(48.dp)
                     )

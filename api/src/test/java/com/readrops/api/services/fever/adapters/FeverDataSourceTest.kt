@@ -6,9 +6,8 @@ import com.readrops.api.services.fever.FeverCredentials
 import com.readrops.api.services.fever.FeverDataSource
 import com.readrops.api.utils.ApiUtils
 import com.readrops.api.utils.AuthInterceptor
-import com.readrops.api.utils.exceptions.LoginException
+import com.readrops.api.utils.exceptions.LoginFailedException
 import kotlinx.coroutines.runBlocking
-import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -68,9 +67,7 @@ class FeverDataSourceTest : KoinTest {
                 .setBody(Buffer().readFrom(stream)))
 
         runBlocking {
-            dataSource.login(MultipartBody.Builder()
-                    .addFormDataPart("api_key", "value")
-                    .build())
+            dataSource.login("","")
         }
     }
 
@@ -82,11 +79,9 @@ class FeverDataSourceTest : KoinTest {
                 .addHeader(ApiUtils.CONTENT_TYPE_HEADER, "application/json")
                 .setBody(Buffer().readFrom(stream)))
 
-        assertThrows(LoginException::class.java) {
+        assertThrows(LoginFailedException::class.java) {
             runBlocking {
-                dataSource.login(MultipartBody.Builder()
-                        .addFormDataPart("api_key", "value")
-                        .build())
+                dataSource.login("","")
             }
         }
     }
