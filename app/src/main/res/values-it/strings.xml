@@ -91,8 +91,8 @@
     <string name="account_name">Nome dell\'account</string>
     <string name="account_url">URL dell\'account</string>
     <string name="select_all">Seleziona tutto</string>
-    <string name="read">Segna come letto</string>
-    <string name="unread">Segna come non letto</string>
+    <string name="mark_read">Segna come letto</string>
+    <string name="mark_unread">Segna come non letto</string>
     <string name="filter">Filtra</string>
     <string name="show_read_articles">Mostra gli articoli letti</string>
     <string name="read_later">Da leggere più tardi</string>

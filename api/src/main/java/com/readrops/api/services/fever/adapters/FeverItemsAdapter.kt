@@ -7,10 +7,10 @@ import com.readrops.api.utils.extensions.nextNullableString
 import com.readrops.api.utils.extensions.skipField
 import com.readrops.api.utils.extensions.toBoolean
 import com.readrops.db.entities.Item
+import com.readrops.db.util.DateUtils
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.ToJson
-import org.joda.time.LocalDateTime
 
 class FeverItemsAdapter {
 
@@ -47,7 +47,7 @@ class FeverItemsAdapter {
                             5 -> link = nextNullableString()
                             6 -> isRead = nextInt().toBoolean()
                             7 -> isStarred = nextInt().toBoolean()
-                            8 -> pubDate = LocalDateTime(nextLong() * 1000L)
+                            8 -> pubDate = DateUtils.fromEpochSeconds(nextLong())
                             else -> skipValue()
                         }
                     }

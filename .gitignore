@@ -135,3 +135,5 @@ Gemfile
 mapping/
 
 **/*.exec
+
+.kotlin/

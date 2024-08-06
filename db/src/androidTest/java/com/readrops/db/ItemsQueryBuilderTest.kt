@@ -4,8 +4,9 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.readrops.db.filters.FilterType
 import com.readrops.db.filters.ListSortType
+import com.readrops.db.filters.MainFilter
+import com.readrops.db.filters.SubFilter
 import com.readrops.db.queries.ItemsQueryBuilder
 import com.readrops.db.queries.QueryFilters
 import junit.framework.TestCase.assertFalse
@@ -41,7 +42,6 @@ class ItemsQueryBuilderTest {
 
         with(query.sql) {
             assertTrue(contains("Feed.account_id = 1"))
-            assertTrue(contains("read_it_later = 0"))
             assertTrue(contains("pub_date DESC"))
 
             assertFalse(contains("read = 0 And"))
@@ -51,43 +51,33 @@ class ItemsQueryBuilderTest {
 
     @Test
     fun feedFilterCaseTest() {
-        val queryFilters = QueryFilters(accountId = 1, filterType = FilterType.FEED_FILTER,
+        val queryFilters = QueryFilters(accountId = 1, subFilter = SubFilter.FEED,
                 filterFeedId = 15)
 
         val query = ItemsQueryBuilder.buildItemsQuery(queryFilters)
         database.query(query)
 
-        assertTrue(query.sql.contains("feed_id = 15 And read_it_later = 0"))
-    }
-
-    @Test
-    fun readLaterFilterCaseTest() {
-        val queryFilters = QueryFilters(accountId = 1, filterType = FilterType.READ_IT_LATER_FILTER)
-
-        val query = ItemsQueryBuilder.buildItemsQuery(queryFilters)
-        database.query(query)
-
-        assertTrue(query.sql.contains("read_it_later = 1"))
+        assertTrue(query.sql.contains("feed_id = 15"))
     }
 
     @Test
     fun starsFilterCaseTest() {
-        val queryFilters = QueryFilters(accountId = 1, filterType = FilterType.STARS_FILTER)
+        val queryFilters = QueryFilters(accountId = 1, mainFilter = MainFilter.STARS)
 
         val query = ItemsQueryBuilder.buildItemsQuery(queryFilters)
         database.query(query)
 
-        assertTrue(query.sql.contains("starred = 1 And read_it_later = 0"))
+        assertTrue(query.sql.contains("starred = 1"))
     }
 
     @Test
     fun folderFilterCaseTest() {
-        val queryFilters = QueryFilters(accountId = 1, filterType = FilterType.FOLDER_FILER, filterFolderId = 1)
+        val queryFilters = QueryFilters(accountId = 1, subFilter = SubFilter.FOLDER, filterFolderId = 1)
 
         val query = ItemsQueryBuilder.buildItemsQuery(queryFilters)
         database.query(query)
 
-        assertTrue(query.sql.contains("folder_id = ${queryFilters.filterFolderId} And read_it_later = 0"))
+        assertTrue(query.sql.contains("folder_id = ${queryFilters.filterFolderId}"))
     }
 
     @Test
@@ -99,7 +89,7 @@ class ItemsQueryBuilderTest {
         database.query(query)
 
         with(query.sql) {
-            assertTrue(contains("read = 0 And "))
+            assertTrue(contains("read = 0"))
             assertTrue(contains("pub_date ASC"))
         }
 
@@ -107,7 +97,7 @@ class ItemsQueryBuilderTest {
 
     @Test
     fun separateStateTest() {
-        val queryFilters = QueryFilters(accountId = 1, showReadItems = false, filterType = FilterType.STARS_FILTER)
+        val queryFilters = QueryFilters(accountId = 1, showReadItems = false, mainFilter = MainFilter.STARS)
 
         val query = ItemsQueryBuilder.buildItemsQuery(queryFilters, true)
         database.query(query)
@@ -115,7 +105,7 @@ class ItemsQueryBuilderTest {
         with(query.sql) {
             assertFalse(contains("read, starred"))
             assertTrue(contains("ItemState.read = 0 And "))
-            assertTrue(contains("ItemState.starred = 1 And read_it_later = 0"))
+            assertTrue(contains("ItemState.starred = 1"))
         }
     }
 
@@ -127,7 +117,7 @@ class ItemsQueryBuilderTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun filterFeedIdExceptionTest() {
-        val queryFilters = QueryFilters(accountId = 1, filterType = FilterType.FEED_FILTER)
+        val queryFilters = QueryFilters(accountId = 1, subFilter = SubFilter.FEED)
         ItemsQueryBuilder.buildItemsQuery(queryFilters)
     }
 }

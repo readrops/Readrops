@@ -29,6 +29,7 @@ class ATOMFeedAdapter : XmlAdapter<Pair<Feed, List<Item>>> {
                             "link" -> parseLink(this@allChildrenAutoIgnore, feed)
                             "subtitle" -> description = nullableText()
                             "entry" -> items += itemAdapter.fromXml(this@allChildrenAutoIgnore)
+                            else -> skipContents()
                         }
                     }
                 }

@@ -1,15 +1,19 @@
 package com.readrops.api.localfeed.rss2
 
-import com.gitlab.mvysny.konsumexml.*
+import com.gitlab.mvysny.konsumexml.Konsumer
+import com.gitlab.mvysny.konsumexml.KonsumerException
+import com.gitlab.mvysny.konsumexml.Names
+import com.gitlab.mvysny.konsumexml.allChildrenAutoIgnore
 import com.readrops.api.localfeed.XmlAdapter
 import com.readrops.api.localfeed.XmlAdapter.Companion.AUTHORS_MAX
-import com.readrops.api.utils.*
+import com.readrops.api.utils.ApiUtils
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.extensions.nonNullText
 import com.readrops.api.utils.extensions.nullableText
 import com.readrops.api.utils.extensions.nullableTextRecursively
 import com.readrops.db.entities.Item
-import org.joda.time.LocalDateTime
+import com.readrops.db.util.DateUtils
+import java.time.LocalDateTime
 
 class RSS2ItemAdapter : XmlAdapter<Item> {
 
@@ -29,7 +33,7 @@ class RSS2ItemAdapter : XmlAdapter<Item> {
                         "dc:creator" -> creators += nullableText()
                         "pubDate" -> pubDate = DateUtils.parse(nullableText())
                         "dc:date" -> pubDate = DateUtils.parse(nullableText())
-                        "guid" -> guid = nullableText()
+                        "guid" -> remoteId = nullableText()
                         "description" -> description = nullableTextRecursively()
                         "content:encoded" -> content = nullableTextRecursively()
                         "enclosure" -> parseEnclosure(this, item = this@apply)
@@ -81,7 +85,7 @@ class RSS2ItemAdapter : XmlAdapter<Item> {
         validateItem(this)
 
         if (pubDate == null) pubDate = LocalDateTime.now()
-        if (guid == null) guid = link
+        if (remoteId == null) remoteId = link
         if (author == null && creators.filterNotNull().isNotEmpty())
             author = creators.filterNotNull().joinToString(limit = AUTHORS_MAX)
     }

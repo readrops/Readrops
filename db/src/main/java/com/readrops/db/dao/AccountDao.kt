@@ -1,42 +1,51 @@
 package com.readrops.db.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Insert
 import androidx.room.Query
 import com.readrops.db.entities.account.Account
-import io.reactivex.Completable
-import io.reactivex.Single
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AccountDao : BaseDao<Account> {
 
-    @Query("Select * from Account")
-    fun selectAllAsync(): LiveData<List<Account>>
+    override suspend fun insert(entity: Account): Long {
+        val id = insertAccount(entity)
+        updateCurrentAccount(id.toInt())
+        return id
+    }
+
+    @Insert
+    suspend fun insertAccount(entity: Account): Long
 
     @Query("Select * From Account Where id = :accountId")
-    fun selectAsync(accountId: Int): LiveData<Account>
+    suspend fun select(accountId: Int): Account
 
-    @Query("Select * from Account")
-    fun selectAll(): List<Account>
+    @Query("Select * From Account")
+    fun selectAllAccounts(): Flow<List<Account>>
 
-    @Query("Select * From Account Where id = :accountId")
-    fun select(accountId: Int): Account
+    @Query("Select Count(*) From Account")
+    suspend fun selectAccountCount(): Int
+
+    @Query("Select * From Account Where current_account = 1")
+    fun selectCurrentAccount(): Flow<Account?>
+
+    @Query("Delete From Account")
+    suspend fun deleteAllAccounts()
 
     @Query("Update Account set last_modified = :lastModified Where id = :accountId")
-    fun updateLastModified(accountId: Int, lastModified: Long)
-
-    @Query("Update Account set current_account = 0 Where id Not In (:accountId)")
-    fun deselectOldCurrentAccount(accountId: Int)
-
-    @Query("Update Account set current_account = 1 Where id = :accountId")
-    fun setCurrentAccount(accountId: Int)
-
-    @get:Query("Select count(*) From Account")
-    val accountCount: Single<Int>
-
-    @Query("Update Account set writeToken = :writeToken Where id = :accountId")
-    fun updateWriteToken(accountId: Int, writeToken: String)
+    suspend fun updateLastModified(lastModified: Long, accountId: Int)
 
     @Query("Update Account set notifications_enabled = :enabled Where id = :accountId")
-    fun updateNotificationState(accountId: Int, enabled: Boolean): Completable
+    suspend fun updateNotificationState(accountId: Int, enabled: Boolean)
+
+    @Query("Select notifications_enabled From Account Where id = :accountId")
+    fun selectAccountNotificationsState(accountId: Int): Flow<Boolean>
+
+    @Query("""Update Account set current_account = Case When id = :accountId Then 1 
+        When id Is Not :accountId Then 0 End""")
+    suspend fun updateCurrentAccount(accountId: Int)
+
+    @Query("Update Account set account_name = :name Where id = :accountId")
+    suspend fun renameAccount(accountId: Int, name: String)
 }

@@ -1,5 +1,6 @@
 package com.readrops.app.repositories
 
+/*
 import android.content.Context
 import android.util.Log
 import com.readrops.api.services.SyncType
@@ -30,7 +31,7 @@ class FeverRepository(
         database: Database,
         context: Context,
         account: Account?,
-) : ARepository(database, context, account) {
+) : BaseRepository(database, context, account) {
 
     override fun login(account: Account, insert: Boolean): Completable =
             rxCompletable(context = dispatcher) {
@@ -226,4 +227,4 @@ class FeverRepository(
     companion object {
         val TAG: String = FeverRepository::class.java.simpleName
     }
-}
+}*/

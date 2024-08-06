@@ -5,6 +5,7 @@ import com.readrops.api.TestUtils
 import com.readrops.api.apiModule
 import com.readrops.api.utils.ApiUtils
 import com.readrops.api.utils.AuthInterceptor
+import com.readrops.api.utils.exceptions.HttpException
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.exceptions.UnknownFormatException
 import junit.framework.TestCase.*
@@ -149,7 +150,7 @@ class LocalRSSDataSourceTest : KoinTest {
         assertNull(pair)
     }
 
-    @Test(expected = NetworkErrorException::class)
+    @Test(expected = HttpException::class)
     fun response404Test() {
         mockServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_NOT_FOUND))
 

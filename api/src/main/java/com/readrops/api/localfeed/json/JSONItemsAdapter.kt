@@ -1,15 +1,15 @@
 package com.readrops.api.localfeed.json
 
 import com.readrops.api.localfeed.XmlAdapter.Companion.AUTHORS_MAX
-import com.readrops.api.utils.DateUtils
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.extensions.nextNonEmptyString
 import com.readrops.api.utils.extensions.nextNullableString
 import com.readrops.db.entities.Item
+import com.readrops.db.util.DateUtils
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
-import org.joda.time.LocalDateTime
+import java.time.LocalDateTime
 
 class JSONItemsAdapter : JsonAdapter<List<Item>>() {
 
@@ -33,7 +33,7 @@ class JSONItemsAdapter : JsonAdapter<List<Item>>() {
                 while (hasNext()) {
                     with(item) {
                         when (selectName(names)) {
-                            0 -> guid = nextNonEmptyString()
+                            0 -> remoteId = nextNonEmptyString()
                             1 -> link = nextNonEmptyString()
                             2 -> title = nextNonEmptyString()
                             3 -> contentHtml = nextNullableString()

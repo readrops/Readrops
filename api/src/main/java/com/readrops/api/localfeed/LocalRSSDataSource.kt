@@ -1,12 +1,12 @@
 package com.readrops.api.localfeed
 
-import android.accounts.NetworkErrorException
 import androidx.annotation.WorkerThread
 import com.gitlab.mvysny.konsumexml.Konsumer
 import com.gitlab.mvysny.konsumexml.konsumeXml
 import com.readrops.api.localfeed.json.JSONFeedAdapter
 import com.readrops.api.utils.ApiUtils
 import com.readrops.api.utils.AuthInterceptor
+import com.readrops.api.utils.exceptions.HttpException
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.exceptions.UnknownFormatException
 import com.readrops.db.entities.Feed
@@ -21,7 +21,6 @@ import okio.Buffer
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import java.io.IOException
-import java.lang.Exception
 import java.net.HttpURLConnection
 
 class LocalRSSDataSource(private val httpClient: OkHttpClient) : KoinComponent {
@@ -32,7 +31,7 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) : KoinComponent {
      * @param headers request headers
      * @return a Feed object with its items
      */
-    @Throws(ParseException::class, UnknownFormatException::class, NetworkErrorException::class, IOException::class)
+    @Throws(ParseException::class, UnknownFormatException::class, HttpException::class, IOException::class)
     @WorkerThread
     fun queryRSSResource(url: String, headers: Headers?): Pair<Feed, List<Item>>? {
         get<AuthInterceptor>().credentials = null
@@ -46,7 +45,7 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) : KoinComponent {
                 pair
             }
             response.code == HttpURLConnection.HTTP_NOT_MODIFIED -> null
-            else -> throw NetworkErrorException("$url returned ${response.code} code : ${response.message}")
+            else -> throw HttpException(response)
         }
     }
 
@@ -74,7 +73,8 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) : KoinComponent {
                         val rootKonsumer = nextElement(LocalRSSHelper.RSS_ROOT_NAMES)
                         rootKonsumer?.let { type = LocalRSSHelper.guessRSSType(rootKonsumer) }
                     } catch (e: Exception) {
-                        throw UnknownFormatException(e.message)
+                        close()
+                        return false
                     }
 
                 }

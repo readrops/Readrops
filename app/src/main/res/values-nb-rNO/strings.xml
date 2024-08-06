@@ -29,8 +29,8 @@
     <string name="password">Passord</string>
     <string name="account_name">Kontonavn</string>
     <string name="select_all">Velg alle</string>
-    <string name="read">Marker som lest</string>
-    <string name="unread">Marker som ulest</string>
+    <string name="mark_read">Marker som lest</string>
+    <string name="mark_unread">Marker som ulest</string>
     <string name="filter">Filter</string>
     <string name="show_read_articles">Vis leste artikler</string>
     <string name="articles">Artikler</string>

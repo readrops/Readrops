@@ -3,26 +3,38 @@ package com.readrops.app
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Intent
 import android.os.Build
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.preference.PreferenceManager
+import androidx.core.app.NotificationManagerCompat
+import coil.ImageLoader
+import coil.ImageLoaderFactory
+import coil.disk.DiskCache
 import com.readrops.api.apiModule
-import com.readrops.app.utils.SharedPreferencesManager
+import com.readrops.app.util.CrashActivity
 import com.readrops.db.dbModule
-import io.reactivex.plugins.RxJavaPlugins
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
+import kotlin.system.exitProcess
 
-open class ReadropsApp : Application() {
+open class ReadropsApp : Application(), KoinComponent, ImageLoaderFactory {
 
     override fun onCreate() {
         super.onCreate()
-        RxJavaPlugins.setErrorHandler { e: Throwable? -> }
 
-        createNotificationChannels()
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
+        Thread.setDefaultUncaughtExceptionHandler { _, throwable ->
+            val intent = Intent(this, CrashActivity::class.java).apply {
+                putExtra(CrashActivity.THROWABLE_KEY, throwable)
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            }
+
+            startActivity(intent)
+            exitProcess(0)
+        }
 
         startKoin {
             androidLogger(Level.ERROR)
@@ -31,41 +43,37 @@ open class ReadropsApp : Application() {
             modules(apiModule, dbModule, appModule)
         }
 
-        val theme = when (SharedPreferencesManager.readString(SharedPreferencesManager.SharedPrefKey.DARK_THEME)) {
-            getString(R.string.theme_value_light) -> AppCompatDelegate.MODE_NIGHT_NO
-            getString(R.string.theme_value_dark) -> AppCompatDelegate.MODE_NIGHT_YES
-            else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-        }
+        createNotificationChannels()
+    }
 
-        AppCompatDelegate.setDefaultNightMode(theme)
+    override fun newImageLoader(): ImageLoader {
+        return ImageLoader.Builder(this)
+            .okHttpClient { get() }
+            .diskCache {
+                DiskCache.Builder()
+                    .directory(this.cacheDir.resolve("image_cache"))
+                    .maxSizePercent(0.05)
+                    .build()
+            }
+            .crossfade(true)
+            .build()
     }
 
     private fun createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val feedsColorsChannel = NotificationChannel(FEEDS_COLORS_CHANNEL_ID,
-                    getString(R.string.feeds_colors), NotificationManager.IMPORTANCE_DEFAULT)
-            feedsColorsChannel.description = getString(R.string.get_feeds_colors)
-
-            val opmlExportChannel = NotificationChannel(OPML_EXPORT_CHANNEL_ID,
-                    getString(R.string.opml_export), NotificationManager.IMPORTANCE_DEFAULT)
-            opmlExportChannel.description = getString(R.string.opml_export_description)
-
-            val syncChannel = NotificationChannel(SYNC_CHANNEL_ID,
-                    getString(R.string.auto_synchro), NotificationManager.IMPORTANCE_LOW)
+            val syncChannel = NotificationChannel(
+                SYNC_CHANNEL_ID,
+                getString(R.string.auto_synchro),
+                NotificationManager.IMPORTANCE_LOW
+            )
             syncChannel.description = getString(R.string.account_synchro)
 
-            val manager = getSystemService(NotificationManager::class.java)!!
-
-            manager.createNotificationChannel(feedsColorsChannel)
-            manager.createNotificationChannel(opmlExportChannel)
-            manager.createNotificationChannel(syncChannel)
+            NotificationManagerCompat.from(this)
+                .createNotificationChannel(syncChannel)
         }
     }
 
     companion object {
-        const val FEEDS_COLORS_CHANNEL_ID = "feedsColorsChannel"
-        const val OPML_EXPORT_CHANNEL_ID = "opmlExportChannel"
         const val SYNC_CHANNEL_ID = "syncChannel"
     }
-
 }

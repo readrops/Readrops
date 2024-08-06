@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">Readrops</string>
+    <string name="app_licence">App released under the GPLv3 licence</string>
     <string name="to_read">To read</string>
     <string name="non_read_articles">Non read articles</string>
     <string name="open_nav_drawer">Open menu</string>
@@ -18,8 +19,8 @@
     <string name="add_feed_connexion_error">Connection error</string>
     <string name="add_feed_unknownhost_error">Unknown host</string>
     <string name="by_author">by %1$s</string>
-    <string name="read_time">%1$s mins</string>
-    <string name="read_time_lower_than_1">Less than a minute</string>
+    <string name="read_time">%1$s min</string>
+    <string name="read_time_lower_than_1">&lt;1 min</string>
     <string name="read_time_one_minute">1 min</string>
     <string name="interpoint" translatable="false">·</string>
     <string name="share_article">Share Article</string>
@@ -44,8 +45,8 @@
     <string name="read_later">To read later</string>
     <string name="show_read_articles">Show read articles</string>
     <string name="filter">Filter</string>
-    <string name="unread">Mark as non read</string>
-    <string name="read">Mark as read</string>
+    <string name="mark_unread">Mark as non read</string>
+    <string name="mark_read">Mark as read</string>
     <string name="select_all">Select all</string>
     <string name="account_url">Account url</string>
     <string name="account_name">Account name</string>
@@ -144,8 +145,89 @@
     <string name="theme_value_light" translatable="false">light</string>
     <string name="theme_value_dark" translatable="false">dark</string>
     <string name="theme_value_system" translatable="false">system</string>
-    <string name="hide">Hide</string>
-    <string name="show">Show</string>
-    <string name="show_hide_feeds">Show or hide feeds without new items</string>
-    <string name="mark_items_read">Mark items read on scroll</string>
+    <string name="hide_feeds">Hide feeds without new items</string>
+    <string name="mark_items_read_on_scroll">Mark items read on scroll</string>
+    <string name="new_articles">New articles</string>
+    <string name="filters">Filters</string>
+    <plurals name="error_occurred">
+        <item quantity="one">An error occurred</item>
+        <item quantity="other">Some errors occurred</item>
+    </plurals>
+    <string name="details">Details</string>
+    <string name="synchronization_errors">Synchronization errors</string>
+    <plurals name="error_occurred_feed">
+        <item quantity="one">An error occurred for the following feed:</item>
+        <item quantity="other">Some errors occurred for the following feeds:</item>
+    </plurals>
+    <string name="unreachable_feed_http_error">Unreachable feed, HTTP error %1$s</string>
+    <string name="network_failure">Network failure: %1$s</string>
+    <string name="processing_feed_error">Processing feed error</string>
+    <string name="unreachable_url">Unreachable URL</string>
+    <string name="unable_open_file">Unable to open file</string>
+    <string name="http_error_400">HTTP error 400, please check your server URL</string>
+    <string name="http_error_401">HTTP error 401, please check your credentials</string>
+    <string name="http_error_403">HTTP error 403, access forbidden</string>
+    <string name="http_error_404">HTTP error 404, URL not found</string>
+    <string name="http_error_4XX">HTTP error %1$d, please check your fields</string>
+    <string name="http_error_5XX">HTTP error %1$d, server error</string>
+    <string name="http_error">HTTP error %1$d</string>
+    <string name="feed_url_read_only">The API doesn\'t support Feed URL modification</string>
+    <string name="updating_account">Updating %1$s account</string>
+    <string name="enable_all">Enable all</string>
+    <string name="disable_all">Disable all</string>
+    <string name="open_source_libraries">Open source libraries</string>
+    <string name="make_donation">Make a donation</string>
+    <string name="app_changelog_url" translatable="false">https://github.com/readrops/Readrops/blob/develop/CHANGELOG.md</string>
+    <string name="app_issues_url" translatable="false">https://github.com/readrops/Readrops/issues</string>
+    <string name="other_accounts">Other accounts</string>
+    <string name="update">Update</string>
+    <string name="rename_account">Rename account</string>
+    <string name="name">Name</string>
+    <string name="url">URL</string>
+    <string name="unread">%1$d unread</string>
+    <string name="preferences">Preferences</string>
+    <string name="item_view">Article view</string>
+    <string name="timeline">Timeline</string>
+    <string name="hide_feeds_subtitle">Feeds with no left unread items will be hidden in the drawer</string>
+    <string name="compact">Compact</string>
+    <string name="regular">Regular</string>
+    <string name="large">Large</string>
+    <string name="item_size">Item size</string>
+    <string name="background_sync_already_running">A background synchronization is already running</string>
+    <string name="disable_battery_optimization">Disable battery optimization</string>
+    <string name="disable_battery_optimization_subtitle">Can help with background synchronization not being killed by the system</string>
+    <string name="battery_optimization_already_disabled">Battery optimization already disabled for this app</string>
+    <string name="opml_export_success">OPML export success</string>
+    <string name="add_to_favorite">Add to favorites</string>
+    <string name="grant_access_notifications">Grant access to Notifications</string>
+    <string name="system_notifications_disabled">System notifications are currently disabled. Click here to enable them</string>
+    <string name="show_notifications_background_sync">Show notifications after background synchronization</string>
+    <string name="background_sync_new_articles">Be alerted of new articles after background synchronization</string>
+    <string name="no_article">No article</string>
+    <string name="not_valid_url">Input is not a valid URL</string>
+    <string name="field_cant_be_empty">Field can\'t be empty</string>
+    <string name="no_rss_feed_found">No RSS feed found</string>
+    <string name="not_valid_rss_feed">The provided URL is not a valid RSS feed</string>
+    <string name="error_occurred">An error occurred</string>
+    <string name="more">More</string>
+    <string name="show_oldest_articles_first">Show oldest articles first</string>
+    <string name="delete_feed_question">Do you want to delete feed %1$s?</string>
+    <string name="delete_folder_question">Do you want to delete folder %1$s? All linked feeds will also be deleted.</string>
+    <string name="update_color">Update color</string>
+    <string name="external">External</string>
+    <string name="mark_all_articles_read">Mark all articles as read</string>
+    <string name="mark_all_articles_read_question">Do you really want to mark all items as read?</string>
+    <string name="readrops_crashed">Readrops crashed.</string>
+    <string name="crash_message">I you see this, it means the app ran into an unexpected error. Please if you can, report the error on Github.</string>
+    <string name="report_error_github">Report the error on Github</string>
+    <string name="copy_error_clipboard">Copy error to clipboard</string>
+    <string name="copied">Copied!</string>
+    <string name="paypal" translatable="false">Paypal</string>
+    <string name="paypal_url" translatable="false">https://paypal.me/readropsapp</string>
+    <string name="bitcoin_address" translatable="false">bc1qlkzlcsvvtn3y6mek5umv5tc4ln09l64x6y42hr</string>
+    <string name="litecoin_address" translatable="false">MTuf45ZvxhMWWo4v8YBbFDTLsFcGtpcPNT</string>
+    <string name="bitcoin_copy_address">Bitcoin (copy address)</string>
+    <string name="litecoin_copy_address">Litecoin (copy address)</string>
+    <string name="donation_text">I you find my work useful and you would like to support me, you can consider making me a donation.</string>
+    <string name="add_feed">Add feed</string>
 </resources>

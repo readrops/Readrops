@@ -2,12 +2,12 @@ package com.readrops.api.services.freshrss.adapters
 
 import com.readrops.api.TestUtils
 import com.readrops.db.entities.Item
+import com.readrops.db.util.DateUtils
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
 import okio.Buffer
-import org.joda.time.LocalDateTime
 import org.junit.Test
 
 class FreshRSSItemsAdapterTest {
@@ -29,7 +29,7 @@ class FreshRSSItemsAdapterTest {
             assertNotNull(content)
             assertEquals(link, "http://feedproxy.google.com/~r/d0od/~3/4Zk-fncSuek/adwaita-borderless-theme-in-development-gnome-41")
             assertEquals(author, "Joey Sneddon")
-            assertEquals(pubDate, LocalDateTime(1625234040 * 1000L))
+            assertEquals(pubDate, DateUtils.fromEpochSeconds(1625234040))
             assertEquals(isRead, false)
             assertEquals(isStarred, false)
         }

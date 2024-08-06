@@ -1,13 +1,11 @@
 package com.readrops.db.entities.account
 
-import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import kotlinx.parcelize.Parcelize
+import java.io.Serializable
 
-@Parcelize
 @Entity
 data class Account(
         @PrimaryKey(autoGenerate = true) var id: Int = 0,
@@ -22,7 +20,7 @@ data class Account(
         @ColumnInfo(name = "notifications_enabled") var isNotificationsEnabled: Boolean = false,
         @Ignore var login: String? = null,
         @Ignore var password: String? = null,
-) : Parcelable {
+) : Serializable {
 
     constructor(accountUrl: String?, accountName: String, accountType: AccountType):
             this(url = accountUrl, accountName =  accountName, accountType = accountType)
