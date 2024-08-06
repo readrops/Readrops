@@ -33,7 +33,10 @@ dependencies {
 
     implementation(platform(libs.koin.bom))
     implementation(libs.bundles.koin)
-    androidTestImplementation(libs.bundles.kointest)
+    //testImplementation(libs.bundles.kointest)
+    // I don't know why but those dependencies are unreachable when accessed directly from version catalog
+    testImplementation("io.insert-koin:koin-test:${libs.versions.koin.bom.get()}")
+   testImplementation("io.insert-koin:koin-test-junit4:${libs.versions.koin.bom.get()}")
 
     implementation(libs.konsumexml)
     implementation(libs.kotlinxmlbuilder)
