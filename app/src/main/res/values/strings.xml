@@ -222,4 +222,11 @@
     <string name="report_error_github">Report the error on Github</string>
     <string name="copy_error_clipboard">Copy error to clipboard</string>
     <string name="copied">Copied!</string>
+    <string name="paypal" translatable="false">Paypal</string>
+    <string name="paypal_url" translatable="false">https://paypal.me/readropsapp</string>
+    <string name="bitcoin_address" translatable="false">bc1qlkzlcsvvtn3y6mek5umv5tc4ln09l64x6y42hr</string>
+    <string name="litecoin_address" translatable="false">MTuf45ZvxhMWWo4v8YBbFDTLsFcGtpcPNT</string>
+    <string name="bitcoin_copy_address">Bitcoin (copy address)</string>
+    <string name="litecoin_copy_address">Litecoin (copy address)</string>
+    <string name="donation_text">I you find my work useful and you would like to support me, you can consider making me a donation.</string>
 </resources>

@@ -60,7 +60,7 @@ class CrashActivity : ComponentActivity() {
 
         } catch (e: Exception) {
             Log.e("CrashActivity", "Unable to get crash exception")
-            null
+            throwable?.let { it::class.simpleName + it.message }
         }
 
         setContent {

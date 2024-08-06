@@ -13,6 +13,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -51,6 +55,14 @@ object MoreTab : Tab, KoinComponent {
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
         val context = LocalContext.current
+
+        var showDonationDialog by remember { mutableStateOf(false) }
+
+        if (showDonationDialog) {
+            DonationDialog(
+                onDismiss = { showDonationDialog = false }
+            )
+        }
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -159,7 +171,7 @@ object MoreTab : Tab, KoinComponent {
                 spacing = MaterialTheme.spacing.largeSpacing,
                 padding = MaterialTheme.spacing.mediumSpacing,
                 tint = MaterialTheme.colorScheme.primary,
-                onClick = { }
+                onClick = { showDonationDialog = true }
             )
         }
     }
