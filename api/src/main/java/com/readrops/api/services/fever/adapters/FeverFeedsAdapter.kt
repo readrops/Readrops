@@ -5,13 +5,14 @@ import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.extensions.nextNonEmptyString
 import com.readrops.api.utils.extensions.nextNullableString
 import com.readrops.api.utils.extensions.skipField
-import com.readrops.api.utils.extensions.skipToEnd
 import com.readrops.db.entities.Feed
-import com.squareup.moshi.*
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.JsonReader
+import com.squareup.moshi.JsonWriter
 
 data class FeverFeeds(
-        val feeds: List<Feed>,
-        val feedsGroups: Map<Int, List<Int>>
+    val feeds: List<Feed> = listOf(),
+    val feedsGroups: Map<Int, List<Int>> = emptyMap()
 )
 
 class FeverFeedsAdapter : JsonAdapter<FeverFeeds>() {

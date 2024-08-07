@@ -3,8 +3,11 @@ package com.readrops.api.services.fever
 import com.readrops.api.services.SyncType
 import com.readrops.api.services.fever.adapters.FeverAPIAdapter
 import com.readrops.api.utils.ApiUtils
-import com.readrops.db.entities.Item
 import com.squareup.moshi.Moshi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import okhttp3.MultipartBody
 
 class FeverDataSource(private val service: FeverService) {
@@ -21,54 +24,68 @@ class FeverDataSource(private val service: FeverService) {
     }
 
     suspend fun synchronize(
+        login: String,
+        password: String,
         syncType: SyncType,
-        syncData: FeverSyncData,
-        body: MultipartBody
-    ): FeverSyncResult {
+        syncData: FeverSyncData
+    ): FeverSyncResult = with(CoroutineScope(Dispatchers.IO)) {
+        val body = getFeverRequestBody(login, password)
+
         if (syncType == SyncType.INITIAL_SYNC) {
-            val unreadIds = service.getUnreadItemsIds(body)
-                .reversed()
-                .subList(0, MAX_ITEMS_IDS)
+            return FeverSyncResult().apply {
+                listOf(
+                    async { feverFeeds = service.getFeeds(body) },
+                    async { folders = service.getFolders(body) },
+                    async {
+                        unreadIds = service.getUnreadItemsIds(body)
+                            .reversed()
+                            .subList(0, MAX_ITEMS_IDS)
 
-            var lastId = unreadIds.first()
-            val items = arrayListOf<Item>()
-            repeat(INITIAL_SYNC_ITEMS_REQUESTS_COUNT) {
-                val newItems = service.getItems(body, lastId, null)
+                        var lastId = unreadIds.first()
+                        items = buildList {
+                            repeat(INITIAL_SYNC_ITEMS_REQUESTS_COUNT) {
+                                val newItems = service.getItems(body, lastId, null)
 
-                lastId = newItems.last().remoteId!!
-                items += newItems
+                                lastId = newItems.last().remoteId!!
+                                addAll(newItems)
+                            }
+                        }
+
+                        sinceId = unreadIds.first().toLong()
+                    },
+                    async { starredIds = service.getStarredItemsIds(body) },
+                    async { favicons = listOf() }
+                )
+                    .awaitAll()
             }
 
-            return FeverSyncResult(
-                feverFeeds = service.getFeeds(body),
-                folders = service.getFolders(body),
-                items = items,
-                unreadIds = unreadIds,
-                starredIds = service.getStarredItemsIds(body),
-                favicons = listOf(),
-                sinceId = unreadIds.first().toLong(),
-            )
+
         } else {
-            val items = arrayListOf<Item>()
-            var sinceId = syncData.sinceId
+            return FeverSyncResult().apply {
+                listOf(
+                    async { folders = service.getFolders(body) },
+                    async { feverFeeds = service.getFeeds(body) },
+                    async { unreadIds = service.getUnreadItemsIds(body) },
+                    async { starredIds = service.getStarredItemsIds(body) },
+                    async { favicons = listOf() },
+                    async {
+                        items = buildList {
+                            var sinceId = syncData.sinceId
 
-            while (true) {
-                val newItems = service.getItems(body, null, sinceId)
+                            while (true) {
+                                val newItems = service.getItems(body, null, sinceId)
 
-                if (newItems.isEmpty()) break
-                sinceId = newItems.first().remoteId!!
-                items += newItems
+                                if (newItems.isEmpty()) break
+                                sinceId = newItems.first().remoteId!!
+                                addAll(newItems)
+                            }
+                        }
+
+                        if (items.isNotEmpty()) items.first().remoteId!!.toLong() else sinceId.toLong()
+                    }
+                )
+                    .awaitAll()
             }
-
-            return FeverSyncResult(
-                feverFeeds = service.getFeeds(body),
-                folders = service.getFolders(body),
-                items = items,
-                unreadIds = service.getUnreadItemsIds(body),
-                starredIds = service.getStarredItemsIds(body),
-                favicons = listOf(),
-                sinceId = if (items.isNotEmpty()) items.first().remoteId!!.toLong() else sinceId.toLong(),
-            )
         }
     }
 

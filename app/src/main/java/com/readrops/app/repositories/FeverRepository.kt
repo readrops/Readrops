@@ -41,20 +41,24 @@ class FeverRepository(
         }
 
         return feverDataSource.synchronize(
+            account.login!!,
+            account.password!!,
             syncType,
-            FeverSyncData(account.lastModified.toString()),
-            getFeverRequestBody()
+            FeverSyncData(account.lastModified.toString())
         ).run {
             insertFolders(folders)
-            insertFeeds(feverFeeds)
+            val newFeeds = insertFeeds(feverFeeds)
 
-            insertItems(items)
+            val newItems = insertItems(items)
             insertItemsIds(unreadIds, starredIds.toMutableList())
 
             // We store the id to use for the next synchronisation even if it's not a timestamp
             database.accountDao().updateLastModified(sinceId, account.id)
 
-            SyncResult()
+            SyncResult(
+                items = newItems,
+                feeds = newFeeds
+            )
         }
     }
 
@@ -144,7 +148,7 @@ class FeverRepository(
         database.folderDao().upsertFolders(folders, account)
     }
 
-    private suspend fun insertFeeds(feverFeeds: FeverFeeds) = with(feverFeeds) {
+    private suspend fun insertFeeds(feverFeeds: FeverFeeds): List<Feed> = with(feverFeeds) {
         for (feed in feeds) {
             for ((folderId, feedsIds) in feedsGroups) {
                 if (feedsIds.contains(feed.remoteId!!.toInt())) {
@@ -154,23 +158,23 @@ class FeverRepository(
         }
 
         feeds.forEach { it.accountId = account.id }
-        database.feedDao().upsertFeeds(feeds, account)
+        return database.feedDao().upsertFeeds(feeds, account)
     }
 
     private suspend fun insertItems(items: List<Item>): List<Item> {
         val newItems = arrayListOf<Item>()
-        val itemsFeedsIds = mutableMapOf<String, Int>()
+        val itemsFeedsIds = mutableMapOf<String?, Int>()
 
         for (item in items) {
-            var feedId: Int?
+            val feedId: Int
             if (itemsFeedsIds.containsKey(item.feedRemoteId)) {
-                feedId = itemsFeedsIds[item.feedRemoteId]
+                feedId = itemsFeedsIds.getValue(item.feedRemoteId)
             } else {
-                //feedId = database.feedDao().getFeedIdByRemoteId(item.feedRemoteId!!, account.id)
-               // itemsFeedsIds[item.feedRemoteId!!] = feedId
+                feedId = database.feedDao().selectRemoteFeedLocalId(item.feedRemoteId!!, account.id)
+                itemsFeedsIds[item.feedRemoteId!!] = feedId
             }
 
-            //item.feedId = feedId!!
+            item.feedId = feedId
             item.text?.let { item.readTime = Utils.readTimeFromString(it) }
 
             newItems += item

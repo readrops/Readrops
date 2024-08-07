@@ -6,11 +6,11 @@ import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
 
 data class FeverSyncResult(
-        val feverFeeds: FeverFeeds,
-        val folders: List<Folder>,
-        val items: List<Item>,
-        val unreadIds: List<String>,
-        val starredIds: List<String>,
-        val favicons: List<Favicon>,
-        val sinceId: Long = 0,
+    var feverFeeds: FeverFeeds = FeverFeeds(),
+    var folders: List<Folder> = listOf(),
+    var items: List<Item> = listOf(),
+    var unreadIds: List<String> = listOf(),
+    var starredIds: List<String> = listOf(),
+    var favicons: List<Favicon> = listOf(),
+    var sinceId: Long = 0,
 )
