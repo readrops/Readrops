@@ -15,7 +15,6 @@ object ItemSelectionQueryBuilder {
         "pub_date",
         "image_link",
         "author",
-        "Item.read",
         "icon_url",
         "color",
         "read_time",
@@ -26,8 +25,10 @@ object ItemSelectionQueryBuilder {
         "Folder.name as folder_name"
     )
 
-    private val SEPARATE_STATE_COLUMNS =
-        arrayOf("case When ItemState.starred = 1 Then 1 else 0 End starred")
+    private val SEPARATE_STATE_COLUMNS = arrayOf(
+        "case When ItemState.read = 1 Then 1 else 0 End read",
+        "case When ItemState.starred = 1 Then 1 else 0 End starred"
+    )
 
     private const val JOIN =
         "Item Inner Join Feed On Item.feed_id = Feed.id Left Join Folder on Folder.id = Feed.folder_id"
@@ -42,7 +43,10 @@ object ItemSelectionQueryBuilder {
     fun buildQuery(itemId: Int, separateState: Boolean): SupportSQLiteQuery {
         val tables = if (separateState) JOIN + SEPARATE_STATE_JOIN else JOIN
         val columns =
-            if (separateState) COLUMNS.plus(SEPARATE_STATE_COLUMNS) else COLUMNS.plus("starred")
+            if (separateState) COLUMNS.plus(SEPARATE_STATE_COLUMNS) else COLUMNS + arrayOf(
+                "Item.read",
+                "starred"
+            )
 
         return SupportSQLiteQueryBuilder.builder(tables).run {
             columns(columns)

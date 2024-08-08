@@ -2,6 +2,7 @@ package com.readrops.app.item
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
@@ -17,10 +18,13 @@ import com.readrops.app.util.Preferences
 import com.readrops.db.Database
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
+import com.readrops.db.entities.account.AccountType
 import com.readrops.db.pojo.ItemWithFeed
 import com.readrops.db.queries.ItemSelectionQueryBuilder
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
@@ -29,6 +33,7 @@ import org.koin.core.parameter.parametersOf
 import java.io.File
 import java.io.FileOutputStream
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ItemScreenModel(
     private val database: Database,
     private val itemId: Int,
@@ -43,8 +48,16 @@ class ItemScreenModel(
     init {
         screenModelScope.launch(dispatcher) {
             database.accountDao().selectCurrentAccount()
-                .collect { account ->
+                .flatMapLatest { account ->
                     this@ItemScreenModel.account = account!!
+
+                    if (account.accountType == AccountType.FEVER) {
+                        get<SharedPreferences>().apply {
+                            account.login = getString(account.loginKey, null)
+                            account.password = getString(account.passwordKey, null)
+                        }
+                    }
+
                     repository = get { parametersOf(account) }
 
                     val query = ItemSelectionQueryBuilder.buildQuery(
@@ -53,17 +66,17 @@ class ItemScreenModel(
                     )
 
                     database.itemDao().selectItemById(query)
-                        .collect { itemWithFeed ->
-                            mutableState.update {
-                                it.copy(
-                                    itemWithFeed = itemWithFeed,
-                                    bottomBarState = BottomBarState(
-                                        isRead = itemWithFeed.item.isRead,
-                                        isStarred = itemWithFeed.item.isStarred
-                                    )
-                                )
-                            }
-                        }
+                }
+                .collect { itemWithFeed ->
+                    mutableState.update {
+                        it.copy(
+                            itemWithFeed = itemWithFeed,
+                            bottomBarState = BottomBarState(
+                                isRead = itemWithFeed.item.isRead,
+                                isStarred = itemWithFeed.item.isStarred
+                            )
+                        )
+                    }
                 }
         }
 
@@ -93,14 +106,12 @@ class ItemScreenModel(
     }
 
     fun setItemReadState(item: Item) {
-        //TODO support separateState
         screenModelScope.launch(dispatcher) {
             repository.setItemReadState(item)
         }
     }
 
     fun setItemStarState(item: Item) {
-        //TODO support separateState
         screenModelScope.launch(dispatcher) {
             repository.setItemStarState(item)
         }
