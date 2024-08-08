@@ -1,6 +1,5 @@
 package com.readrops.app.sync
 
-import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -159,7 +158,6 @@ class SyncWorker(
         return workResult to syncResults
     }
 
-    @SuppressLint("MissingPermission")
     private suspend fun refreshLocalAccount(
         repository: BaseRepository,
         account: Account,
@@ -184,10 +182,13 @@ class SyncWorker(
         val result = repository.synchronize(
             selectedFeeds = feeds,
             onUpdate = { feed ->
-                notificationBuilder.setContentText(feed.name)
-                    .setStyle(NotificationCompat.BigTextStyle().bigText(feed.name))
-                    .setProgress(feedMax, ++feedCount, false)
-                notificationManager.notify(SYNC_NOTIFICATION_ID, notificationBuilder.build())
+                if (notificationManager.areNotificationsEnabled()) {
+                    notificationBuilder.setContentText(feed.name)
+                        .setStyle(NotificationCompat.BigTextStyle().bigText(feed.name))
+                        .setProgress(feedMax, ++feedCount, false)
+
+                    notificationManager.notify(SYNC_NOTIFICATION_ID, notificationBuilder.build())
+                }
 
                 setProgress(
                     workDataOf(
