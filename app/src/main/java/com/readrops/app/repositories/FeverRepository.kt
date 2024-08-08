@@ -6,7 +6,6 @@ import com.readrops.api.services.fever.FeverDataSource
 import com.readrops.api.services.fever.FeverSyncData
 import com.readrops.api.services.fever.ItemAction
 import com.readrops.api.services.fever.adapters.FeverFeeds
-import com.readrops.api.utils.ApiUtils
 import com.readrops.api.utils.exceptions.LoginFailedException
 import com.readrops.app.util.Utils
 import com.readrops.db.Database
@@ -14,8 +13,8 @@ import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.ItemState
+import com.readrops.db.entities.ItemStateChange
 import com.readrops.db.entities.account.Account
-import okhttp3.MultipartBody
 
 class FeverRepository(
     database: Database,
@@ -89,20 +88,40 @@ class FeverRepository(
     override suspend fun deleteFolder(folder: Folder) {}
 
     override suspend fun setItemReadState(item: Item) {
-        val action =
-            if (item.isRead) ItemAction.ReadStateAction.ReadAction else ItemAction.ReadStateAction.UnreadAction
+        val action = if (item.isRead) {
+            ItemAction.ReadStateAction.ReadAction
+        } else {
+            ItemAction.ReadStateAction.UnreadAction
+        }
+
         return setItemState(item, action)
     }
 
     override suspend fun setItemStarState(item: Item) {
-        val action =
-            if (item.isStarred) ItemAction.StarStateAction.StarAction else ItemAction.StarStateAction.UnstarAction
+        val action = if (item.isStarred) {
+            ItemAction.StarStateAction.StarAction
+        } else {
+            ItemAction.StarStateAction.UnstarAction
+        }
+
         return setItemState(item, action)
     }
 
     private suspend fun setItemState(item: Item, action: ItemAction) {
         try {
-            feverDataSource.setItemState(account.login!!, account.password!!, action.value, item.remoteId!!)
+            val currentState = database.itemStateDao().selectItemState(account.id, item.remoteId!!)
+
+            // if new state the same as the current one, do nothing
+            if (action is ItemAction.ReadStateAction) {
+                if (item.isRead == currentState.read) {
+                    return
+                }
+            } else {
+                if (item.isStarred == currentState.starred) {
+                    return
+                }
+            }
+
             val itemState = ItemState(
                 read = item.isRead,
                 starred = item.isStarred,
@@ -110,21 +129,32 @@ class FeverRepository(
                 accountId = account.id,
             )
 
-            val completable = if (action is ItemAction.ReadStateAction) {
+            // local state change
+            if (action is ItemAction.ReadStateAction) {
                 database.itemStateDao().upsertItemReadState(itemState)
             } else {
                 database.itemStateDao().upsertItemStarState(itemState)
             }
 
+            // remote state change
+            feverDataSource.setItemState(
+                account.login!!,
+                account.password!!,
+                action.value,
+                item.remoteId!!
+            )
+
+            // time to process item state changes which couldn't be sent previously (no network for example)
+            sendPreviousItemStateChanges()
         } catch (e: Exception) {
-            val completable = if (action is ItemAction.ReadStateAction) {
+            // error occurred, probably network error, so we keep this change until the next state change
+            if (action is ItemAction.ReadStateAction) {
                 super.setItemReadState(item)
             } else {
                 super.setItemStarState(item)
             }
 
             Log.e(TAG, "setItemStarState: ${e.message}")
-            error(e.message!!)
         }
     }
 
@@ -134,12 +164,26 @@ class FeverRepository(
 
         for (stateChange in stateChanges) {
             val action = if (stateChange.readChange) {
-                if (stateChange.read) ItemAction.ReadStateAction.ReadAction else ItemAction.ReadStateAction.UnreadAction
-            } else { // star change
-                if (stateChange.starred) ItemAction.StarStateAction.StarAction else ItemAction.StarStateAction.UnstarAction
+                when {
+                    stateChange.read -> ItemAction.ReadStateAction.ReadAction
+                    else -> ItemAction.ReadStateAction.UnreadAction
+                }
+            } else {
+                when {
+                    stateChange.starred -> ItemAction.StarStateAction.StarAction
+                    else -> ItemAction.StarStateAction.UnstarAction
+                }
             }
 
-            feverDataSource.setItemState(account.login!!, account.password!!, action.value, stateChange.remoteId)
+            feverDataSource.setItemState(
+                account.login!!,
+                account.password!!,
+                action.value,
+                stateChange.remoteId
+            )
+
+            database.itemStateChangeDao()
+                .delete(ItemStateChange(id = stateChange.id, accountId = account.id))
         }
     }
 
@@ -195,7 +239,9 @@ class FeverRepository(
 
         database.itemStateDao().insert(unreadIds.map { unreadId ->
             val starred = starredIds.any { starredId -> starredId == unreadId }
-            if (starred) starredIds.remove(unreadId)
+            if (starred) {
+                starredIds.remove(unreadId)
+            }
 
             ItemState(
                 id = 0,
@@ -217,14 +263,6 @@ class FeverRepository(
                 )
             })
         }
-    }
-
-    private fun getFeverRequestBody(): MultipartBody {
-        val credentials = ApiUtils.md5hash("${account.login}:${account.password}")
-        return MultipartBody.Builder()
-            .setType(MultipartBody.FORM)
-            .addFormDataPart("api_key", credentials)
-            .build()
     }
 
     companion object {

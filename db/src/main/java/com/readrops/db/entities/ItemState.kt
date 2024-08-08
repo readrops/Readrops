@@ -8,10 +8,14 @@ import androidx.room.PrimaryKey
 import com.readrops.db.entities.account.Account
 
 @Entity(
-    foreignKeys = [ForeignKey(
-        entity = Account::class, parentColumns = ["id"],
-        childColumns = ["account_id"], onDelete = ForeignKey.CASCADE
-    )]
+    foreignKeys = [
+        ForeignKey(
+            entity = Account::class,
+            parentColumns = ["id"],
+            childColumns = ["account_id"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
 )
 data class ItemStateChange(
     @PrimaryKey val id: Int = 0,
@@ -21,10 +25,14 @@ data class ItemStateChange(
 )
 
 @Entity(
-    foreignKeys = [ForeignKey(
-        entity = Account::class, parentColumns = ["id"],
-        childColumns = ["account_id"], onDelete = ForeignKey.CASCADE
-    )],
+    foreignKeys = [
+        ForeignKey(
+            entity = Account::class,
+            parentColumns = ["id"],
+            childColumns = ["account_id"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
     indices = [Index( // TODO check potential performance regression at insertion when synchronizing
         value = ["remote_id", "account_id"],
         unique = true
