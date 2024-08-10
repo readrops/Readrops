@@ -4,14 +4,19 @@ import com.readrops.app.util.components.TextFieldError
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.account.Account
+import com.readrops.db.entities.account.AccountConfig
 
 data class FeedState(
     val foldersAndFeeds: FolderAndFeedsState = FolderAndFeedsState.InitialState,
     val dialog: DialogState? = null,
     val areFoldersExpanded: Boolean = false,
-    val displayFolderCreationButton: Boolean = false,
-    val exception: Exception? = null
-)
+    val exception: Exception? = null,
+    val config: AccountConfig? = null
+) {
+
+    val displayThreeDotsMenu
+        get() = config?.canUpdateFolder == true && config.canDeleteFolder
+}
 
 sealed interface DialogState {
     data class AddFeed(val url: String? = null) : DialogState
@@ -20,7 +25,12 @@ sealed interface DialogState {
     class DeleteFolder(val folder: Folder) : DialogState
     class UpdateFeed(val feed: Feed, val folder: Folder?) : DialogState
     class UpdateFolder(val folder: Folder) : DialogState
-    class FeedSheet(val feed: Feed, val folder: Folder?) : DialogState
+
+    data class FeedSheet(
+        val feed: Feed,
+        val folder: Folder?,
+        val config: AccountConfig
+    ) : DialogState
 }
 
 sealed class FolderAndFeedsState {

@@ -72,20 +72,23 @@ class FeverRepository(
         onUpdate: (Feed) -> Unit
     ): ErrorResult = throw CloneNotSupportedException()
 
-    // Not supported by Fever API
-    override suspend fun updateFeed(feed: Feed) {}
+    override suspend fun updateFeed(feed: Feed) =
+        throw NotImplementedError("Update feed action not supported by Fever API")
+
+    override suspend fun deleteFeed(feed: Feed) =
+        throw NotImplementedError("Delete feed action not supported by Fever API")
 
     // Not supported by Fever API
-    override suspend fun deleteFeed(feed: Feed) {}
+    override suspend fun addFolder(folder: Folder) =
+        throw NotImplementedError("Add folder action not supported by Fever API")
 
     // Not supported by Fever API
-    override suspend fun addFolder(folder: Folder) {}
+    override suspend fun updateFolder(folder: Folder) =
+        throw NotImplementedError("Update folder action not supported by Fever API")
 
     // Not supported by Fever API
-    override suspend fun updateFolder(folder: Folder) {}
-
-    // Not supported by Fever API
-    override suspend fun deleteFolder(folder: Folder) {}
+    override suspend fun deleteFolder(folder: Folder) =
+        throw NotImplementedError("Delete folder action not supported by Fever API")
 
     override suspend fun setItemReadState(item: Item) {
         val action = if (item.isRead) {

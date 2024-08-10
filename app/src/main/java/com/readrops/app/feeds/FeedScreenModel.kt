@@ -56,21 +56,23 @@ class FeedScreenModel(
 
     init {
         screenModelScope.launch(dispatcher) {
-            accountEvent
-                .flatMapLatest { account ->
-                    _feedState.update { it.copy(displayFolderCreationButton = account.config.canCreateFolder) }
-                    _updateFeedDialogState.update {
-                        it.copy(
-                            isFeedUrlReadOnly = account.config.isFeedUrlReadOnly,
-                        )
-                    }
+            accountEvent.flatMapLatest { account ->
+                _feedState.update {
+                    it.copy(config = account.config)
+                }
 
-                    getFoldersWithFeeds.get(
-                        account.id,
-                        MainFilter.ALL,
-                        account.config.useSeparateState
+                _updateFeedDialogState.update {
+                    it.copy(
+                        isFeedUrlReadOnly = account.config.isFeedUrlReadOnly,
                     )
                 }
+
+                getFoldersWithFeeds.get(
+                    account.id,
+                    MainFilter.ALL,
+                    account.config.useSeparateState
+                )
+            }
                 .catch { throwable ->
                     _feedState.update {
                         it.copy(foldersAndFeeds = FolderAndFeedsState.ErrorState(Exception(throwable)))
@@ -81,7 +83,6 @@ class FeedScreenModel(
                         it.copy(foldersAndFeeds = FolderAndFeedsState.LoadedState(foldersAndFeeds))
                     }
                 }
-
         }
 
         screenModelScope.launch(dispatcher) {
@@ -174,11 +175,13 @@ class FeedScreenModel(
                         feedId = state.feed.id,
                         feedName = state.feed.name!!,
                         feedUrl = state.feed.url!!,
-                        selectedFolder = state.folder ?: it.folders.find { folder -> folder.id == 0 },
+                        selectedFolder = state.folder
+                            ?: it.folders.find { folder -> folder.id == 0 },
                         feedRemoteId = state.feed.remoteId
                     )
                 }
             }
+
             is DialogState.UpdateFolder -> {
                 _folderState.update {
                     it.copy(
@@ -186,11 +189,13 @@ class FeedScreenModel(
                     )
                 }
             }
+
             is DialogState.AddFeed -> {
                 _addFeedDialogState.update {
                     it.copy(url = state.url.orEmpty())
                 }
             }
+
             else -> {}
         }
 
@@ -229,7 +234,12 @@ class FeedScreenModel(
     }
 
     fun setAddFeedDialogSelectedAccount(account: Account) {
-        _addFeedDialogState.update { it.copy(selectedAccount = account, isAccountDropDownExpanded = false) }
+        _addFeedDialogState.update {
+            it.copy(
+                selectedAccount = account,
+                isAccountDropDownExpanded = false
+            )
+        }
     }
 
     fun setAccountDropDownExpanded(isExpanded: Boolean) {

@@ -127,7 +127,7 @@ object FeedTab : Tab {
             },
             floatingActionButton = {
                 Column {
-                    if (state.displayFolderCreationButton) {
+                    if (state.config?.canCreateFolder == true) {
                         SmallFloatingActionButton(
                             modifier = Modifier
                                 .padding(
@@ -144,13 +144,15 @@ object FeedTab : Tab {
                         }
                     }
 
-                    FloatingActionButton(
-                        onClick = { screenModel.openDialog(DialogState.AddFeed()) }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = null
-                        )
+                    if (state.config?.canCreateFeed == true) {
+                        FloatingActionButton(
+                            onClick = { screenModel.openDialog(DialogState.AddFeed()) }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = null
+                            )
+                        }
                     }
                 }
             },
@@ -186,7 +188,11 @@ object FeedTab : Tab {
                                             isExpanded = state.areFoldersExpanded,
                                             onFeedClick = { feed ->
                                                 screenModel.openDialog(
-                                                    DialogState.FeedSheet(feed, folder)
+                                                    DialogState.FeedSheet(
+                                                        feed = feed,
+                                                        folder = folder,
+                                                        config = state.config!!
+                                                    )
                                                 )
                                             },
                                             onFeedLongClick = { feed -> onFeedLongClick(feed) },
@@ -199,7 +205,8 @@ object FeedTab : Tab {
                                                 screenModel.openDialog(
                                                     DialogState.DeleteFolder(folder)
                                                 )
-                                            }
+                                            },
+                                            displayThreeDotsMenu = state.displayThreeDotsMenu
                                         )
                                     } else {
                                         val feeds = folderWithFeeds.second
@@ -209,7 +216,11 @@ object FeedTab : Tab {
                                                 feed = feed,
                                                 onClick = {
                                                     screenModel.openDialog(
-                                                        DialogState.FeedSheet(feed, null)
+                                                        DialogState.FeedSheet(
+                                                            feed = feed,
+                                                            folder = null,
+                                                            config = state.config!!
+                                                        )
                                                     )
                                                 },
                                                 onLongClick = { onFeedLongClick(feed) },
@@ -287,7 +298,9 @@ object FeedTab : Tab {
                         screenModel.openDialog(DialogState.UpdateFeed(dialog.feed, dialog.folder))
                     },
                     onUpdateColor = {},
-                    onDelete = { screenModel.openDialog(DialogState.DeleteFeed(dialog.feed)) }
+                    onDelete = { screenModel.openDialog(DialogState.DeleteFeed(dialog.feed)) },
+                    canUpdateFeed = dialog.config.canUpdateFeed,
+                    canDeleteFeed = dialog.config.canDeleteFeed
                 )
             }
 

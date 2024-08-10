@@ -42,6 +42,8 @@ fun FeedModalBottomSheet(
     onUpdate: () -> Unit,
     onUpdateColor: () -> Unit,
     onDelete: () -> Unit,
+    canUpdateFeed: Boolean,
+    canDeleteFeed: Boolean
 ) {
     ModalBottomSheet(
         onDismissRequest = { onDismissRequest() }
@@ -100,11 +102,13 @@ fun FeedModalBottomSheet(
                 onClick = onOpen
             )
 
-            BottomSheetOption(
-                text = stringResource(id = R.string.update),
-                icon = Icons.Default.Create,
-                onClick = onUpdate
-            )
+            if (canUpdateFeed) {
+                BottomSheetOption(
+                    text = stringResource(id = R.string.update),
+                    icon = Icons.Default.Create,
+                    onClick = onUpdate
+                )
+            }
 
             BottomSheetOption(
                 text = stringResource(R.string.update_color),
@@ -112,11 +116,13 @@ fun FeedModalBottomSheet(
                 onClick = onUpdateColor
             )
 
-            BottomSheetOption(
-                text = stringResource(R.string.delete),
-                icon = Icons.Default.Delete,
-                onClick = onDelete
-            )
+            if (canDeleteFeed) {
+                BottomSheetOption(
+                    text = stringResource(R.string.delete),
+                    icon = Icons.Default.Delete,
+                    onClick = onDelete
+                )
+            }
         }
 
         LargeSpacer()
