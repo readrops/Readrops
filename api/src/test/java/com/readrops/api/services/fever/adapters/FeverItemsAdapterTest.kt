@@ -19,7 +19,7 @@ class FeverItemsAdapterTest {
 
     @Test
     fun validItemsTest() {
-        val stream = TestUtils.loadResource("services/fever/items.json")
+        val stream = TestUtils.loadResource("services/fever/items_page2.json")
 
         val items = adapter.fromJson(Buffer().readFrom(stream))!!
 

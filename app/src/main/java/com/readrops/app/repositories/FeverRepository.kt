@@ -3,7 +3,6 @@ package com.readrops.app.repositories
 import android.util.Log
 import com.readrops.api.services.SyncType
 import com.readrops.api.services.fever.FeverDataSource
-import com.readrops.api.services.fever.FeverSyncData
 import com.readrops.api.services.fever.ItemAction
 import com.readrops.api.services.fever.adapters.FeverFeeds
 import com.readrops.api.utils.exceptions.LoginFailedException
@@ -43,7 +42,7 @@ class FeverRepository(
             account.login!!,
             account.password!!,
             syncType,
-            FeverSyncData(account.lastModified.toString())
+            account.lastModified.toString()
         ).run {
             insertFolders(folders)
             val newFeeds = insertFeeds(feverFeeds)
@@ -51,7 +50,7 @@ class FeverRepository(
             val newItems = insertItems(items)
             insertItemsIds(unreadIds, starredIds.toMutableList())
 
-            // We store the id to use for the next synchronisation even if it's not a timestamp
+            // We use the most recent item id as lastModified instead of a timestamp
             database.accountDao().updateLastModified(sinceId, account.id)
 
             SyncResult(
@@ -66,11 +65,10 @@ class FeverRepository(
         onUpdate: suspend (Feed) -> Unit
     ): Pair<SyncResult, ErrorResult> = throw NotImplementedError("This method can't be called here")
 
-    // Not supported by Fever API
     override suspend fun insertNewFeeds(
         newFeeds: List<Feed>,
         onUpdate: (Feed) -> Unit
-    ): ErrorResult = throw CloneNotSupportedException()
+    ): ErrorResult = throw NotImplementedError("Add feed action not supported by Fever API")
 
     override suspend fun updateFeed(feed: Feed) =
         throw NotImplementedError("Update feed action not supported by Fever API")
@@ -78,15 +76,12 @@ class FeverRepository(
     override suspend fun deleteFeed(feed: Feed) =
         throw NotImplementedError("Delete feed action not supported by Fever API")
 
-    // Not supported by Fever API
     override suspend fun addFolder(folder: Folder) =
         throw NotImplementedError("Add folder action not supported by Fever API")
 
-    // Not supported by Fever API
     override suspend fun updateFolder(folder: Folder) =
         throw NotImplementedError("Update folder action not supported by Fever API")
 
-    // Not supported by Fever API
     override suspend fun deleteFolder(folder: Folder) =
         throw NotImplementedError("Delete folder action not supported by Fever API")
 

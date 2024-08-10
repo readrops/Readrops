@@ -17,3 +17,9 @@ fun MockWebServer.enqueueStream(stream: InputStream) {
         .setResponseCode(HttpURLConnection.HTTP_OK)
         .setBody(Buffer().readFrom(stream)))
 }
+
+fun MockResponse.Companion.okResponseWithBody(stream: InputStream): MockResponse {
+    return MockResponse()
+        .setResponseCode(HttpURLConnection.HTTP_OK)
+        .setBody(Buffer().readFrom(stream))
+}

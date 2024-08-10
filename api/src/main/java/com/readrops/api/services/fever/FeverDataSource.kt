@@ -27,7 +27,7 @@ class FeverDataSource(private val service: FeverService) {
         login: String,
         password: String,
         syncType: SyncType,
-        syncData: FeverSyncData
+        lastSinceId: String,
     ): FeverSyncResult = with(CoroutineScope(Dispatchers.IO)) {
         val body = getFeverRequestBody(login, password)
 
@@ -39,14 +39,16 @@ class FeverDataSource(private val service: FeverService) {
                     async {
                         unreadIds = service.getUnreadItemsIds(body)
                             .reversed()
-                            .subList(0, MAX_ITEMS_IDS)
+                            .take(MAX_ITEMS_IDS)
 
-                        var lastId = unreadIds.first()
+                        var maxId = unreadIds.first()
                         items = buildList {
-                            repeat(INITIAL_SYNC_ITEMS_REQUESTS_COUNT) {
-                                val newItems = service.getItems(body, lastId, null)
+                            for(index in 0 until INITIAL_SYNC_ITEMS_REQUESTS_COUNT) {
+                                val newItems = service.getItems(body, maxId, null)
 
-                                lastId = newItems.last().remoteId!!
+                                if (newItems.isEmpty()) break
+                                // always take the lowest id
+                                maxId = newItems.last().remoteId!!
                                 addAll(newItems)
                             }
                         }
@@ -58,8 +60,6 @@ class FeverDataSource(private val service: FeverService) {
                 )
                     .awaitAll()
             }
-
-
         } else {
             return FeverSyncResult().apply {
                 listOf(
@@ -70,18 +70,23 @@ class FeverDataSource(private val service: FeverService) {
                     async { favicons = listOf() },
                     async {
                         items = buildList {
-                            var sinceId = syncData.sinceId
+                            var localSinceId = lastSinceId
 
                             while (true) {
-                                val newItems = service.getItems(body, null, sinceId)
+                                val newItems = service.getItems(body, null, localSinceId)
 
                                 if (newItems.isEmpty()) break
-                                sinceId = newItems.first().remoteId!!
+                                // always take the highest id
+                                localSinceId = newItems.first().remoteId!!
                                 addAll(newItems)
                             }
-                        }
 
-                        if (items.isNotEmpty()) items.first().remoteId!!.toLong() else sinceId.toLong()
+                            sinceId = if (items.isNotEmpty()) {
+                                items.first().remoteId!!.toLong()
+                            } else {
+                                localSinceId.toLong()
+                            }
+                        }
                     }
                 )
                     .awaitAll()
@@ -105,8 +110,8 @@ class FeverDataSource(private val service: FeverService) {
     }
 
     companion object {
-        private const val MAX_ITEMS_IDS = 5000
-        private const val INITIAL_SYNC_ITEMS_REQUESTS_COUNT = 10
+        private const val MAX_ITEMS_IDS = 1000
+        private const val INITIAL_SYNC_ITEMS_REQUESTS_COUNT = 20 // (1000 items max)
     }
 }
 
