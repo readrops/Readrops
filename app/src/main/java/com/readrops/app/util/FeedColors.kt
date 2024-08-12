@@ -1,5 +1,6 @@
 package com.readrops.app.util
 
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.annotation.ColorInt
 import androidx.palette.graphics.Palette
@@ -19,6 +20,10 @@ object FeedColors : KoinComponent {
         ).execute()
 
         val bitmap = BitmapFactory.decodeStream(response.body?.byteStream()) ?: return 0
+        return getFeedColor(bitmap)
+    }
+
+    fun getFeedColor(bitmap: Bitmap): Int {
         val palette = Palette.from(bitmap).generate()
 
         val dominantSwatch = palette.dominantSwatch

@@ -11,11 +11,12 @@ import coil.ImageLoaderFactory
 import coil.disk.DiskCache
 import com.readrops.api.apiModule
 import com.readrops.app.util.CrashActivity
+import com.readrops.app.util.FeverFaviconFetcher
 import com.readrops.db.dbModule
+import org.koin.android.ext.android.get
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 import kotlin.system.exitProcess
@@ -49,10 +50,11 @@ open class ReadropsApp : Application(), KoinComponent, ImageLoaderFactory {
     override fun newImageLoader(): ImageLoader {
         return ImageLoader.Builder(this)
             .okHttpClient { get() }
+            .components { add(FeverFaviconFetcher.Factory(get())) }
             .diskCache {
                 DiskCache.Builder()
                     .directory(this.cacheDir.resolve("image_cache"))
-                    .maxSizePercent(0.05)
+                    .maximumMaxSizeBytes(1024 * 1024 * 100)
                     .build()
             }
             .crossfade(true)

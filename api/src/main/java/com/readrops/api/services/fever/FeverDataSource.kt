@@ -56,7 +56,7 @@ class FeverDataSource(private val service: FeverService) {
                         sinceId = unreadIds.first().toLong()
                     },
                     async { starredIds = service.getStarredItemsIds(body) },
-                    async { favicons = listOf() }
+                    async { favicons = service.getFavicons(body) }
                 )
                     .awaitAll()
             }
@@ -67,7 +67,7 @@ class FeverDataSource(private val service: FeverService) {
                     async { feverFeeds = service.getFeeds(body) },
                     async { unreadIds = service.getUnreadItemsIds(body) },
                     async { starredIds = service.getStarredItemsIds(body) },
-                    async { favicons = listOf() },
+                    async { favicons = service.getFavicons(body) },
                     async {
                         items = buildList {
                             var localSinceId = lastSinceId

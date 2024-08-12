@@ -55,7 +55,10 @@ class FeverRepository(
 
             SyncResult(
                 items = newItems,
-                feeds = newFeeds
+                feeds = newFeeds,
+                favicons = favicons.associateBy { favicon ->
+                    feverFeeds.feeds.find { it.remoteId == favicon.id }!!
+                }
             )
         }
     }

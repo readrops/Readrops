@@ -1,5 +1,6 @@
 package com.readrops.app.repositories
 
+import com.readrops.api.services.fever.adapters.Favicon
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
@@ -11,7 +12,8 @@ typealias ErrorResult = HashMap<Feed, Exception>
 
 data class SyncResult(
     val items: List<Item> = listOf(),
-    val feeds: List<Feed> = listOf()
+    val feeds: List<Feed> = listOf(),
+    val favicons: Map<Feed, Favicon> = emptyMap() // only for Fever
 )
 
 interface Repository {

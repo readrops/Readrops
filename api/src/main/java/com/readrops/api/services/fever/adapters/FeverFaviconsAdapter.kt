@@ -6,9 +6,11 @@ import com.readrops.api.utils.extensions.skipField
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.ToJson
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 data class Favicon(
-    val id: Int,
+    val id: String,
     val data: ByteArray
 )
 
@@ -17,6 +19,7 @@ class FeverFaviconsAdapter {
     @ToJson
     fun toJson(favicons: List<Favicon>) = ""
 
+    @OptIn(ExperimentalEncodingApi::class)
     @SuppressLint("CheckResult")
     @FromJson
     fun fromJson(reader: JsonReader): List<Favicon> = with(reader) {
@@ -41,14 +44,14 @@ class FeverFaviconsAdapter {
                 while (hasNext()) {
                     when (selectName(NAMES)) {
                         0 -> id = nextInt()
-                        1 -> data = nextString().toByteArray()
+                        1 -> data = Base64.decode(nextString().substringAfter("base64,"))
                         else -> skipValue()
                     }
                 }
 
                 if (id > 0 && data != null) {
                     favicons += Favicon(
-                        id = id,
+                        id = id.toString(),
                         data = data,
                     )
                 }
