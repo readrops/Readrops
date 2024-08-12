@@ -111,6 +111,10 @@ class FeverDataSourceTest : KoinTest {
                             MockResponse.okResponseWithBody(TestUtils.loadResource("services/fever/folders.json"))
                         }
 
+                        this == "/?favicons" -> {
+                            MockResponse.okResponseWithBody(TestUtils.loadResource("services/fever/favicons.json"))
+                        }
+
                         this == "/?unread_item_ids" -> {
                             MockResponse.okResponseWithBody(TestUtils.loadResource("services/fever/itemsIds.json"))
                         }
@@ -148,6 +152,7 @@ class FeverDataSourceTest : KoinTest {
 
         assertEquals(1, result.folders.size)
         assertEquals(1, result.feverFeeds.feeds.size)
+        assertEquals(3, result.favicons.size)
         assertEquals(6, result.unreadIds.size)
         assertEquals(6, result.starredIds.size)
         assertEquals(10, result.items.size)
@@ -177,6 +182,10 @@ class FeverDataSourceTest : KoinTest {
 
                         this == "/?groups" -> {
                             MockResponse.okResponseWithBody(TestUtils.loadResource("services/fever/folders.json"))
+                        }
+
+                        this == "/?favicons" -> {
+                            MockResponse.okResponseWithBody(TestUtils.loadResource("services/fever/favicons.json"))
                         }
 
                         this == "/?unread_item_ids" -> {
@@ -216,6 +225,7 @@ class FeverDataSourceTest : KoinTest {
 
         assertEquals(1, result.folders.size)
         assertEquals(1, result.feverFeeds.feeds.size)
+        assertEquals(3, result.favicons.size)
         assertEquals(6, result.unreadIds.size)
         assertEquals(6, result.starredIds.size)
         assertEquals(10, result.items.size)
