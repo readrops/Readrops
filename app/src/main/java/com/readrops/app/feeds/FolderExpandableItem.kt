@@ -34,11 +34,13 @@ import com.readrops.db.entities.Folder
 fun FolderExpandableItem(
     folder: Folder,
     feeds: List<Feed>,
-    isExpanded: Boolean = false,
     onFeedClick: (Feed) -> Unit,
     onFeedLongClick: (Feed) -> Unit,
     onUpdateFolder: () -> Unit,
-    onDeleteFolder: () -> Unit
+    onDeleteFolder: () -> Unit,
+    displayThreeDotsMenu: Boolean,
+    modifier: Modifier = Modifier,
+    isExpanded: Boolean = false
 ) {
     var isFolderExpanded by remember { mutableStateOf(false) }
 
@@ -47,7 +49,7 @@ fun FolderExpandableItem(
     }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .animateContentSize(
                 animationSpec = tween(
                     durationMillis = 300,
@@ -60,8 +62,8 @@ fun FolderExpandableItem(
                 .clickable { isFolderExpanded = isFolderExpanded.not() }
                 .padding(
                     start = MaterialTheme.spacing.mediumSpacing,
-                    top = MaterialTheme.spacing.veryShortSpacing,
-                    bottom = MaterialTheme.spacing.veryShortSpacing
+                    top = if (displayThreeDotsMenu) MaterialTheme.spacing.veryShortSpacing else MaterialTheme.spacing.mediumSpacing,
+                    bottom = if (displayThreeDotsMenu) MaterialTheme.spacing.veryShortSpacing else MaterialTheme.spacing.mediumSpacing
                 )
         ) {
             Row(
@@ -89,18 +91,20 @@ fun FolderExpandableItem(
                     )
                 }
 
-                ThreeDotsMenu(
-                    items = mapOf(
-                        1 to stringResource(id = R.string.update),
-                        2 to stringResource(id = R.string.delete)
-                    ),
-                    onItemClick = { index ->
-                        when (index) {
-                            1 -> onUpdateFolder()
-                            else -> onDeleteFolder()
+                if (displayThreeDotsMenu) {
+                    ThreeDotsMenu(
+                        items = mapOf(
+                            1 to stringResource(id = R.string.update),
+                            2 to stringResource(id = R.string.delete)
+                        ),
+                        onItemClick = { index ->
+                            when (index) {
+                                1 -> onUpdateFolder()
+                                else -> onDeleteFolder()
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
 

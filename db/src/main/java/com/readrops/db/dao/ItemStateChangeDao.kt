@@ -12,11 +12,11 @@ interface ItemStateChangeDao: BaseDao<ItemStateChange> {
     @Query("Delete From ItemStateChange Where account_id = :accountId")
     suspend fun resetStateChanges(accountId: Int)
 
-    @Query("Select case When ItemState.remote_id is NULL Or ItemState.read = 1 Then 1 else 0 End read,  " +
-            "case When ItemState.remote_id is NULL Or ItemState.starred = 1 Then 1 else 0 End starred," +
-            "ItemStateChange.read_change, ItemStateChange.star_change, Item.remote_id " +
-            "From ItemStateChange Inner Join Item On ItemStateChange.id = Item.id " +
-            "Left Join ItemState On ItemState.remote_id = Item.remote_id Where ItemStateChange.account_id = :accountId")
+    @Query("""Select case When ItemState.remote_id is NULL Or ItemState.read = 1 Then 1 else 0 End read, 
+        case When ItemState.remote_id is NULL Or ItemState.starred = 1 Then 1 else 0 End starred, 
+        ItemStateChange.id as id, ItemStateChange.read_change, ItemStateChange.star_change, Item.remote_id From ItemStateChange 
+        Inner Join Item On ItemStateChange.id = Item.id Left Join ItemState On ItemState.remote_id = Item.remote_id
+        Where ItemStateChange.account_id = :accountId""")
     suspend fun selectItemStateChanges(accountId: Int): List<ItemReadStarState>
 
     @Query("Select Case When :itemId In (Select id From ItemStateChange Where read_change = 1) Then 1 Else 0 End")

@@ -7,6 +7,9 @@ import com.readrops.db.entities.ItemState
 @Dao
 interface ItemStateDao : BaseDao<ItemState> {
 
+    @Query("Select * From ItemState Where account_id = :accountId And remote_id = :remoteId")
+    suspend fun selectItemState(accountId: Int, remoteId: String): ItemState
+
     @Query("Delete From ItemState Where account_id = :accountId")
     suspend fun deleteItemStates(accountId: Int)
 

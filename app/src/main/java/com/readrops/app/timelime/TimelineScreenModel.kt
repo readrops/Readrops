@@ -36,7 +36,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -64,35 +63,10 @@ class TimelineScreenModel(
                 accountEvent,
                 filters
             ) { account, filters ->
-                Pair(account, filters.copy(accountId = account.id))
+                account to filters.copy(accountId = account.id)
             }.collectLatest { (account, filters) ->
-                val query =
-                    ItemsQueryBuilder.buildItemsQuery(filters, account.config.useSeparateState)
-
-                _timelineState.update {
-                    it.copy(
-                        itemState = Pager(
-                            config = PagingConfig(
-                                initialLoadSize = 50,
-                                pageSize = 50,
-                                prefetchDistance = 15
-                            ),
-                            pagingSourceFactory = {
-                                database.itemDao().selectAll(query)
-                            },
-                        ).flow
-                            .transformLatest { value ->
-                                if (!timelineState.value.isRefreshing) {
-                                    emit(value)
-                                }
-                            }
-                            .cachedIn(screenModelScope),
-                        isAccountLocal = account.isLocal,
-                        scrollToTop = true
-                    )
-                }
-
-                _listIndexState.update { 0 }
+                this@TimelineScreenModel.filters.update { filters }
+                buildPager()
 
                 preferences.hideReadFeeds.flow
                     .flatMapLatest { hideReadFeeds ->
@@ -146,11 +120,46 @@ class TimelineScreenModel(
         }
     }
 
+    private fun buildPager(empty: Boolean = false) {
+        val query = ItemsQueryBuilder.buildItemsQuery(
+            filters.value,
+            currentAccount!!.config.useSeparateState
+        )
+
+        val pager = Pager(
+            config = PagingConfig(
+                initialLoadSize = 50,
+                pageSize = 50,
+                prefetchDistance = 15
+            ),
+            pagingSourceFactory = {
+                database.itemDao().selectAll(query)
+            },
+        ).flow
+            .cachedIn(screenModelScope)
+
+        _timelineState.update {
+            it.copy(
+                itemState = if (!empty) {
+                    pager
+                } else {
+                    emptyFlow()
+                },
+                isAccountLocal = currentAccount!!.isLocal,
+                scrollToTop = true
+            )
+        }
+
+        _listIndexState.update { 0 }
+    }
+
     @Suppress("UNCHECKED_CAST")
     fun refreshTimeline(context: Context) {
+        buildPager(empty = true)
+
         screenModelScope.launch(dispatcher) {
             val filterPair = with(filters.value) {
-                 when (subFilter) {
+                when (subFilter) {
                     SubFilter.FEED -> SyncWorker.FEED_ID_KEY to filterFeedId
                     SubFilter.FOLDER -> SyncWorker.FOLDER_ID_KEY to filterFolderId
                     else -> null
@@ -173,7 +182,8 @@ class TimelineScreenModel(
             SyncWorker.startNow(context, workData) { workInfo ->
                 when {
                     workInfo.outputData.getBoolean(SyncWorker.END_SYNC_KEY, false) -> {
-                        val errors = workInfo.outputData.getSerializable(SyncWorker.LOCAL_SYNC_ERRORS_KEY) as ErrorResult?
+                        val errors =
+                            workInfo.outputData.getSerializable(SyncWorker.LOCAL_SYNC_ERRORS_KEY) as ErrorResult?
                         workInfo.outputData.clearSerializables()
 
                         _timelineState.update {
@@ -184,9 +194,12 @@ class TimelineScreenModel(
                                 localSyncErrors = errors?.ifEmpty { null }
                             )
                         }
+
+                        buildPager()
                     }
                     workInfo.outputData.getBoolean(SyncWorker.SYNC_FAILURE_KEY, false) -> {
-                        val error = workInfo.outputData.getSerializable(SyncWorker.SYNC_FAILURE_EXCEPTION_KEY) as Exception?
+                        val error =
+                            workInfo.outputData.getSerializable(SyncWorker.SYNC_FAILURE_EXCEPTION_KEY) as Exception?
                         workInfo.outputData.clearSerializables()
 
                         _timelineState.update {
@@ -196,13 +209,16 @@ class TimelineScreenModel(
                                 hideReadAllFAB = false
                             )
                         }
+
+                        buildPager()
                     }
                     workInfo.progress.getString(SyncWorker.FEED_NAME_KEY) != null -> {
                         _timelineState.update {
                             it.copy(
                                 isRefreshing = true,
                                 hideReadAllFAB = true,
-                                currentFeed = workInfo.progress.getString(SyncWorker.FEED_NAME_KEY) ?: "",
+                                currentFeed = workInfo.progress.getString(SyncWorker.FEED_NAME_KEY)
+                                    ?: "",
                                 feedCount = workInfo.progress.getInt(SyncWorker.FEED_COUNT_KEY, 0),
                                 feedMax = workInfo.progress.getInt(SyncWorker.FEED_MAX_KEY, 0)
                             )

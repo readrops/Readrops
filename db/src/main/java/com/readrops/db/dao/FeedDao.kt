@@ -70,6 +70,9 @@ abstract class FeedDao : BaseDao<Feed> {
     @Query("Select * From Feed Where id in (:ids)")
     abstract suspend fun selectFromIds(ids: List<Int>): List<Feed>
 
+    @Query("Update Feed set icon_url = :iconUrl Where id = :feedId")
+    abstract suspend fun updateFeedIconUrl(feedId: Int, iconUrl: String)
+
     /**
      * Insert, update and delete feeds by account
      *

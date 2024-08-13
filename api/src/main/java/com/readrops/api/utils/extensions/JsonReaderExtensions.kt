@@ -13,3 +13,16 @@ fun JsonReader.nextNonEmptyString(): String {
 
 fun JsonReader.nextNullableInt(): Int? =
         if (peek() != JsonReader.Token.NULL) nextInt() else nextNull()
+
+fun JsonReader.skipField() {
+    skipName()
+    skipValue()
+}
+
+fun JsonReader.skipToEnd() {
+    while (hasNext()) {
+        skipField()
+    }
+}
+
+fun Int.toBoolean(): Boolean = this == 1

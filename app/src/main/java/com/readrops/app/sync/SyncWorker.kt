@@ -1,10 +1,10 @@
 package com.readrops.app.sync
 
-import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.Action
@@ -23,7 +23,10 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import coil.annotation.ExperimentalCoilApi
+import coil.imageLoader
 import com.readrops.api.services.Credentials
+import com.readrops.api.services.fever.adapters.Favicon
 import com.readrops.api.utils.AuthInterceptor
 import com.readrops.app.MainActivity
 import com.readrops.app.R
@@ -34,6 +37,7 @@ import com.readrops.app.repositories.SyncResult
 import com.readrops.app.util.FeedColors
 import com.readrops.app.util.putSerializable
 import com.readrops.db.Database
+import com.readrops.db.entities.Feed
 import com.readrops.db.entities.account.Account
 import kotlinx.coroutines.flow.first
 import org.koin.core.component.KoinComponent
@@ -148,9 +152,13 @@ class SyncWorker(
                 syncResults[account] = result.first
             } else {
                 get<AuthInterceptor>().credentials = Credentials.toCredentials(account)
-
                 val syncResult = repository.synchronize()
-                fetchFeedColors(syncResult, notificationBuilder)
+
+                if (syncResult.favicons.isNotEmpty()) {
+                    loadFeverFavicons(syncResult.favicons, notificationBuilder)
+                } else {
+                    fetchFeedColors(syncResult, notificationBuilder)
+                }
 
                 syncResults[account] = syncResult
             }
@@ -159,7 +167,6 @@ class SyncWorker(
         return workResult to syncResults
     }
 
-    @SuppressLint("MissingPermission")
     private suspend fun refreshLocalAccount(
         repository: BaseRepository,
         account: Account,
@@ -184,10 +191,13 @@ class SyncWorker(
         val result = repository.synchronize(
             selectedFeeds = feeds,
             onUpdate = { feed ->
-                notificationBuilder.setContentText(feed.name)
-                    .setStyle(NotificationCompat.BigTextStyle().bigText(feed.name))
-                    .setProgress(feedMax, ++feedCount, false)
-                notificationManager.notify(SYNC_NOTIFICATION_ID, notificationBuilder.build())
+                if (notificationManager.areNotificationsEnabled()) {
+                    notificationBuilder.setContentText(feed.name)
+                        .setStyle(NotificationCompat.BigTextStyle().bigText(feed.name))
+                        .setProgress(feedMax, ++feedCount, false)
+
+                    notificationManager.notify(SYNC_NOTIFICATION_ID, notificationBuilder.build())
+                }
 
                 setProgress(
                     workDataOf(
@@ -232,6 +242,50 @@ class SyncWorker(
             } catch (e: Exception) {
                 Log.e(TAG, "${feed.name}: ${e.message}")
             }
+        }
+    }
+
+    @OptIn(ExperimentalCoilApi::class)
+    private suspend fun loadFeverFavicons(
+        favicons: Map<Feed, Favicon>,
+        notificationBuilder: Builder
+    ) {
+        if (notificationManager.areNotificationsEnabled()) {
+            // can't make detailed progress as the favicon might already exist in cache
+            notificationBuilder.setContentTitle("Loading icons and colors")
+                .setProgress(0, 0, true)
+            notificationManager.notify(SYNC_NOTIFICATION_ID, notificationBuilder.build())
+        }
+
+        val diskCache = applicationContext.imageLoader.diskCache!!
+
+        for ((feed, favicon) in favicons) {
+            val key =  "account_${feed.accountId}_feed_${feed.id}"
+            val snapshot = diskCache.openSnapshot(key)
+
+            if (snapshot == null) {
+                try {
+                    diskCache.openEditor(key)!!.apply {
+                        diskCache.fileSystem.write(data) {
+                            write(favicon.data)
+                        }
+                        commit()
+                    }
+
+                    database.feedDao().updateFeedIconUrl(feed.id, key)
+                    val bitmap =
+                        BitmapFactory.decodeByteArray(favicon.data, 0, favicon.data.size)
+
+                    if (bitmap != null) {
+                        val color = FeedColors.getFeedColor(bitmap)
+                        database.feedDao().updateFeedColor(feed.id, color)
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "${feed.name}: ${e.message}")
+                }
+            }
+
+            snapshot?.close()
         }
     }
 
