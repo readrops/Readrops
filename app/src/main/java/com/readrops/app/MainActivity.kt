@@ -17,9 +17,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
-import cafe.adriel.voyager.navigator.CurrentScreen
+import cafe.adriel.voyager.core.annotation.ExperimentalVoyagerApi
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.NavigatorDisposeBehavior
+import cafe.adriel.voyager.transitions.SlideTransition
 import com.readrops.app.account.selection.AccountSelectionScreen
 import com.readrops.app.account.selection.AccountSelectionScreenModel
 import com.readrops.app.home.HomeScreen
@@ -40,7 +41,7 @@ import org.koin.core.component.get
 
 class MainActivity : ComponentActivity(), KoinComponent {
 
-    @OptIn(KoinExperimentalAPI::class)
+    @OptIn(KoinExperimentalAPI::class, ExperimentalVoyagerApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
@@ -80,14 +81,18 @@ class MainActivity : ComponentActivity(), KoinComponent {
                         screen = if (accountExists) HomeScreen else AccountSelectionScreen(),
                         disposeBehavior = NavigatorDisposeBehavior(
                             // prevent screenModels being recreated when opening a screen from a tab
-                            disposeNestedNavigators = false
+                            disposeNestedNavigators = false,
+                            disposeSteps = false
                         )
-                    ) {
+                    ) { navigator ->
                         LaunchedEffect(Unit) {
                             handleIntent(intent)
                         }
 
-                        CurrentScreen()
+                        SlideTransition(
+                            navigator = navigator,
+                            disposeScreenAfterTransitionEnd = true
+                        )
                     }
                 }
             }
@@ -116,6 +121,7 @@ class MainActivity : ComponentActivity(), KoinComponent {
                     HomeScreen.openItemScreen(itemId)
                 }
             }
+
             intent.action != null && intent.action == Intent.ACTION_SEND -> {
                 HomeScreen.openAddFeedDialog(intent.getStringExtra(Intent.EXTRA_TEXT).orEmpty())
             }

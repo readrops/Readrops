@@ -4,7 +4,7 @@ ksp = "2.0.0-1.0.24"
 android_agp = "8.5.1"
 compose_bom = "2024.06.00"
 
-voyager = "1.0.0"
+voyager = "1.1.0-beta02"
 lifecycle = "2.8.4"
 coil = "2.7.0"
 coroutines = "1.8.1"
