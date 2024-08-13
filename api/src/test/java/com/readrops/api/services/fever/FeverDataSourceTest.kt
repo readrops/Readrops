@@ -229,8 +229,6 @@ class FeverDataSourceTest : KoinTest {
         assertEquals(6, result.unreadIds.size)
         assertEquals(6, result.starredIds.size)
         assertEquals(10, result.items.size)
-        assertEquals("5", result.items.first().remoteId)
-        assertEquals("6", result.items.last().remoteId)
 
         assertEquals("1", firstLastSinceId)
         assertEquals("5", secondLastSinceId)

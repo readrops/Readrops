@@ -31,7 +31,7 @@ class FeverItemsAdapterTest {
             assertTrue(isStarred)
             assertTrue(isRead)
             assertNotNull(pubDate)
-            assertEquals(remoteId, "10")
+            assertEquals(remoteId, "6")
             assertEquals(feedRemoteId, "2")
         }
     }

@@ -48,7 +48,7 @@ class FeverDataSource(private val service: FeverService) {
 
                                 if (newItems.isEmpty()) break
                                 // always take the lowest id
-                                maxId = newItems.last().remoteId!!
+                                maxId = newItems.minOfOrNull { it.remoteId!!.toLong() }.toString()
                                 addAll(newItems)
                             }
                         }
@@ -77,7 +77,7 @@ class FeverDataSource(private val service: FeverService) {
 
                                 if (newItems.isEmpty()) break
                                 // always take the highest id
-                                localSinceId = newItems.first().remoteId!!
+                                localSinceId = newItems.maxOfOrNull { it.remoteId!!.toLong() }.toString()
                                 addAll(newItems)
                             }
 
