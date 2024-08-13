@@ -73,7 +73,7 @@ object MoreTab : Tab, KoinComponent {
             LargeSpacer()
 
             Image(
-                painter = adaptiveIconPainterResource(id = R.mipmap.ic_launcher_round),
+                painter = adaptiveIconPainterResource(id = R.mipmap.ic_launcher),
                 contentDescription = null,
                 modifier = Modifier.size(64.dp)
             )

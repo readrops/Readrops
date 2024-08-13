@@ -96,6 +96,7 @@ workmanager = "androidx.work:work-runtime-ktx:2.9.0"
 encrypted-preferences = "androidx.security:security-crypto:1.1.0-alpha06"
 datastore = "androidx.datastore:datastore-preferences:1.1.1"
 browser = "androidx.browser:browser:1.8.0"
+splashscreen = "androidx.core:core-splashscreen:1.0.1"
 
 # test
 junit4 = "junit:junit:4.13.2"

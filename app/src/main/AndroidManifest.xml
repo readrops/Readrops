@@ -12,7 +12,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Readrops">
+        android:theme="@style/Theme.Readrops.SplashScreen">
 
         <provider
             android:name="androidx.core.content.FileProvider"

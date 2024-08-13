@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.encrypted.preferences)
     implementation(libs.datastore)
     implementation(libs.browser)
+    implementation(libs.splashscreen)
 
     implementation(libs.jsoup)
 
