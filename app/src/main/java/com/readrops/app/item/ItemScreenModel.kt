@@ -24,6 +24,7 @@ import com.readrops.db.queries.ItemSelectionQueryBuilder
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -81,17 +82,22 @@ class ItemScreenModel(
         }
 
         screenModelScope.launch(dispatcher) {
-            preferences.openLinksWith.flow
-                .collect { value ->
-                    mutableState.update {
-                        it.copy(
-                            openInExternalBrowser = when (value) {
-                                "external_navigator" -> true
-                                else -> false
-                            }
-                        )
-                    }
+            combine(
+                preferences.openLinksWith.flow,
+                preferences.theme.flow
+            ) { openLinksWith, theme ->
+                openLinksWith to theme
+            }.collect { (openLinksWith, theme) ->
+                mutableState.update {
+                    it.copy(
+                        openInExternalBrowser = when (openLinksWith) {
+                            "external_navigator" -> true
+                            else -> false
+                        },
+                        theme = theme
+                    )
                 }
+            }
         }
     }
 
@@ -186,5 +192,6 @@ data class ItemState(
     val bottomBarState: BottomBarState = BottomBarState(),
     val imageDialogUrl: String? = null,
     val fileDownloadedEvent: Boolean = false,
-    val openInExternalBrowser: Boolean = false
+    val openInExternalBrowser: Boolean = false,
+    val theme: String? = ""
 )

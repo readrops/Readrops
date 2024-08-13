@@ -11,6 +11,7 @@ import androidx.core.widget.NestedScrollView
 @SuppressLint("ResourceType", "ViewConstructor")
 class ItemNestedScrollView(
     context: Context,
+    useBackgroundTitle: Boolean,
     onGlobalLayoutListener: (viewHeight: Int, contentHeight: Int) -> Unit,
     onUrlClick: (String) -> Unit,
     onImageLongPress: (String) -> Unit,
@@ -53,6 +54,12 @@ class ItemNestedScrollView(
 
                 webViewParams.addRule(RelativeLayout.BELOW, composeView.id)
                 webView.layoutParams = webViewParams
+
+                if (useBackgroundTitle) {
+                    val density = resources.displayMetrics.density
+                    val dpAsPixels = (8 * density + 0.5f).toInt()
+                    composeView.setPadding(0, 0, 0, dpAsPixels)
+                }
 
                 addView(composeView)
                 addView(webView)

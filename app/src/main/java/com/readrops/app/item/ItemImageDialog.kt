@@ -8,10 +8,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.readrops.app.R
+import com.readrops.app.util.DefaultPreview
+import com.readrops.app.util.components.SelectableIconText
 import com.readrops.app.util.components.dialog.BaseDialog
-import com.readrops.app.util.components.SelectableImageText
 import com.readrops.app.util.theme.spacing
 
 enum class ItemImageChoice {
@@ -30,25 +30,32 @@ fun ItemImageDialog(
         onDismiss = onDismiss
     ) {
         Column {
-            SelectableImageText(
-                image = rememberVectorPainter(image = Icons.Default.Share),
+            SelectableIconText(
+                icon = rememberVectorPainter(image = Icons.Default.Share),
                 text = stringResource(id = R.string.share_image),
                 style = MaterialTheme.typography.titleMedium,
-                spacing = MaterialTheme.spacing.shortSpacing,
+                spacing = MaterialTheme.spacing.mediumSpacing,
                 padding = MaterialTheme.spacing.shortSpacing,
-                imageSize = 16.dp,
                 onClick = { onChoice(ItemImageChoice.SHARE) }
             )
 
-            SelectableImageText(
-                image = painterResource(id = R.drawable.ic_download),
+            SelectableIconText(
+                icon = painterResource(id = R.drawable.ic_download),
                 text = stringResource(id = R.string.download_image),
                 style = MaterialTheme.typography.titleMedium,
-                spacing = MaterialTheme.spacing.shortSpacing,
+                spacing = MaterialTheme.spacing.mediumSpacing,
                 padding = MaterialTheme.spacing.shortSpacing,
-                imageSize = 16.dp,
                 onClick = { onChoice(ItemImageChoice.DOWNLOAD) }
             )
         }
     }
+}
+
+@DefaultPreview
+@Composable
+private fun ItemImageDialogPreview() {
+    ItemImageDialog(
+        onChoice = {},
+        onDismiss = {}
+    )
 }

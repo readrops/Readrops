@@ -14,6 +14,7 @@ import com.readrops.app.util.FeedKey
 fun FeedIcon(
     iconUrl: String?,
     name: String,
+    modifier: Modifier = Modifier,
     size: Dp = 24.dp
 ) {
     AsyncImage(
@@ -22,6 +23,6 @@ fun FeedIcon(
         placeholder = painterResource(R.drawable.ic_rss_feed_grey),
         fallback = painterResource(id = R.drawable.ic_rss_feed_grey),
         contentDescription = name,
-        modifier = Modifier.size(size)
+        modifier = modifier.size(size)
     )
 }

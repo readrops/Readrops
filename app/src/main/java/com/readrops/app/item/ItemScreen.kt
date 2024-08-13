@@ -13,9 +13,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -51,12 +55,15 @@ import androidx.core.net.toUri
 import androidx.core.view.children
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import coil.compose.AsyncImage
 import com.readrops.app.R
 import com.readrops.app.item.view.ItemNestedScrollView
 import com.readrops.app.item.view.ItemWebView
 import com.readrops.app.util.components.AndroidScreen
 import com.readrops.app.util.components.CenteredProgressIndicator
+import com.readrops.app.util.components.FeedIcon
 import com.readrops.app.util.components.IconText
 import com.readrops.app.util.theme.MediumSpacer
 import com.readrops.app.util.theme.ShortSpacer
@@ -74,6 +81,7 @@ class ItemScreen(
     override fun Content() {
         val context = LocalContext.current
         val density = LocalDensity.current
+        val navigator = LocalNavigator.currentOrThrow
 
         val screenModel =
             getScreenModel<ItemScreenModel>(parameters = { parametersOf(itemId) })
@@ -122,7 +130,7 @@ class ItemScreen(
 
         LaunchedEffect(state.fileDownloadedEvent) {
             if (state.fileDownloadedEvent) {
-                snackbarHostState.showSnackbar("Downloaded file!")
+                snackbarHostState.showSnackbar(context.getString(R.string.downloaded_file))
             }
         }
 
@@ -134,6 +142,12 @@ class ItemScreen(
                 Color(itemWithFeed.color)
             } else {
                 primaryColor
+            }
+
+            val colorScheme = when (state.theme) {
+                "light" -> CustomTabsIntent.COLOR_SCHEME_LIGHT
+                "dark" -> CustomTabsIntent.COLOR_SCHEME_DARK
+                else -> CustomTabsIntent.COLOR_SCHEME_SYSTEM
             }
 
             fun openUrl(url: String) {
@@ -150,14 +164,14 @@ class ItemScreen(
                         )
                         .setShareState(CustomTabsIntent.SHARE_STATE_ON)
                         .setUrlBarHidingEnabled(true)
+                        .setColorScheme(colorScheme)
                         .build()
                         .launchUrl(context, url.toUri())
                 }
             }
 
             Scaffold(
-                modifier = Modifier
-                    .nestedScroll(nestedScrollConnection),
+                modifier = Modifier.nestedScroll(nestedScrollConnection),
                 snackbarHost = { SnackbarHost(snackbarHostState) },
                 bottomBar = {
                     ItemScreenBottomBar(
@@ -194,6 +208,7 @@ class ItemScreen(
                         factory = { context ->
                             ItemNestedScrollView(
                                 context = context,
+                                useBackgroundTitle = item.imageLink != null,
                                 onGlobalLayoutListener = { viewHeight, contentHeight ->
                                     isScrollable = viewHeight - contentHeight < 0
                                 },
@@ -203,19 +218,27 @@ class ItemScreen(
                                 if (item.imageLink != null) {
                                     BackgroundTitle(itemWithFeed = itemWithFeed)
                                 } else {
-                                    val tintColor = if (itemWithFeed.color != 0) {
-                                        Color(itemWithFeed.color)
-                                    } else {
-                                        MaterialTheme.colorScheme.onBackground
-                                    }
+                                    Box {
+                                        IconButton(
+                                            onClick = { navigator.pop() },
+                                            modifier = Modifier
+                                                .statusBarsPadding()
+                                                .align(Alignment.TopStart)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                                                contentDescription = null,
+                                            )
+                                        }
 
-                                    SimpleTitle(
-                                        itemWithFeed = itemWithFeed,
-                                        titleColor = tintColor,
-                                        accentColor = tintColor,
-                                        baseColor = MaterialTheme.colorScheme.onBackground,
-                                        bottomPadding = true
-                                    )
+                                        SimpleTitle(
+                                            itemWithFeed = itemWithFeed,
+                                            titleColor = accentColor,
+                                            accentColor = accentColor,
+                                            baseColor = MaterialTheme.colorScheme.onBackground,
+                                            bottomPadding = true
+                                        )
+                                    }
                                 }
                             }
                         },
@@ -248,6 +271,8 @@ class ItemScreen(
 fun BackgroundTitle(
     itemWithFeed: ItemWithFeed,
 ) {
+    val navigator = LocalNavigator.currentOrThrow
+
     val onScrimColor = Color.White.copy(alpha = 0.85f)
     val accentColor = if (itemWithFeed.color != 0) {
         Color(itemWithFeed.color)
@@ -276,13 +301,28 @@ fun BackgroundTitle(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            SimpleTitle(
-                itemWithFeed = itemWithFeed,
-                titleColor = onScrimColor,
-                accentColor = accentColor,
-                baseColor = onScrimColor,
-                bottomPadding = true
-            )
+            Box {
+                IconButton(
+                    onClick = { navigator.pop() },
+                    modifier = Modifier
+                        .statusBarsPadding()
+                        .align(Alignment.TopStart)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                        contentDescription = null,
+                        tint = Color.White
+                    )
+                }
+
+                SimpleTitle(
+                    itemWithFeed = itemWithFeed,
+                    titleColor = onScrimColor,
+                    accentColor = accentColor,
+                    baseColor = onScrimColor,
+                    bottomPadding = true
+                )
+            }
         }
     }
 
@@ -309,14 +349,11 @@ fun SimpleTitle(
             bottom = if (bottomPadding) spacing else 0.dp
         )
     ) {
-        AsyncImage(
-            model = itemWithFeed.feedIconUrl,
-            contentDescription = itemWithFeed.feedName,
-            placeholder = painterResource(id = R.drawable.ic_rss_feed_grey),
-            error = painterResource(id = R.drawable.ic_rss_feed_grey),
-            modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape)
+        FeedIcon(
+            iconUrl = itemWithFeed.feedIconUrl,
+            name = itemWithFeed.feedName,
+            size = 48.dp,
+            modifier = Modifier.clip(CircleShape)
         )
 
         ShortSpacer()
