@@ -94,7 +94,7 @@ object ItemsQueryBuilder {
                     }
                 }
 
-                MainFilter.NEW -> append("DateTime(Round(pub_date / 1000), 'unixepoch') Between DateTime(DateTime(\"now\"), \"-24 hour\") And DateTime(\"now\") ")
+                MainFilter.NEW -> append("And DateTime(Round(pub_date / 1000), 'unixepoch') Between DateTime(DateTime(\"now\"), \"-24 hour\") And DateTime(\"now\") ")
                 else -> {}
             }
 
