@@ -86,9 +86,11 @@ class FreshRSSItemsAdapter : JsonAdapter<List<Item>>() {
         while (reader.hasNext()) {
             reader.beginObject()
 
-            when (reader.nextName()) {
-                "href" -> href = reader.nextNullableString()
-                else -> reader.skipValue()
+            while (reader.hasNext()) {
+                when (reader.nextName()) {
+                    "href" -> href = reader.nextString()
+                    else -> reader.skipValue()
+                }
             }
 
             reader.endObject()
