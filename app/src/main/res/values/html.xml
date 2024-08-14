@@ -13,6 +13,8 @@
             %1$s: accent color
             %2$s: text color
             %3$s: background color
+            %4$s: text direction (ltr or rtl)
+            %5$s: content
         */
 
         @font-face {
@@ -113,8 +115,8 @@
         </style>
     </head>
 
-    <body>
-      %4$s
+    <body dir=\"%4$s\">
+      %5$s
     </body>
 </html>]]></string>
 </resources>

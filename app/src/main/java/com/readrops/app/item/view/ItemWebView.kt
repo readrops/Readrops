@@ -7,11 +7,13 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.core.text.layoutDirection
 import com.readrops.app.R
 import com.readrops.app.util.Utils
 import com.readrops.db.pojo.ItemWithFeed
 import org.jsoup.Jsoup
 import org.jsoup.parser.Parser
+import java.util.Locale
 
 @SuppressLint("SetJavaScriptEnabled", "ViewConstructor")
 class ItemWebView(
@@ -51,11 +53,18 @@ class ItemWebView(
         backgroundColor: Color,
         onBackgroundColor: Color
     ) {
+        val direction = if (Locale.getDefault().layoutDirection == LAYOUT_DIRECTION_LTR) {
+            "ltr"
+        } else {
+            "rtl"
+        }
+
         val string = context.getString(
             R.string.webview_html_template,
             Utils.getCssColor(accentColor.toArgb()),
             Utils.getCssColor(onBackgroundColor.toArgb()),
             Utils.getCssColor(backgroundColor.toArgb()),
+            direction,
             formatText(itemWithFeed)
         )
 
