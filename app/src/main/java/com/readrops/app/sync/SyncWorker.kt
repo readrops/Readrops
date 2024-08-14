@@ -155,7 +155,7 @@ class SyncWorker(
                 val syncResult = repository.synchronize()
 
                 if (syncResult.favicons.isNotEmpty()) {
-                    loadFeverFavicons(syncResult.favicons, notificationBuilder)
+                    loadFeverFavicons(syncResult.favicons, account, notificationBuilder)
                 } else {
                     fetchFeedColors(syncResult, notificationBuilder)
                 }
@@ -248,6 +248,7 @@ class SyncWorker(
     @OptIn(ExperimentalCoilApi::class)
     private suspend fun loadFeverFavicons(
         favicons: Map<Feed, Favicon>,
+        account: Account,
         notificationBuilder: Builder
     ) {
         if (notificationManager.areNotificationsEnabled()) {
@@ -260,7 +261,7 @@ class SyncWorker(
         val diskCache = applicationContext.imageLoader.diskCache!!
 
         for ((feed, favicon) in favicons) {
-            val key =  "account_${feed.accountId}_feed_${feed.id}"
+            val key = "account_${account.id}_feed_${feed.name!!.replace(" ", "_")}"
             val snapshot = diskCache.openSnapshot(key)
 
             if (snapshot == null) {
