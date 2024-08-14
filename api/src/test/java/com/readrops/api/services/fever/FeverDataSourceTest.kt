@@ -157,6 +157,7 @@ class FeverDataSourceTest : KoinTest {
         assertEquals(6, result.starredIds.size)
         assertEquals(10, result.items.size)
         assertEquals(10, result.items.size)
+        assertEquals(1564058340320135, result.sinceId)
 
         assertEquals("1564058340320135", firstMaxId)
         assertEquals("6", secondMaxId)
@@ -229,6 +230,7 @@ class FeverDataSourceTest : KoinTest {
         assertEquals(6, result.unreadIds.size)
         assertEquals(6, result.starredIds.size)
         assertEquals(10, result.items.size)
+        assertEquals(10, result.sinceId)
 
         assertEquals("1", firstLastSinceId)
         assertEquals("5", secondLastSinceId)

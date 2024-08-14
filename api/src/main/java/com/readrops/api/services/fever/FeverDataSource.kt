@@ -82,7 +82,7 @@ class FeverDataSource(private val service: FeverService) {
                             }
 
                             sinceId = if (items.isNotEmpty()) {
-                                items.first().remoteId!!.toLong()
+                                items.maxOfOrNull { it.remoteId!!.toLong() }!!
                             } else {
                                 localSinceId.toLong()
                             }
