@@ -297,7 +297,6 @@ object FeedTab : Tab {
                     onUpdate = {
                         screenModel.openDialog(DialogState.UpdateFeed(dialog.feed, dialog.folder))
                     },
-                    onUpdateColor = {},
                     onDelete = { screenModel.openDialog(DialogState.DeleteFeed(dialog.feed)) },
                     canUpdateFeed = dialog.config.canUpdateFeed,
                     canDeleteFeed = dialog.config.canDeleteFeed
