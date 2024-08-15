@@ -9,9 +9,9 @@ import kotlin.test.assertEquals
 class FeverFeedsAdapterTest {
 
     val adapter = Moshi.Builder()
-            .add(FeverFeeds::class.java, FeverFeedsAdapter())
-            .build()
-            .adapter(FeverFeeds::class.java)!!
+        .add(FeverFeeds::class.java, FeverFeedsAdapter())
+        .build()
+        .adapter(FeverFeeds::class.java)!!
 
     @Test
     fun validFeedsTest() {
@@ -31,6 +31,11 @@ class FeverFeedsAdapterTest {
         with(feverFeeds.feedsGroups.entries.first()) {
             assertEquals(key, 3)
             assertEquals(value, listOf(5, 4))
+        }
+
+        with(feverFeeds.favicons.entries.first()) {
+            assertEquals(30, key)
+            assertEquals("32", value)
         }
     }
 }

@@ -24,14 +24,11 @@ class FeverItemsAdapter {
             val items = arrayListOf<Item>()
 
             beginObject()
-
-            repeat(4) {
-                skipField()
+            while (nextName() != "items") {
+                skipValue()
             }
 
-            nextName() // beginning of items array
             beginArray()
-
             while (hasNext()) {
                 beginObject()
 
@@ -39,7 +36,13 @@ class FeverItemsAdapter {
                 while (hasNext()) {
                     with(item) {
                         when (selectName(NAMES)) {
-                            0 -> remoteId = nextNonEmptyString()
+                            0 -> {
+                                remoteId = if (reader.peek() == JsonReader.Token.STRING) {
+                                    nextNonEmptyString()
+                                } else {
+                                    nextInt().toString()
+                                }
+                            }
                             1 -> feedRemoteId = nextNonEmptyString()
                             2 -> title = nextNonEmptyString()
                             3 -> author = nextNullableString()
@@ -58,6 +61,11 @@ class FeverItemsAdapter {
             }
 
             endArray()
+
+            while (peek() != JsonReader.Token.END_OBJECT) {
+                skipField()
+            }
+
             endObject()
 
             items

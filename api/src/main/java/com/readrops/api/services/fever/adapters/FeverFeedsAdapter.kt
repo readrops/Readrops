@@ -12,6 +12,7 @@ import com.squareup.moshi.JsonWriter
 
 data class FeverFeeds(
     val feeds: List<Feed> = listOf(),
+    val favicons: Map<Int, String> = mapOf(), // <faviconId, feedRemoteId>
     val feedsGroups: Map<Int, List<Int>> = emptyMap()
 )
 
@@ -25,6 +26,7 @@ class FeverFeedsAdapter : JsonAdapter<FeverFeeds>() {
     override fun fromJson(reader: JsonReader): FeverFeeds = with(reader) {
         return try {
             val feeds = arrayListOf<Feed>()
+            val favicons = mutableMapOf<Int, String>()
             val feedsGroups = mutableMapOf<Int, List<Int>>()
 
             beginObject()
@@ -45,9 +47,10 @@ class FeverFeedsAdapter : JsonAdapter<FeverFeeds>() {
                     with(feed) {
                         when (selectName(NAMES)) {
                             0 -> remoteId = nextInt().toString()
-                            1 -> name = nextNonEmptyString()
-                            2 -> url = nextNonEmptyString()
-                            3 -> siteUrl = nextNullableString()
+                            1 -> favicons[nextInt()] = remoteId!!
+                            2 -> name = nextNonEmptyString()
+                            3 -> url = nextNonEmptyString()
+                            4 -> siteUrl = nextNullableString()
                             else -> skipValue()
                         }
                     }
@@ -82,13 +85,18 @@ class FeverFeedsAdapter : JsonAdapter<FeverFeeds>() {
             endArray()
             endObject()
 
-            FeverFeeds(feeds, feedsGroups)
+            FeverFeeds(
+                feeds = feeds,
+                favicons = favicons,
+                feedsGroups = feedsGroups
+            )
         } catch (e: Exception) {
             throw ParseException(e.message)
         }
     }
 
     companion object {
-        val NAMES: JsonReader.Options = JsonReader.Options.of("id", "title", "url", "site_url")
+        val NAMES: JsonReader.Options =
+            JsonReader.Options.of("id", "favicon_id", "title", "url", "site_url")
     }
 }

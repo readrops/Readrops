@@ -57,7 +57,9 @@ class FeverRepository(
                 items = newItems,
                 feeds = newFeeds,
                 favicons = favicons.associateBy { favicon ->
-                    feverFeeds.feeds.find { it.remoteId == favicon.id }!!
+                    val feedId = feverFeeds.favicons.entries.find { it.key == favicon.id }!!.value
+
+                    feverFeeds.feeds.find { it.remoteId == feedId }!!
                 }
             )
         }

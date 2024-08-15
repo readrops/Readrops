@@ -10,7 +10,7 @@ import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 data class Favicon(
-    val id: String,
+    val id: Int,
     val data: ByteArray
 )
 
@@ -51,7 +51,7 @@ class FeverFaviconsAdapter {
 
                 if (id > 0 && data != null) {
                     favicons += Favicon(
-                        id = id.toString(),
+                        id = id,
                         data = data,
                     )
                 }

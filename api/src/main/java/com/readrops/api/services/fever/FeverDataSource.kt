@@ -43,7 +43,7 @@ class FeverDataSource(private val service: FeverService) {
 
                         var maxId = unreadIds.first()
                         items = buildList {
-                            for(index in 0 until INITIAL_SYNC_ITEMS_REQUESTS_COUNT) {
+                            for (index in 0 until INITIAL_SYNC_ITEMS_REQUESTS_COUNT) {
                                 val newItems = service.getItems(body, maxId, null)
 
                                 if (newItems.isEmpty()) break
@@ -77,7 +77,8 @@ class FeverDataSource(private val service: FeverService) {
 
                                 if (newItems.isEmpty()) break
                                 // always take the highest id
-                                localSinceId = newItems.maxOfOrNull { it.remoteId!!.toLong() }.toString()
+                                localSinceId =
+                                    newItems.maxOfOrNull { it.remoteId!!.toLong() }.toString()
                                 addAll(newItems)
                             }
 
