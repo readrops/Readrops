@@ -231,5 +231,6 @@
     <string name="donation_text">I you find my work useful and you would like to support me, you can consider making me a donation.</string>
     <string name="add_feed">Add feed</string>
     <string name="downloaded_file">Downloaded file!</string>
-    <string name="provide_full_api">Please provide the full API URL</string>
+    <string name="provide_full_url">Please provide the full API URL</string>
+    <string name="provide_root_url">Please provide the service root URL</string>
 </resources>

@@ -56,8 +56,14 @@ class AccountCredentialsScreenModel(
             mutableState.update { it.copy(isLoginOnGoing = true) }
 
             with(state.value) {
+                val normalizedUrl = if (!url.contains("https://") && !url.contains("http://")) {
+                    "https://$url"
+                } else {
+                    url
+                }
+
                 val newAccount = account.copy(
-                    url = url,
+                    url = normalizedUrl,
                     accountName = name,
                     login = login,
                     password = password,

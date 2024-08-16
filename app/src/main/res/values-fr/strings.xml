@@ -218,5 +218,6 @@
     <string name="donation_text">"Si vous considérez que mon travail vous est utile et si vous souhaitez me soutenir, vous pouvez me faire une donation. "</string>
     <string name="add_feed">Ajouter un flux</string>
     <string name="downloaded_file">Fichier téléchargé !</string>
-    <string name="provide_full_api">Merci de fournir l\'URL entière de l\'API</string>
+    <string name="provide_full_url">Merci de fournir l\'URL entière de l\'API</string>
+    <string name="provide_root_url">Merci de fournir l\'URL racine du service</string>
 </resources>

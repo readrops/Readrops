@@ -156,7 +156,10 @@ class AccountCredentialsScreen(
                                     Text(text = state.urlError!!.errorText())
                                 }
                                 account.accountType == AccountType.FEVER -> {
-                                    Text(text = stringResource(R.string.provide_full_api))
+                                    Text(text = stringResource(R.string.provide_full_url))
+                                }
+                                else -> {
+                                    Text(text = stringResource(R.string.provide_root_url))
                                 }
                             }
                         },
