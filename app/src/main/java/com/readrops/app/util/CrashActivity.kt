@@ -44,6 +44,8 @@ import com.readrops.app.util.theme.ShortSpacer
 import com.readrops.app.util.theme.VeryLargeSpacer
 import com.readrops.app.util.theme.VeryShortSpacer
 import com.readrops.app.util.theme.spacing
+import java.io.PrintWriter
+import java.io.StringWriter
 
 class CrashActivity : ComponentActivity() {
 
@@ -55,17 +57,19 @@ class CrashActivity : ComponentActivity() {
 
         val throwable = intent.getSerializableExtra(THROWABLE_KEY) as Throwable?
 
-        val stackTrace = try {
-            throwable?.stackTraceToString()
-
+        val sw = StringWriter()
+        val pw = PrintWriter(sw)
+        try {
+            throwable?.printStackTrace(pw)
         } catch (e: Exception) {
-            Log.e("CrashActivity", "Unable to get crash exception")
-            throwable?.let { it::class.simpleName + it.message }
+            Log.e("CrashActivity", "couldn't get full exception stacktrace")
         }
+
+        pw.flush()
 
         setContent {
             ReadropsTheme {
-                CrashScreen(stackTrace.orEmpty())
+                CrashScreen(sw.toString())
             }
         }
     }
