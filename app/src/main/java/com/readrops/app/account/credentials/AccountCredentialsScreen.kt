@@ -49,6 +49,7 @@ import com.readrops.app.util.theme.MediumSpacer
 import com.readrops.app.util.theme.ShortSpacer
 import com.readrops.app.util.theme.spacing
 import com.readrops.db.entities.account.Account
+import com.readrops.db.entities.account.AccountType
 import org.koin.core.parameter.parametersOf
 
 enum class AccountCredentialsScreenMode {
@@ -149,7 +150,16 @@ class AccountCredentialsScreen(
                         label = { Text(text = stringResource(id = R.string.account_url)) },
                         singleLine = true,
                         isError = state.isUrlError,
-                        supportingText = { Text(text = state.urlError?.errorText().orEmpty()) },
+                        supportingText = {
+                            when {
+                                state.urlError != null -> {
+                                    Text(text = state.urlError!!.errorText())
+                                }
+                                account.accountType == AccountType.FEVER -> {
+                                    Text(text = stringResource(R.string.provide_full_api))
+                                }
+                            }
+                        },
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -194,9 +204,14 @@ class AccountCredentialsScreen(
                             PasswordVisualTransformation(),
                         isError = state.isPasswordError,
                         supportingText = {
-                            Text(
-                                text = state.passwordError?.errorText().orEmpty()
-                            )
+                            when {
+                                state.passwordError != null -> {
+                                    Text(text = state.passwordError!!.errorText())
+                                }
+                                account.accountType == AccountType.FRESHRSS -> {
+                                    Text(text = stringResource(id = R.string.password_helper))
+                                }
+                            }
                         },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Password,
