@@ -41,7 +41,7 @@ class FeverDataSource(private val service: FeverService) {
                             .reversed()
                             .take(MAX_ITEMS_IDS)
 
-                        var maxId = unreadIds.first()
+                        var maxId = unreadIds.maxOfOrNull { it }
                         items = buildList {
                             for (index in 0 until INITIAL_SYNC_ITEMS_REQUESTS_COUNT) {
                                 val newItems = service.getItems(body, maxId, null)
@@ -53,7 +53,7 @@ class FeverDataSource(private val service: FeverService) {
                             }
                         }
 
-                        sinceId = unreadIds.first().toLong()
+                        sinceId = unreadIds.maxOfOrNull { it.toLong() } ?: 0
                     },
                     async { starredIds = service.getStarredItemsIds(body) },
                     async { favicons = service.getFavicons(body) }
