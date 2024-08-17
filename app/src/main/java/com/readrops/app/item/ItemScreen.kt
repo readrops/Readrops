@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
@@ -342,12 +343,14 @@ fun SimpleTitle(
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(
-            start = spacing,
-            end = spacing,
-            top = spacing,
-            bottom = if (bottomPadding) spacing else 0.dp
-        )
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = spacing,
+                end = spacing,
+                top = spacing,
+                bottom = if (bottomPadding) spacing else 0.dp
+            )
     ) {
         FeedIcon(
             iconUrl = itemWithFeed.feedIconUrl,
