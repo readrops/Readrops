@@ -19,6 +19,8 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
+
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
 
@@ -31,6 +33,13 @@ android {
             enableAndroidTestCoverage = true
 
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+        }
+
+        create("beta") {
+            initWith(getByName("release"))
+
+            applicationIdSuffix = ".beta"
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 

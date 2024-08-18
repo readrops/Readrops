@@ -7,6 +7,14 @@ plugins {
 android {
     namespace = "com.readrops.db"
 
+    buildTypes {
+        create("beta") {
+            initWith(getByName("release"))
+
+            signingConfig = signingConfigs.getByName("debug")
+        }
+    }
+
     defaultConfig {
         consumerProguardFiles("consumer-rules.pro")
     }

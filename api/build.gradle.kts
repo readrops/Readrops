@@ -6,6 +6,14 @@ plugins {
 android {
     namespace = "com.readrops.api"
 
+    buildTypes {
+        create("beta") {
+            initWith(getByName("release"))
+
+            signingConfig = signingConfigs.getByName("debug")
+        }
+    }
+
     sourceSets {
         getByName("androidTest") {
             assets.srcDirs("$projectDir/androidTest/assets")
