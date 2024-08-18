@@ -1,4 +1,4 @@
-package com.readrops.app
+package com.readrops.db
 
 import com.readrops.db.util.DateUtils
 import junit.framework.TestCase.assertEquals
