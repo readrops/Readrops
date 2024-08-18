@@ -146,7 +146,8 @@ class TimelineScreenModel(
                     emptyFlow()
                 },
                 isAccountLocal = currentAccount!!.isLocal,
-                scrollToTop = true
+                scrollToTop = true,
+                hideReadAllFAB = !currentAccount!!.config.canMarkAllItemsAsRead
             )
         }
 
@@ -175,7 +176,10 @@ class TimelineScreenModel(
 
             if (!currentAccount!!.isLocal) {
                 _timelineState.update {
-                    it.copy(isRefreshing = true)
+                    it.copy(
+                        isRefreshing = true,
+                        hideReadAllFAB = true
+                    )
                 }
             }
 
@@ -216,7 +220,6 @@ class TimelineScreenModel(
                         _timelineState.update {
                             it.copy(
                                 isRefreshing = true,
-                                hideReadAllFAB = true,
                                 currentFeed = workInfo.progress.getString(SyncWorker.FEED_NAME_KEY)
                                     ?: "",
                                 feedCount = workInfo.progress.getInt(SyncWorker.FEED_COUNT_KEY, 0),

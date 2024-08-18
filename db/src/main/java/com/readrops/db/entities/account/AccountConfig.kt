@@ -9,7 +9,8 @@ data class AccountConfig(
     val canUpdateFolder: Boolean = true,
     val canUpdateFeed: Boolean = true,
     val canDeleteFeed: Boolean = true,
-    val canDeleteFolder: Boolean = true
+    val canDeleteFolder: Boolean = true,
+    val canMarkAllItemsAsRead: Boolean = true
 ) {
 
     companion object {
@@ -18,7 +19,6 @@ data class AccountConfig(
             canCreateFolder = true,
             addNoFolder = true,
             useSeparateState = false,
-
         )
 
         val NEXTCLOUD_NEWS = AccountConfig(
@@ -44,7 +44,8 @@ data class AccountConfig(
             canUpdateFolder = false,
             canUpdateFeed = false,
             canDeleteFeed = false,
-            canDeleteFolder = false
+            canDeleteFolder = false,
+            canMarkAllItemsAsRead = false
         )
     }
 }
