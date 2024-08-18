@@ -84,7 +84,7 @@ class AccountSelectionScreenModel(
             mutableState.update {
                 it.copy(
                     showOPMLImportDialog = true,
-                    currentFeed = foldersAndFeeds.values.first().first().name!!,
+                    currentFeed = foldersAndFeeds.values.first().first().name,
                     feedCount = 0,
                     feedMax = foldersAndFeeds.values.flatten().size
                 )
@@ -98,7 +98,7 @@ class AccountSelectionScreenModel(
                 onUpdate = { feed ->
                     mutableState.update {
                         it.copy(
-                            currentFeed = feed.name!!,
+                            currentFeed = feed.name,
                             feedCount = it.feedCount + 1
                         )
                     }
@@ -121,7 +121,7 @@ data class AccountSelectionState(
     val showOPMLImportDialog: Boolean = false,
     val navState: NavState = NavState.Idle,
     val exception: Exception? = null,
-    val currentFeed: String = "",
+    val currentFeed: String? = null,
     val feedCount: Int = 0,
     val feedMax: Int = 0
 )

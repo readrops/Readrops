@@ -29,7 +29,7 @@ fun RefreshScreen(
 
 @Composable
 fun RefreshIndicator(
-    currentFeed: String,
+    currentFeed: String?,
     feedCount: Int,
     feedMax: Int
 ) {
@@ -44,7 +44,7 @@ fun RefreshIndicator(
         VeryShortSpacer()
 
         Text(
-            text = "$currentFeed ($feedCount/$feedMax)",
+            text = "${currentFeed.orEmpty()} ($feedCount/$feedMax)",
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )

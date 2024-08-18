@@ -134,7 +134,7 @@ class AccountScreenModel(
 
             openDialog(
                 DialogState.OPMLImport(
-                    currentFeed = foldersAndFeeds.values.first().first().name!!,
+                    currentFeed = foldersAndFeeds.values.first().first().name,
                     feedCount = 0,
                     feedMax = foldersAndFeeds.values.flatten().size
                 )
@@ -148,7 +148,7 @@ class AccountScreenModel(
 
                         it.copy(
                             dialog = dialog.copy(
-                                currentFeed = feed.name!!,
+                                currentFeed = feed.name,
                                 feedCount = dialog.feedCount + 1
                             )
                         )
@@ -225,7 +225,7 @@ data class AccountState(
 sealed interface DialogState {
     data object DeleteAccount : DialogState
     data object NewAccount : DialogState
-    data class OPMLImport(val currentFeed: String, val feedCount: Int, val feedMax: Int) :
+    data class OPMLImport(val currentFeed: String?, val feedCount: Int, val feedMax: Int) :
         DialogState
 
     data class ErrorList(val errorResult: ErrorResult) : DialogState
