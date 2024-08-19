@@ -94,13 +94,13 @@ class SyncWorker(
 
             workResult
         } catch (e: Exception) {
-            Log.e(TAG, "${e::class.simpleName}: ${e.message} ${e.printStackTrace()}")
+            Log.e(TAG, "${e.printStackTrace()}")
 
             notificationManager.cancel(SYNC_NOTIFICATION_ID)
             if (isManual) {
                 Result.failure(
                     workDataOf(SYNC_FAILURE_KEY to true)
-                        .putSerializable(SYNC_FAILURE_EXCEPTION_KEY, e)
+                        .putSerializable(SYNC_FAILURE_EXCEPTION_KEY, Exception(e.cause))
                 )
             } else {
                 Result.failure()
