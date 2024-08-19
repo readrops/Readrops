@@ -136,4 +136,5 @@
     <string name="no_item">Sin elementos</string>
     <string name="get_feeds_colors">Obtener colores de feed</string>
     <string name="feeds_colors">Colores de Feed</string>
+    <string name="app_licence">Aplicación publicada bajo la licencia GPLv3</string>
 </resources>
