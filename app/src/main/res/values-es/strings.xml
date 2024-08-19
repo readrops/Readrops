@@ -86,12 +86,12 @@
     <string name="synchronize">Sincronizar</string>
     <string name="enable_all_feeds">Activar las notificaciones de todos los feeds</string>
     <string name="non_read_articles">Artículos no leídos</string>
-    <string name="read_time_lower_than_1">Menos de un minuto</string>
+    <string name="read_time_lower_than_1">&lt;1 min</string>
     <string name="favorites">Favoritos</string>
     <string name="source_code">Código fuente</string>
     <string name="changelog">Registro de cambios</string>
     <string name="validate">Validar</string>
-    <string name="unread">Marcar como no leído</string>
+    <string name="unread">%1$d sin leer</string>
     <string name="error_occured">Ocurrió un error</string>
     <string name="folder_doesnt_exist">La carpeta no existe en el servidor</string>
     <string name="new_account">Nueva cuenta</string>
@@ -137,4 +137,22 @@
     <string name="get_feeds_colors">Obtener colores de feed</string>
     <string name="feeds_colors">Colores de Feed</string>
     <string name="app_licence">Aplicación publicada bajo la licencia GPLv3</string>
+    <string name="mark_read">Marcar como leído</string>
+    <string name="system">Tema del sistema</string>
+    <string name="preferences">Preferencias</string>
+    <string name="timeline">Cronología</string>
+    <string name="compact">Compacto</string>
+    <string name="large">Grande</string>
+    <string name="item_size">Tamaño del artículo</string>
+    <string name="background_sync_already_running">Ya se está ejecutando una sincronización en segundo plano</string>
+    <string name="disable_battery_optimization">Desactivar la optimización de la batería</string>
+    <string name="battery_optimization_already_disabled">La optimización de la batería ya está deshabilitada para esta aplicación</string>
+    <string name="opml_export_success">Exportación OPML exitosa</string>
+    <string name="add_to_favorite">Añadir a favoritos</string>
+    <string name="grant_access_notifications">Permitir el acceso a las notificaciones</string>
+    <string name="system_notifications_disabled">Las notificaciones del sistema están deshabilitadas. Haz clic aquí para activarlos</string>
+    <string name="mark_unread">Marcar como no leído</string>
+    <string name="item_view">Vista del artículo</string>
+    <string name="regular">Regular</string>
+    <string name="disable_battery_optimization_subtitle">Puede ayudar a que el sistema no cancele la sincronización en segundo plano</string>
 </resources>
