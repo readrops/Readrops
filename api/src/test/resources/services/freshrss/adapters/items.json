@@ -13,12 +13,16 @@
       },
       "alternate": [
         {
-          "href": "http://feedproxy.google.com/~r/d0od/~3/4Zk-fncSuek/adwaita-borderless-theme-in-development-gnome-41"
+          "href": "http://feedproxy.google.com/~r/d0od/~3/4Zk-fncSuek/adwaita-borderless-theme-in-development-gnome-41",
+          "type": "text/html"
         }
       ],
       "categories": [
         "user/-/state/com.google/reading-list",
-        "user/-/label/Libre"
+        "user/-/label/Libre",
+        "category1",
+        "category2",
+        "category3"
       ],
       "origin": {
         "streamId": "feed/15",
@@ -44,7 +48,10 @@
         "user/-/state/com.google/reading-list",
         "user/-/label/Libre",
         "user/-/state/com.google/starred",
-        "user/-/state/com.google/read"
+        "user/-/state/com.google/read",
+         "category1",
+         "category2",
+         "category3"
       ],
       "origin": {
         "streamId": "feed/15",

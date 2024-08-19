@@ -2,8 +2,8 @@ package com.readrops.api.localfeed.rss2
 
 import com.gitlab.mvysny.konsumexml.konsumeXml
 import com.readrops.api.TestUtils
-import com.readrops.api.utils.DateUtils
 import com.readrops.api.utils.exceptions.ParseException
+import com.readrops.db.util.DateUtils
 import junit.framework.TestCase
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
@@ -36,7 +36,7 @@ class RSS2AdapterTest {
             assertEquals(pubDate, DateUtils.parse("Tue, 25 Aug 2020 17:15:49 +0000"))
             assertEquals(author, "Author 1")
             assertEquals(description, "<a href=\"https://news.ycombinator.com/item?id=24273602\">Comments</a>")
-            assertEquals(guid, "https://www.bbc.com/news/world-africa-53887947")
+            assertEquals(remoteId, "https://www.bbc.com/news/world-africa-53887947")
         }
     }
 
@@ -55,7 +55,7 @@ class RSS2AdapterTest {
         val stream = TestUtils.loadResource("localfeed/rss2/rss_items_other_namespaces.xml")
         val item = adapter.fromXml(stream.konsumeXml()).second[0]
 
-        assertEquals(item.guid, "guid")
+        assertEquals(item.remoteId, "guid")
         assertEquals(item.author, "creator 1, creator 2, creator 3, creator 4")
         assertEquals(item.pubDate, DateUtils.parse("2020-08-05T14:03:48Z"))
         assertEquals(item.content, "content:encoded")

@@ -1,59 +1,45 @@
 package com.readrops.api.opml
 
 import com.gitlab.mvysny.konsumexml.konsumeXml
+import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
-import io.reactivex.Completable
-import io.reactivex.Single
 import org.redundent.kotlin.xml.xml
 import java.io.InputStream
 import java.io.OutputStream
 
 object OPMLParser {
 
-    @JvmStatic
-    fun read(stream: InputStream): Single<Map<Folder?, List<Feed>>> {
-        return Single.create { emitter ->
-            try {
-                val adapter = OPMLAdapter()
-                val opml = adapter.fromXml(stream.konsumeXml())
+    suspend fun read(stream: InputStream): Map<Folder?, List<Feed>> {
+        try {
+            val adapter = OPMLAdapter()
+            val opml = adapter.fromXml(stream.konsumeXml())
 
-                emitter.onSuccess(opml)
-            } catch (e: Exception) {
-                emitter.onError(e)
-            }
+            stream.close()
+            return opml
+        } catch (e: Exception) {
+            throw ParseException(e.message)
         }
     }
 
-    @JvmStatic
-    fun write(foldersAndFeeds: Map<Folder?, List<Feed>>, outputStream: OutputStream): Completable {
-        return Completable.create { emitter ->
-            val opml = xml("opml") {
-                attribute("version", "2.0")
+    suspend fun write(foldersAndFeeds: Map<Folder?, List<Feed>>, outputStream: OutputStream) {
+        val opml = xml("opml") {
+            attribute("version", "2.0")
 
-                "head" {
-                    -"Subscriptions"
-                }
+            "head" {
+                -"Subscriptions"
+            }
 
-                "body" {
-                    for (folderAndFeeds in foldersAndFeeds) {
-                        if (folderAndFeeds.key != null) { // feeds with folder
-                            "outline" {
-                                folderAndFeeds.key?.name?.let {
-                                    attribute("title", it)
-                                    attribute("text", it)
-                                }
-
-                                for (feed in folderAndFeeds.value) {
-                                    "outline" {
-                                        feed.name?.let { attribute("title", it) }
-                                        attribute("xmlUrl", feed.url!!)
-                                        feed.siteUrl?.let { attribute("htmlUrl", it) }
-                                    }
-                                }
+            "body" {
+                for (folderAndFeeds in foldersAndFeeds) {
+                    if (folderAndFeeds.key != null) { // feeds with folder
+                        "outline" {
+                            folderAndFeeds.key?.name?.let {
+                                attribute("title", it)
+                                attribute("text", it)
                             }
-                        } else {
-                            for (feed in folderAndFeeds.value) { // feeds without folder
+
+                            for (feed in folderAndFeeds.value) {
                                 "outline" {
                                     feed.name?.let { attribute("title", it) }
                                     attribute("xmlUrl", feed.url!!)
@@ -61,14 +47,21 @@ object OPMLParser {
                                 }
                             }
                         }
+                    } else {
+                        for (feed in folderAndFeeds.value) { // feeds without folder
+                            "outline" {
+                                feed.name?.let { attribute("title", it) }
+                                attribute("xmlUrl", feed.url!!)
+                                feed.siteUrl?.let { attribute("htmlUrl", it) }
+                            }
+                        }
                     }
                 }
             }
-
-            outputStream.write(opml.toString().toByteArray())
-            outputStream.flush()
-
-            emitter.onComplete()
         }
+
+        outputStream.write(opml.toString().toByteArray())
+        outputStream.flush()
+        outputStream.close()
     }
 }

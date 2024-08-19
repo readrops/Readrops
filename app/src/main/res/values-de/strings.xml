@@ -60,7 +60,6 @@
     <string name="local">Lokal</string>
     <string name="unlimited">Unbegrenzt</string>
     <string name="number_items_to_parse">Maximale Anzahl von Artikeln pro Feed</string>
-    <string name="app_licence">Anwendung unter der GPLv3-Lizenz veröffentlicht</string>
     <string name="new_account">Neues Konto</string>
     <string name="login_failed">Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Anmeldedaten</string>
     <string name="filter_oldest">Älteste zuerst</string>
@@ -91,8 +90,8 @@
     <string name="account_name">Kontobezeichnung</string>
     <string name="account_url">Konto-URL</string>
     <string name="select_all">Alle auswählen</string>
-    <string name="read">Als gelesen markieren</string>
-    <string name="unread">Als ungelesen markieren</string>
+    <string name="mark_read">Als gelesen markieren</string>
+    <string name="mark_unread">Als ungelesen markieren</string>
     <string name="filter">Filtern</string>
     <string name="show_read_articles">Gelesene Artikel anzeigen</string>
     <string name="read_later">Später zu lesen</string>

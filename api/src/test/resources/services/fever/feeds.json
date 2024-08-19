@@ -1,0 +1,22 @@
+{
+  "api_version": 3,
+  "auth": 1,
+  "last_refreshed_on_time": 1640284745,
+  "feeds": [
+    {
+      "id": 32,
+      "favicon_id": 30,
+      "title": "xda-developers",
+      "url": "https:\/\/www.xda-developers.com\/feed\/",
+      "site_url": "https:\/\/www.xda-developers.com\/",
+      "is_spark": 0,
+      "last_updated_on_time": 1640364024
+    }
+  ],
+  "feeds_groups": [
+    {
+      "group_id": 3,
+      "feed_ids": "5,4"
+    }
+  ]
+}

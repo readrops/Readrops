@@ -1,0 +1,121 @@
+[versions]
+kotlin = "2.0.0"
+ksp = "2.0.0-1.0.24"
+android_agp = "8.5.1"
+compose_bom = "2024.06.00"
+
+voyager = "1.1.0-beta02"
+lifecycle = "2.8.4"
+coil = "2.7.0"
+coroutines = "1.8.1"
+room = "2.6.1"
+koin-bom = "3.5.6"
+paging = "3.3.1"
+okhttp = "4.12.0"
+retrofit = "2.11.0"
+about_libraries = "11.2.2"
+
+[plugins]
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
+[libraries]
+android-agp = { module = "com.android.tools.build:gradle", version.ref = "android_agp" }
+kotlin-kgp = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+jacoco = "org.jacoco:org.jacoco.core:0.8.7"
+
+compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose_bom" }
+compose-foundation = { module = "androidx.compose.foundation:foundation" }
+compose-runtime = { module = "androidx.compose.runtime:runtime" }
+compose-animation = { module = "androidx.compose.animation:animation" }
+compose-ui = { module = "androidx.compose.ui:ui" }
+compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+# specify material3 version is required for gradle to find the dependency
+compose-material3 = { module = "androidx.compose.material3:material3", version = "1.2.1" }
+compose-activity = "androidx.activity:activity-compose:1.9.0"
+compose-permissions = "com.google.accompanist:accompanist-permissions:0.34.0"
+
+voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
+voyager-screenmodel = { module = "cafe.adriel.voyager:voyager-screenmodel", version.ref = "voyager" }
+voyager-tab-navigator = { module = "cafe.adriel.voyager:voyager-tab-navigator", version.ref = "voyager" }
+voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyager" }
+voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", version.ref = "voyager" }
+
+lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "lifecycle" }
+lifecyle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
+
+coil-core = { module = "io.coil-kt:coil", version.ref = "coil" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
+room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
+
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
+koin-core = { module = "io.insert-koin:koin-core" }
+koin-android = { module = "io.insert-koin:koin-android" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose" }
+koin-test = { module = "io.insert-koin:koin-test" }
+koin-test-junit4 = { module = "io.insert-koin:koin-test-junit4" }
+
+paging-runtime = { module = "androidx.paging:paging-runtime-ktx", version.ref = "paging" }
+paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging" }
+
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+okhttp-mockserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
+
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit-convertermoshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "retrofit" }
+
+aboutlibraries = { module = "com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin", version.ref = "about_libraries" }
+aboutlibraries-composem3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "about_libraries" }
+
+konsumexml = "com.gitlab.mvysny.konsume-xml:konsume-xml:1.1"
+kotlinxmlbuilder = "org.redundent:kotlin-xml-builder:1.7.3" #TODO update this
+
+jdk-desugar = "com.android.tools:desugar_jdk_libs_nio:2.0.4"
+
+jsoup = "org.jsoup:jsoup:1.18.1"
+moshi = "com.squareup.moshi:moshi:1.15.1"
+
+# androidx
+corektx = "androidx.core:core-ktx:1.13.1"
+appcompat = "androidx.appcompat:appcompat:1.7.0"
+material = "com.google.android.material:material:1.12.0"
+palette = "androidx.palette:palette-ktx:1.0.0"
+workmanager = "androidx.work:work-runtime-ktx:2.9.0"
+encrypted-preferences = "androidx.security:security-crypto:1.1.0-alpha06"
+datastore = "androidx.datastore:datastore-preferences:1.1.1"
+browser = "androidx.browser:browser:1.8.0"
+splashscreen = "androidx.core:core-splashscreen:1.0.1"
+
+# test
+junit4 = "junit:junit:4.13.2"
+ext-junit = "androidx.test.ext:junit:1.2.1"
+ext-runner = "androidx.test:runner:1.6.1"
+ext-rules = "androidx.test:rules:1.6.1"
+expressocore = "androidx.test.espresso:espresso-core:3.6.1"
+
+[bundles]
+compose = ["compose-foundation", "compose-runtime", "compose-animation",
+    "compose-ui", "compose-ui-tooling", "compose-ui-tooling-preview", "compose-material3", "compose-activity", "compose-permissions"]
+voyager = ["voyager-navigator", "voyager-screenmodel", "voyager-tab-navigator", "voyager-koin", "voyager-transitions"]
+lifecycle = ["lifecycle-viewmodel-ktx", "lifecycle-viewmodel-compose", "lifecycle-viewmodel-savedstate",
+    "lifecyle-runtime-compose"]
+coil = ["coil-core", "coil-compose"]
+coroutines = ["coroutines-core", "coroutines-android"]
+room = ["room-runtime", "room-ktx", "room-paging"]
+koin = ["koin-core", "koin-android", "koin-androidx-compose"]
+kointest = ["koin-test", "koin-test-junit4"]
+paging = ["paging-runtime", "paging-compose"]
+test = ["junit4", "ext-junit", "ext-runner", "ext-rules", "expressocore"]
+retrofit = ["retrofit", "retrofit-convertermoshi"]

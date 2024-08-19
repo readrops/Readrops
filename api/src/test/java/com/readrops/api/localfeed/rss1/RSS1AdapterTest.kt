@@ -2,8 +2,8 @@ package com.readrops.api.localfeed.rss1
 
 import com.gitlab.mvysny.konsumexml.konsumeXml
 import com.readrops.api.TestUtils
-import com.readrops.api.utils.DateUtils
 import com.readrops.api.utils.exceptions.ParseException
+import com.readrops.db.util.DateUtils
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertNotNull
 import junit.framework.TestCase
@@ -35,7 +35,7 @@ class RSS1AdapterTest {
             assertEquals(title, "Google Expands its Flutter Development Kit To Windows Apps")
             assertEquals(link!!.trim(), "https://developers.slashdot.org/story/20/09/23/1616231/google-expands-" +
                     "its-flutter-development-kit-to-windows-apps?utm_source=rss1.0mainlinkanon&utm_medium=feed")
-            assertEquals(guid!!.trim(), "https://developers.slashdot.org/story/20/09/23/1616231/google-expands-" +
+            assertEquals(remoteId!!.trim(), "https://developers.slashdot.org/story/20/09/23/1616231/google-expands-" +
                     "its-flutter-development-kit-to-windows-apps?utm_source=rss1.0mainlinkanon&utm_medium=feed")
             assertEquals(pubDate, DateUtils.parse("2020-09-23T16:15:00+00:00"))
             assertEquals(author, "msmash")

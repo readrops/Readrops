@@ -1,0 +1,94 @@
+package com.readrops.app.item.view
+
+import android.annotation.SuppressLint
+import android.content.Context
+import android.util.AttributeSet
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.core.text.layoutDirection
+import com.readrops.app.R
+import com.readrops.app.util.Utils
+import com.readrops.db.pojo.ItemWithFeed
+import org.jsoup.Jsoup
+import org.jsoup.parser.Parser
+import java.util.Locale
+
+@SuppressLint("SetJavaScriptEnabled", "ViewConstructor")
+class ItemWebView(
+    context: Context,
+    onUrlClick: (String) -> Unit,
+    onImageLongPress: (String) -> Unit,
+    attrs: AttributeSet? = null,
+) : WebView(context, attrs) {
+
+    init {
+        settings.javaScriptEnabled = true
+        settings.builtInZoomControls = true
+        settings.displayZoomControls = false
+        settings.setSupportZoom(false)
+        isVerticalScrollBarEnabled = false
+
+        webViewClient = object : WebViewClient() {
+            override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+                url?.let { onUrlClick(it) }
+                return true
+            }
+        }
+
+        setOnLongClickListener {
+            val type = hitTestResult.type
+            if (type == HitTestResult.IMAGE_TYPE || type == HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {
+                hitTestResult.extra?.let { onImageLongPress(it) }
+            }
+
+            false
+        }
+    }
+
+    fun loadText(
+        itemWithFeed: ItemWithFeed,
+        accentColor: Color,
+        backgroundColor: Color,
+        onBackgroundColor: Color
+    ) {
+        val direction = if (Locale.getDefault().layoutDirection == LAYOUT_DIRECTION_LTR) {
+            "ltr"
+        } else {
+            "rtl"
+        }
+
+        val string = context.getString(
+            R.string.webview_html_template,
+            Utils.getCssColor(accentColor.toArgb()),
+            Utils.getCssColor(onBackgroundColor.toArgb()),
+            Utils.getCssColor(backgroundColor.toArgb()),
+            direction,
+            formatText(itemWithFeed)
+        )
+
+        loadDataWithBaseURL(
+            "file:///android_asset/",
+            string,
+            "text/html; charset=utf-8",
+            "UTF-8",
+            null
+        )
+    }
+
+    private fun formatText(itemWithFeed: ItemWithFeed): String {
+        return if (itemWithFeed.item.text != null) {
+            val document = if (itemWithFeed.websiteUrl != null) Jsoup.parse(
+                Parser.unescapeEntities(itemWithFeed.item.text, false), itemWithFeed.websiteUrl
+            ) else Jsoup.parse(
+                Parser.unescapeEntities(itemWithFeed.item.text, false)
+            )
+
+            document.select("div,span").forEach { it.clearAttributes() }
+            return document.body().html()
+        } else {
+            ""
+        }
+    }
+}
