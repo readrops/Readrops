@@ -1,3 +1,6 @@
+<p align="center"><a href="https://github.com/readrops/Readrops/releases/tag/v2.0-beta01">Readrops 2.0 first beta is out!</a>
+</p>
+
 <p align="center">
 	<img src="fastlane/metadata/android/en-US/images/icon.png" width=180>
 </p>
