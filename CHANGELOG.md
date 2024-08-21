@@ -1,8 +1,62 @@
+# v2.0-beta01
+
+## General
+
+- 🆕 design:
+  - 🆕 Material3: Readrops implements last material design system version 
+  - 🆕 Bottom bar navigation: you can now navigate to feeds and account management way more easily, with 4 tabs in total:
+    - Timeline 
+    - Feeds 
+    - Account 
+    - More 
+  - Timeline tab:
+    - 🆕 Article size: you can now choose among three article sizes: compact, regular and large 
+    - 🆕 You can now show only articles less than 24h old 
+    - 🆕 Mark all articles as read FAB: the floating action button now lets you mark all articles read, taking into account the current filter, replacing opening new feed activity action 
+    - 🆕 Mark articles read on scroll: an option is now available to mark items read on scroll 
+    - 🆕 Drawer: hide folders and feeds without unread articles 
+    - 🆕 Local account: sync now respects the current filter and will only synchronize affected feeds 
+  - Feeds Tab:
+    - 🆕 Feeds and folder management have been merged into a single screen 
+  - Account Tab:
+    - 🆕 Add, manage and remove any account from Account Tab 
+  - More Tab:
+    - 🆕 This new screen gathers some app infos, parameters, open source libraries and a donation dialog 
+  - Articles screen:
+    - The global UI has been improved with a new title layout 
+    - 🆕 Action bottom bar: you now have access to a collapsable bottom bar containing the following actions:
+      - Mark as read/non read 
+      - Add to favorites/remove from favorites 
+      - Share 
+      - Open in external navigator/navigator view 
+    - 🆕 A new font, Inter is used for the article content 
+    - 🆕 Some html tags look have been improved:
+      - blockquote 
+      - figure/figcaption 
+      - iframe 
+      - table
+    - "Open in" option has been reduced to two options: navigator view and external navigator 
+- 🆕 FEVER API implementation, should work with any provider which supports it 
+- Migrate to Nextcloud News API 1.3 
+- 🆕 Follow system theme option (default)
+- 🆕 Option to disable battery optimization for background synchronization
+
+## Technical
+
+- The UI has been entirely rewritten in Kotlin using Jetpack Compose, moving from old traditional view system
+- All other Java parts have also been rewritten in Kotlin, including API implementations, repositories, etc
+- RXJava was replaced by Kotlin coroutines and flows
+- Migrate to Gradle Kotlin DSL
+- Migrate dependencies to Version Catalog
+- 🆕 Support user certificates
+
 # v1.3.1
+
 - FreshRSS : Fix items being fav unintentionally
 - FreshRSS : Fix 401 error when synchronising for the second time
 
 # v1.3.0
+
 - New local RSS parser, much reliable
 - New external navigator view for items (Custom tabs)
 - FreshRSS and Nextcloud News favorites
@@ -64,15 +118,13 @@ Fix a crash related to Proguard Rules.
 
 # v1.0.2
 
- - Add swipe background to main list items
- - Add preference to parse a fixed number of items when adding a local feed
- - Change feed/folders way to interact
- - Minor bug fixes and improvements
+- Add swipe background to main list items
+- Add preference to parse a fixed number of items when adding a local feed
+- Change feed/folders way to interact
+- Minor bug fixes and improvements
 
-
- 
 # v1.0.1
- 
+
 # v1.0 Initial release
 
 - Local RSS parsing 
