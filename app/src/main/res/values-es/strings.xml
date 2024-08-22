@@ -217,4 +217,5 @@
     <string name="url">URL</string>
     <string name="rename_account">Cambiar el nombre de la cuenta</string>
     <string name="name">Nombre</string>
+    <string name="hide_feeds_subtitle">Los feeds sin artículos nuevos desaparecerán del menú</string>
 </resources>
