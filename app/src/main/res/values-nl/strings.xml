@@ -1,38 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="add_feed_title">Feed toevoegen</string>
-    <string name="open_nav_drawer">Menu openen</string>
-    <string name="about">Over</string>
     <string name="validate">Verifiëren</string>
     <string name="empty_field">Het veld mag niet blanco zijn</string>
     <string name="wrong_url">De url is ongeldig</string>
-    <string name="add_feed_no_result">Er is geen feed-url aangetroffen</string>
     <string name="add_feed_connexion_error">Er is een verbindingsfout opgetreden</string>
-    <string name="by_author">van %1$s</string>
     <string name="read_time">%1$s min.</string>
     <string name="read_time_lower_than_1">&lt;1 min.</string>
     <string name="open_url">Url openen</string>
-    <string name="feed_folder">Feedmap</string>
     <string name="feed_name">Feednaam</string>
     <string name="edit_feed">Feed bewerken</string>
-    <string name="results">Resultaten</string>
     <string name="feed_insertion_successfull">‘%1$s’ is toegevoegd</string>
-    <string name="updating_feed">Bezig met bijwerken van ‘%1$s’…</string>
-    <string name="to_read">Nog te lezen</string>
     <string name="app_licence">De app is uitgebracht onder de GPLv3-licentie</string>
-    <string name="non_read_articles">Ongelezen artikelen</string>
-    <string name="close_nav_drawer">Menu sluiten</string>
-    <string name="add_feed_item">Feed toevoegen</string>
     <string name="settings">Instellingen</string>
     <string name="feed_url">Feed-url</string>
     <string name="add_feed_unknownhost_error">Onbekende host</string>
-    <string name="add_folder_item">Map toevoegen</string>
     <string name="read_time_one_minute">1 min.</string>
     <string name="add_folder">Map toevoegen</string>
-    <string name="folder">Map</string>
     <string name="cancel">Annuleren</string>
     <string name="share_article">Artikel delen</string>
     <string name="delete_feed">Feed verwijderen?</string>
-    <string name="load">Laden</string>
     <string name="no_folder">Geen map</string>
 </resources>

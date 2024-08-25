@@ -42,7 +42,7 @@ fun AddFeedDialog(
     onDismiss: () -> Unit
 ) {
     BaseDialog(
-        title = stringResource(R.string.add_feed_item),
+        title = stringResource(R.string.add_feed),
         icon = painterResource(id = R.drawable.ic_rss_feed_grey),
         onDismiss = { if (!state.isLoading) onDismiss() }
     ) {

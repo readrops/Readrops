@@ -373,7 +373,7 @@ fun TimelineItemBadge(
             )
 
             Text(
-                text = "·",
+                text = stringResource(id = R.string.interpoint),
                 style = MaterialTheme.typography.labelMedium,
                 modifier = Modifier.padding(horizontal = MaterialTheme.spacing.veryShortSpacing),
                 color = textColor
