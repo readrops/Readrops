@@ -75,13 +75,13 @@
     <string name="hour_1">1 hora</string>
     <string name="hour_6">6 horas</string>
     <string name="enable_auto_synchro_text">Para que se muestren las notificaciones es necesario que la sincronización automática esté activada.
-\n¿Deseas abrir los ajustes\?</string>
+\n¿Deseas abrir los ajustes?</string>
     <string name="navigator_view">Vista de navegador</string>
     <string name="account_synchro">Sincronización de cuentas</string>
     <string name="auto_synchro_disabled">La sincronización automática está desactivada</string>
     <string name="feed_url">URL de feed</string>
     <string name="add_feed_unknownhost_error">Host desconocido</string>
-    <string name="delete_feed">¿Borrar feed\?</string>
+    <string name="delete_feed">¿Borrar feed?</string>
     <string name="feed_name">Nombre del feed</string>
     <string name="feed_insertion_network_failed">Error de red al acceder al feed %1$s</string>
     <string name="edit_feed">Editar feed</string>
