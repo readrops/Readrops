@@ -27,7 +27,7 @@
     <string name="mark_unread">Marker som ulest</string>
     <string name="show_read_articles">Vis leste artikler</string>
     <string name="articles">Artikler</string>
-    <string name="delete_feed">Slett informasjonskanal\?</string>
+    <string name="delete_feed">Slett informasjonskanal?</string>
     <string name="cancel">Avbryt</string>
     <string name="no_folder">Ingen mappe</string>
     <string name="edit_feed">Rediger informasjonskanal</string>
@@ -60,7 +60,7 @@
     <string name="global">Hele programmet</string>
     <string name="open_items_in">Åpne elementer i</string>
     <string name="enable_auto_synchro_text">Automatisk synkronisering må skrus på for visning.
-\nØnsker du å åpne innstillingene\?</string>
+\nØnsker du å åpne innstillingene?</string>
     <string name="feed_doesnt_exist">Informasjonskanalen %1$s finnes ikke på tjeneren</string>
     <string name="error_occured">En feil inntraff</string>
     <string name="feed_insertion_successfull">Informasjonskanalen %1$s ble oppdatert</string>
