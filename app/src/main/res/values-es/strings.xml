@@ -112,6 +112,9 @@
     <string name="download_image">Descargar imagen</string>
     <string name="share_image">Compartir imagen</string>
     <string name="theme">Tema</string>
+    <string name="theme_color_scheme">Bandera</string>
+    <string name="theme_readrops">Readrops</string>
+    <string name="theme_blackwhite">Black White</string>
     <string name="hour_1">1 hora</string>
     <string name="hour_6">6 horas</string>
     <string name="enable_auto_synchro_text">Para que se muestren las notificaciones es necesario que la sincronización automática esté activada.

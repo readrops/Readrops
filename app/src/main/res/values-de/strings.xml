@@ -28,7 +28,10 @@
     <string name="opml_export_description">Exportieren von Feeds und Ordnern</string>
     <string name="dark">Dunkel</string>
     <string name="light">Hell</string>
-    <string name="theme">Farbschema</string>
+    <string name="theme">Thema</string>
+    <string name="theme_color_scheme">Farbschema</string>
+    <string name="theme_readrops">Readrops</string>
+    <string name="theme_blackwhite">Black White</string>
     <string name="share_image">Bild teilen</string>
     <string name="download_image">Bild herunterladen</string>
     <string name="image_options">Bildoptionen</string>

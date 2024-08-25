@@ -55,15 +55,21 @@ class MainActivity : ComponentActivity(), KoinComponent {
         val initialUseDarkTheme = runBlocking {
             useDarkTheme(preferences.theme.flow.first(), darkFlag)
         }
+        val initialColourScheme = runBlocking {
+            preferences.themeColourScheme.flow.first()
+        }
 
         setContent {
             KoinAndroidContext {
                 val useDarkTheme by preferences.theme.flow
                     .map { mode -> useDarkTheme(mode, darkFlag) }
                     .collectAsState(initial = initialUseDarkTheme)
+                val themeColourScheme by preferences.themeColourScheme.flow
+                    .collectAsState(initial = initialColourScheme)
 
                 ReadropsTheme(
-                    useDarkTheme = useDarkTheme
+                    useDarkTheme = useDarkTheme,
+                    themeColourScheme = themeColourScheme
                 ) {
                     val navigationBarElevation = NavigationBarDefaults.Elevation
 

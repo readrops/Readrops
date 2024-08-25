@@ -25,7 +25,8 @@ class PreferencesScreenModel(
                 preferences.scrollRead.flow,
                 preferences.hideReadFeeds.flow,
                 preferences.openLinksWith.flow,
-                preferences.timelineItemSize.flow
+                preferences.timelineItemSize.flow,
+                preferences.themeColourScheme.flow
             )
 
             combine(
@@ -37,7 +38,8 @@ class PreferencesScreenModel(
                     scrollReadPref = (list[2] as Boolean) to preferences.scrollRead,
                     hideReadFeeds = (list[3] as Boolean) to preferences.hideReadFeeds,
                     openLinksWith = (list[4] as String) to preferences.openLinksWith,
-                    timelineItemSize = (list[5] as String) to preferences.timelineItemSize
+                    timelineItemSize = (list[5] as String) to preferences.timelineItemSize,
+                    themeColourScheme = (list[6] as String) to preferences.themeColourScheme
                 )
             }.collect { theme ->
                 mutableState.update { theme }
@@ -57,7 +59,8 @@ sealed class PreferencesScreenState {
         val scrollReadPref: PreferenceState<Boolean>,
         val hideReadFeeds: PreferenceState<Boolean>,
         val openLinksWith: PreferenceState<String>,
-        val timelineItemSize: PreferenceState<String>
+        val timelineItemSize: PreferenceState<String>,
+        val themeColourScheme: PreferenceState<String>
     ) : PreferencesScreenState()
 
 }

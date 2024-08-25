@@ -111,6 +111,9 @@
     <string name="download_image">Download image</string>
     <string name="share_image">Share image</string>
     <string name="theme">Theme</string>
+    <string name="theme_color_scheme">Color Scheme</string>
+    <string name="theme_readrops">Readrops</string>
+    <string name="theme_blackwhite">Black White</string>
     <string name="light">Light</string>
     <string name="dark">Dark</string>
     <string name="opml_export_description">Export feeds and folders</string>

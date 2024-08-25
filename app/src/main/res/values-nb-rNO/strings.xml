@@ -6,6 +6,9 @@
     <string name="dark">Mørk</string>
     <string name="light">Lys</string>
     <string name="theme">Drakt</string>
+    <string name="theme_color_scheme">Fargevalg</string>
+    <string name="theme_readrops">Readrops</string>
+    <string name="theme_blackwhite">Black White</string>
     <string name="share_image">Del bilde</string>
     <string name="download_image">Last ned bilde</string>
     <string name="image_options">Bildevalg</string>
