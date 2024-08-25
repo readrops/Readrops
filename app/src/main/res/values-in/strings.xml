@@ -84,7 +84,8 @@
     <string name="new_items">%1$s artikel baru</string>
     <string name="notifications">Notifikasi</string>
     <string name="auto_synchro_disabled">Sinkronisasi otomatis dinonaktifkan</string>
-    <string name="enable_auto_synchro_text">Agar bisa ditampilkan, notifikasi membutuhkan sinkronisasi otomatis untuk diaktifkan.\nApakah Anda ingin membuka pengaturan ?</string>
+    <string name="enable_auto_synchro_text">Agar bisa ditampilkan, notifikasi membutuhkan sinkronisasi otomatis untuk diaktifkan.
+\nApakah Anda ingin membuka pengaturan ?</string>
     <string name="open">Buka</string>
     <string name="back">Kembali</string>
     <string name="synchronize">Sinkronkan</string>
