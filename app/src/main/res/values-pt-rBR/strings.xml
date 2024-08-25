@@ -46,7 +46,7 @@
     <string name="notifications">Notificações</string>
     <string name="auto_synchro_disabled">A sincronização automática é desativada</string>
     <string name="enable_auto_synchro_text">A fim de serem mostradas, as notificações precisam de sincronização automática ativada.
-\nVocê quer abrir menu de configurações\?</string>
+\nVocê quer abrir menu de configurações?</string>
     <string name="open">Abrir</string>
     <string name="back">Voltar</string>
     <string name="synchronize">Sincronizar</string>
@@ -66,7 +66,7 @@
     <string name="error_occured">Ocorreu um erro</string>
     <string name="feed_name">Nome do Feed</string>
     <string name="edit_feed">Editar o Feed</string>
-    <string name="delete_feed">Eliminar o Feed\?</string>
+    <string name="delete_feed">Eliminar o Feed?</string>
     <string name="folder_already_exists">A pasta já existe</string>
     <string name="open_url">Abrir URL</string>
     <string name="edit_folder">Editar pasta</string>
