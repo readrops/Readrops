@@ -26,10 +26,16 @@ class Preferences(
 ) {
 
     val theme = Preference(
-            dataStore = dataStore,
-            key = stringPreferencesKey("theme"),
-            default = "system"
-        )
+        dataStore = dataStore,
+        key = stringPreferencesKey("theme"),
+        default = "system"
+    )
+
+    val themeColourScheme = Preference(
+        dataStore = dataStore,
+        key = stringPreferencesKey("theme_color_scheme"),
+        default = "readrops"
+    )
 
     val backgroundSynchronization = Preference(
         dataStore = dataStore,

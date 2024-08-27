@@ -100,6 +100,17 @@ class PreferencesScreen : AndroidScreen() {
                             )
 
                             ListPreferenceWidget(
+                                preference = loadedState.themeColourScheme.second,
+                                selectedKey = loadedState.themeColourScheme.first,
+                                entries = mapOf(
+                                    "readrops" to stringResource(id = R.string.theme_readrops),
+                                    "blackwhite" to stringResource(id = R.string.theme_blackwhite),
+                                ),
+                                title = stringResource(id = R.string.theme_color_scheme),
+                                onValueChange = {}
+                            )
+
+                            ListPreferenceWidget(
                                 preference = loadedState.backgroundSyncPref.second,
                                 selectedKey = loadedState.backgroundSyncPref.first,
                                 entries = mapOf(

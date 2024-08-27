@@ -21,4 +21,8 @@
     <string name="share_article">Artikel delen</string>
     <string name="delete_feed">Feed verwijderen?</string>
     <string name="no_folder">Geen map</string>
+    <string name="theme">Thema</string>
+    <string name="theme_color_scheme">Kleurenschema</string>
+    <string name="theme_readrops">Readrops</string>
+    <string name="theme_blackwhite">Black White</string>
 </resources>
