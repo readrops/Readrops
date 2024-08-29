@@ -16,6 +16,7 @@ class Converters {
         return localDateTime.toInstant(DateUtils.defaultOffset).toEpochMilli()
     }
 
+    // TODO Use Room built-in enum converter, ordinal is not reliable
     @TypeConverter
     fun fromAccountTypeCode(ordinal: Int): AccountType {
         return AccountType.entries[ordinal]

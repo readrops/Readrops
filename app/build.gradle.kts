@@ -12,8 +12,8 @@ android {
     defaultConfig {
         applicationId = "com.readrops.app"
 
-        versionCode = 15
-        versionName = "2.0-beta01"
+        versionCode = 16
+        versionName = "2.0-beta02"
     }
 
     buildTypes {
@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.datastore)
     implementation(libs.browser)
     implementation(libs.splashscreen)
+    implementation(libs.preferences)
 
     implementation(libs.jsoup)
 

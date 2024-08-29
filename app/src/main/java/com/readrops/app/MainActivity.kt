@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
+import androidx.preference.PreferenceManager
 import cafe.adriel.voyager.core.annotation.ExperimentalVoyagerApi
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.NavigatorDisposeBehavior
@@ -26,6 +27,7 @@ import com.readrops.app.account.selection.AccountSelectionScreenModel
 import com.readrops.app.home.HomeScreen
 import com.readrops.app.sync.SyncWorker
 import com.readrops.app.timelime.TimelineTab
+import com.readrops.app.util.Migrations
 import com.readrops.app.util.Preferences
 import com.readrops.app.util.theme.ReadropsTheme
 import com.readrops.db.Database
@@ -45,6 +47,15 @@ class MainActivity : ComponentActivity(), KoinComponent {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
+
+        runBlocking {
+            Migrations.upgrade(
+                appPreferences = get(),
+                encryptedPreferences = get(),
+                oldPreferences = PreferenceManager.getDefaultSharedPreferences(this@MainActivity),
+                database = get(),
+            )
+        }
 
         val screenModel = get<AccountSelectionScreenModel>()
         val accountExists = screenModel.accountExists()

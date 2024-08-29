@@ -185,7 +185,9 @@ class AccountSelectionScreen : AndroidScreen() {
                                 modifier = Modifier.padding(start = MaterialTheme.spacing.mediumSpacing)
                             )
 
-                            AccountType.entries.filter { it != AccountType.LOCAL }
+                            AccountType.entries
+                                .filter { it != AccountType.LOCAL }
+                                .filter { it != AccountType.FEEDLY }
                                 .forEach { accountType ->
                                     SelectableImageText(
                                         image = adaptiveIconPainterResource(id = accountType.iconRes),
@@ -197,8 +199,6 @@ class AccountSelectionScreen : AndroidScreen() {
                                         onClick = { screenModel.createAccount(accountType) }
                                     )
                                 }
-
-
                         }
                     }
                 }
