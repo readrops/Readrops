@@ -25,4 +25,21 @@
     <string name="feeds">フィード</string>
     <string name="account">アカウント</string>
     <string name="add_feed_unknownhost_error">不明なホストです</string>
+    <string name="articles">記事</string>
+    <string name="show_read_articles">既読の記事を表示する</string>
+    <string name="mark_unread">未読にする</string>
+    <string name="mark_read">既読にする</string>
+    <string name="account_url">アカウント URL</string>
+    <string name="account_name">アカウント名</string>
+    <string name="login">ログイン</string>
+    <string name="password">パスワード</string>
+    <string name="password_helper">FreshRSS の API パスワード (設定 &gt; プロフィール) を入力してください</string>
+    <string name="add_account">アカウントを追加</string>
+    <string name="no_feed">フィードがありません</string>
+    <string name="choose_account">アカウントを選択</string>
+    <string name="edit_folder">フォルダーを編集</string>
+    <string name="delete_folder">フォルダーを削除しますか？</string>
+    <string name="delete_account">アカウント削除</string>
+    <string name="delete_account_question">本当にアカウントを削除しますか？</string>
+    <string name="feed_deleted">フィード %1$s が削除されました</string>
 </resources>
