@@ -93,7 +93,7 @@ fun <T> RadioButtonPreferenceDialog(
                 onClick = onDismiss,
                 modifier = Modifier.align(Alignment.End)
             ) {
-                Text(text = stringResource(id = R.string.cancel))
+                Text(text = stringResource(id = R.string.back))
             }
         }
     }
