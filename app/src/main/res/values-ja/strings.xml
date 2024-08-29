@@ -1,2 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="add_feed">フィードを追加</string>
+    <string name="empty_field">この欄の入力は必須です</string>
+    <string name="wrong_url">入力された URL は無効です</string>
+    <string name="add_feed_connexion_error">接続エラー</string>
+    <string name="feed_name">フィード名</string>
+    <string name="edit_feed">フィードを編集</string>
+    <string name="delete_feed">フィードを削除しますか？</string>
+    <string name="read_time">%1$s 分</string>
+    <string name="read_time_lower_than_1">1 分未満</string>
+    <string name="read_time_one_minute">1 分</string>
+    <string name="share_article">記事を共有</string>
+    <string name="open_url">URL を開く</string>
+    <string name="add_folder">フォルダーを追加</string>
+    <string name="no_folder">フォルダーがありません</string>
+    <string name="cancel">キャンセル</string>
+    <string name="settings">設定</string>
+    <string name="validate">確認</string>
+    <string name="add_feed_title">フィードを追加</string>
+    <string name="feed_url">フィード URL</string>
+    <string name="timeline">タイムライン</string>
+    <string name="feed_insertion_successfull">フィード %1$s を追加しました</string>
+    <string name="feed_insertion_network_failed">フィードへのアクセス中にネットワークエラーが発生しました %1$s</string>
+    <string name="feeds">フィード</string>
+    <string name="account">アカウント</string>
+    <string name="add_feed_unknownhost_error">不明なホストです</string>
+</resources>
