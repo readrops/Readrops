@@ -8,7 +8,10 @@ import android.os.PowerManager
 import android.provider.Settings
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -50,6 +53,7 @@ class PreferencesScreen : AndroidScreen() {
         val context = LocalContext.current
         val screenModel = getScreenModel<PreferencesScreenModel>()
 
+        val scrollState = rememberScrollState()
         val coroutineScope = rememberCoroutineScope()
         val snackbarHostState = remember { SnackbarHostState() }
 
@@ -84,7 +88,12 @@ class PreferencesScreen : AndroidScreen() {
                     else -> {
                         val loadedState = (state as PreferencesScreenState.Loaded)
 
-                        Column {
+                        // a lazyColumn might be necessary in the future
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .verticalScroll(scrollState)
+                        ) {
                             PreferenceHeader(text = stringResource(id = R.string.global))
 
                             ListPreferenceWidget(
