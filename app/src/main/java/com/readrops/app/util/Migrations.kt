@@ -33,7 +33,7 @@ object Migrations {
 
                 oldPreferences.getString(account.passwordKey, null)?.run {
                     encryptedPreferences.edit()
-                        .putString(account.password, this)
+                        .putString(account.passwordKey, this)
                         .apply()
 
                     oldPreferences.edit()
