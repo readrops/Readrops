@@ -1,3 +1,10 @@
+# v2.0-beta02
+
+- Fix migration issues from v1.3 and older (especially for F-Droid builds)
+- Make Preferences screen scrollable (#190)
+- Fix wrong translation in RadioButtonPreferenceDialog (#185)
+- Translation updates
+
 # v2.0-beta01
 
 ## General
