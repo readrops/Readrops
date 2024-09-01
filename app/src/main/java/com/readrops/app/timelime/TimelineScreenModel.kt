@@ -297,12 +297,18 @@ class TimelineScreenModel(
 
     fun setItemRead(item: Item) {
         item.isRead = true
-        updateItemReadState(item)
-    }
 
-    private fun updateItemReadState(item: Item) {
         screenModelScope.launch(dispatcher) {
             repository?.setItemReadState(item)
+        }
+    }
+
+    fun updateItemReadState(item: Item) {
+        screenModelScope.launch(dispatcher) {
+            with(item) {
+                isRead = !isRead
+                repository?.setItemReadState(this)
+            }
         }
     }
 

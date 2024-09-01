@@ -3,6 +3,7 @@ package com.readrops.app.timelime
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,6 +25,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -94,11 +97,18 @@ fun CompactTimelineItem(
     onShare: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val containerColor = MaterialTheme.colorScheme.background
+
     Surface(
         color = MaterialTheme.colorScheme.surfaceVariant,
         modifier = modifier
             .fillMaxWidth()
-            .alpha(if (itemWithFeed.item.isRead) 0.6f else 1f)
+            .drawBehind {
+                // if some alpha is applied to the card, the swipe to dismiss background appears behind it
+                // so we draw a rect with the current screen background color behind the card but in front of the dismiss background
+                drawRect(containerColor)
+            }
+            .alpha(if (itemWithFeed.item.isRead) readAlpha else 1f)
             .clickable { onClick() }
     ) {
         Column(
@@ -147,7 +157,8 @@ fun LargeTimelineItem(
             itemWithFeed = itemWithFeed,
             onClick = onClick,
             onFavorite = onFavorite,
-            onShare = onShare
+            onShare = onShare,
+            modifier = modifier
         )
     } else {
         TimelineItemContainer(
@@ -222,13 +233,24 @@ fun TimelineItemContainer(
     isRead: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    padding: PaddingValues = PaddingValues(horizontal = MaterialTheme.spacing.shortSpacing),
     content: @Composable () -> Unit
 ) {
+    val containerColor = MaterialTheme.colorScheme.background
+
     Card(
         modifier = modifier
-            .padding(horizontal = MaterialTheme.spacing.shortSpacing)
+            .padding(padding)
             .fillMaxWidth()
-            .alpha(if (isRead) 0.6f else 1f)
+            .drawBehind {
+                // if some alpha is applied to the card, the swipe to dismiss background appears behind it
+                // so we draw a rect with the current screen background color behind the card but in front of the dismiss background
+                drawRoundRect(
+                    color = containerColor,
+                    cornerRadius = CornerRadius(12.dp.toPx())
+                )
+            }
+            .alpha(if (isRead) readAlpha else 1f)
             .clickable { onClick() }
     ) {
         content()

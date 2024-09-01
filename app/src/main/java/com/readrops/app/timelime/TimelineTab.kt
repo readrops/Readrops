@@ -403,9 +403,11 @@ object TimelineTab : Tab {
                                                         context
                                                     )
                                                 },
+                                                onSetReadState = {
+                                                    screenModel.updateItemReadState(itemWithFeed.item)
+                                                },
                                                 size = state.itemSize
                                             )
-
                                         }
                                     }
                                 }
