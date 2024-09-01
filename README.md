@@ -1,4 +1,4 @@
-<p align="center"><a href="https://github.com/readrops/Readrops/releases/tag/v2.0-beta01">Readrops 2.0 first beta is out!</a>
+<p align="center"><a href="https://github.com/readrops/Readrops/releases/tag/v2.0-beta02">Readrops 2.0 second beta is out!</a>
 </p>
 
 <p align="center">
