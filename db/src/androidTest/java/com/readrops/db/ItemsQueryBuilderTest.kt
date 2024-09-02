@@ -4,11 +4,11 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.readrops.db.filters.ListSortType
+import com.readrops.db.filters.OrderType
 import com.readrops.db.filters.MainFilter
 import com.readrops.db.filters.SubFilter
 import com.readrops.db.queries.ItemsQueryBuilder
-import com.readrops.db.queries.QueryFilters
+import com.readrops.db.filters.QueryFilters
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import org.junit.After
@@ -52,7 +52,7 @@ class ItemsQueryBuilderTest {
     @Test
     fun feedFilterCaseTest() {
         val queryFilters = QueryFilters(accountId = 1, subFilter = SubFilter.FEED,
-                filterFeedId = 15)
+                feedId = 15)
 
         val query = ItemsQueryBuilder.buildItemsQuery(queryFilters)
         database.query(query)
@@ -72,17 +72,17 @@ class ItemsQueryBuilderTest {
 
     @Test
     fun folderFilterCaseTest() {
-        val queryFilters = QueryFilters(accountId = 1, subFilter = SubFilter.FOLDER, filterFolderId = 1)
+        val queryFilters = QueryFilters(accountId = 1, subFilter = SubFilter.FOLDER, folderId = 1)
 
         val query = ItemsQueryBuilder.buildItemsQuery(queryFilters)
         database.query(query)
 
-        assertTrue(query.sql.contains("folder_id = ${queryFilters.filterFolderId}"))
+        assertTrue(query.sql.contains("folder_id = ${queryFilters.folderId}"))
     }
 
     @Test
     fun oldestSortCaseTest() {
-        val queryFilters = QueryFilters(accountId = 1, sortType = ListSortType.OLDEST_TO_NEWEST,
+        val queryFilters = QueryFilters(accountId = 1, orderType = OrderType.ASC,
                 showReadItems = false)
 
         val query = ItemsQueryBuilder.buildItemsQuery(queryFilters)

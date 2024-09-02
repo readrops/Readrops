@@ -18,8 +18,8 @@ import com.readrops.app.R
 import com.readrops.app.util.theme.LargeSpacer
 import com.readrops.app.util.theme.ShortSpacer
 import com.readrops.app.util.theme.spacing
-import com.readrops.db.filters.ListSortType
-import com.readrops.db.queries.QueryFilters
+import com.readrops.db.filters.OrderType
+import com.readrops.db.filters.QueryFilters
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,7 +68,7 @@ fun FilterBottomSheet(
                     .clickable(onClick = onSetSortTypeState)
             ) {
                 Checkbox(
-                    checked = filters.sortType == ListSortType.OLDEST_TO_NEWEST,
+                    checked = filters.orderType == OrderType.ASC,
                     onCheckedChange = { onSetSortTypeState() }
                 )
 

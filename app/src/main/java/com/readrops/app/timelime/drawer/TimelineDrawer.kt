@@ -78,10 +78,10 @@ fun TimelineDrawer(
                         badge = {
                             Text(folderEntry.value.sumOf { it.unreadCount }.toString())
                         },
-                        selected = state.filters.filterFolderId == folder.id,
+                        selected = state.filters.folderId == folder.id,
                         onClick = { onFolderClick(folder) },
                         feeds = folderEntry.value,
-                        selectedFeed = state.filters.filterFeedId,
+                        selectedFeed = state.filters.feedId,
                         onFeedClick = { onFeedClick(it) },
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
@@ -104,7 +104,7 @@ fun TimelineDrawer(
                                 )
                             },
                             badge = { Text(feed.unreadCount.toString()) },
-                            selected = feed.id == state.filters.filterFeedId,
+                            selected = feed.id == state.filters.feedId,
                             onClick = { onFeedClick(feed) },
                             modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                         )

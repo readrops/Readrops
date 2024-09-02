@@ -20,12 +20,12 @@ import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
-import com.readrops.db.filters.ListSortType
 import com.readrops.db.filters.MainFilter
+import com.readrops.db.filters.OrderType
+import com.readrops.db.filters.QueryFilters
 import com.readrops.db.filters.SubFilter
 import com.readrops.db.pojo.ItemWithFeed
 import com.readrops.db.queries.ItemsQueryBuilder
-import com.readrops.db.queries.QueryFilters
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -161,8 +161,8 @@ class TimelineScreenModel(
         screenModelScope.launch(dispatcher) {
             val filterPair = with(filters.value) {
                 when (subFilter) {
-                    SubFilter.FEED -> SyncWorker.FEED_ID_KEY to filterFeedId
-                    SubFilter.FOLDER -> SyncWorker.FOLDER_ID_KEY to filterFolderId
+                    SubFilter.FEED -> SyncWorker.FEED_ID_KEY to feedId
+                    SubFilter.FOLDER -> SyncWorker.FOLDER_ID_KEY to folderId
                     else -> null
                 }
             }
@@ -247,8 +247,8 @@ class TimelineScreenModel(
                     it.filters.copy(
                         mainFilter = selection,
                         subFilter = SubFilter.ALL,
-                        filterFeedId = 0,
-                        filterFolderId = 0
+                        feedId = 0,
+                        folderId = 0
                     )
                 },
                 isDrawerOpen = false
@@ -262,8 +262,8 @@ class TimelineScreenModel(
                 filters = updateFilters {
                     it.filters.copy(
                         subFilter = SubFilter.FOLDER,
-                        filterFolderId = folder.id,
-                        filterFeedId = 0
+                        folderId = folder.id,
+                        feedId = 0
                     )
                 },
                 filterFolderName = folder.name!!,
@@ -278,8 +278,8 @@ class TimelineScreenModel(
                 filters = updateFilters {
                     it.filters.copy(
                         subFilter = SubFilter.FEED,
-                        filterFeedId = feed.id,
-                        filterFolderId = 0
+                        feedId = feed.id,
+                        folderId = 0
                     )
                 },
                 filterFeedName = feed.name!!,
@@ -336,11 +336,11 @@ class TimelineScreenModel(
             when (_timelineState.value.filters.subFilter) {
                 SubFilter.FEED ->
                     repository?.setAllItemsReadByFeed(
-                        feedId = _timelineState.value.filters.filterFeedId
+                        feedId = _timelineState.value.filters.feedId
                     )
 
                 SubFilter.FOLDER -> repository?.setAllItemsReadByFolder(
-                    folderId = _timelineState.value.filters.filterFolderId
+                    folderId = _timelineState.value.filters.folderId
                 )
 
                 else -> when (_timelineState.value.filters.mainFilter) {
@@ -374,12 +374,12 @@ class TimelineScreenModel(
         }
     }
 
-    fun setSortTypeState(sortType: ListSortType) {
+    fun setOrderTypeState(orderType: OrderType) {
         _timelineState.update {
             it.copy(
                 filters = updateFilters {
                     it.filters.copy(
-                        sortType = sortType
+                        orderType = orderType
                     )
                 }
             )

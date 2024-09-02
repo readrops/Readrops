@@ -67,8 +67,8 @@ import com.readrops.app.util.components.Placeholder
 import com.readrops.app.util.components.RefreshScreen
 import com.readrops.app.util.components.dialog.TwoChoicesDialog
 import com.readrops.app.util.theme.spacing
-import com.readrops.db.filters.ListSortType
 import com.readrops.db.filters.MainFilter
+import com.readrops.db.filters.OrderType
 import com.readrops.db.filters.SubFilter
 import com.readrops.db.pojo.ItemWithFeed
 import kotlinx.coroutines.flow.filter
@@ -212,11 +212,12 @@ object TimelineTab : Tab {
                         screenModel.setShowReadItemsState(!state.filters.showReadItems)
                     },
                     onSetSortTypeState = {
-                        screenModel.setSortTypeState(
-                            if (state.filters.sortType == ListSortType.NEWEST_TO_OLDEST)
-                                ListSortType.OLDEST_TO_NEWEST
-                            else
-                                ListSortType.NEWEST_TO_OLDEST
+                        screenModel.setOrderTypeState(
+                            if (state.filters.orderType == OrderType.DESC) {
+                                OrderType.ASC
+                            } else {
+                                OrderType.DESC
+                            }
                         )
                     },
                     onDismiss = { screenModel.closeDialog() }
