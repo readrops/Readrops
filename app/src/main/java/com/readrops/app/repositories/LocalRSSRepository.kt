@@ -103,6 +103,8 @@ class LocalRSSRepository(
             }
         }
 
+        // sort by date
+        newItems.sort()
         database.itemDao().insert(newItems)
             .zip(newItems)
             .forEach { (id, item) -> item.id = id.toInt() }

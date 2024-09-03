@@ -4,11 +4,12 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.readrops.db.filters.OrderType
 import com.readrops.db.filters.MainFilter
+import com.readrops.db.filters.OrderField
+import com.readrops.db.filters.OrderType
+import com.readrops.db.filters.QueryFilters
 import com.readrops.db.filters.SubFilter
 import com.readrops.db.queries.ItemsQueryBuilder
-import com.readrops.db.filters.QueryFilters
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import org.junit.After
@@ -42,7 +43,7 @@ class ItemsQueryBuilderTest {
 
         with(query.sql) {
             assertTrue(contains("Feed.account_id = 1"))
-            assertTrue(contains("pub_date DESC"))
+            assertTrue(contains("Item.id DESC"))
 
             assertFalse(contains("read = 0 And"))
         }
@@ -51,8 +52,11 @@ class ItemsQueryBuilderTest {
 
     @Test
     fun feedFilterCaseTest() {
-        val queryFilters = QueryFilters(accountId = 1, subFilter = SubFilter.FEED,
-                feedId = 15)
+        val queryFilters = QueryFilters(
+            accountId = 1,
+            subFilter = SubFilter.FEED,
+            feedId = 15
+        )
 
         val query = ItemsQueryBuilder.buildItemsQuery(queryFilters)
         database.query(query)
@@ -82,8 +86,12 @@ class ItemsQueryBuilderTest {
 
     @Test
     fun oldestSortCaseTest() {
-        val queryFilters = QueryFilters(accountId = 1, orderType = OrderType.ASC,
-                showReadItems = false)
+        val queryFilters = QueryFilters(
+            accountId = 1,
+            orderType = OrderType.ASC,
+            orderField = OrderField.DATE,
+            showReadItems = false
+        )
 
         val query = ItemsQueryBuilder.buildItemsQuery(queryFilters)
         database.query(query)
@@ -92,12 +100,15 @@ class ItemsQueryBuilderTest {
             assertTrue(contains("read = 0"))
             assertTrue(contains("pub_date ASC"))
         }
-
     }
 
     @Test
     fun separateStateTest() {
-        val queryFilters = QueryFilters(accountId = 1, showReadItems = false, mainFilter = MainFilter.STARS)
+        val queryFilters = QueryFilters(
+            accountId = 1,
+            showReadItems = false,
+            mainFilter = MainFilter.STARS
+        )
 
         val query = ItemsQueryBuilder.buildItemsQuery(queryFilters, true)
         database.query(query)

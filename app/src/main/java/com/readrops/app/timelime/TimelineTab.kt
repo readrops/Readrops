@@ -68,6 +68,7 @@ import com.readrops.app.util.components.RefreshScreen
 import com.readrops.app.util.components.dialog.TwoChoicesDialog
 import com.readrops.app.util.theme.spacing
 import com.readrops.db.filters.MainFilter
+import com.readrops.db.filters.OrderField
 import com.readrops.db.filters.OrderType
 import com.readrops.db.filters.SubFilter
 import com.readrops.db.pojo.ItemWithFeed
@@ -208,10 +209,19 @@ object TimelineTab : Tab {
             is DialogState.FilterSheet -> {
                 FilterBottomSheet(
                     filters = state.filters,
-                    onSetShowReadItemsState = {
+                    onSetShowReadItems = {
                         screenModel.setShowReadItemsState(!state.filters.showReadItems)
                     },
-                    onSetSortTypeState = {
+                    onSetOrderField = {
+                        screenModel.setOrderFieldState(
+                            if (state.filters.orderField == OrderField.ID) {
+                                OrderField.DATE
+                            } else {
+                                OrderField.ID
+                            }
+                        )
+                    },
+                    onSetOrderType = {
                         screenModel.setOrderTypeState(
                             if (state.filters.orderType == OrderType.DESC) {
                                 OrderType.ASC

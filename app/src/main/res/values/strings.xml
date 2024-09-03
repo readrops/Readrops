@@ -180,4 +180,11 @@
     <string name="downloaded_file">Downloaded file!</string>
     <string name="provide_full_url">Please provide the full API URL</string>
     <string name="provide_root_url">Please provide the service root URL</string>
+    <string name="order_field_tooltip">RSS feeds always contain old articles it is unlikely you will see in your timeline if you order it by date. Ordering by article identifier lets you show all new inserted articles whatever date they might have.</string>
+    <string name="date">Date</string>
+    <string name="identifier">Identifier</string>
+    <string name="ascending">Ascending</string>
+    <string name="descending">Descending</string>
+    <string name="order_by">Order by</string>
+    <string name="with_direction">With direction</string>
 </resources>

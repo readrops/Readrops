@@ -170,4 +170,11 @@
     <string name="downloaded_file">Fichier téléchargé !</string>
     <string name="provide_full_url">Merci de fournir l\'URL entière de l\'API</string>
     <string name="provide_root_url">Merci de fournir l\'URL racine du service</string>
+    <string name="order_field_tooltip">Les flux RSS contiennent toujours d\'anciens articles qu\'il est peu probable de voir apparaître dans votre timeline si vous la classez par date. Le classement par identifiant d\'article vous permet d\'afficher tous les nouveaux articles insérés, quelle que soit leur date.</string>
+    <string name="date">Date</string>
+    <string name="identifier">Identifiant</string>
+    <string name="ascending">Ascendant</string>
+    <string name="descending">Descendant</string>
+    <string name="order_by">Ordonner par</string>
+    <string name="with_direction">Avec comme direction</string>
 </resources>

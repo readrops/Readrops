@@ -12,6 +12,11 @@ enum class SubFilter {
     ALL
 }
 
+enum class OrderField {
+    DATE,
+    ID
+}
+
 enum class OrderType {
     DESC,
     ASC
@@ -24,5 +29,6 @@ data class QueryFilters(
     val accountId: Int = 0,
     val mainFilter: MainFilter = MainFilter.ALL,
     val subFilter: SubFilter = SubFilter.ALL,
+    val orderField: OrderField = OrderField.ID,
     val orderType: OrderType = OrderType.DESC,
 )

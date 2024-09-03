@@ -3,6 +3,7 @@ package com.readrops.db.queries
 import androidx.sqlite.db.SupportSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQueryBuilder
 import com.readrops.db.filters.MainFilter
+import com.readrops.db.filters.OrderField
 import com.readrops.db.filters.OrderType
 import com.readrops.db.filters.QueryFilters
 import com.readrops.db.filters.SubFilter
@@ -40,10 +41,6 @@ object ItemsQueryBuilder {
     private const val SEPARATE_STATE_JOIN =
         "LEFT JOIN ItemState On Item.remote_id = ItemState.remote_id"
 
-    private const val ORDER_BY_DESC = "pub_date DESC"
-
-    private const val ORDER_BY_ASC = "pub_date ASC"
-
     fun buildItemsQuery(queryFilters: QueryFilters, separateState: Boolean): SupportSQLiteQuery =
         buildQuery(queryFilters, separateState)
 
@@ -55,13 +52,14 @@ object ItemsQueryBuilder {
             if (accountId == 0)
                 throw IllegalArgumentException("AccountId must be greater than 0")
 
-            if (queryFilters.subFilter == SubFilter.FEED && feedId == 0)
+            if (subFilter == SubFilter.FEED && feedId == 0)
                 throw IllegalArgumentException("FeedId must be greater than 0 if current filter is FEED_FILTER")
 
-            val columns = if (separateState)
+            val columns = if (separateState) {
                 COLUMNS.plus(SEPARATE_STATE_COLUMNS)
-            else
+            } else {
                 COLUMNS.plus(OTHER_COLUMNS)
+            }
 
             val selectAllJoin =
                 if (separateState) SELECT_ALL_JOIN + SEPARATE_STATE_JOIN else SELECT_ALL_JOIN
@@ -69,7 +67,7 @@ object ItemsQueryBuilder {
             SupportSQLiteQueryBuilder.builder(selectAllJoin).run {
                 columns(columns)
                 selection(buildWhereClause(this@with, separateState), null)
-                orderBy(if (orderType == OrderType.DESC) this@ItemsQueryBuilder.ORDER_BY_DESC else this@ItemsQueryBuilder.ORDER_BY_ASC)
+                orderBy(buildOrderByClause(orderField, orderType))
 
                 create()
             }
@@ -108,5 +106,18 @@ object ItemsQueryBuilder {
             toString()
         }
 
+    private fun buildOrderByClause(orderField: OrderField, orderType: OrderType): String {
+        return buildString {
+            when (orderField) {
+                OrderField.ID -> append("Item.id ")
+                else -> append("pub_date ")
+            }
+
+            when (orderType) {
+                OrderType.DESC -> append("DESC")
+                else -> append("ASC")
+            }
+        }
+    }
 }
 

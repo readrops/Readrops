@@ -21,6 +21,7 @@ import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
 import com.readrops.db.filters.MainFilter
+import com.readrops.db.filters.OrderField
 import com.readrops.db.filters.OrderType
 import com.readrops.db.filters.QueryFilters
 import com.readrops.db.filters.SubFilter
@@ -368,6 +369,18 @@ class TimelineScreenModel(
                 filters = updateFilters {
                     it.filters.copy(
                         showReadItems = showReadItems
+                    )
+                }
+            )
+        }
+    }
+
+    fun setOrderFieldState(orderField: OrderField) {
+        _timelineState.update {
+            it.copy(
+                filters = updateFilters {
+                    it.filters.copy(
+                        orderField = orderField
                     )
                 }
             )
