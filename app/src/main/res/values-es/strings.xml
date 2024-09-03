@@ -168,4 +168,11 @@
     <string name="rename_account">Cambiar el nombre de la cuenta</string>
     <string name="name">Nombre</string>
     <string name="hide_feeds_subtitle">Los feeds sin artículos nuevos desaparecerán del menú</string>
+    <string name="date">Fecha</string>
+    <string name="identifier">Identificador</string>
+    <string name="ascending">Ascendente</string>
+    <string name="order_field_tooltip">Los feeds RSS siempre contienen artículos antiguos que es poco probable que veas en tu cronología si los ordenas por fecha. Ordenar por identificador de artículo te permite mostrar todos los artículos nuevos insertados, independientemente de la fecha en que los haya.</string>
+    <string name="descending">Descendente</string>
+    <string name="order_by">Ordenar por</string>
+    <string name="with_direction">Con direccion</string>
 </resources>
