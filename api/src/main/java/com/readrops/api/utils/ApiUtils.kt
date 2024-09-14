@@ -14,7 +14,7 @@ object ApiUtils {
     const val LAST_MODIFIED_HEADER = "Last-Modified"
     const val IF_MODIFIED_HEADER = "If-Modified-Since"
 
-    val OPML_MIMETYPES = listOf("application/xml", "text/xml", "text/x-opml")
+    val OPML_MIMETYPES = listOf("application/xml", "text/xml", "text/x-opml", "application/octet-stream")
 
     private const val RSS_CONTENT_TYPE_REGEX = "([^;]+)"
 
