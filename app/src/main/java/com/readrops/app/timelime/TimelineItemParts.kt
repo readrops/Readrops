@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
@@ -31,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -321,7 +320,10 @@ fun TimelineItemHeader(
                         onClick = onFavorite
                     ) {
                         Icon(
-                            imageVector = if (isStarred) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                            painter = painterResource(
+                                if (isStarred) R.drawable.ic_star
+                                else R.drawable.ic_star_outline
+                            ),
                             contentDescription = null,
                         )
                     }
