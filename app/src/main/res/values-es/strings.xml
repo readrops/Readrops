@@ -57,7 +57,7 @@
     <string name="favorites">Favoritos</string>
     <string name="validate">Validar</string>
     <string name="unread">%1$d sin leer</string>
-    <string name="error_occured">Ocurrió un error</string>
+    <string name="error_occured">Se produjo un error</string>
     <string name="folder_doesnt_exist">La carpeta no existe en el servidor</string>
     <string name="new_account">Nueva cuenta</string>
     <string name="share_article">Compartir Artículo</string>
@@ -74,14 +74,14 @@
     <string name="theme">Tema</string>
     <string name="hour_1">1 hora</string>
     <string name="hour_6">6 horas</string>
-    <string name="enable_auto_synchro_text">Para que se muestren las notificaciones es necesario que la sincronización automática esté activada.
-\n¿Deseas abrir los ajustes\?</string>
+    <string name="enable_auto_synchro_text">Para que se muestren, las notificaciones necesitan que la sincronización en segundo plano esté activada.
+\n¿Deseas abrir los ajustes?</string>
     <string name="navigator_view">Vista de navegador</string>
     <string name="account_synchro">Sincronización de cuentas</string>
     <string name="auto_synchro_disabled">La sincronización automática está desactivada</string>
     <string name="feed_url">URL de feed</string>
     <string name="add_feed_unknownhost_error">Host desconocido</string>
-    <string name="delete_feed">¿Borrar feed\?</string>
+    <string name="delete_feed">¿Borrar el feed?</string>
     <string name="feed_name">Nombre del feed</string>
     <string name="feed_insertion_network_failed">Error de red al acceder al feed %1$s</string>
     <string name="edit_feed">Editar feed</string>
@@ -126,7 +126,7 @@
     <string name="open_source_libraries">Bibliotecas de código abierto</string>
     <string name="other_accounts">Otras cuentas</string>
     <string name="show_notifications_background_sync">Mostrar notificaciones después de la sincronización en segundo plano</string>
-    <string name="background_sync_new_articles">Reciba notificaciones sobre nuevos artículos después de la sincronización en segundo plano</string>
+    <string name="background_sync_new_articles">Recibir notificaciones de nuevos artículos tras la sincronización en segundo plano</string>
     <string name="no_article">Sin artículos</string>
     <string name="no_rss_feed_found">No se encontró ninguna fuente RSS</string>
     <string name="not_valid_rss_feed">La URL proporcionada no es una fuente RSS válida</string>
@@ -168,4 +168,11 @@
     <string name="rename_account">Cambiar el nombre de la cuenta</string>
     <string name="name">Nombre</string>
     <string name="hide_feeds_subtitle">Los feeds sin artículos nuevos desaparecerán del menú</string>
+    <string name="date">Fecha</string>
+    <string name="identifier">Identificador</string>
+    <string name="ascending">Ascendente</string>
+    <string name="order_field_tooltip">Los feeds RSS siempre contienen artículos antiguos que es poco probable que veas en tu cronología si los ordenas por fecha. Ordenar por identificador de artículo te permite mostrar todos los artículos nuevos insertados, independientemente de la fecha en que los haya.</string>
+    <string name="descending">Descendente</string>
+    <string name="order_by">Ordenar por</string>
+    <string name="with_direction">Con direccion</string>
 </resources>

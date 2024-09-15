@@ -6,7 +6,7 @@
     <string name="back">Zurück</string>
     <string name="open">Öffnen</string>
     <string name="enable_auto_synchro_text">Damit die Benachrichtigungen angezeigt werden, muss die automatische Synchronisierung aktiviert sein.
-\nWollen Sie die Einstellungen öffnen\?</string>
+\nWollen Sie die Einstellungen öffnen?</string>
     <string name="auto_synchro_disabled">Automatische Synchronisierung ist deaktiviert</string>
     <string name="notifications">Benachrichtigungen</string>
     <string name="new_items">%1$s neue Artikel</string>
@@ -70,7 +70,7 @@
     <string name="feed_insertion_parse_failed">Fehler beim Analysieren des Feeds %1$s</string>
     <string name="feed_insertion_network_failed">Netzwerkfehler beim Zugriff auf den Feed %1$s</string>
     <string name="feed_insertion_successfull">Feed %1$s erfolgreich hinzugefügt</string>
-    <string name="delete_feed">Feed löschen\?</string>
+    <string name="delete_feed">Feed löschen?</string>
     <string name="no_folder">Keine Ordner</string>
     <string name="cancel">Abbrechen</string>
     <string name="edit_feed">Feed bearbeiten</string>

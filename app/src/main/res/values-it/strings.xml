@@ -7,7 +7,7 @@
     <string name="back">Indietro</string>
     <string name="open">Apri</string>
     <string name="enable_auto_synchro_text">Per essere visualizzate, le notifiche hanno bisogno che la sincronizzazione automatica sia attivata.
-\nVuoi aprire le impostazioni\?</string>
+\nVuoi aprire le impostazioni?</string>
     <string name="auto_synchro_disabled">La sincronizzazione automatica è disabilitata</string>
     <string name="notifications">Notifiche</string>
     <string name="new_items">%1$s nuovi articoli</string>
@@ -70,7 +70,7 @@
     <string name="feed_insertion_parse_failed">Errore durante l\'analisi del flusso %1$s</string>
     <string name="feed_insertion_network_failed">Errore di rete durante l\'accesso al flusso %1$s</string>
     <string name="feed_insertion_successfull">Il flusso %1$s è stato aggiunto con successo</string>
-    <string name="delete_feed">Eliminare il flusso\?</string>
+    <string name="delete_feed">Eliminare il flusso?</string>
     <string name="cancel">Annulla</string>
     <string name="no_folder">Nessuna cartella</string>
     <string name="edit_feed">Modifica il flusso</string>
