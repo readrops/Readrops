@@ -25,6 +25,7 @@ import cafe.adriel.voyager.transitions.SlideTransition
 import com.readrops.app.account.selection.AccountSelectionScreen
 import com.readrops.app.account.selection.AccountSelectionScreenModel
 import com.readrops.app.home.HomeScreen
+import com.readrops.app.repositories.BaseRepository
 import com.readrops.app.sync.SyncWorker
 import com.readrops.app.timelime.TimelineTab
 import com.readrops.app.util.Migrations
@@ -40,6 +41,7 @@ import org.koin.androidx.compose.KoinAndroidContext
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
+import org.koin.core.parameter.parametersOf
 
 class MainActivity : ComponentActivity(), KoinComponent {
 
@@ -122,13 +124,21 @@ class MainActivity : ComponentActivity(), KoinComponent {
         when {
             intent.hasExtra(SyncWorker.ACCOUNT_ID_KEY) -> {
                 val accountId = intent.getIntExtra(SyncWorker.ACCOUNT_ID_KEY, -1)
-                get<Database>().accountDao()
-                    .updateCurrentAccount(accountId)
+                val database = get<Database>().also {
+                    it.accountDao()
+                        .updateCurrentAccount(accountId)
+                }
 
                 HomeScreen.openTab(TimelineTab)
 
                 if (intent.hasExtra(SyncWorker.ITEM_ID_KEY)) {
                     val itemId = intent.getIntExtra(SyncWorker.ITEM_ID_KEY, -1)
+                    val account = database.accountDao().select(accountId)
+                    val item = database.itemDao().select(itemId)
+                        .apply { isRead = true }
+
+                    get<BaseRepository>(parameters = { parametersOf(account) })
+                        .setItemReadState(item)
                     HomeScreen.openItemScreen(itemId)
                 }
             }

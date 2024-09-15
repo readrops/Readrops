@@ -16,6 +16,9 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 abstract class ItemDao : BaseDao<Item> {
 
+    @Query("Select * From Item Where id = :itemId")
+    abstract fun select(itemId: Int): Item
+
     @RawQuery(observedEntities = [Item::class, Feed::class, Folder::class, ItemState::class])
     abstract fun selectAll(query: SupportSQLiteQuery): PagingSource<Int, ItemWithFeed>
 
