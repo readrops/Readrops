@@ -1,0 +1,6 @@
+** New 2.0 version **
+
+* New design
+* Fever API implementation
+
+See changelog for full list.

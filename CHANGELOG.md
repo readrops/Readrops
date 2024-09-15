@@ -1,3 +1,11 @@
+# v2.0
+
+- Restore swipe to mark as read (#188)
+- Restore Ordering by article id in Timeline tab
+- Improve OPML file picker filtering (#195)
+- Translation updates
+- See previous beta versions to get full changelog since v1.3
+
 # v2.0-beta02
 
 - Fix migration issues from v1.3 and older (especially for F-Droid builds)
@@ -47,6 +55,7 @@
 - Migrate to Nextcloud News API 1.3 
 - 🆕 Follow system theme option (default)
 - 🆕 Option to disable battery optimization for background synchronization
+- Add support for new Android versions until Android 14 (API 34)
 
 ## Technical
 
