@@ -25,6 +25,7 @@ A clear and concise description of what you expected to happen.
  - App version: [e.g. 2.0]
  - Android version: [e.g. Android 13, 14]
  - Device type: [e.g. One Plus 12, Samsung Galaxy S23]
+ - Store: [e.g F-Droid, Play Store, standalone apk]
  - [ ] Stacktrace collected from crash screen
 
 **Additional context**
