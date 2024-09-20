@@ -29,7 +29,7 @@ jobs:
         uses: ReactiveCircus/android-emulator-runner@v2.30.1
         with:
           api-level: 29
-          script: ./gradlew clean build connectedCheck
+          script: ./gradlew clean build connectedCheck jacocoFullReport
       - uses: codecov/codecov-action@v2.1.0
         with:
           files: ./build/reports/jacoco/jacocoFullReport/jacocoFullReport.xml
