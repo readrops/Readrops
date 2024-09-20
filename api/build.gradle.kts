@@ -7,6 +7,10 @@ android {
     namespace = "com.readrops.api"
 
     buildTypes {
+        debug {
+            enableUnitTestCoverage = true
+        }
+
         create("beta") {
             initWith(getByName("release"))
 

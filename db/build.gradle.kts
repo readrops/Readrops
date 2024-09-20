@@ -8,6 +8,11 @@ android {
     namespace = "com.readrops.db"
 
     buildTypes {
+        debug {
+            enableUnitTestCoverage = true
+            enableAndroidTestCoverage = true
+        }
+
         create("beta") {
             initWith(getByName("release"))
 
