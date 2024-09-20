@@ -5,6 +5,7 @@ import android.util.Patterns
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.readrops.app.repositories.BaseRepository
+import com.readrops.app.util.Utils
 import com.readrops.app.util.components.TextFieldError
 import com.readrops.db.Database
 import com.readrops.db.entities.account.Account
@@ -56,11 +57,7 @@ class AccountCredentialsScreenModel(
             mutableState.update { it.copy(isLoginOnGoing = true) }
 
             with(state.value) {
-                val normalizedUrl = if (!url.contains("https://") && !url.contains("http://")) {
-                    "https://$url"
-                } else {
-                    url
-                }
+                val normalizedUrl = Utils.normalizeUrl(url)
 
                 val newAccount = account.copy(
                     url = normalizedUrl,

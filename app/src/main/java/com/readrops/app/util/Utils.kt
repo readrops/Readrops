@@ -22,4 +22,18 @@ object Utils {
             Color.alpha(color) / 255.0
         )
     }
+
+    fun normalizeUrl(url: String): String {
+        return buildString {
+            if (!url.contains("https://") && !url.contains("http://")) {
+                append("https://$url")
+            } else {
+                append(url)
+            }
+
+            if (!url.endsWith("/")) {
+                append("/")
+            }
+        }
+    }
 }
