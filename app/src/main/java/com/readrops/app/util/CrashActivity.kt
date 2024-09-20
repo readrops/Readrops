@@ -60,7 +60,11 @@ class CrashActivity : ComponentActivity() {
         val sw = StringWriter()
         val pw = PrintWriter(sw)
         try {
-            throwable?.printStackTrace(pw)
+            if (throwable?.cause != null) {
+                throwable.cause?.printStackTrace(pw)
+            } else {
+                throwable?.printStackTrace(pw)
+            }
         } catch (e: Exception) {
             Log.e("CrashActivity", "couldn't get full exception stacktrace")
         }
