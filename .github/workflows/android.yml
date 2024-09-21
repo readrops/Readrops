@@ -30,8 +30,9 @@ jobs:
         with:
           api-level: 29
           script: ./gradlew clean build connectedCheck jacocoFullReport
-      - uses: codecov/codecov-action@v2.1.0
+      - uses: codecov/codecov-action@v4
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           files: ./build/reports/jacoco/jacocoFullReport/jacocoFullReport.xml
           fail_ci_if_error: true
           verbose: true
