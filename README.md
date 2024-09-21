@@ -5,7 +5,7 @@
 <h1 align="center"><b>Readrops</b></h1>
 
 <p align="center">
-<a href="https://github.com/readrops/Readrops/actions"><img src="https://github.com/readrops/Readrops/workflows/Android%20CI/badge.svg?branch=develop"></a>
+<a href="https://github.com/readrops/Readrops/actions"><img src="https://github.com/readrops/Readrops/actions/workflows/android.yml/badge.svg?branch=develop"></a>
 <a href="https://codecov.io/gh/readrops/Readrops"><img src="https://codecov.io/gh/readrops/Readrops/branch/develop/graph/badge.svg?token=229PNPQPMM"></a>
 <a href="https://hosted.weblate.org/engage/readrops/"><img src="https://hosted.weblate.org/widgets/readrops/-/strings/svg-badge.svg"/></a>
 
