@@ -93,6 +93,7 @@ object TimelineTab : Tab {
 
         val screenModel = getScreenModel<TimelineScreenModel>()
         val state by screenModel.timelineState.collectAsStateWithLifecycle()
+        val preferences = state.preferences
         val items = state.itemState.collectAsLazyPagingItems()
 
         val lazyListState = rememberLazyListState()
@@ -105,9 +106,9 @@ object TimelineTab : Tab {
             screenModel.disableDisplayNotificationsPermission()
         }
 
-        LaunchedEffect(state.displayNotificationsPermission) {
+        LaunchedEffect(preferences.displayNotificationsPermission) {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU
-                && state.displayNotificationsPermission
+                && preferences.displayNotificationsPermission
             ) {
                 launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
@@ -372,21 +373,21 @@ object TimelineTab : Tab {
                                 MarkItemsRead(
                                     lazyListState = lazyListState,
                                     items = items,
-                                    markReadOnScroll = state.markReadOnScroll,
+                                    markReadOnScroll = preferences.markReadOnScroll,
                                     screenModel = screenModel
                                 )
 
                                 LazyColumn(
                                     state = lazyListState,
                                     contentPadding = PaddingValues(
-                                        vertical = if (state.itemSize == TimelineItemSize.COMPACT) {
+                                        vertical = if (preferences.itemSize == TimelineItemSize.COMPACT) {
                                             0.dp
                                         } else {
                                             MaterialTheme.spacing.shortSpacing
                                         }
                                     ),
                                     verticalArrangement = Arrangement.spacedBy(
-                                        if (state.itemSize == TimelineItemSize.COMPACT) {
+                                        if (preferences.itemSize == TimelineItemSize.COMPACT) {
                                             0.dp
                                         } else
                                             MaterialTheme.spacing.shortSpacing
@@ -417,7 +418,7 @@ object TimelineTab : Tab {
                                                 onSetReadState = {
                                                     screenModel.updateItemReadState(itemWithFeed.item)
                                                 },
-                                                size = state.itemSize
+                                                size = preferences.itemSize
                                             )
                                         }
                                     }

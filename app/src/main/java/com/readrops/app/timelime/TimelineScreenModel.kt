@@ -100,25 +100,47 @@ class TimelineScreenModel(
         }
 
         screenModelScope.launch(dispatcher) {
-            combine(
-                preferences.timelineItemSize.flow,
-                preferences.scrollRead.flow,
-                preferences.displayNotificationsPermission.flow
-            ) { a, b, c -> Triple(a, b, c) }
-                .collect { (itemSize, scrollRead, notificationPermission) ->
+            getTimelinePreferences()
+                .collect { preferences ->
                     _timelineState.update {
                         it.copy(
-                            itemSize = when (itemSize) {
-                                "compact" -> TimelineItemSize.COMPACT
-                                "regular" -> TimelineItemSize.REGULAR
-                                else -> TimelineItemSize.LARGE
-                            },
-                            markReadOnScroll = scrollRead,
-                            displayNotificationsPermission = notificationPermission
+                            preferences = preferences,
+                            filters = updateFilters {
+                                it.filters.copy(
+                                    showReadItems = preferences.showReadItems,
+                                    orderField = preferences.orderField,
+                                    orderType = preferences.orderType
+                                )
+                            }
                         )
                     }
                 }
         }
+    }
+
+    private fun getTimelinePreferences(): Flow<TimelinePreferences> {
+        return combine(
+            preferences.timelineItemSize.flow,
+            preferences.scrollRead.flow,
+            preferences.displayNotificationsPermission.flow,
+            preferences.showReadItems.flow,
+            preferences.orderField.flow,
+            preferences.orderType.flow,
+            transform = {
+                TimelinePreferences(
+                    itemSize = when (it[0]) {
+                        "compact" -> TimelineItemSize.COMPACT
+                        "regular" -> TimelineItemSize.REGULAR
+                        else -> TimelineItemSize.LARGE
+                    },
+                    markReadOnScroll = it[1] as Boolean,
+                    displayNotificationsPermission = it[2] as Boolean,
+                    showReadItems = it[3] as Boolean,
+                    orderField = OrderField.valueOf(it[4] as String),
+                    orderType = OrderType.valueOf(it[5] as String)
+                )
+            }
+        )
     }
 
     private fun buildPager(empty: Boolean = false) {
@@ -364,38 +386,36 @@ class TimelineScreenModel(
     }
 
     fun setShowReadItemsState(showReadItems: Boolean) {
-        _timelineState.update {
-            it.copy(
-                filters = updateFilters {
-                    it.filters.copy(
-                        showReadItems = showReadItems
-                    )
-                }
-            )
+        screenModelScope.launch {
+            preferences.showReadItems.write(showReadItems)
+
+            _timelineState.update {
+                it.copy(
+                    filters = it.filters.copy(showReadItems = showReadItems)
+                )
+            }
         }
     }
 
     fun setOrderFieldState(orderField: OrderField) {
-        _timelineState.update {
-            it.copy(
-                filters = updateFilters {
-                    it.filters.copy(
-                        orderField = orderField
-                    )
-                }
-            )
+        screenModelScope.launch {
+            preferences.orderField.write(orderField.name)
+
+            _timelineState.update {
+                it.copy(
+                    filters = it.filters.copy(orderField = orderField)
+                )
+            }
         }
     }
 
     fun setOrderTypeState(orderType: OrderType) {
-        _timelineState.update {
-            it.copy(
-                filters = updateFilters {
-                    it.filters.copy(
-                        orderType = orderType
-                    )
-                }
-            )
+        screenModelScope.launch {
+            preferences.orderType.write(orderType.name)
+
+            _timelineState.update {
+                it.copy(filters = it.filters.copy(orderType = orderType))
+            }
         }
     }
 
@@ -437,15 +457,23 @@ data class TimelineState(
     val dialog: DialogState? = null,
     val isAccountLocal: Boolean = false,
     val hideReadAllFAB: Boolean = false,
-    val itemSize: TimelineItemSize = TimelineItemSize.LARGE,
-    val markReadOnScroll: Boolean = false,
-    val displayNotificationsPermission: Boolean = false
+    val preferences: TimelinePreferences = TimelinePreferences()
 ) {
 
     val showSubtitle = filters.subFilter != SubFilter.ALL
 
     val displayRefreshScreen = isRefreshing && isAccountLocal
 }
+
+@Stable
+data class TimelinePreferences(
+    val itemSize: TimelineItemSize = TimelineItemSize.LARGE,
+    val markReadOnScroll: Boolean = false,
+    val displayNotificationsPermission: Boolean = false,
+    val showReadItems: Boolean = true,
+    val orderField: OrderField = OrderField.DATE,
+    val orderType: OrderType = OrderType.DESC
+)
 
 sealed interface DialogState {
     data object ConfirmDialog : DialogState

@@ -73,6 +73,24 @@ class Preferences(
         key = intPreferencesKey("last_version_code"),
         default = 0
     )
+
+    val showReadItems = Preference(
+        dataStore = dataStore,
+        key = booleanPreferencesKey("show_read_items"),
+        default = true
+    )
+
+    val orderField = Preference(
+        dataStore = dataStore,
+        key = stringPreferencesKey("order_field"),
+        default = "DATE" // or "ID", uppercase important, used with Enum.valueOf()
+    )
+
+    val orderType = Preference(
+        dataStore = dataStore,
+        key = stringPreferencesKey("order_type"),
+        default = "DESC" // or "ASC", uppercase important, used with Enum.valueOf()
+    )
 }
 
 
