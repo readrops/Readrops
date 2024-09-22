@@ -31,8 +31,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -40,7 +39,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -96,7 +94,6 @@ object TimelineTab : Tab {
         val items = state.itemState.collectAsLazyPagingItems()
 
         val lazyListState = rememberLazyListState()
-        val pullToRefreshState = rememberPullToRefreshState()
         val snackbarHostState = remember { SnackbarHostState() }
         val topAppBarState = rememberTopAppBarState()
         val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(topAppBarState)
@@ -110,22 +107,6 @@ object TimelineTab : Tab {
                 && state.displayNotificationsPermission
             ) {
                 launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
-            }
-        }
-
-        LaunchedEffect(state.isRefreshing) {
-            if (state.isRefreshing) {
-                pullToRefreshState.startRefresh()
-            } else {
-                pullToRefreshState.endRefresh()
-            }
-        }
-
-        // Material3 pull to refresh doesn't have a onRefresh callback,
-        // so we need to listen to the internal state change to trigger the refresh
-        LaunchedEffect(pullToRefreshState.isRefreshing) {
-            if (pullToRefreshState.isRefreshing && !state.isRefreshing) {
-                screenModel.refreshTimeline(context)
             }
         }
 
@@ -188,60 +169,6 @@ object TimelineTab : Tab {
                 snackbarHostState.showSnackbar(ErrorMessage.get(state.syncError!!, context))
                 screenModel.resetSyncError()
             }
-        }
-
-        when (val dialog = state.dialog) {
-            is DialogState.ConfirmDialog -> {
-                TwoChoicesDialog(
-                    title = stringResource(R.string.mark_all_articles_read),
-                    text = stringResource(R.string.mark_all_articles_read_question),
-                    icon = painterResource(id = R.drawable.ic_rss_feed_grey),
-                    confirmText = stringResource(id = R.string.validate),
-                    dismissText = stringResource(id = R.string.cancel),
-                    onDismiss = { screenModel.closeDialog() },
-                    onConfirm = {
-                        screenModel.closeDialog()
-                        screenModel.setAllItemsRead()
-                    }
-                )
-            }
-
-            is DialogState.FilterSheet -> {
-                FilterBottomSheet(
-                    filters = state.filters,
-                    onSetShowReadItems = {
-                        screenModel.setShowReadItemsState(!state.filters.showReadItems)
-                    },
-                    onSetOrderField = {
-                        screenModel.setOrderFieldState(
-                            if (state.filters.orderField == OrderField.ID) {
-                                OrderField.DATE
-                            } else {
-                                OrderField.ID
-                            }
-                        )
-                    },
-                    onSetOrderType = {
-                        screenModel.setOrderTypeState(
-                            if (state.filters.orderType == OrderType.DESC) {
-                                OrderType.ASC
-                            } else {
-                                OrderType.DESC
-                            }
-                        )
-                    },
-                    onDismiss = { screenModel.closeDialog() }
-                )
-            }
-
-            is DialogState.ErrorList -> {
-                ErrorListDialog(
-                    errorResult = dialog.errorResult,
-                    onDismiss = { screenModel.closeDialog(dialog) }
-                )
-            }
-
-            null -> {}
         }
 
         ModalNavigationDrawer(
@@ -346,7 +273,6 @@ object TimelineTab : Tab {
                     modifier = Modifier
                         .padding(paddingValues)
                         .fillMaxSize()
-                        .nestedScroll(pullToRefreshState.nestedScrollConnection)
                         .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
                 ) {
                     when {
@@ -368,85 +294,134 @@ object TimelineTab : Tab {
                         }
 
                         else -> {
-                            if (items.itemCount > 0) {
-                                MarkItemsRead(
-                                    lazyListState = lazyListState,
-                                    items = items,
-                                    markReadOnScroll = state.markReadOnScroll,
-                                    screenModel = screenModel
-                                )
-
-                                LazyColumn(
-                                    state = lazyListState,
-                                    contentPadding = PaddingValues(
-                                        vertical = if (state.itemSize == TimelineItemSize.COMPACT) {
-                                            0.dp
-                                        } else {
-                                            MaterialTheme.spacing.shortSpacing
-                                        }
-                                    ),
-                                    verticalArrangement = Arrangement.spacedBy(
-                                        if (state.itemSize == TimelineItemSize.COMPACT) {
-                                            0.dp
-                                        } else
-                                            MaterialTheme.spacing.shortSpacing
+                            PullToRefreshBox(
+                                isRefreshing = state.isRefreshing,
+                                onRefresh = { screenModel.refreshTimeline(context) },
+                            ) {
+                                if (items.itemCount > 0) {
+                                    MarkItemsRead(
+                                        lazyListState = lazyListState,
+                                        items = items,
+                                        markReadOnScroll = state.markReadOnScroll,
+                                        screenModel = screenModel
                                     )
-                                ) {
-                                    items(
-                                        count = items.itemCount,
-                                        key = items.itemKey { it.item.id },
-                                    ) { itemCount ->
-                                        val itemWithFeed = items[itemCount]
 
-                                        if (itemWithFeed != null) {
-                                            TimelineItem(
-                                                itemWithFeed = itemWithFeed,
-                                                onClick = {
-                                                    screenModel.setItemRead(itemWithFeed.item)
-                                                    navigator.push(ItemScreen(itemWithFeed.item.id))
-                                                },
-                                                onFavorite = {
-                                                    screenModel.updateStarState(itemWithFeed.item)
-                                                },
-                                                onShare = {
-                                                    screenModel.shareItem(
-                                                        itemWithFeed.item,
-                                                        context
-                                                    )
-                                                },
-                                                onSetReadState = {
-                                                    screenModel.updateItemReadState(itemWithFeed.item)
-                                                },
-                                                size = state.itemSize
-                                            )
+                                    LazyColumn(
+                                        state = lazyListState,
+                                        contentPadding = PaddingValues(
+                                            vertical = if (state.itemSize == TimelineItemSize.COMPACT) {
+                                                0.dp
+                                            } else {
+                                                MaterialTheme.spacing.shortSpacing
+                                            }
+                                        ),
+                                        verticalArrangement = Arrangement.spacedBy(
+                                            if (state.itemSize == TimelineItemSize.COMPACT) {
+                                                0.dp
+                                            } else
+                                                MaterialTheme.spacing.shortSpacing
+                                        )
+                                    ) {
+                                        items(
+                                            count = items.itemCount,
+                                            key = items.itemKey { it.item.id },
+                                        ) { itemCount ->
+                                            val itemWithFeed = items[itemCount]
+
+                                            if (itemWithFeed != null) {
+                                                TimelineItem(
+                                                    itemWithFeed = itemWithFeed,
+                                                    onClick = {
+                                                        screenModel.setItemRead(itemWithFeed.item)
+                                                        navigator.push(ItemScreen(itemWithFeed.item.id))
+                                                    },
+                                                    onFavorite = {
+                                                        screenModel.updateStarState(itemWithFeed.item)
+                                                    },
+                                                    onShare = {
+                                                        screenModel.shareItem(
+                                                            itemWithFeed.item,
+                                                            context
+                                                        )
+                                                    },
+                                                    onSetReadState = {
+                                                        screenModel.updateItemReadState(itemWithFeed.item)
+                                                    },
+                                                    size = state.itemSize
+                                                )
+                                            }
                                         }
                                     }
+                                } else {
+                                    // Empty lazyColumn to let the pull to refresh be usable
+                                    // when no items are displayed
+                                    LazyColumn(
+                                        modifier = Modifier.fillMaxSize()
+                                    ) {}
+
+                                    Placeholder(
+                                        text = stringResource(R.string.no_article),
+                                        painter = painterResource(R.drawable.ic_timeline),
+                                    )
                                 }
-
-                                PullToRefreshContainer(
-                                    state = pullToRefreshState,
-                                    modifier = Modifier.align(Alignment.TopCenter)
-                                )
-                            } else {
-                                // Empty lazyColumn to let the pull to refresh be usable
-                                // when the no item placeholder is displayed
-                                LazyColumn(
-                                    modifier = Modifier.fillMaxSize()
-                                ) {}
-
-                                PullToRefreshContainer(
-                                    state = pullToRefreshState,
-                                    modifier = Modifier.align(Alignment.TopCenter)
-                                )
-
-                                Placeholder(
-                                    text = stringResource(R.string.no_article),
-                                    painter = painterResource(R.drawable.ic_timeline),
-                                )
                             }
                         }
                     }
                 }
+            }
+
+            when (val dialog = state.dialog) {
+                is DialogState.ConfirmDialog -> {
+                    TwoChoicesDialog(
+                        title = stringResource(R.string.mark_all_articles_read),
+                        text = stringResource(R.string.mark_all_articles_read_question),
+                        icon = painterResource(id = R.drawable.ic_rss_feed_grey),
+                        confirmText = stringResource(id = R.string.validate),
+                        dismissText = stringResource(id = R.string.cancel),
+                        onDismiss = { screenModel.closeDialog() },
+                        onConfirm = {
+                            screenModel.closeDialog()
+                            screenModel.setAllItemsRead()
+                        }
+                    )
+                }
+
+                is DialogState.FilterSheet -> {
+                    FilterBottomSheet(
+                        filters = state.filters,
+                        onSetShowReadItems = {
+                            screenModel.setShowReadItemsState(!state.filters.showReadItems)
+                        },
+                        onSetOrderField = {
+                            screenModel.setOrderFieldState(
+                                if (state.filters.orderField == OrderField.ID) {
+                                    OrderField.DATE
+                                } else {
+                                    OrderField.ID
+                                }
+                            )
+                        },
+                        onSetOrderType = {
+                            screenModel.setOrderTypeState(
+                                if (state.filters.orderType == OrderType.DESC) {
+                                    OrderType.ASC
+                                } else {
+                                    OrderType.DESC
+                                }
+                            )
+                        },
+                        onDismiss = { screenModel.closeDialog() }
+                    )
+                }
+
+                is DialogState.ErrorList -> {
+                    ErrorListDialog(
+                        errorResult = dialog.errorResult,
+                        onDismiss = { screenModel.closeDialog(dialog) }
+                    )
+                }
+
+                null -> {}
             }
         }
     }
