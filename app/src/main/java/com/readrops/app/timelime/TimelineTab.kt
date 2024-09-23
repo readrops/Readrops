@@ -303,21 +303,21 @@ object TimelineTab : Tab {
                                     MarkItemsRead(
                                         lazyListState = lazyListState,
                                         items = items,
-                                        markReadOnScroll = state.markReadOnScroll,
+                                        markReadOnScroll = preferences.markReadOnScroll,
                                         screenModel = screenModel
                                     )
 
                                     LazyColumn(
                                         state = lazyListState,
                                         contentPadding = PaddingValues(
-                                            vertical = if (state.itemSize == TimelineItemSize.COMPACT) {
+                                            vertical = if (preferences.itemSize == TimelineItemSize.COMPACT) {
                                                 0.dp
                                             } else {
                                                 MaterialTheme.spacing.shortSpacing
                                             }
                                         ),
                                         verticalArrangement = Arrangement.spacedBy(
-                                            if (state.itemSize == TimelineItemSize.COMPACT) {
+                                            if (preferences.itemSize == TimelineItemSize.COMPACT) {
                                                 0.dp
                                             } else
                                                 MaterialTheme.spacing.shortSpacing
