@@ -43,7 +43,7 @@ class ItemsQueryBuilderTest {
 
         with(query.sql) {
             assertTrue(contains("Feed.account_id = 1"))
-            assertTrue(contains("Item.id DESC"))
+            assertTrue(contains("pub_date DESC"))
 
             assertFalse(contains("read = 0 And"))
         }

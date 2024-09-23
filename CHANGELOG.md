@@ -1,3 +1,10 @@
+# v2.0.1
+
+- Make Timeline tab filters persistent (#138)
+- Change Timeline tab order field default value (#202)
+- Fix crash when adding a Fever API account (#200)
+- Be less strict with feed and folder names (#206)
+
 # v2.0
 
 - Restore swipe to mark as read (#188)

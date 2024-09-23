@@ -113,7 +113,7 @@ fun DrawerFolderItem(
                 DrawerFeedItem(
                     label = {
                         Text(
-                            text = feed.name!!,
+                            text = feed.name.orEmpty(),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -121,7 +121,7 @@ fun DrawerFolderItem(
                     icon = {
                         FeedIcon(
                             iconUrl = feed.iconUrl,
-                            name = feed.name!!
+                            name = feed.name.orEmpty()
                         )
                     },
                     badge = { Text(feed.unreadCount.toString()) },

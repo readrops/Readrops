@@ -63,7 +63,7 @@ fun TimelineDrawer(
                     DrawerFolderItem(
                         label = {
                             Text(
-                                text = folder.name!!,
+                                text = folder.name.orEmpty(),
                                 fontWeight = FontWeight.Medium,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
@@ -92,7 +92,7 @@ fun TimelineDrawer(
                         DrawerFeedItem(
                             label = {
                                 Text(
-                                    text = feed.name!!,
+                                    text = feed.name.orEmpty(),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
                                 )
@@ -100,7 +100,7 @@ fun TimelineDrawer(
                             icon = {
                                 FeedIcon(
                                     iconUrl = feed.iconUrl,
-                                    name = feed.name!!
+                                    name = feed.name.orEmpty()
                                 )
                             },
                             badge = { Text(feed.unreadCount.toString()) },

@@ -64,14 +64,14 @@ fun FeedItem(
 
             FeedIcon(
                 iconUrl = feed.iconUrl,
-                name = feed.name!!,
+                name = feed.name.orEmpty(),
                 size = 16.dp
             )
 
             ShortSpacer()
 
             Text(
-                text = feed.name!!,
+                text = feed.name.orEmpty(),
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

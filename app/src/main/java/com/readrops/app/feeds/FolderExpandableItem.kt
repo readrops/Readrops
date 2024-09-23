@@ -84,7 +84,7 @@ fun FolderExpandableItem(
                     MediumSpacer()
 
                     Text(
-                        text = folder.name!!,
+                        text = folder.name.orEmpty(),
                         style = MaterialTheme.typography.bodyLarge,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,

@@ -91,6 +91,7 @@ object TimelineTab : Tab {
 
         val screenModel = getScreenModel<TimelineScreenModel>()
         val state by screenModel.timelineState.collectAsStateWithLifecycle()
+        val preferences = state.preferences
         val items = state.itemState.collectAsLazyPagingItems()
 
         val lazyListState = rememberLazyListState()
@@ -102,9 +103,9 @@ object TimelineTab : Tab {
             screenModel.disableDisplayNotificationsPermission()
         }
 
-        LaunchedEffect(state.displayNotificationsPermission) {
+        LaunchedEffect(preferences.displayNotificationsPermission) {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU
-                && state.displayNotificationsPermission
+                && preferences.displayNotificationsPermission
             ) {
                 launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
@@ -347,7 +348,7 @@ object TimelineTab : Tab {
                                                     onSetReadState = {
                                                         screenModel.updateItemReadState(itemWithFeed.item)
                                                     },
-                                                    size = state.itemSize
+                                                    size = preferences.itemSize
                                                 )
                                             }
                                         }

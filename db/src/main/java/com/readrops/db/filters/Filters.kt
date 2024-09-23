@@ -29,6 +29,6 @@ data class QueryFilters(
     val accountId: Int = 0,
     val mainFilter: MainFilter = MainFilter.ALL,
     val subFilter: SubFilter = SubFilter.ALL,
-    val orderField: OrderField = OrderField.ID,
+    val orderField: OrderField = OrderField.DATE,
     val orderType: OrderType = OrderType.DESC,
 )
