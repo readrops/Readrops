@@ -41,7 +41,7 @@ sealed class FolderAndFeedsState {
 
 data class AddFeedDialogState(
     val url: String = "",
-    val selectedAccount: Account = Account(accountName = ""),
+    val selectedAccount: Account = Account(name = ""),
     val accounts: List<Account> = listOf(),
     val error: TextFieldError? = null,
     val exception: Exception? = null,

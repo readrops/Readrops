@@ -5,7 +5,7 @@ data class AccountConfig(
     val addNoFolder: Boolean, // Add a "No folder" option when modifying a feed's folder
     val useSeparateState: Boolean, // Let know if it uses ItemState table to synchronize read/star state
     val canCreateFolder: Boolean, // Enable or disable folder creation in Feed Tab
-    val canCreateFeed: Boolean =  true,
+    val canCreateFeed: Boolean = true,
     val canUpdateFolder: Boolean = true,
     val canUpdateFeed: Boolean = true,
     val canDeleteFeed: Boolean = true,

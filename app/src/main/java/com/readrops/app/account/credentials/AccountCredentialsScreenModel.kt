@@ -28,14 +28,14 @@ class AccountCredentialsScreenModel(
         if (mode == AccountCredentialsScreenMode.EDIT_CREDENTIALS) {
             mutableState.update {
                 it.copy(
-                    name = account.accountName!!,
+                    name = account.name!!,
                     url = account.url!!,
                     login = account.login!!,
                     password = account.password!!
                 )
             }
         } else {
-            mutableState.update { it.copy(name = account.accountName!!) }
+            mutableState.update { it.copy(name = account.name!!) }
         }
     }
 
@@ -61,10 +61,10 @@ class AccountCredentialsScreenModel(
 
                 val newAccount = account.copy(
                     url = normalizedUrl,
-                    accountName = name,
+                    name = name,
                     login = login,
                     password = password,
-                    accountType = account.accountType,
+                    type = account.type,
                     isCurrentAccount = true
                 )
 

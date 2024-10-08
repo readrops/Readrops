@@ -12,9 +12,9 @@ abstract class Credentials(val authorization: String?, val url: String) {
 
     companion object {
         fun toCredentials(account: Account): Credentials {
-            val endPoint = getEndPoint(account.accountType!!)
+            val endPoint = getEndPoint(account.type!!)
 
-            return when (account.accountType) {
+            return when (account.type) {
                 AccountType.NEXTCLOUD_NEWS -> NextcloudNewsCredentials(account.login, account.password, account.url + endPoint)
                 AccountType.FRESHRSS -> FreshRSSCredentials(account.token, account.url + endPoint)
                 AccountType.FEVER -> FeverCredentials(account.login, account.password, account.url + endPoint)

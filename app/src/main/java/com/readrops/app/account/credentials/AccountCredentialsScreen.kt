@@ -117,7 +117,7 @@ class AccountCredentialsScreen(
                         .verticalScroll(rememberScrollState())
                 ) {
                     Image(
-                        painter = adaptiveIconPainterResource(id = account.accountType!!.iconRes),
+                        painter = adaptiveIconPainterResource(id = account.type!!.iconRes),
                         contentDescription = null,
                         modifier = Modifier.size(48.dp)
                     )
@@ -125,7 +125,7 @@ class AccountCredentialsScreen(
                     ShortSpacer()
 
                     Text(
-                        text = stringResource(id = account.accountType!!.typeName),
+                        text = stringResource(id = account.type!!.nameRes),
                         style = MaterialTheme.typography.headlineMedium
                     )
 
@@ -155,7 +155,7 @@ class AccountCredentialsScreen(
                                 state.urlError != null -> {
                                     Text(text = state.urlError!!.errorText())
                                 }
-                                account.accountType == AccountType.FEVER -> {
+                                account.type == AccountType.FEVER -> {
                                     Text(text = stringResource(R.string.provide_full_url))
                                 }
                                 else -> {
@@ -211,7 +211,7 @@ class AccountCredentialsScreen(
                                 state.passwordError != null -> {
                                     Text(text = state.passwordError!!.errorText())
                                 }
-                                account.accountType == AccountType.FRESHRSS -> {
+                                account.type == AccountType.FRESHRSS -> {
                                     Text(text = stringResource(id = R.string.password_helper))
                                 }
                             }

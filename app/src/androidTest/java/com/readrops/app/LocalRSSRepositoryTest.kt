@@ -32,7 +32,7 @@ import kotlin.test.assertTrue
 class LocalRSSRepositoryTest : KoinTest {
 
     private val mockServer: MockWebServer = MockWebServer()
-    private val account = Account(accountType = AccountType.LOCAL)
+    private val account = Account(type = AccountType.LOCAL)
     private lateinit var database: Database
     private lateinit var repository: LocalRSSRepository
     private lateinit var feeds: List<Feed>

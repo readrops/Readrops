@@ -32,20 +32,20 @@ class SyncAnalyzerTest {
         NullPointerException("Notification content shouldn't be null")
 
     private val account1 = Account(
-        accountName = "test account 1",
-        accountType = AccountType.FRESHRSS,
+        name = "test account 1",
+        type = AccountType.FRESHRSS,
         isNotificationsEnabled = true
     )
 
     private val account2 = Account(
-        accountName = "test account 2",
-        accountType = AccountType.NEXTCLOUD_NEWS,
+        name = "test account 2",
+        type = AccountType.NEXTCLOUD_NEWS,
         isNotificationsEnabled = false
     )
 
     private val account3 = Account(
-        accountName = "test account 3",
-        accountType = AccountType.LOCAL,
+        name = "test account 3",
+        type = AccountType.LOCAL,
         isNotificationsEnabled = true
     )
 
@@ -124,7 +124,7 @@ class SyncAnalyzerTest {
 
         syncAnalyzer.getNotificationContent(mapOf(account1 to syncResult))?.let { content ->
             assertEquals(context.getString(R.string.new_items, 2), content.text)
-            assertEquals(account1.accountName, content.title)
+            assertEquals(account1.name, content.title)
             assertTrue(content.largeIcon != null)
             assertTrue(content.accountId > 0)
         } ?: throw nullContentException

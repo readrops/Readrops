@@ -22,11 +22,10 @@ fun AccountSelectionDialog(
         onDismiss = onDismiss
     ) {
         AccountType.entries
-            .filter { it != AccountType.FEEDLY }
             .forEach { type ->
                 SelectableImageText(
                     image = adaptiveIconPainterResource(id = type.iconRes),
-                    text = stringResource(id = type.typeName),
+                    text = stringResource(id = type.nameRes),
                     style = MaterialTheme.typography.titleMedium,
                     spacing = MaterialTheme.spacing.mediumSpacing,
                     padding = MaterialTheme.spacing.shortSpacing,

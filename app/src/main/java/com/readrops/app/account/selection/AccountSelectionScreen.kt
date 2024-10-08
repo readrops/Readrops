@@ -95,8 +95,8 @@ class AccountSelectionScreen : AndroidScreen() {
                 val accountType =
                     (state.navState as NavState.GoToAccountCredentialsScreen).accountType
                 val account = Account(
-                    accountType = accountType,
-                    accountName = stringResource(id = accountType.typeName)
+                    type = accountType,
+                    name = stringResource(id = accountType.nameRes)
                 )
 
                 navigator.push(
@@ -159,7 +159,7 @@ class AccountSelectionScreen : AndroidScreen() {
 
                             SelectableImageText(
                                 image = adaptiveIconPainterResource(id = R.mipmap.ic_launcher),
-                                text = stringResource(id = AccountType.LOCAL.typeName),
+                                text = stringResource(id = AccountType.LOCAL.nameRes),
                                 style = MaterialTheme.typography.bodyLarge,
                                 spacing = MaterialTheme.spacing.mediumSpacing,
                                 padding = MaterialTheme.spacing.mediumSpacing,
@@ -187,11 +187,10 @@ class AccountSelectionScreen : AndroidScreen() {
 
                             AccountType.entries
                                 .filter { it != AccountType.LOCAL }
-                                .filter { it != AccountType.FEEDLY }
                                 .forEach { accountType ->
                                     SelectableImageText(
                                         image = adaptiveIconPainterResource(id = accountType.iconRes),
-                                        text = stringResource(id = accountType.typeName),
+                                        text = stringResource(id = accountType.nameRes),
                                         style = MaterialTheme.typography.bodyLarge,
                                         imageSize = 24.dp,
                                         spacing = MaterialTheme.spacing.mediumSpacing,

@@ -67,11 +67,11 @@ class SyncAnalyzer(
                 // multiple new items from several feeds
                 feedsIdsForNewItems.size > 1 && itemCount > 1 -> {
                     NotificationContent(
-                        title = account.accountName!!,
+                        title = account.name!!,
                         text = context.getString(R.string.new_items, itemCount.toString()),
                         largeIcon = ContextCompat.getDrawable(
                             context,
-                            account.accountType!!.iconRes
+                            account.type!!.iconRes
                         )!!.toBitmap(),
                         accountId = account.id
                     )

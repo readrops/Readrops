@@ -178,8 +178,8 @@ class AccountScreenModel(
     fun createLocalAccount() {
         val context = get<Context>()
         val account = Account(
-            accountName = context.getString(AccountType.LOCAL.typeName),
-            accountType = AccountType.LOCAL,
+            name = context.getString(AccountType.LOCAL.nameRes),
+            type = AccountType.LOCAL,
             isCurrentAccount = true
         )
 
@@ -212,7 +212,7 @@ class AccountScreenModel(
 
 @Stable
 data class AccountState(
-    val account: Account = Account(accountName = "account", accountType = AccountType.LOCAL),
+    val account: Account = Account(name = "account", type = AccountType.LOCAL),
     val dialog: DialogState? = null,
     val synchronizationErrors: ErrorResult? = null,
     val error: Exception? = null,

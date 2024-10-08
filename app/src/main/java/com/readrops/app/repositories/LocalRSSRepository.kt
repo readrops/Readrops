@@ -115,7 +115,7 @@ class LocalRSSRepository(
     private suspend fun insertFeed(feed: Feed): Feed {
         // TODO better handle this case
         require(!database.feedDao().feedExists(feed.url!!, account.id)) {
-            "Feed already exists for account ${account.accountName}"
+            "Feed already exists for account ${account.name}"
         }
 
         return feed.apply {

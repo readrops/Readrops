@@ -52,7 +52,7 @@ class ItemScreenModel(
                 .flatMapLatest { account ->
                     this@ItemScreenModel.account = account!!
 
-                    if (account.accountType == AccountType.FEVER) {
+                    if (account.type == AccountType.FEVER) {
                         get<SharedPreferences>().apply {
                             account.login = getString(account.loginKey, null)
                             account.password = getString(account.passwordKey, null)

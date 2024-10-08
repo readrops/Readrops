@@ -17,12 +17,13 @@ import com.readrops.db.entities.Item
 import com.readrops.db.entities.ItemState
 import com.readrops.db.entities.ItemStateChange
 import com.readrops.db.entities.account.Account
+import com.readrops.db.entities.account.AccountType
 import com.readrops.db.util.Converters
 
 @Database(
     entities = [Feed::class, Item::class, Folder::class, Account::class,
         ItemStateChange::class, ItemState::class],
-    version = 4
+    version = 5
 )
 @TypeConverters(Converters::class)
 abstract class Database : RoomDatabase() {
@@ -96,5 +97,29 @@ object MigrationFrom3To4 : Migration(3, 4) {
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_Feed_folder_id` ON `Feed` (`folder_id`)")
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_Feed_account_id` ON `Feed` (`account_id`)")
     }
+}
 
+object MigrationFrom4To5 : Migration(4, 5) {
+
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // rename account_name to name
+        // rename account_type to type
+        // rename writeToken to write_token
+        db.execSQL("CREATE TABLE IF NOT EXISTS `_new_Account` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `url` TEXT, `name` TEXT, `displayed_name` TEXT, `type` TEXT, `last_modified` INTEGER NOT NULL, `current_account` INTEGER NOT NULL, `token` TEXT, `write_token` TEXT, `notifications_enabled` INTEGER NOT NULL)")
+        db.execSQL("INSERT INTO `_new_Account` (`id`, `url`, `name`, `displayed_name`, `type`, `last_modified`, `current_account`, `token`, `write_token`, `notifications_enabled`) SELECT `id`, `url`, `account_name`, `displayed_name`, NULL, `last_modified`, `current_account`, `token`, `writeToken`, `notifications_enabled` FROM `Account`")
+
+        // migrate type from INTEGER to TEXT
+        val cursor = db.query("SELECT `id`, `account_type` FROM `Account`")
+        while (cursor.moveToNext()) {
+            val id = cursor.getInt(0)
+            val ordinal = cursor.getInt(1)
+
+            val type = AccountType.entries[ordinal]
+
+            db.execSQL("UPDATE `_new_Account` SET `type` = \"${type.name}\" WHERE `id` = $id")
+        }
+
+        db.execSQL("DROP TABLE IF EXISTS `Account`")
+        db.execSQL("ALTER TABLE `_new_Account` RENAME TO `Account`")
+    }
 }

@@ -59,7 +59,7 @@ val appModule = module {
     single { GetFoldersWithFeeds(get()) }
 
     factory<BaseRepository> { (account: Account) ->
-        when (account.accountType) {
+        when (account.type) {
             AccountType.LOCAL -> LocalRSSRepository(get(), get(), account)
             AccountType.FRESHRSS -> FreshRSSRepository(
                 database = get(),

@@ -192,7 +192,7 @@ object AccountTab : Tab {
                         modifier = Modifier.weight(1f)
                     ) {
                         Image(
-                            painter = adaptiveIconPainterResource(id = state.account.accountType!!.iconRes),
+                            painter = adaptiveIconPainterResource(id = state.account.type!!.iconRes),
                             contentDescription = null,
                             modifier = Modifier.size(48.dp)
                         )
@@ -201,7 +201,7 @@ object AccountTab : Tab {
 
                         Column {
                             Text(
-                                text = state.account.accountName!!,
+                                text = state.account.name!!,
                                 style = MaterialTheme.typography.titleLarge,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
@@ -224,7 +224,7 @@ object AccountTab : Tab {
                         ThreeDotsMenu(
                             items = mapOf(1 to stringResource(id = R.string.rename_account)),
                             onItemClick = {
-                                screenModel.openDialog(DialogState.RenameAccount(state.account.accountName!!))
+                                screenModel.openDialog(DialogState.RenameAccount(state.account.name!!))
                             },
                         )
                     }
@@ -303,8 +303,8 @@ object AccountTab : Tab {
 
                     for (account in state.accounts) {
                         SelectableImageText(
-                            image = adaptiveIconPainterResource(id = account.accountType!!.iconRes),
-                            text = account.accountName!!,
+                            image = adaptiveIconPainterResource(id = account.type!!.iconRes),
+                            text = account.name!!,
                             style = MaterialTheme.typography.titleMedium,
                             padding = MaterialTheme.spacing.mediumSpacing,
                             spacing = MaterialTheme.spacing.mediumSpacing,
@@ -358,8 +358,8 @@ object AccountTab : Tab {
                             screenModel.createLocalAccount()
                         } else {
                             val account = Account(
-                                accountType = accountType,
-                                accountName = context.resources.getString(accountType.typeName)
+                                type = accountType,
+                                name = context.resources.getString(accountType.nameRes)
                             )
                             navigator.push(
                                 AccountCredentialsScreen(

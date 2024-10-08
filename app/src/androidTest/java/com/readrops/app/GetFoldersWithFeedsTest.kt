@@ -22,7 +22,7 @@ class GetFoldersWithFeedsTest {
 
     private lateinit var database: Database
     private lateinit var getFoldersWithFeeds: GetFoldersWithFeeds
-    private val account = Account(accountType = AccountType.LOCAL)
+    private val account = Account(type = AccountType.LOCAL)
 
     @Before
     fun before() {

@@ -46,6 +46,6 @@ interface AccountDao : BaseDao<Account> {
         When id Is Not :accountId Then 0 End""")
     suspend fun updateCurrentAccount(accountId: Int)
 
-    @Query("Update Account set account_name = :name Where id = :accountId")
+    @Query("Update Account set name = :name Where id = :accountId")
     suspend fun renameAccount(accountId: Int, name: String)
 }

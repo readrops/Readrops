@@ -79,14 +79,14 @@ fun AddFeedDialog(
             ) {
                 for (account in state.accounts) {
                     DropdownMenuItem(
-                        text = { Text(text = account.accountName!!) },
+                        text = { Text(text = account.name!!) },
                         onClick = {
                             onAccountClick(account)
                         },
                         leadingIcon = {
                             Image(
                                 painter = adaptiveIconPainterResource(
-                                    id = account.accountType!!.iconRes
+                                    id = account.type!!.iconRes
                                 ),
                                 contentDescription = null,
                                 modifier = Modifier.size(24.dp)
@@ -97,7 +97,7 @@ fun AddFeedDialog(
             }
 
             OutlinedTextField(
-                value = state.selectedAccount.accountName!!,
+                value = state.selectedAccount.name!!,
                 readOnly = true,
                 onValueChange = {},
                 trailingIcon = {
@@ -106,7 +106,7 @@ fun AddFeedDialog(
                 leadingIcon = {
                     Image(
                         painter = adaptiveIconPainterResource(
-                            id = state.selectedAccount.accountType!!.iconRes
+                            id = state.selectedAccount.type!!.iconRes
                         ),
                         contentDescription = null,
                         modifier = Modifier.size(24.dp)

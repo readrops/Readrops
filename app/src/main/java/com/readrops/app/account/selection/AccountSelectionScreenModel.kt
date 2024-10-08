@@ -55,8 +55,8 @@ class AccountSelectionScreenModel(
         val context = get<Context>()
         val account = Account(
             url = null,
-            accountName = context.getString(AccountType.LOCAL.typeName),
-            accountType = AccountType.LOCAL,
+            name = context.getString(AccountType.LOCAL.nameRes),
+            type = AccountType.LOCAL,
             isCurrentAccount = true
         )
 

@@ -131,7 +131,7 @@ class SyncWorker(
             notificationBuilder.setContentTitle(
                 applicationContext.resources.getString(
                     R.string.updating_account,
-                    account.accountName
+                    account.name
                 )
             )
 
@@ -212,7 +212,7 @@ class SyncWorker(
         if (result.second.isNotEmpty()) {
             Log.e(
                 TAG,
-                "refreshing local account ${account.accountName}: ${result.second.size} errors"
+                "refreshing local account ${account.name}: ${result.second.size} errors"
             )
         }
 

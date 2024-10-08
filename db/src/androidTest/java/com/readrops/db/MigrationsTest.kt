@@ -54,4 +54,16 @@ class MigrationsTest {
             assertEquals("guid", remoteId)
         }
     }
+
+    @Test
+    fun migrate4To5() {
+        helper.createDatabase(dbName, 4).apply {
+            execSQL("Insert Into Account(account_type, last_modified, current_account, notifications_enabled) Values(0, 0, 1, 0)")
+        }
+
+        helper.runMigrationsAndValidate(dbName, 5, true, MigrationFrom4To5).apply {
+            val type = compileStatement("Select type From Account").simpleQueryForString()
+            assertEquals("LOCAL", type)
+        }
+    }
 }
