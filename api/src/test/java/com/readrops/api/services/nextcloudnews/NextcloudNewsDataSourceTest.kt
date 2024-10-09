@@ -338,6 +338,8 @@ class NextcloudNewsDataSourceTest : KoinTest {
 
             override fun dispatch(request: RecordedRequest): MockResponse {
                 with(request.path!!) {
+                    // important, otherwise test fails and I don't know why
+                    println("request: ${request.path}")
                     return when {
                         this == "/folders" -> {
                             MockResponse.okResponseWithBody(TestUtils.loadResource("services/nextcloudnews/adapters/valid_folder.json"))
