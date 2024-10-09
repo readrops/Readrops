@@ -362,6 +362,8 @@ class FreshRSSDataSourceTest : KoinTest {
 
             override fun dispatch(request: RecordedRequest): MockResponse {
                 with(request.path!!) {
+                    // printing request path before anything prevents a request being ignored and the test fail, I don't really know why
+                    println("request: ${request.path}")
                     return when {
                         contains("0/edit-tag") -> {
                             setItemState++
