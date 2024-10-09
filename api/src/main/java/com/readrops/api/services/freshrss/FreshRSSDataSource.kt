@@ -41,7 +41,7 @@ class FreshRSSDataSource(private val service: FreshRSSService) {
     ): DataSourceResult = with(CoroutineScope(Dispatchers.IO)) {
         return if (syncType == SyncType.INITIAL_SYNC) {
             DataSourceResult().apply {
-                listOf(
+                awaitAll(
                     async { folders = getFolders() },
                     async { feeds = getFeeds() },
                     async {
@@ -50,17 +50,17 @@ class FreshRSSDataSource(private val service: FreshRSSService) {
                     async { starredItems = getStarredItems(MAX_STARRED_ITEMS) },
                     async { unreadIds = getItemsIds(GOOGLE_READ, GOOGLE_READING_LIST, MAX_ITEMS) },
                     async { starredIds = getItemsIds(null, GOOGLE_STARRED, MAX_STARRED_ITEMS) }
-                ).awaitAll()
+                )
 
             }
         } else {
             DataSourceResult().apply {
-                listOf(
+                awaitAll(
                     async { setItemsReadState(syncData, writeToken) },
                     async { setItemsStarState(syncData, writeToken) },
-                ).awaitAll()
+                )
 
-                listOf(
+                awaitAll(
                     async { folders = getFolders() },
                     async { feeds = getFeeds() },
                     async { items = getItems(null, MAX_ITEMS, syncData.lastModified) },
@@ -69,7 +69,7 @@ class FreshRSSDataSource(private val service: FreshRSSService) {
                         readIds = getItemsIds(GOOGLE_UNREAD, GOOGLE_READING_LIST, MAX_ITEMS)
                     },
                     async { starredIds = getItemsIds(null, GOOGLE_STARRED, MAX_STARRED_ITEMS) }
-                ).awaitAll()
+                )
             }
         }
 

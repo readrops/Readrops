@@ -33,7 +33,7 @@ class FeverDataSource(private val service: FeverService) {
 
         if (syncType == SyncType.INITIAL_SYNC) {
             return FeverSyncResult().apply {
-                listOf(
+                awaitAll(
                     async { feverFeeds = service.getFeeds(body) },
                     async { folders = service.getFolders(body) },
                     async {
@@ -58,11 +58,10 @@ class FeverDataSource(private val service: FeverService) {
                     async { starredIds = service.getStarredItemsIds(body) },
                     async { favicons = service.getFavicons(body) }
                 )
-                    .awaitAll()
             }
         } else {
             return FeverSyncResult().apply {
-                listOf(
+                awaitAll(
                     async { folders = service.getFolders(body) },
                     async { feverFeeds = service.getFeeds(body) },
                     async { unreadIds = service.getUnreadItemsIds(body) },
@@ -90,7 +89,6 @@ class FeverDataSource(private val service: FeverService) {
                         }
                     }
                 )
-                    .awaitAll()
             }
         }
     }
