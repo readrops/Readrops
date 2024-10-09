@@ -24,6 +24,7 @@ import com.readrops.app.repositories.FreshRSSRepository
 import com.readrops.app.repositories.GetFoldersWithFeeds
 import com.readrops.app.repositories.LocalRSSRepository
 import com.readrops.app.repositories.NextcloudNewsRepository
+import com.readrops.app.sync.Synchronizer
 import com.readrops.app.timelime.TimelineScreenModel
 import com.readrops.app.util.DataStorePreferences
 import com.readrops.app.util.Preferences
@@ -113,4 +114,6 @@ val appModule = module {
     single { Preferences(get()) }
 
     single { NotificationManagerCompat.from(get()) }
+
+    single { Synchronizer(get(), get(), get(), get()) }
 }
