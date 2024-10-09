@@ -3,7 +3,7 @@ package com.readrops.api.services.nextcloudnews
 import com.readrops.api.TestUtils
 import com.readrops.api.apiModule
 import com.readrops.api.enqueueOK
-import com.readrops.api.enqueueStream
+import com.readrops.api.enqueueOKStream
 import com.readrops.db.entities.account.Account
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
@@ -60,7 +60,7 @@ class NextcloudNewsDataSourceTest : KoinTest {
         val stream = TestUtils.loadResource("services/nextcloudnews/user.xml")
         val account = Account(login = "login", url = mockServer.url("").toString())
 
-        mockServer.enqueueStream(stream)
+        mockServer.enqueueOKStream(stream)
 
         val displayName = nextcloudNewsDataSource.login(get(), account)
         val request = mockServer.takeRequest()
@@ -73,7 +73,7 @@ class NextcloudNewsDataSourceTest : KoinTest {
     @Test
     fun foldersTest() = runTest {
         val stream = TestUtils.loadResource("services/nextcloudnews/adapters/valid_folder.json")
-        mockServer.enqueueStream(stream)
+        mockServer.enqueueOKStream(stream)
 
         val folders = nextcloudNewsDataSource.getFolders()
         assertTrue { folders.size == 1 }
@@ -82,7 +82,7 @@ class NextcloudNewsDataSourceTest : KoinTest {
     @Test
     fun feedsTest() = runTest {
         val stream = TestUtils.loadResource("services/nextcloudnews/adapters/feeds.json")
-        mockServer.enqueueStream(stream)
+        mockServer.enqueueOKStream(stream)
 
         val feeds = nextcloudNewsDataSource.getFeeds()
         assertTrue { feeds.size == 3 }
@@ -91,7 +91,7 @@ class NextcloudNewsDataSourceTest : KoinTest {
     @Test
     fun itemsTest() = runTest {
         val stream = TestUtils.loadResource("services/nextcloudnews/adapters/items.json")
-        mockServer.enqueueStream(stream)
+        mockServer.enqueueOKStream(stream)
 
         val items = nextcloudNewsDataSource.getItems(NextcloudNewsDataSource.ItemQueryType.ALL.value, false, 10)
         val request = mockServer.takeRequest()
@@ -107,7 +107,7 @@ class NextcloudNewsDataSourceTest : KoinTest {
     @Test
     fun newItemsTest() = runTest {
         val stream = TestUtils.loadResource("services/nextcloudnews/adapters/items.json")
-        mockServer.enqueueStream(stream)
+        mockServer.enqueueOKStream(stream)
 
         val items =
             nextcloudNewsDataSource.getNewItems(1512, NextcloudNewsDataSource.ItemQueryType.ALL)
@@ -123,7 +123,7 @@ class NextcloudNewsDataSourceTest : KoinTest {
     @Test
     fun createFeedTest() = runTest {
         val stream = TestUtils.loadResource("services/nextcloudnews/adapters/feeds.json")
-        mockServer.enqueueStream(stream)
+        mockServer.enqueueOKStream(stream)
 
         val feeds = nextcloudNewsDataSource.createFeed("https://news.ycombinator.com/rss", null)
         val request = mockServer.takeRequest()
@@ -184,7 +184,7 @@ class NextcloudNewsDataSourceTest : KoinTest {
     @Test
     fun createFolderTest() = runTest {
         val stream = TestUtils.loadResource("services/nextcloudnews/adapters/valid_folder.json")
-        mockServer.enqueueStream(stream)
+        mockServer.enqueueOKStream(stream)
 
         val folders = nextcloudNewsDataSource.createFolder("folder name")
         val request = mockServer.takeRequest()

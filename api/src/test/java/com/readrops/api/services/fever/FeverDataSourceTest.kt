@@ -3,7 +3,7 @@ package com.readrops.api.services.fever
 import com.readrops.api.TestUtils
 import com.readrops.api.apiModule
 import com.readrops.api.enqueueOK
-import com.readrops.api.enqueueStream
+import com.readrops.api.enqueueOKStream
 import com.readrops.api.okResponseWithBody
 import com.readrops.api.services.SyncType
 import com.readrops.api.utils.AuthInterceptor
@@ -63,7 +63,7 @@ class FeverDataSourceTest : KoinTest {
     @Test
     fun loginSuccessfulTest() = runTest {
         val stream = TestUtils.loadResource("services/fever/successful_auth.json")
-        mockServer.enqueueStream(stream)
+        mockServer.enqueueOKStream(stream)
 
         assertTrue { dataSource.login("", "") }
     }
@@ -71,7 +71,7 @@ class FeverDataSourceTest : KoinTest {
     @Test
     fun loginFailedTest() = runTest {
         val stream = TestUtils.loadResource("services/fever/failed_auth.json")
-        mockServer.enqueueStream(stream)
+        mockServer.enqueueOKStream(stream)
 
         assertFalse { dataSource.login("", "") }
     }
