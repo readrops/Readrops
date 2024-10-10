@@ -55,7 +55,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
 import androidx.core.view.children
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil.compose.AsyncImage
@@ -85,7 +85,7 @@ class ItemScreen(
         val navigator = LocalNavigator.currentOrThrow
 
         val screenModel =
-            getScreenModel<ItemScreenModel>(parameters = { parametersOf(itemId) })
+            koinScreenModel<ItemScreenModel>(parameters = { parametersOf(itemId) })
         val state by screenModel.state.collectAsStateWithLifecycle()
 
         val primaryColor = MaterialTheme.colorScheme.primary

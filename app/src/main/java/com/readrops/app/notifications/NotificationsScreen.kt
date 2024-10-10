@@ -31,7 +31,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -60,7 +60,7 @@ class NotificationsScreen(val account: Account) : AndroidScreen() {
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
         val context = LocalContext.current
-        val screenModel = getScreenModel<NotificationsScreenModel> { parametersOf(account) }
+        val screenModel = koinScreenModel<NotificationsScreenModel> { parametersOf(account) }
 
         val state by screenModel.state.collectAsStateWithLifecycle()
 

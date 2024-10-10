@@ -39,7 +39,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.readrops.app.R
@@ -75,7 +75,7 @@ object FeedTab : Tab {
         val uriHandler = LocalUriHandler.current
         val context = LocalContext.current
 
-        val screenModel = getScreenModel<FeedScreenModel>()
+        val screenModel = koinScreenModel<FeedScreenModel>()
         val state by screenModel.feedsState.collectAsStateWithLifecycle()
 
         val snackbarHostState = remember { SnackbarHostState() }

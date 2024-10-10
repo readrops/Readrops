@@ -51,7 +51,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
@@ -89,7 +89,7 @@ object TimelineTab : Tab {
         val navigator = LocalNavigator.currentOrThrow
         val context = LocalContext.current
 
-        val screenModel = getScreenModel<TimelineScreenModel>()
+        val screenModel = koinScreenModel<TimelineScreenModel>()
         val state by screenModel.timelineState.collectAsStateWithLifecycle()
         val preferences = state.preferences
         val items = state.itemState.collectAsLazyPagingItems()

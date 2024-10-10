@@ -21,7 +21,7 @@ object ApiUtils {
     fun isMimeImage(type: String): Boolean =
             type == "image" || type == "image/jpeg" || type == "image/jpg" || type == "image/png"
 
-    fun parseContentType(header: String?): String? {
+    fun parseContentType(header: String): String? {
         val matcher = Pattern.compile(RSS_CONTENT_TYPE_REGEX)
                 .matcher(header)
         return if (matcher.find()) {
@@ -37,7 +37,7 @@ object ApiUtils {
      * @param text string to clean
      * @return cleaned text
      */
-    fun cleanText(text: String?): String {
+    fun cleanText(text: String): String {
         return Jsoup.parse(text).text().trim()
     }
 

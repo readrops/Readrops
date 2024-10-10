@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.readrops.api.utils.ApiUtils
@@ -60,7 +60,7 @@ class AccountSelectionScreen : AndroidScreen() {
         val navigator = LocalNavigator.currentOrThrow
         val context = LocalContext.current
 
-        val screenModel = getScreenModel<AccountSelectionScreenModel>()
+        val screenModel = koinScreenModel<AccountSelectionScreenModel>()
         val state by screenModel.state.collectAsStateWithLifecycle()
 
         val opmlImportLauncher =

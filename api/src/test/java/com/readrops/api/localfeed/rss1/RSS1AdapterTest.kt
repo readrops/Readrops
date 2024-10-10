@@ -4,9 +4,9 @@ import com.gitlab.mvysny.konsumexml.konsumeXml
 import com.readrops.api.TestUtils
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.db.util.DateUtils
-import junit.framework.Assert.assertEquals
-import junit.framework.Assert.assertNotNull
 import junit.framework.TestCase
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test

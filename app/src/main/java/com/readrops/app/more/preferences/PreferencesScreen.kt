@@ -30,7 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.readrops.app.R
@@ -51,7 +51,7 @@ class PreferencesScreen : AndroidScreen() {
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
         val context = LocalContext.current
-        val screenModel = getScreenModel<PreferencesScreenModel>()
+        val screenModel = koinScreenModel<PreferencesScreenModel>()
 
         val scrollState = rememberScrollState()
         val coroutineScope = rememberCoroutineScope()

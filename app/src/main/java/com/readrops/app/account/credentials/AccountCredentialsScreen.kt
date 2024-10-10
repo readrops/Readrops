@@ -37,7 +37,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.readrops.app.R
@@ -67,7 +67,7 @@ class AccountCredentialsScreen(
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
         val screenModel =
-            getScreenModel<AccountCredentialsScreenModel>(parameters = { parametersOf(account, mode) })
+            koinScreenModel<AccountCredentialsScreenModel>(parameters = { parametersOf(account, mode) })
 
         val state by screenModel.state.collectAsStateWithLifecycle()
 

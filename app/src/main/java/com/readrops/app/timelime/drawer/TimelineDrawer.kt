@@ -9,7 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
@@ -172,7 +172,7 @@ fun DrawerDefaultItems(
 
 @Composable
 fun DrawerDivider() {
-    Divider(
+    HorizontalDivider(
         thickness = 2.dp,
         modifier = Modifier.padding(
             vertical = MaterialTheme.spacing.drawerSpacing,
