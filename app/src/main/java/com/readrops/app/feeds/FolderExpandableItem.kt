@@ -84,7 +84,7 @@ fun FolderExpandableItem(
                     MediumSpacer()
 
                     Text(
-                        text = folder.name.orEmpty(),
+                        text = folder.name.orEmpty() + if (feeds.isNotEmpty()) " (${feeds.size})" else "",
                         style = MaterialTheme.typography.bodyLarge,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
