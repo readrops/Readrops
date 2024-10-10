@@ -90,10 +90,7 @@ dependencies {
 
     implementation(platform(libs.koin.bom))
     implementation(libs.bundles.koin)
-    //androidTestImplementation(libs.bundles.kointest)
-    // I don't know why but those dependencies are unreachable when accessed directly from version catalog
-    androidTestImplementation("io.insert-koin:koin-test:${libs.versions.koin.bom.get()}")
-    androidTestImplementation("io.insert-koin:koin-test-junit4:${libs.versions.koin.bom.get()}")
+    androidTestImplementation(libs.bundles.kointest)
 
     androidTestImplementation(libs.okhttp.mockserver)
 
