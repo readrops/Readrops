@@ -37,6 +37,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.KoinAndroidContext
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.core.component.KoinComponent
@@ -115,12 +116,12 @@ class MainActivity : ComponentActivity(), KoinComponent {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
 
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch {
             handleIntent(intent)
         }
     }
 
-    private suspend fun handleIntent(intent: Intent) {
+    private suspend fun handleIntent(intent: Intent) = withContext(Dispatchers.IO) {
         when {
             intent.hasExtra(SyncWorker.ACCOUNT_ID_KEY) -> {
                 val accountId = intent.getIntExtra(SyncWorker.ACCOUNT_ID_KEY, -1)
