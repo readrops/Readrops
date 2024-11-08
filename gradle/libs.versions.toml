@@ -80,7 +80,7 @@ aboutlibraries = { module = "com.mikepenz.aboutlibraries.plugin:aboutlibraries-p
 aboutlibraries-composem3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "about_libraries" }
 
 konsumexml = "com.gitlab.mvysny.konsume-xml:konsume-xml:1.1"
-kotlinxmlbuilder = "org.redundent:kotlin-xml-builder:1.7.3" #TODO update this
+kotlinxmlbuilder = "org.redundent:kotlin-xml-builder:1.9.1"
 
 jdk-desugar = "com.android.tools:desugar_jdk_libs_nio:2.1.2"
 
