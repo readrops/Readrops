@@ -1,4 +1,4 @@
-package com.readrops.app.base
+package com.readrops.app.home
 
 import android.content.SharedPreferences
 import cafe.adriel.voyager.core.model.ScreenModel
@@ -20,7 +20,7 @@ import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
 
 /**
- * Custom ViewModel for Tab screens handling account change
+ * Custom screenModel for Tab screens handling account change
  */
 abstract class TabScreenModel(
     private val database: Database,
@@ -61,7 +61,6 @@ abstract class TabScreenModel(
 
                         currentAccount = account
                         repository = get(parameters = { parametersOf(account) })
-
 
                         _accountEvent.emit(account)
                     }

@@ -9,7 +9,7 @@ import com.readrops.api.services.Credentials
 import com.readrops.api.utils.AuthInterceptor
 import com.readrops.api.utils.HtmlParser
 import com.readrops.app.R
-import com.readrops.app.base.TabScreenModel
+import com.readrops.app.home.TabScreenModel
 import com.readrops.app.repositories.BaseRepository
 import com.readrops.app.repositories.GetFoldersWithFeeds
 import com.readrops.app.util.components.TextFieldError

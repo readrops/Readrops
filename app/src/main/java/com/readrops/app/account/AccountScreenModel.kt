@@ -6,7 +6,7 @@ import androidx.compose.runtime.Stable
 import androidx.core.net.toFile
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.readrops.api.opml.OPMLParser
-import com.readrops.app.base.TabScreenModel
+import com.readrops.app.home.TabScreenModel
 import com.readrops.app.repositories.ErrorResult
 import com.readrops.app.repositories.GetFoldersWithFeeds
 import com.readrops.app.util.components.TextFieldError
