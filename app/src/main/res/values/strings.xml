@@ -187,4 +187,8 @@
     <string name="descending">Descending</string>
     <string name="order_by">Order by</string>
     <string name="with_direction">With direction</string>
+    <string name="choose_folder">Choose a folder</string>
+    <string name="selected">(%1$s selected)</string>
+    <string name="add_selected_feeds">Add %1$s selected feeds</string>
+    <string name="enter_url">Enter an URL</string>
 </resources>

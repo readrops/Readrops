@@ -40,12 +40,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.koin.koinScreenModel
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.readrops.app.R
-import com.readrops.app.feeds.dialogs.AddFeedDialog
 import com.readrops.app.feeds.dialogs.FeedModalBottomSheet
 import com.readrops.app.feeds.dialogs.UpdateFeedDialog
+import com.readrops.app.feeds.newfeed.NewFeedScreen
 import com.readrops.app.util.ErrorMessage
 import com.readrops.app.util.components.CenteredProgressIndicator
 import com.readrops.app.util.components.ErrorMessage
@@ -74,6 +76,7 @@ object FeedTab : Tab {
         val haptic = LocalHapticFeedback.current
         val uriHandler = LocalUriHandler.current
         val context = LocalContext.current
+        val navigator = LocalNavigator.currentOrThrow
 
         val screenModel = koinScreenModel<FeedScreenModel>()
         val state by screenModel.feedsState.collectAsStateWithLifecycle()
@@ -93,7 +96,7 @@ object FeedTab : Tab {
             addFeedDialogChannel.receiveAsFlow()
                 .collect { url ->
                     if (Patterns.WEB_URL.matcher(url).matches()) {
-                        screenModel.openDialog(DialogState.AddFeed(url))
+                        navigator.push(NewFeedScreen(url))
                     }
                 }
         }
@@ -146,7 +149,7 @@ object FeedTab : Tab {
 
                     if (state.config?.canCreateFeed == true) {
                         FloatingActionButton(
-                            onClick = { screenModel.openDialog(DialogState.AddFeed()) }
+                            onClick = { navigator.push(NewFeedScreen()) }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Add,
@@ -256,21 +259,9 @@ object FeedTab : Tab {
     private fun FeedDialogs(state: FeedState, screenModel: FeedScreenModel) {
         val uriHandler = LocalUriHandler.current
 
-        val addFeedDialogState by screenModel.addFeedDialogState.collectAsStateWithLifecycle()
         val folderState by screenModel.folderState.collectAsStateWithLifecycle()
 
         when (val dialog = state.dialog) {
-            is DialogState.AddFeed -> {
-                AddFeedDialog(
-                    state = addFeedDialogState,
-                    onValueChange = { screenModel.setAddFeedDialogURL(it) },
-                    onExpandChange = { screenModel.setAccountDropDownExpanded(it) },
-                    onAccountClick = { screenModel.setAddFeedDialogSelectedAccount(it) },
-                    onValidate = { screenModel.addFeedDialogValidate() },
-                    onDismiss = { screenModel.closeDialog(DialogState.AddFeed()) },
-                )
-            }
-
             is DialogState.DeleteFeed -> {
                 TwoChoicesDialog(
                     title = stringResource(R.string.delete_feed),

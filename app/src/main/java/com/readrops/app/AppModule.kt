@@ -15,6 +15,7 @@ import com.readrops.app.account.credentials.AccountCredentialsScreenMode
 import com.readrops.app.account.credentials.AccountCredentialsScreenModel
 import com.readrops.app.account.selection.AccountSelectionScreenModel
 import com.readrops.app.feeds.FeedScreenModel
+import com.readrops.app.feeds.newfeed.NewFeedScreenModel
 import com.readrops.app.item.ItemScreenModel
 import com.readrops.app.more.preferences.PreferencesScreenModel
 import com.readrops.app.notifications.NotificationsScreenModel
@@ -42,6 +43,8 @@ val appModule = module {
     factory { TimelineScreenModel(get(), get(), get()) }
 
     factory { FeedScreenModel(get(), get(), get(), androidContext()) }
+
+    factory { (url: String?) -> NewFeedScreenModel(get(), get(), androidContext(), url) }
 
     factory { AccountSelectionScreenModel(get()) }
 

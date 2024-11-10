@@ -1,0 +1,316 @@
+package com.readrops.app.feeds.newfeed
+
+import android.content.Context
+import android.content.SharedPreferences
+import android.util.Patterns
+import cafe.adriel.voyager.core.model.StateScreenModel
+import cafe.adriel.voyager.core.model.screenModelScope
+import com.readrops.api.localfeed.LocalRSSDataSource
+import com.readrops.api.services.Credentials
+import com.readrops.api.utils.AuthInterceptor
+import com.readrops.api.utils.HtmlParser
+import com.readrops.app.R
+import com.readrops.app.repositories.BaseRepository
+import com.readrops.app.util.components.TextFieldError
+import com.readrops.db.Database
+import com.readrops.db.entities.Feed
+import com.readrops.db.entities.Folder
+import com.readrops.db.entities.account.Account
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
+import org.koin.core.parameter.parametersOf
+import java.net.UnknownHostException
+
+class NewFeedScreenModel(
+    private val database: Database,
+    private val dataSource: LocalRSSDataSource,
+    private val context: Context,
+    url: String?,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+) : StateScreenModel<State>(State(url = url.orEmpty())), KoinComponent {
+
+    private val selectedAccountState = MutableStateFlow(state.value.selectedAccount)
+
+    init {
+        screenModelScope.launch(dispatcher) {
+            database.accountDao()
+                .selectAllAccounts()
+                .map { it.filter { account -> account.config.canCreateFeed } }
+                .collect { accounts ->
+                    val selectedAccount = accounts.find { it.isCurrentAccount }
+                        ?: accounts.first()
+                    selectedAccountState.update { selectedAccount }
+
+                    mutableState.update { newFeedState ->
+                        newFeedState.copy(
+                            accounts = accounts,
+                            selectedAccount = selectedAccount
+                        )
+                    }
+                }
+        }
+
+        screenModelScope.launch(dispatcher) {
+            selectedAccountState.collect { selectedAccount ->
+                if (selectedAccount != null) {
+                    val folders = if (selectedAccount.config.addNoFolder) {
+                        database.folderDao().selectFolders(selectedAccount.id).first() +
+                                Folder(name = context.resources.getString(R.string.no_folder))
+                    } else {
+                        database.folderDao().selectFolders(selectedAccount.id).first()
+                    }
+
+                    val newParsingResults = mutableState.value.parsingResults.map {
+                        it.copy(folder = folders.firstOrNull())
+                    }
+
+                    mutableState.update {
+                        it.copy(
+                            folders = folders,
+                            selectedFolder = folders.firstOrNull(),
+                            parsingResults = newParsingResults
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    fun validate() {
+        val url = mutableState.value.url
+
+        if (state.value.selectedResultsCount > 0) {
+            mutableState.update { it.copy(exception = null, isLoading = true) }
+
+            screenModelScope.launch(dispatcher) {
+                insertFeeds(state.value.parsingResults
+                    .filter { it.isSelected }
+                    .map { Feed(url = it.url, folderId = it.folderId) })
+            }
+        } else {
+            when {
+                url.isEmpty() -> {
+                    mutableState.update {
+                        it.copy(urlError = TextFieldError.EmptyField)
+                    }
+                    return
+                }
+
+                !Patterns.WEB_URL.matcher(url).matches() -> {
+                    mutableState.update {
+                        it.copy(urlError = TextFieldError.BadUrl)
+                    }
+                    return
+                }
+
+                else -> loadFeeds()
+            }
+        }
+    }
+
+    private fun loadFeeds() {
+        screenModelScope.launch(dispatcher) {
+            mutableState.update { it.copy(exception = null, isLoading = true) }
+            val url = state.value.url
+
+            try {
+                if (dataSource.isUrlRSSResource(url)) {
+                    insertFeeds(listOf(Feed(url = url, folderId = state.value.folderId)))
+                } else {
+                    val rssUrls = HtmlParser.getFeedLink(url, get())
+
+                    when {
+                        rssUrls.isEmpty() -> mutableState.update {
+                            it.copy(urlError = TextFieldError.NoRSSFeed, isLoading = false)
+                        }
+
+                        rssUrls.size == 1 -> insertFeeds(
+                            listOf(
+                                Feed(
+                                    url = rssUrls.first().url,
+                                    folderId = state.value.folderId
+                                )
+                            )
+                        )
+
+                        else -> {
+                            val parsingResults = rssUrls.map {
+                                ParsingResultState(
+                                    url = it.url,
+                                    label = it.label,
+                                    isSelected = true,
+                                    folder = state.value.folders.firstOrNull(),
+                                    isExpanded = false
+                                )
+                            }
+
+                            mutableState.update {
+                                it.copy(
+                                    parsingResults = parsingResults,
+                                    isLoading = false
+                                )
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                // TODO improve error handling for all accounts
+                when (e) {
+                    is UnknownHostException -> mutableState.update {
+                        it.copy(
+                            urlError = TextFieldError.UnreachableUrl,
+                            isLoading = false
+                        )
+                    }
+
+                    else -> mutableState.update {
+                        it.copy(
+                            urlError = TextFieldError.NoRSSFeed,
+                            isLoading = false
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun insertFeeds(feeds: List<Feed>) {
+        val selectedAccount = mutableState.value.selectedAccount
+
+        if (selectedAccount != null && !selectedAccount.isLocal) {
+            get<SharedPreferences>().apply {
+                selectedAccount.login = getString(selectedAccount.loginKey, null)
+                selectedAccount.password = getString(selectedAccount.passwordKey, null)
+            }
+            get<AuthInterceptor>().apply {
+                credentials = Credentials.toCredentials(selectedAccount)
+            }
+        }
+
+        val repository = get<BaseRepository> { parametersOf(selectedAccount) }
+
+        val errors = repository.insertNewFeeds(
+            newFeeds = feeds,
+            onUpdate = { /* TODO */ }
+        )
+
+        if (errors.isEmpty()) {
+            mutableState.update { it.copy(popScreen = true) }
+        } else {
+            mutableState.update {
+                it.copy(
+                    exception = errors.values.first(),
+                    isLoading = false
+                )
+            }
+        }
+    }
+
+    fun updateUrl(url: String) = mutableState.update { it.copy(url = url, urlError = null) }
+
+    fun updateAccountDropDownExpandStatus(isExpanded: Boolean) =
+        mutableState.update { it.copy(isAccountDropdownExpanded = isExpanded) }
+
+    fun updateSelectedAccount(account: Account) {
+        mutableState.update {
+            it.copy(
+                selectedAccount = account,
+                isAccountDropdownExpanded = false
+            )
+        }
+
+        selectedAccountState.update { account }
+    }
+
+    fun updateFolderDropdownExpandStatus(isExpanded: Boolean) =
+        mutableState.update { it.copy(isFoldersDropdownExpanded = isExpanded) }
+
+    fun updateSelectedFolder(folder: Folder) {
+        val newParsingResults = mutableState.value.parsingResults.map {
+            it.copy(folder = folder)
+        }
+
+        mutableState.update {
+            it.copy(
+                selectedFolder = folder,
+                isFoldersDropdownExpanded = false,
+                parsingResults = newParsingResults
+            )
+        }
+    }
+
+    fun updateParsingResultCheckedState(parsingResult: ParsingResultState) {
+        val newList = mutableState.value.parsingResults.map {
+            if (it == parsingResult) {
+                parsingResult.copy(isSelected = !parsingResult.isSelected)
+            } else {
+                it
+            }
+        }
+
+        mutableState.update { it.copy(parsingResults = newList) }
+    }
+
+    fun updateParsingResultExpandedState(parsingResult: ParsingResultState, isExpanded: Boolean) {
+        val newList = mutableState.value.parsingResults.map {
+            if (it == parsingResult) {
+                parsingResult.copy(isExpanded = isExpanded)
+            } else {
+                it
+            }
+        }
+
+        mutableState.update { it.copy(parsingResults = newList) }
+    }
+
+    fun updateParsingResultFolder(parsingResult: ParsingResultState, folder: Folder) {
+        val newList = mutableState.value.parsingResults.map {
+            if (it == parsingResult) {
+                parsingResult.copy(folder = folder, isExpanded = false)
+            } else {
+                it
+            }
+        }
+
+        mutableState.update { it.copy(parsingResults = newList) }
+    }
+}
+
+data class State(
+    val url: String = "https://blog.broulik.de/",
+    val selectedAccount: Account? = null,
+    val selectedFolder: Folder? = null,
+    val accounts: List<Account> = listOf(),
+    val folders: List<Folder> = listOf(),
+    val isAccountDropdownExpanded: Boolean = false,
+    val isFoldersDropdownExpanded: Boolean = false,
+    val urlError: TextFieldError? = null,
+    val exception: Exception? = null,
+    val isLoading: Boolean = false,
+    val popScreen: Boolean = false,
+    val parsingResults: List<ParsingResultState> = listOf()
+) {
+
+    val isURLError: Boolean get() = urlError != null
+
+    val selectedResultsCount: Int get() = parsingResults.count { it.isSelected }
+
+    val folderId: Int? get() = selectedFolder?.id.takeUnless { it == 0 }
+}
+
+data class ParsingResultState(
+    val url: String,
+    val label: String?,
+    val isSelected: Boolean,
+    val folder: Folder?,
+    val isExpanded: Boolean
+) {
+    val folderId: Int? get() = folder?.id.takeUnless { it == 0 }
+}

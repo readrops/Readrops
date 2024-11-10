@@ -178,4 +178,8 @@
     <string name="descending">Descendant</string>
     <string name="order_by">Ordonner par</string>
     <string name="with_direction">Avec comme direction</string>
+    <string name="choose_folder">Choisir un dossier</string>
+    <string name="selected">(%1$s sélectionnés)</string>
+    <string name="add_selected_feeds">Ajouter %1$s flux sélectionnés</string>
+    <string name="enter_url">Entrer une URL</string>
 </resources>

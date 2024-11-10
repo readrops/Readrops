@@ -3,7 +3,6 @@ package com.readrops.app.feeds
 import com.readrops.app.util.components.TextFieldError
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
-import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountConfig
 
 data class FeedState(
@@ -19,7 +18,6 @@ data class FeedState(
 }
 
 sealed interface DialogState {
-    data class AddFeed(val url: String? = null) : DialogState
     data object AddFolder : DialogState
     class DeleteFeed(val feed: Feed) : DialogState
     class DeleteFolder(val folder: Folder) : DialogState
@@ -37,18 +35,6 @@ sealed class FolderAndFeedsState {
     data object InitialState : FolderAndFeedsState()
     data class ErrorState(val exception: Exception) : FolderAndFeedsState()
     data class LoadedState(val values: Map<Folder?, List<Feed>>) : FolderAndFeedsState()
-}
-
-data class AddFeedDialogState(
-    val url: String = "",
-    val selectedAccount: Account = Account(name = ""),
-    val accounts: List<Account> = listOf(),
-    val error: TextFieldError? = null,
-    val exception: Exception? = null,
-    val isLoading: Boolean = false,
-    val isAccountDropDownExpanded: Boolean = false
-) {
-    val isError: Boolean get() = error != null
 }
 
 data class UpdateFeedDialogState(
