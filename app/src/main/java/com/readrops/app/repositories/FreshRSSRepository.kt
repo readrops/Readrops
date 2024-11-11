@@ -95,7 +95,7 @@ class FreshRSSRepository(
             onUpdate(newFeed)
 
             try {
-                dataSource.createFeed(account.writeToken!!, newFeed.url!!)
+                dataSource.createFeed(account.writeToken!!, newFeed.url!!, newFeed.remoteFolderId)
             } catch (e: Exception) {
                 errors[newFeed] = e
             }

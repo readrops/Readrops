@@ -94,7 +94,7 @@ class NextcloudNewsRepository(
             onUpdate(newFeed)
 
             try {
-                val feeds = dataSource.createFeed(newFeed.url!!, null)
+                val feeds = dataSource.createFeed(newFeed.url!!, newFeed.remoteFolderId?.toInt())
                 insertFeeds(feeds)
             } catch (e: Exception) {
                 errors[newFeed] = e

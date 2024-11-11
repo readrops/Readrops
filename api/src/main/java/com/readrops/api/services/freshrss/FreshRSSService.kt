@@ -31,29 +31,49 @@ interface FreshRSSService {
     suspend fun getFolders(): List<Folder>
 
     @GET("reader/api/0/stream/contents/user/-/state/com.google/reading-list")
-    suspend fun getItems(@Query("xt") excludeTarget: List<String>?, @Query("n") max: Int,
-                 @Query("ot") lastModified: Long?): List<Item>
+    suspend fun getItems(
+        @Query("xt") excludeTarget: List<String>?,
+        @Query("n") max: Int,
+        @Query("ot") lastModified: Long?
+    ): List<Item>
 
     @GET("reader/api/0/stream/contents/user/-/state/com.google/starred")
     suspend fun getStarredItems(@Query("n") max: Int): List<Item>
 
     @GET("reader/api/0/stream/items/ids")
-    suspend fun getItemsIds(@Query("xt") excludeTarget: String?, @Query("s") includeTarget: String?,
-                    @Query("n") max: Int): List<String>
+    suspend fun getItemsIds(
+        @Query("xt") excludeTarget: String?,
+        @Query("s") includeTarget: String?,
+        @Query("n") max: Int
+    ): List<String>
 
     @FormUrlEncoded
     @POST("reader/api/0/edit-tag")
-    suspend fun setItemsState(@Field("T") token: String, @Field("a") addAction: String?,
-                      @Field("r") removeAction: String?, @Field("i") itemIds: List<String>)
+    suspend fun setItemsState(
+        @Field("T") token: String,
+        @Field("a") addAction: String?,
+        @Field("r") removeAction: String?,
+        @Field("i") itemIds: List<String>
+    )
 
     @FormUrlEncoded
     @POST("reader/api/0/subscription/edit")
-    suspend fun createOrDeleteFeed(@Field("T") token: String, @Field("s") feedUrl: String, @Field("ac") action: String)
+    suspend fun createOrDeleteFeed(
+        @Field("T") token: String,
+        @Field("s") feedUrl: String,
+        @Field("ac") action: String,
+        @Field("a") folderId: String?
+    )
 
     @FormUrlEncoded
     @POST("reader/api/0/subscription/edit")
-    suspend fun updateFeed(@Field("T") token: String, @Field("s") feedUrl: String, @Field("t") title: String,
-                   @Field("a") folderId: String, @Field("ac") action: String)
+    suspend fun updateFeed(
+        @Field("T") token: String,
+        @Field("s") feedUrl: String,
+        @Field("t") title: String,
+        @Field("a") folderId: String,
+        @Field("ac") action: String
+    )
 
     @FormUrlEncoded
     @POST("reader/api/0/edit-tag")
@@ -61,7 +81,11 @@ interface FreshRSSService {
 
     @FormUrlEncoded
     @POST("reader/api/0/rename-tag")
-    suspend fun updateFolder(@Field("T") token: String, @Field("s") folderId: String, @Field("dest") newFolderId: String)
+    suspend fun updateFolder(
+        @Field("T") token: String,
+        @Field("s") folderId: String,
+        @Field("dest") newFolderId: String
+    )
 
     @FormUrlEncoded
     @POST("reader/api/0/disable-tag")

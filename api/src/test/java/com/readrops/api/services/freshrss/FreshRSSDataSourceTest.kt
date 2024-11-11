@@ -179,11 +179,12 @@ class FreshRSSDataSourceTest : KoinTest {
     fun createFeedTest() = runTest {
         mockServer.enqueueOK()
 
-        freshRSSDataSource.createFeed("token", "https://feed.url")
+        freshRSSDataSource.createFeed("token", "https://feed.url", "feed/1")
         val request = mockServer.takeRequest()
 
         with(request.body.readUtf8()) {
             assertTrue { contains("T=token") }
+            assertTrue { contains("a=feed%2F1") }
             assertTrue {
                 contains(
                     "s=${

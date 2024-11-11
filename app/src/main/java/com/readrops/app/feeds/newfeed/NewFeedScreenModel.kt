@@ -101,7 +101,13 @@ class NewFeedScreenModel(
             screenModelScope.launch(dispatcher) {
                 insertFeeds(state.value.parsingResults
                     .filter { it.isSelected }
-                    .map { Feed(url = it.url, folderId = it.folderId) })
+                    .map {
+                        Feed(
+                            url = it.url,
+                            folderId = it.folderId,
+                            remoteFolderId = it.folder?.remoteId
+                        )
+                    })
             }
         } else {
             when {
@@ -131,7 +137,15 @@ class NewFeedScreenModel(
 
             try {
                 if (dataSource.isUrlRSSResource(url)) {
-                    insertFeeds(listOf(Feed(url = url, folderId = state.value.folderId)))
+                    insertFeeds(
+                        listOf(
+                            Feed(
+                                url = url,
+                                folderId = state.value.folderId,
+                                remoteFolderId = state.value.selectedFolder?.remoteId
+                            )
+                        )
+                    )
                 } else {
                     val rssUrls = HtmlParser.getFeedLink(url, get())
 
@@ -144,7 +158,8 @@ class NewFeedScreenModel(
                             listOf(
                                 Feed(
                                     url = rssUrls.first().url,
-                                    folderId = state.value.folderId
+                                    folderId = state.value.folderId,
+                                    remoteFolderId = state.value.selectedFolder?.remoteId
                                 )
                             )
                         )

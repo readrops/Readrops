@@ -105,12 +105,13 @@ class FreshRSSDataSource(private val service: FreshRSSService) {
         }
     }
 
-    suspend fun createFeed(token: String, feedUrl: String) {
-        service.createOrDeleteFeed(token, FEED_PREFIX + feedUrl, "subscribe")
+    suspend fun createFeed(token: String, feedUrl: String, folderId: String?) {
+        // no feed here of the folder prefix for the folder id
+        service.createOrDeleteFeed(token, FEED_PREFIX + feedUrl, "subscribe", folderId)
     }
 
     suspend fun deleteFeed(token: String, feedUrl: String) {
-        service.createOrDeleteFeed(token, FEED_PREFIX + feedUrl, "unsubscribe")
+        service.createOrDeleteFeed(token, FEED_PREFIX + feedUrl, "unsubscribe", null)
     }
 
     suspend fun updateFeed(token: String, feedUrl: String, title: String, folderId: String) {

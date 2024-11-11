@@ -136,13 +136,13 @@ class NextcloudNewsDataSourceTest : KoinTest {
         val stream = TestUtils.loadResource("services/nextcloudnews/adapters/feeds.json")
         mockServer.enqueueOKStream(stream)
 
-        val feeds = nextcloudNewsDataSource.createFeed("https://news.ycombinator.com/rss", null)
+        val feeds = nextcloudNewsDataSource.createFeed("https://news.ycombinator.com/rss", 100)
         val request = mockServer.takeRequest()
 
         assertTrue { feeds.isNotEmpty() }
         with(request.requestUrl!!) {
             assertEquals("https://news.ycombinator.com/rss", queryParameter("url"))
-            assertEquals(null, queryParameter("folderId"))
+            assertEquals("100", queryParameter("folderId"))
         }
     }
 
