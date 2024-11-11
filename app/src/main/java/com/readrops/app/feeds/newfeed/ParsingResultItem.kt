@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.readrops.app.R
 import com.readrops.app.util.components.CompactDropdownBox
 import com.readrops.app.util.components.DropdownBoxValue
+import com.readrops.app.util.components.IconText
 import com.readrops.app.util.theme.ShortSpacer
 import com.readrops.app.util.theme.VeryShortSpacer
 import com.readrops.app.util.theme.spacing
@@ -32,7 +33,8 @@ fun ParsingResultItem(
     onExpandedChange: (Boolean) -> Unit,
     onSelectFolder: (Folder) -> Unit,
     onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    error: String? = null
 ) {
     Surface(
         color = animateColorAsState(
@@ -109,6 +111,19 @@ fun ParsingResultItem(
                             onDismiss = onDismiss,
                         )
                     }
+                }
+
+                if (error != null) {
+                    ShortSpacer()
+
+                    IconText(
+                        icon = painterResource(R.drawable.ic_error),
+                        text = error,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                        tint = MaterialTheme.colorScheme.error,
+                        maxLines = 2
+                    )
                 }
             }
         }

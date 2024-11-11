@@ -18,9 +18,12 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -51,6 +54,7 @@ class NewFeedScreen(val url: String? = null) : AndroidScreen() {
         val navigator = LocalNavigator.currentOrThrow
         val screenModel = koinScreenModel<NewFeedScreenModel> { parametersOf(url) }
 
+        val appBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
         val state by screenModel.state.collectAsStateWithLifecycle()
 
         if (state.popScreen) {
@@ -72,7 +76,8 @@ class NewFeedScreen(val url: String? = null) : AndroidScreen() {
                                 contentDescription = null
                             )
                         }
-                    }
+                    },
+                    scrollBehavior = appBarScrollBehavior
                 )
             }
         ) { paddingValues ->
@@ -80,6 +85,7 @@ class NewFeedScreen(val url: String? = null) : AndroidScreen() {
                 modifier = Modifier
                     .padding(paddingValues)
                     .padding(horizontal = MaterialTheme.spacing.mediumSpacing)
+                    .nestedScroll(appBarScrollBehavior.nestedScrollConnection)
                     .verticalScroll(rememberScrollState())
                     .animateContentSize()
                     .fillMaxSize(),
@@ -194,6 +200,7 @@ class NewFeedScreen(val url: String? = null) : AndroidScreen() {
                                     isExpanded = false
                                 )
                             },
+                            error = parsingResult.error,
                             modifier = Modifier.fillMaxWidth()
                         )
 
@@ -206,6 +213,7 @@ class NewFeedScreen(val url: String? = null) : AndroidScreen() {
 
                     Text(
                         text = ErrorMessage.get(state.exception!!, LocalContext.current),
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.error,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth()

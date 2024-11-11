@@ -11,6 +11,7 @@ import com.readrops.api.utils.AuthInterceptor
 import com.readrops.api.utils.HtmlParser
 import com.readrops.app.R
 import com.readrops.app.repositories.BaseRepository
+import com.readrops.app.util.ErrorMessage
 import com.readrops.app.util.components.TextFieldError
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
@@ -87,7 +88,15 @@ class NewFeedScreenModel(
         val url = mutableState.value.url
 
         if (state.value.selectedResultsCount > 0) {
-            mutableState.update { it.copy(exception = null, isLoading = true) }
+            mutableState.update {
+                it.copy(
+                    exception = null,
+                    isLoading = true,
+                    parsingResults = state.value.parsingResults.map { parsingResult ->
+                        parsingResult.copy(error = null)
+                    }
+                )
+            }
 
             screenModelScope.launch(dispatcher) {
                 insertFeeds(state.value.parsingResults
@@ -189,6 +198,7 @@ class NewFeedScreenModel(
                 selectedAccount.login = getString(selectedAccount.loginKey, null)
                 selectedAccount.password = getString(selectedAccount.passwordKey, null)
             }
+
             get<AuthInterceptor>().apply {
                 credentials = Credentials.toCredentials(selectedAccount)
             }
@@ -198,17 +208,37 @@ class NewFeedScreenModel(
 
         val errors = repository.insertNewFeeds(
             newFeeds = feeds,
-            onUpdate = { /* TODO */ }
+            onUpdate = {}
         )
 
         if (errors.isEmpty()) {
             mutableState.update { it.copy(popScreen = true) }
         } else {
-            mutableState.update {
-                it.copy(
-                    exception = errors.values.first(),
-                    isLoading = false
-                )
+            if (state.value.selectedResultsCount > 0) {
+                val newParsingResults = state.value.parsingResults.map { parsingResult ->
+                    val feed = errors.keys.find { feed -> feed.url == parsingResult.url }
+
+                    if (feed != null) {
+                        val error = errors[feed]
+                        parsingResult.copy(error = ErrorMessage.get(error!!, context))
+                    } else {
+                        parsingResult
+                    }
+                }
+
+                mutableState.update {
+                    it.copy(
+                        parsingResults = newParsingResults,
+                        isLoading = false
+                    )
+                }
+            } else {
+                mutableState.update {
+                    it.copy(
+                        exception = errors.values.first(),
+                        isLoading = false
+                    )
+                }
             }
         }
     }
@@ -284,7 +314,7 @@ class NewFeedScreenModel(
 }
 
 data class State(
-    val url: String = "https://blog.broulik.de/",
+    val url: String = "",
     val selectedAccount: Account? = null,
     val selectedFolder: Folder? = null,
     val accounts: List<Account> = listOf(),
@@ -310,7 +340,8 @@ data class ParsingResultState(
     val label: String?,
     val isSelected: Boolean,
     val folder: Folder?,
-    val isExpanded: Boolean
+    val isExpanded: Boolean,
+    val error: String? = null
 ) {
     val folderId: Int? get() = folder?.id.takeUnless { it == 0 }
 }
