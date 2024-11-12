@@ -170,7 +170,7 @@ class NewFeedScreenModel(
                                     url = it.url,
                                     label = it.label,
                                     isSelected = true,
-                                    folder = state.value.folders.firstOrNull(),
+                                    folder = state.value.selectedFolder,
                                     isExpanded = false
                                 )
                             }
