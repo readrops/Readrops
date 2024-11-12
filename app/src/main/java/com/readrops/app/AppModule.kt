@@ -40,15 +40,15 @@ import org.koin.dsl.module
 
 val appModule = module {
 
-    factory { TimelineScreenModel(get(), get(), get()) }
+    factory { TimelineScreenModel(get(), get(), get(), androidContext()) }
 
-    factory { FeedScreenModel(get(), get(), get(), androidContext()) }
+    factory { FeedScreenModel(get(), get(), androidContext()) }
 
     factory { (url: String?) -> NewFeedScreenModel(get(), get(), androidContext(), url) }
 
     factory { AccountSelectionScreenModel(get()) }
 
-    factory { AccountScreenModel(get()) }
+    factory { AccountScreenModel(get(), androidContext()) }
 
     factory { (itemId: Int) -> ItemScreenModel(get(), itemId, get()) }
 

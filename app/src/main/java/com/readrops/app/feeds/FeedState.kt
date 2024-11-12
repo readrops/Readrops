@@ -9,7 +9,7 @@ data class FeedState(
     val foldersAndFeeds: FolderAndFeedsState = FolderAndFeedsState.InitialState,
     val dialog: DialogState? = null,
     val areFoldersExpanded: Boolean = false,
-    val exception: Exception? = null,
+    val error: String? = null,
     val config: AccountConfig? = null
 ) {
 
@@ -48,7 +48,7 @@ data class UpdateFeedDialogState(
     val folders: List<Folder> = listOf(),
     val isFolderDropDownExpanded: Boolean = false,
     val isFeedUrlReadOnly: Boolean = true,
-    val exception: Exception? = null,
+    val error: String? = null,
     val isLoading: Boolean = false
 ) {
     val isFeedNameError

@@ -10,10 +10,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.readrops.app.R
-import com.readrops.app.util.ErrorMessage
 import com.readrops.app.util.components.LoadingTextButton
 import com.readrops.app.util.components.TextFieldError
 import com.readrops.app.util.theme.LargeSpacer
@@ -21,7 +19,7 @@ import com.readrops.app.util.theme.LargeSpacer
 data class TextFieldDialogState(
     val value: String = "",
     val textFieldError: TextFieldError? = null,
-    val exception: Exception? = null,
+    val error: String? = null,
     val isLoading: Boolean = false
 ) {
     val isTextFieldError
@@ -66,9 +64,9 @@ fun TextFieldDialog(
             supportingText = { Text(text = state.textFieldError?.errorText().orEmpty()) }
         )
 
-        if (state.exception != null) {
+        if (state.error != null) {
             Text(
-                text = ErrorMessage.get(state.exception, LocalContext.current),
+                text = state.error,
                 color = MaterialTheme.colorScheme.error
             )
         }

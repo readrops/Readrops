@@ -45,8 +45,9 @@ class TimelineScreenModel(
     private val database: Database,
     private val getFoldersWithFeeds: GetFoldersWithFeeds,
     private val preferences: Preferences,
+    context: Context,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : TabScreenModel(database) {
+) : TabScreenModel(database, context) {
 
     private val _timelineState = MutableStateFlow(TimelineState())
     val timelineState = _timelineState.asStateFlow()

@@ -3,7 +3,6 @@ package com.readrops.app.feeds
 import android.content.Context
 import android.util.Patterns
 import cafe.adriel.voyager.core.model.screenModelScope
-import com.readrops.api.localfeed.LocalRSSDataSource
 import com.readrops.app.R
 import com.readrops.app.home.TabScreenModel
 import com.readrops.app.repositories.GetFoldersWithFeeds
@@ -28,10 +27,9 @@ import org.koin.core.component.KoinComponent
 class FeedScreenModel(
     database: Database,
     private val getFoldersWithFeeds: GetFoldersWithFeeds,
-    private val localRSSDataSource: LocalRSSDataSource,
     private val context: Context,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : TabScreenModel(database), KoinComponent {
+) : TabScreenModel(database, context), KoinComponent {
 
     private val _feedState = MutableStateFlow(FeedState())
     val feedsState = _feedState.asStateFlow()
@@ -112,14 +110,14 @@ class FeedScreenModel(
                     it.copy(
                         value = "",
                         textFieldError = null,
-                        exception = null,
+                        error = null,
                         isLoading = false
                     )
                 }
             }
 
             is DialogState.UpdateFeed -> {
-                _updateFeedDialogState.update { it.copy(exception = null, isLoading = false) }
+                _updateFeedDialogState.update { it.copy(error = null, isLoading = false) }
             }
 
             else -> {}
@@ -162,7 +160,7 @@ class FeedScreenModel(
             try {
                 repository?.deleteFeed(feed)
             } catch (e: Exception) {
-                _feedState.update { it.copy(exception = e) }
+                _feedState.update { it.copy(error = accountError?.deleteFeedMessage(e)) }
             }
         }
     }
@@ -172,7 +170,7 @@ class FeedScreenModel(
             try {
                 repository?.deleteFolder(folder)
             } catch (e: Exception) {
-                _feedState.update { it.copy(exception = e) }
+                _feedState.update { it.copy(error = accountError?.deleteFolderMessage(e)) }
             }
         }
     }
@@ -236,7 +234,7 @@ class FeedScreenModel(
             }
 
             else -> {
-                _updateFeedDialogState.update { it.copy(exception = null, isLoading = true) }
+                _updateFeedDialogState.update { it.copy(error = null, isLoading = true) }
 
                 screenModelScope.launch(dispatcher) {
                     with(_updateFeedDialogState.value) {
@@ -256,7 +254,7 @@ class FeedScreenModel(
                         } catch (e: Exception) {
                             _updateFeedDialogState.update {
                                 it.copy(
-                                    exception = e,
+                                    error = accountError?.updateFeedMessage(e),
                                     isLoading = false
                                 )
                             }
@@ -304,7 +302,16 @@ class FeedScreenModel(
                     repository?.addFolder(Folder(name = name, accountId = currentAccount!!.id))
                 }
             } catch (e: Exception) {
-                _folderState.update { it.copy(exception = e, isLoading = false) }
+                _folderState.update {
+                    it.copy(
+                        error = if (updateFolder) {
+                            accountError?.updateFolderMessage(e)
+                        } else {
+                            accountError?.newFolderMessage(e)
+                        },
+                        isLoading = false
+                    )
+                }
                 return@launch
             }
 
@@ -312,7 +319,7 @@ class FeedScreenModel(
         }
     }
 
-    fun resetException() = _feedState.update { it.copy(exception = null) }
+    fun resetException() = _feedState.update { it.copy(error = null) }
 
     //endregion
 }

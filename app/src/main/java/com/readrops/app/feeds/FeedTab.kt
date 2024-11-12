@@ -32,7 +32,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
@@ -48,7 +47,6 @@ import com.readrops.app.R
 import com.readrops.app.feeds.dialogs.FeedModalBottomSheet
 import com.readrops.app.feeds.dialogs.UpdateFeedDialog
 import com.readrops.app.feeds.newfeed.NewFeedScreen
-import com.readrops.app.util.ErrorMessage
 import com.readrops.app.util.components.CenteredProgressIndicator
 import com.readrops.app.util.components.ErrorMessage
 import com.readrops.app.util.components.Placeholder
@@ -75,7 +73,6 @@ object FeedTab : Tab {
     override fun Content() {
         val haptic = LocalHapticFeedback.current
         val uriHandler = LocalUriHandler.current
-        val context = LocalContext.current
         val navigator = LocalNavigator.currentOrThrow
 
         val screenModel = koinScreenModel<FeedScreenModel>()
@@ -85,9 +82,9 @@ object FeedTab : Tab {
         val topAppBarScrollBehavior =
             TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
-        LaunchedEffect(state.exception) {
-            if (state.exception != null) {
-                snackbarHostState.showSnackbar(ErrorMessage.get(state.exception!!, context))
+        LaunchedEffect(state.error) {
+            if (state.error != null) {
+                snackbarHostState.showSnackbar((state.error!!))
                 screenModel.resetException()
             }
         }

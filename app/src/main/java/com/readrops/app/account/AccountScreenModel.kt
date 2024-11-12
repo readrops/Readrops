@@ -29,8 +29,9 @@ import org.koin.core.component.get
 
 class AccountScreenModel(
     private val database: Database,
+    context: Context,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : TabScreenModel(database) {
+) : TabScreenModel(database, context) {
 
     private val _closeHome = MutableStateFlow(false)
     val closeHome = _closeHome.asStateFlow()

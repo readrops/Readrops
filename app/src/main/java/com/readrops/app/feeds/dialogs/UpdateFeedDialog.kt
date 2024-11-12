@@ -12,13 +12,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.readrops.app.R
 import com.readrops.app.feeds.FeedScreenModel
-import com.readrops.app.util.ErrorMessage
 import com.readrops.app.util.components.LoadingTextButton
 import com.readrops.app.util.components.dialog.BaseDialog
 import com.readrops.app.util.theme.LargeSpacer
@@ -123,11 +121,11 @@ fun UpdateFeedDialog(
             )
         }
 
-        if (state.exception != null) {
+        if (state.error != null) {
             MediumSpacer()
 
             Text(
-                text = ErrorMessage.get(state.exception!!, LocalContext.current),
+                text = state.error!!,
                 color = MaterialTheme.colorScheme.error
             )
         }

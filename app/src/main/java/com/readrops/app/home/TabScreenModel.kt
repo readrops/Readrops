@@ -1,11 +1,13 @@
 package com.readrops.app.home
 
+import android.content.Context
 import android.content.SharedPreferences
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.readrops.api.services.Credentials
 import com.readrops.api.utils.AuthInterceptor
 import com.readrops.app.repositories.BaseRepository
+import com.readrops.app.util.accounterror.AccountError
 import com.readrops.db.Database
 import com.readrops.db.entities.account.Account
 import kotlinx.coroutines.CoroutineDispatcher
@@ -24,6 +26,7 @@ import org.koin.core.parameter.parametersOf
  */
 abstract class TabScreenModel(
     private val database: Database,
+    private val context: Context,
     dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ScreenModel, KoinComponent {
 
@@ -33,6 +36,8 @@ abstract class TabScreenModel(
     protected var repository: BaseRepository? = null
 
     protected var currentAccount: Account? = null
+
+    protected var accountError: AccountError? = null
 
     private val _accountEvent = MutableSharedFlow<Account>()
     protected val accountEvent =
@@ -61,6 +66,7 @@ abstract class TabScreenModel(
 
                         currentAccount = account
                         repository = get(parameters = { parametersOf(account) })
+                        accountError = AccountError.from(account, context)
 
                         _accountEvent.emit(account)
                     }
