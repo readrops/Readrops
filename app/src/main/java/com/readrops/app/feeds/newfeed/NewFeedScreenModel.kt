@@ -11,7 +11,7 @@ import com.readrops.api.utils.AuthInterceptor
 import com.readrops.api.utils.HtmlParser
 import com.readrops.app.R
 import com.readrops.app.repositories.BaseRepository
-import com.readrops.app.util.ErrorMessage
+import com.readrops.app.util.accounterror.AccountError
 import com.readrops.app.util.components.TextFieldError
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
@@ -27,7 +27,6 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
-import java.net.UnknownHostException
 
 class NewFeedScreenModel(
     private val database: Database,
@@ -39,6 +38,8 @@ class NewFeedScreenModel(
 
     private val selectedAccountState = MutableStateFlow(state.value.selectedAccount)
 
+    private lateinit var accountError: AccountError
+
     init {
         screenModelScope.launch(dispatcher) {
             database.accountDao()
@@ -47,6 +48,8 @@ class NewFeedScreenModel(
                 .collect { accounts ->
                     val selectedAccount = accounts.find { it.isCurrentAccount }
                         ?: accounts.first()
+
+                    accountError = AccountError.from(selectedAccount, context)
                     selectedAccountState.update { selectedAccount }
 
                     mutableState.update { newFeedState ->
@@ -90,7 +93,7 @@ class NewFeedScreenModel(
         if (state.value.selectedResultsCount > 0) {
             mutableState.update {
                 it.copy(
-                    exception = null,
+                    error = null,
                     isLoading = true,
                     parsingResults = state.value.parsingResults.map { parsingResult ->
                         parsingResult.copy(error = null)
@@ -132,7 +135,7 @@ class NewFeedScreenModel(
 
     private fun loadFeeds() {
         screenModelScope.launch(dispatcher) {
-            mutableState.update { it.copy(exception = null, isLoading = true) }
+            mutableState.update { it.copy(error = null, isLoading = true) }
             val url = state.value.url
 
             try {
@@ -185,21 +188,11 @@ class NewFeedScreenModel(
                     }
                 }
             } catch (e: Exception) {
-                // TODO improve error handling for all accounts
-                when (e) {
-                    is UnknownHostException -> mutableState.update {
-                        it.copy(
-                            urlError = TextFieldError.UnreachableUrl,
-                            isLoading = false
-                        )
-                    }
-
-                    else -> mutableState.update {
-                        it.copy(
-                            urlError = TextFieldError.NoRSSFeed,
-                            isLoading = false
-                        )
-                    }
+                mutableState.update {
+                    it.copy(
+                        error = accountError.newFeedMessage(e),
+                        isLoading = false
+                    )
                 }
             }
         }
@@ -235,7 +228,7 @@ class NewFeedScreenModel(
 
                     if (feed != null) {
                         val error = errors[feed]
-                        parsingResult.copy(error = ErrorMessage.get(error!!, context))
+                        parsingResult.copy(error = accountError.newFeedMessage(error!!))
                     } else {
                         parsingResult
                     }
@@ -250,7 +243,7 @@ class NewFeedScreenModel(
             } else {
                 mutableState.update {
                     it.copy(
-                        exception = errors.values.first(),
+                        error = accountError.newFeedMessage(errors.values.first()),
                         isLoading = false
                     )
                 }
@@ -337,7 +330,7 @@ data class State(
     val isAccountDropdownExpanded: Boolean = false,
     val isFoldersDropdownExpanded: Boolean = false,
     val urlError: TextFieldError? = null,
-    val exception: Exception? = null,
+    val error: String? = null,
     val isLoading: Boolean = false,
     val popScreen: Boolean = false,
     val parsingResults: List<ParsingResultState> = listOf()

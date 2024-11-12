@@ -182,4 +182,7 @@
     <string name="selected">(%1$s sélectionnés)</string>
     <string name="add_selected_feeds">Ajouter %1$s flux sélectionnés</string>
     <string name="enter_url">Entrer une URL</string>
+    <string name="feed_already_exists">Le flux existe déjà</string>
+    <string name="invalid_folder">Dossier invalide</string>
+    <string name="invalid_feed">Flux invalide</string>
 </resources>

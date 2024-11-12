@@ -24,7 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -34,7 +33,6 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.readrops.app.R
 import com.readrops.app.account.selection.adaptiveIconPainterResource
-import com.readrops.app.util.ErrorMessage
 import com.readrops.app.util.components.AndroidScreen
 import com.readrops.app.util.components.DropdownBox
 import com.readrops.app.util.components.DropdownBoxValue
@@ -208,11 +206,11 @@ class NewFeedScreen(val url: String? = null) : AndroidScreen() {
                     }
                 }
 
-                if (state.exception != null) {
+                if (state.error != null) {
                     MediumSpacer()
 
                     Text(
-                        text = ErrorMessage.get(state.exception!!, LocalContext.current),
+                        text = state.error!!,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.error,
                         textAlign = TextAlign.Center,
