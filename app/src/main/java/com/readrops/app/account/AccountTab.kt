@@ -390,7 +390,7 @@ object AccountTab : Tab {
 
             is DialogState.Error -> {
                 ErrorDialog(
-                    exception = dialog.exception,
+                    error = dialog.error,
                     onDismiss = { screenModel.closeDialog(dialog) }
                 )
             }

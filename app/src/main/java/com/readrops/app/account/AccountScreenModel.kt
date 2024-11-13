@@ -94,7 +94,11 @@ class AccountScreenModel(
         screenModelScope.launch(dispatcher) {
             val stream = context.contentResolver.openOutputStream(uri)
             if (stream == null) {
-                _accountState.update { it.copy(error = NoSuchFileException(uri.toFile())) }
+                _accountState.update {
+                    it.copy(
+                        error = accountError?.genericMessage(NoSuchFileException(uri.toFile()))
+                    )
+                }
                 return@launch
             }
 
@@ -123,13 +127,17 @@ class AccountScreenModel(
             try {
                 val stream = context.contentResolver.openInputStream(uri)
                 if (stream == null) {
-                    _accountState.update { it.copy(error = NoSuchFileException(uri.toFile())) }
+                    _accountState.update {
+                        it.copy(
+                            error = accountError?.genericMessage(NoSuchFileException(uri.toFile()))
+                        )
+                    }
                     return@launch
                 }
 
                 foldersAndFeeds = OPMLParser.read(stream)
             } catch (e: Exception) {
-                _accountState.update { it.copy(error = e) }
+                _accountState.update { it.copy(error = accountError?.genericMessage(e)) }
                 return@launch
             }
 
@@ -216,7 +224,7 @@ data class AccountState(
     val account: Account = Account(name = "account", type = AccountType.LOCAL),
     val dialog: DialogState? = null,
     val synchronizationErrors: ErrorResult? = null,
-    val error: Exception? = null,
+    val error: String? = null,
     val opmlExportSuccess: Boolean = false,
     val opmlExportUri: Uri? = null,
     val accounts: List<Account> = emptyList(),
@@ -230,7 +238,7 @@ sealed interface DialogState {
         DialogState
 
     data class ErrorList(val errorResult: ErrorResult) : DialogState
-    data class Error(val exception: Exception) : DialogState
+    data class Error(val error: String) : DialogState
 
     data object OPMLChoice : DialogState
 
