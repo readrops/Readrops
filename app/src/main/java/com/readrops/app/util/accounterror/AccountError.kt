@@ -25,7 +25,7 @@ abstract class AccountError(protected val context: Context) {
 
     open fun deleteFolderMessage(exception: Exception): String = genericMessage(exception)
 
-    protected fun genericMessage(exception: Exception) = when (exception) {
+    fun genericMessage(exception: Exception) = when (exception) {
         is HttpException -> httpMessage(exception)
         is UnknownHostException -> context.resources.getString(R.string.unreachable_url)
         is NoSuchFileException -> context.resources.getString(R.string.unable_open_file)

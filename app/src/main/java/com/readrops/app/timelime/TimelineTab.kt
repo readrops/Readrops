@@ -59,7 +59,6 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.readrops.app.R
 import com.readrops.app.item.ItemScreen
 import com.readrops.app.timelime.drawer.TimelineDrawer
-import com.readrops.app.util.ErrorMessage
 import com.readrops.app.util.components.CenteredProgressIndicator
 import com.readrops.app.util.components.Placeholder
 import com.readrops.app.util.components.RefreshScreen
@@ -167,7 +166,7 @@ object TimelineTab : Tab {
 
         LaunchedEffect(state.syncError) {
             if (state.syncError != null) {
-                snackbarHostState.showSnackbar(ErrorMessage.get(state.syncError!!, context))
+                snackbarHostState.showSnackbar(state.syncError!!)
                 screenModel.resetSyncError()
             }
         }
@@ -239,7 +238,7 @@ object TimelineTab : Tab {
                             }
 
                             IconButton(
-                                onClick = { screenModel.refreshTimeline(context) }
+                                onClick = { screenModel.refreshTimeline() }
                             ) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_sync),
@@ -297,7 +296,7 @@ object TimelineTab : Tab {
                         else -> {
                             PullToRefreshBox(
                                 isRefreshing = state.isRefreshing,
-                                onRefresh = { screenModel.refreshTimeline(context) },
+                                onRefresh = { screenModel.refreshTimeline() },
                             ) {
                                 if (items.itemCount > 0) {
                                     MarkItemsRead(

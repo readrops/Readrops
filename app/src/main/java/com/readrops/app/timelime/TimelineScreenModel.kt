@@ -45,7 +45,7 @@ class TimelineScreenModel(
     private val database: Database,
     private val getFoldersWithFeeds: GetFoldersWithFeeds,
     private val preferences: Preferences,
-    context: Context,
+    private val context: Context,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : TabScreenModel(database, context) {
 
@@ -146,8 +146,8 @@ class TimelineScreenModel(
 
     private fun buildPager(empty: Boolean = false) {
         val query = ItemsQueryBuilder.buildItemsQuery(
-            filters.value,
-            currentAccount!!.config.useSeparateState
+            queryFilters = filters.value,
+            separateState = currentAccount!!.config.useSeparateState
         )
 
         val pager = Pager(
@@ -179,7 +179,7 @@ class TimelineScreenModel(
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun refreshTimeline(context: Context) {
+    fun refreshTimeline() {
         buildPager(empty = true)
 
         screenModelScope.launch(dispatcher) {
@@ -232,7 +232,7 @@ class TimelineScreenModel(
 
                         _timelineState.update {
                             it.copy(
-                                syncError = error,
+                                syncError = accountError?.genericMessage(error!!),
                                 isRefreshing = false,
                                 hideReadAllFAB = false
                             )
@@ -449,7 +449,7 @@ data class TimelineState(
     val feedMax: Int = 0,
     val scrollToTop: Boolean = false,
     val localSyncErrors: ErrorResult? = null,
-    val syncError: Exception? = null,
+    val syncError: String? = null,
     val filters: QueryFilters = QueryFilters(),
     val filterFeedName: String = "",
     val filterFolderName: String = "",
