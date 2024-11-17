@@ -11,6 +11,7 @@ object FoldersAndFeedsQueryBuilder {
         "Feed.name As feedName",
         "Feed.icon_url As feedIcon",
         "Feed.url As feedUrl",
+        "Feed.image_url as feedImage",
         "Feed.siteUrl As feedSiteUrl",
         "Feed.description as feedDescription",
         "Feed.remote_id as feedRemoteId",

@@ -28,6 +28,7 @@ class RSS1AdapterTest {
             assertEquals(url, "https://slashdot.org/")
             assertEquals(siteUrl, "https://slashdot.org/")
             assertEquals(description, "News for nerds, stuff that matters")
+            assertEquals(imageUrl, "https://a.fsdn.com/sd/topics/topicslashdot.gif")
         }
 
         with(items[0]) {

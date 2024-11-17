@@ -35,6 +35,7 @@ class JSONFeedAdapterTest {
             assertEquals(url, "http://flyingmeat.com/blog/feed.json")
             assertEquals(siteUrl, "http://flyingmeat.com/blog/")
             assertEquals(description, "News from your friends at Flying Meat.")
+            assertEquals(imageUrl, "https://secure.flyingmeat.com/favicon.ico")
         }
 
         with(items[0]) {

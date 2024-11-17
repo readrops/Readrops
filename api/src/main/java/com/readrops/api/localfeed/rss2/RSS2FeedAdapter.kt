@@ -35,6 +35,7 @@ class RSS2FeedAdapter : XmlAdapter<Pair<Feed, List<Item>>> {
                                         url = attributes.getValueOrNull("href")
                                 }
                                 "item" -> items += itemAdapter.fromXml(this@allChildrenAutoIgnore)
+                                "image" -> imageUrl = parseImage(this@allChildrenAutoIgnore)
                                 else -> skipContents()
                             }
                         }
@@ -49,7 +50,20 @@ class RSS2FeedAdapter : XmlAdapter<Pair<Feed, List<Item>>> {
         }
     }
 
+    private fun parseImage(konsumer: Konsumer): String? = with(konsumer) {
+        var url: String? = null
+
+        allChildrenAutoIgnore(Names.of("url")) {
+            when (tagName) {
+                "url" -> url = nullableText()
+                else -> skipContents()
+            }
+        }
+
+        url
+    }
+
     companion object {
-        val names = Names.of("title", "description", "link", "item")
+        val names = Names.of("title", "description", "link", "item", "image")
     }
 }

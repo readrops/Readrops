@@ -27,6 +27,7 @@ class ATOMAdapterTest {
             assertEquals(url, "https://github.com/readrops/Readrops/commits/develop.atom")
             assertEquals(siteUrl, "https://github.com/readrops/Readrops/commits/develop")
             assertEquals(description, "Here is a subtitle")
+            assertEquals(imageUrl, "https://github.com/readrops/Readrops/blob/develop/images/readrops_logo.png")
         }
 
         with(items[0]) {

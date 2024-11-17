@@ -121,5 +121,8 @@ object MigrationFrom4To5 : Migration(4, 5) {
 
         db.execSQL("DROP TABLE IF EXISTS `Account`")
         db.execSQL("ALTER TABLE `_new_Account` RENAME TO `Account`")
+
+        // add image_url field
+        db.execSQL("""ALTER TABLE `Feed` ADD `image_url` TEXT DEFAULT NULL""")
     }
 }

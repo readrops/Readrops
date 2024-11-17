@@ -28,6 +28,7 @@ data class Feed(
     var name: String? = null,
     var description: String? = null,
     var url: String? = null,
+    @ColumnInfo("image_url") var imageUrl: String? = null,
     var siteUrl: String? = null,
     @ColumnInfo("last_updated") var lastUpdated: String? = null,
     @ColorInt var color: Int = 0,

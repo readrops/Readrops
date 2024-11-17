@@ -20,11 +20,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.readrops.app.R
 import com.readrops.app.util.theme.LargeSpacer
@@ -46,53 +51,87 @@ fun FeedModalBottomSheet(
     canDeleteFeed: Boolean
 ) {
     ModalBottomSheet(
+        dragHandle = null,
         onDismissRequest = { onDismissRequest() }
     ) {
         Column {
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(
-                    horizontal = MaterialTheme.spacing.largeSpacing
-                )
+            Box(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                AsyncImage(
-                    model = feed.iconUrl,
-                    contentDescription = feed.name!!,
-                    placeholder = painterResource(id = R.drawable.ic_rss_feed_grey),
-                    error = painterResource(id = R.drawable.ic_rss_feed_grey),
-                    modifier = Modifier.size(MaterialTheme.spacing.veryLargeSpacing)
-                )
+                if (feed.imageUrl != null) {
+                    AsyncImage(
+                        model = feed.imageUrl,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .matchParentSize()
+                            .drawWithContent {
+                                drawContent()
+                                drawRect(
+                                    color = Color.Black.copy(alpha = 0.65f)
+                                )
+                            }
+                            .blur(2.5.dp)
+                    )
+                }
 
-                MediumSpacer()
-
-                Column {
-                    Text(
-                        text = feed.name!!,
-                        style = MaterialTheme.typography.titleLarge,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(
+                        top = MaterialTheme.spacing.largeSpacing,
+                        start = MaterialTheme.spacing.largeSpacing,
+                        end = MaterialTheme.spacing.largeSpacing,
+                        bottom = MaterialTheme.spacing.mediumSpacing
+                    )
+                ) {
+                    AsyncImage(
+                        model = feed.iconUrl,
+                        contentDescription = feed.name!!,
+                        placeholder = painterResource(id = R.drawable.ic_rss_feed_grey),
+                        error = painterResource(id = R.drawable.ic_rss_feed_grey),
+                        modifier = Modifier.size(MaterialTheme.spacing.veryLargeSpacing)
                     )
 
-                    if (feed.description != null) {
-                        VeryShortSpacer()
+                    MediumSpacer()
 
+                    Column {
                         Text(
-                            text = feed.description!!,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 2,
+                            text = feed.name!!,
+                            style = MaterialTheme.typography.titleLarge,
+                            color = if (feed.imageUrl != null) {
+                                Color.White
+                            } else {
+                                MaterialTheme.colorScheme.onBackground
+                            },
+                            maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
+
+                        if (feed.description != null) {
+                            VeryShortSpacer()
+
+                            Text(
+                                text = feed.description!!,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = if (feed.imageUrl != null) {
+                                    Color.White
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                },
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     }
                 }
             }
 
-            MediumSpacer()
-
-            HorizontalDivider(
-                modifier = Modifier.padding(horizontal = MaterialTheme.spacing.mediumSpacing)
-            )
+            if (feed.imageUrl == null) {
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = MaterialTheme.spacing.mediumSpacing)
+                )
+            }
 
             MediumSpacer()
 

@@ -49,6 +49,7 @@ lifecyle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-comp
 
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-http = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
+coil-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coil" }
 
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
@@ -112,7 +113,7 @@ compose = ["compose-foundation", "compose-runtime", "compose-animation",
 voyager = ["voyager-navigator", "voyager-screenmodel", "voyager-tab-navigator", "voyager-koin", "voyager-transitions"]
 lifecycle = ["lifecycle-viewmodel-ktx", "lifecycle-viewmodel-compose", "lifecycle-viewmodel-savedstate",
     "lifecyle-runtime-compose"]
-coil = ["coil-compose", "coil-http"]
+coil = ["coil-compose", "coil-http", "coil-svg"]
 coroutines = ["coroutines-core", "coroutines-android"]
 room = ["room-runtime", "room-ktx", "room-paging"]
 koin = ["koin-core", "koin-android", "koin-androidx-compose"]

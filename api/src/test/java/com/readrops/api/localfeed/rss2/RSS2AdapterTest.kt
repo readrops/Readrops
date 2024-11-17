@@ -27,6 +27,7 @@ class RSS2AdapterTest {
             assertEquals(url, "https://news.ycombinator.com/feed/")
             assertEquals(siteUrl, "https://news.ycombinator.com/")
             assertEquals(description, "Links for the intellectually curious, ranked by readers.")
+            assertEquals(imageUrl, "https://news.ycombinator.com/y18.svg")
         }
 
         with(items[0]) {
