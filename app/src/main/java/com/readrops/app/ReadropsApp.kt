@@ -26,15 +26,17 @@ open class ReadropsApp : Application(), KoinComponent, ImageLoaderFactory {
     override fun onCreate() {
         super.onCreate()
 
-        Thread.setDefaultUncaughtExceptionHandler { _, throwable ->
-            val intent = Intent(this, CrashActivity::class.java).apply {
-                putExtra(CrashActivity.THROWABLE_KEY, throwable)
-                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            }
+        if (!BuildConfig.DEBUG) {
+            Thread.setDefaultUncaughtExceptionHandler { _, throwable ->
+                val intent = Intent(this, CrashActivity::class.java).apply {
+                    putExtra(CrashActivity.THROWABLE_KEY, throwable)
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                }
 
-            startActivity(intent)
-            exitProcess(0)
+                startActivity(intent)
+                exitProcess(0)
+            }
         }
 
         startKoin {
