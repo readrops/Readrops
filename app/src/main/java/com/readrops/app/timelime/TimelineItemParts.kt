@@ -1,6 +1,5 @@
 package com.readrops.app.timelime
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -54,7 +53,7 @@ fun RegularTimelineItem(
     modifier: Modifier = Modifier
 ) {
     TimelineItemContainer(
-        isRead = itemWithFeed.item.isRead,
+        isRead = itemWithFeed.isRead,
         onClick = onClick,
         modifier = modifier
     ) {
@@ -68,7 +67,7 @@ fun RegularTimelineItem(
                 folderName = itemWithFeed.folder?.name,
                 date = itemWithFeed.item.pubDate!!,
                 duration = itemWithFeed.item.readTime,
-                isStarred = itemWithFeed.item.isStarred,
+                isStarred = itemWithFeed.isStarred,
                 onFavorite = onFavorite,
                 onShare = onShare
             )
@@ -100,6 +99,7 @@ fun CompactTimelineItem(
 
     Surface(
         color = MaterialTheme.colorScheme.surfaceVariant,
+        onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
             .drawBehind {
@@ -107,8 +107,7 @@ fun CompactTimelineItem(
                 // so we draw a rect with the current screen background color behind the card but in front of the dismiss background
                 drawRect(containerColor)
             }
-            .alpha(if (itemWithFeed.item.isRead) readAlpha else 1f)
-            .clickable { onClick() }
+            .alpha(if (itemWithFeed.isRead) readAlpha else 1f)
     ) {
         Column(
             modifier = Modifier.padding(
@@ -126,7 +125,7 @@ fun CompactTimelineItem(
                 onShare = onShare,
                 date = itemWithFeed.item.pubDate!!,
                 duration = itemWithFeed.item.readTime,
-                isStarred = itemWithFeed.item.isStarred,
+                isStarred = itemWithFeed.isStarred,
                 displayActions = false
             )
 
@@ -161,7 +160,7 @@ fun LargeTimelineItem(
         )
     } else {
         TimelineItemContainer(
-            isRead = itemWithFeed.item.isRead,
+            isRead = itemWithFeed.isRead,
             onClick = onClick,
             modifier = modifier
         ) {
@@ -176,7 +175,7 @@ fun LargeTimelineItem(
                         folderName = itemWithFeed.folder?.name,
                         date = itemWithFeed.item.pubDate!!,
                         duration = itemWithFeed.item.readTime,
-                        isStarred = itemWithFeed.item.isStarred,
+                        isStarred = itemWithFeed.isStarred,
                         onFavorite = onFavorite,
                         onShare = onShare
                     )
@@ -238,6 +237,7 @@ fun TimelineItemContainer(
     val containerColor = MaterialTheme.colorScheme.background
 
     Card(
+        onClick = onClick,
         modifier = modifier
             .padding(padding)
             .fillMaxWidth()
@@ -250,7 +250,6 @@ fun TimelineItemContainer(
                 )
             }
             .alpha(if (isRead) readAlpha else 1f)
-            .clickable { onClick() }
     ) {
         content()
     }

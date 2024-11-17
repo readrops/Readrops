@@ -13,5 +13,11 @@ data class ItemWithFeed(
     @ColumnInfo(name = "color") @ColorInt val color: Int,
     @ColumnInfo(name = "icon_url") val feedIconUrl: String?,
     @ColumnInfo(name = "siteUrl") val websiteUrl: String?,
-    @Embedded(prefix = "folder_") val folder: Folder?
+    @Embedded(prefix = "folder_") val folder: Folder?,
+    // duplicates of Item.isRead and Item.isStarred
+    // this is a workaround to make the UI refresh itself when updating read/star state
+    // as since kotlin 2.0.20 it wouldn't work anymore, because of Item properties mutability
+    // TODO see how to resolve this by improving Item immutability
+    @ColumnInfo(name = "is_starred") val isStarred: Boolean = false,
+    @ColumnInfo(name = "is_read") val isRead: Boolean = false
 )

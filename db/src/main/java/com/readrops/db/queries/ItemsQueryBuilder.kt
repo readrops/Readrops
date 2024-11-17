@@ -29,11 +29,13 @@ object ItemsQueryBuilder {
     )
 
     private val SEPARATE_STATE_COLUMNS = arrayOf(
+        "case When ItemState.remote_id is NULL Or ItemState.read = 1 Then 1 else 0 End is_read",
         "case When ItemState.remote_id is NULL Or ItemState.read = 1 Then 1 else 0 End read",
+        "case When ItemState.starred = 1 Then 1 else 0 End is_starred",
         "case When ItemState.starred = 1 Then 1 else 0 End starred"
     )
 
-    private val OTHER_COLUMNS = arrayOf("read", "starred")
+    private val OTHER_COLUMNS = arrayOf("read AS is_read", "read", "starred AS is_starred", "starred")
 
     private val SELECT_ALL_JOIN = """Item INNER JOIN Feed on Item.feed_id = Feed.id
             LEFT JOIN Folder on Feed.folder_id = Folder.id """.trimIndent()
