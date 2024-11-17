@@ -4,15 +4,16 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Environment
 import androidx.compose.runtime.Stable
 import androidx.core.content.FileProvider
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
-import coil.imageLoader
-import coil.request.ImageRequest
+import coil3.imageLoader
+import coil3.request.ImageRequest
+import coil3.request.allowHardware
+import coil3.toBitmap
 import com.readrops.app.repositories.BaseRepository
 import com.readrops.app.util.Preferences
 import com.readrops.db.Database
@@ -168,7 +169,7 @@ class ItemScreenModel(
                 .data(url)
                 .allowHardware(false)
                 .build()
-        ).drawable as BitmapDrawable).bitmap
+        ).image!!.toBitmap())
     }
 
     private fun saveImageInCache(bitmap: Bitmap, url: String, context: Context): Uri {

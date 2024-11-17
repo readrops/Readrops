@@ -7,8 +7,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.Builder
 import androidx.core.app.NotificationManagerCompat
-import coil.annotation.ExperimentalCoilApi
-import coil.imageLoader
+import coil3.imageLoader
 import com.readrops.api.services.Credentials
 import com.readrops.api.services.fever.adapters.Favicon
 import com.readrops.api.utils.AuthInterceptor
@@ -171,7 +170,6 @@ class Synchronizer(
         }
     }
 
-    @OptIn(ExperimentalCoilApi::class)
     private suspend fun loadFeverFavicons(
         favicons: Map<Feed, Favicon>,
         account: Account,

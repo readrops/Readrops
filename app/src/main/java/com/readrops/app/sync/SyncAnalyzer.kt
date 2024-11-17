@@ -4,8 +4,9 @@ import android.content.Context
 import android.graphics.Bitmap
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
-import coil.imageLoader
-import coil.request.ImageRequest
+import coil3.imageLoader
+import coil3.request.ImageRequest
+import coil3.toBitmap
 import com.readrops.app.R
 import com.readrops.app.repositories.SyncResult
 import com.readrops.db.Database
@@ -104,7 +105,7 @@ class SyncAnalyzer(
                             .build()
                     )
 
-                target.drawable?.toBitmap()
+                target.image?.toBitmap()
             }
 
             val (item, text) = if (items.size == 1) {

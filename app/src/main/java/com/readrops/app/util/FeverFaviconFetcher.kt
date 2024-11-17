@@ -1,24 +1,23 @@
 package com.readrops.app.util
 
 import android.util.Patterns
-import coil.ImageLoader
-import coil.annotation.ExperimentalCoilApi
-import coil.decode.DataSource
-import coil.decode.ImageSource
-import coil.disk.DiskCache
-import coil.fetch.FetchResult
-import coil.fetch.Fetcher
-import coil.fetch.SourceResult
-import coil.request.Options
+import coil3.ImageLoader
+import coil3.decode.DataSource
+import coil3.decode.ImageSource
+import coil3.disk.DiskCache
+import coil3.fetch.FetchResult
+import coil3.fetch.Fetcher
+import coil3.fetch.SourceFetchResult
+import coil3.request.Options
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okio.FileSystem
 
 data class FeedKey(val faviconUrl: String?)
 
 /**
  * Custom Coil Fetcher to load Feed favicons from either an http source or a file source
  */
-@OptIn(ExperimentalCoilApi::class)
 class FeverFaviconFetcher(
     private val data: FeedKey,
     private val diskCache: DiskCache,
@@ -38,7 +37,7 @@ class FeverFaviconFetcher(
         val snapshot = diskCache.openSnapshot(diskCacheKey)
 
         return if (snapshot != null) {
-            SourceResult(
+            SourceFetchResult(
                 source = snapshot.toImageSource(),
                 mimeType = MIME_TYPE,
                 dataSource = DataSource.DISK
@@ -53,7 +52,7 @@ class FeverFaviconFetcher(
         val snapshot = diskCache.openSnapshot(diskCacheKey)
 
         return if (snapshot != null) {
-            SourceResult(
+            SourceFetchResult(
                 source = snapshot.toImageSource(),
                 mimeType = MIME_TYPE,
                 dataSource = DataSource.NETWORK
@@ -77,7 +76,7 @@ class FeverFaviconFetcher(
             }
 
             return if (httpSnapshot != null) {
-                SourceResult(
+                SourceFetchResult(
                     source = httpSnapshot.toImageSource(),
                     mimeType = MIME_TYPE,
                     dataSource = DataSource.NETWORK
@@ -91,8 +90,9 @@ class FeverFaviconFetcher(
     private fun DiskCache.Snapshot.toImageSource(): ImageSource {
         return ImageSource(
             file = data,
+            fileSystem = FileSystem.SYSTEM,
             diskCacheKey = this@FeverFaviconFetcher.data.faviconUrl,
-            closeable = this,
+            closeable = this
         )
     }
 
