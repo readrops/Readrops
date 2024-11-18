@@ -31,14 +31,12 @@ class FeverFeedsAdapter : JsonAdapter<FeverFeeds>() {
 
             beginObject()
 
-            // skip based fields (api_version, auth, last_refreshed...)
-            repeat(3) {
-                skipField()
+            while (nextName() != "feeds") {
+                skipValue()
             }
 
-            nextName() // beginning of feeds array
+            // feeds array
             beginArray()
-
             while (hasNext()) {
                 beginObject()
 
@@ -62,9 +60,12 @@ class FeverFeedsAdapter : JsonAdapter<FeverFeeds>() {
 
             endArray()
 
-            nextName()
-            beginArray()
+            while (nextName() != "feeds_groups") {
+                skipValue()
+            }
 
+            // feeds_groups array
+            beginArray()
             while (hasNext()) {
                 beginObject()
 
@@ -83,6 +84,11 @@ class FeverFeedsAdapter : JsonAdapter<FeverFeeds>() {
             }
 
             endArray()
+
+            while (peek() != JsonReader.Token.END_OBJECT) {
+                skipField()
+            }
+
             endObject()
 
             FeverFeeds(

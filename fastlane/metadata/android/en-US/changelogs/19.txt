@@ -1,0 +1,2 @@
+* Fix crash when opening app from a notification (#223)
+* Fix Fever API synchronization error (#228)
