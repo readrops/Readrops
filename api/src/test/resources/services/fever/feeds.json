@@ -1,7 +1,6 @@
 {
   "api_version": 3,
   "auth": 1,
-  "last_refreshed_on_time": 1640284745,
   "feeds": [
     {
       "id": 32,
@@ -13,10 +12,12 @@
       "last_updated_on_time": 1640364024
     }
   ],
+  "last_refreshed_on_time": 1640284745,
   "feeds_groups": [
     {
       "group_id": 3,
       "feed_ids": "5,4"
     }
-  ]
+  ],
+  "another_field": "another_value"
 }
