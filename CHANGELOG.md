@@ -1,3 +1,7 @@
+# v2.0.2
+- Fix crash when opening app from a notification (#223)
+- Fix Fever API synchronization error (#228)
+
 # v2.0.1
 
 - Make Timeline tab filters persistent (#138)
