@@ -129,7 +129,7 @@ class LocalRSSRepository(
                     feedUrl?.let { color = FeedColors.getFeedColor(it) }
                 }
             } catch (e: Exception) {
-                Log.d("LocalRSSRepository", "insertFeed: ${e.message}")
+                Log.e("LocalRSSRepository", "insertFeed: ${e.message}")
             }
 
             id = database.feedDao().insert(this).toInt()

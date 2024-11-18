@@ -2,19 +2,21 @@ package com.readrops.api.utils
 
 import android.nfc.FormatException
 import com.readrops.api.TestUtils
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
+import org.koin.test.get
 import java.net.HttpURLConnection
 import java.util.concurrent.TimeUnit
-import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -34,18 +36,18 @@ class HtmlParserTest : KoinTest {
         })
     }
 
-    @Test
+    @Before
     fun before() {
         mockServer.start()
     }
 
-    @Test
+    @After
     fun after() {
         mockServer.shutdown()
     }
 
     @Test
-    fun getFeedLinkTest() {
+    fun getFeedLinkTest() = runTest {
         val stream = TestUtils.loadResource("utils/file.html")
 
         mockServer.enqueue(
@@ -54,19 +56,14 @@ class HtmlParserTest : KoinTest {
                 .setBody(Buffer().readFrom(stream))
         )
 
-        runBlocking {
-            val result =
-                HtmlParser.getFeedLink(mockServer.url("/rss").toString(), koinTestRule.koin.get())
+        val links = HtmlParser.getFeedLink(mockServer.url("/rss").toString(), get())
 
-            assertTrue { result.size == 1 }
-            assertTrue { result.first().url.endsWith("/rss") }
-            assertEquals("RSS", result.first().label)
-
-        }
+        assertTrue { links.size == 2 }
+        assertTrue { links.all { it.label!!.contains("The Mozilla Blog") } }
     }
 
     @Test(expected = FormatException::class)
-    fun getFeedLinkWithoutHeadTest() {
+    fun getFeedLinkWithoutHeadTest() = runTest {
         val stream = TestUtils.loadResource("utils/file_without_head.html")
 
         mockServer.enqueue(
@@ -75,21 +72,21 @@ class HtmlParserTest : KoinTest {
                 .setBody(Buffer().readFrom(stream))
         )
 
-        runBlocking { HtmlParser.getFeedLink(mockServer.url("/rss").toString(), koinTestRule.koin.get()) }
+        HtmlParser.getFeedLink(mockServer.url("/rss").toString(), get())
     }
 
     @Test(expected = FormatException::class)
-    fun getFeedLinkNoHtmlFileTest() {
+    fun getFeedLinkNoHtmlFileTest() = runTest {
         mockServer.enqueue(
             MockResponse().setResponseCode(HttpURLConnection.HTTP_OK)
-                .addHeader(ApiUtils.CONTENT_TYPE_HEADER, "application/rss+xml"))
+                .addHeader(ApiUtils.CONTENT_TYPE_HEADER, "application/rss+xml")
+        )
 
-
-        runBlocking { HtmlParser.getFeedLink(mockServer.url("/rss").toString(), koinTestRule.koin.get()) }
+        HtmlParser.getFeedLink(mockServer.url("/rss").toString(), get())
     }
 
     @Test
-    fun getFaviconLinkTest() {
+    fun getFaviconLinkTest() = runTest {
         val stream = TestUtils.loadResource("utils/file.html")
 
         mockServer.enqueue(
@@ -98,15 +95,12 @@ class HtmlParserTest : KoinTest {
                 .setBody(Buffer().readFrom(stream))
         )
 
-        runBlocking {
-            val result = HtmlParser.getFaviconLink(mockServer.url("/rss").toString(), koinTestRule.koin.get())
-
-            assertTrue { result!!.contains("favicon.ico") }
-        }
+        val link = HtmlParser.getFaviconLink(mockServer.url("/rss").toString(), get())
+        assertTrue { link!!.contains("apple-touch-icon") }
     }
 
     @Test
-    fun getFaviconLinkWithoutHeadTest() {
+    fun getFaviconLinkWithoutHeadTest() = runTest {
         val stream = TestUtils.loadResource("utils/file_without_icon.html")
 
         mockServer.enqueue(
@@ -115,10 +109,7 @@ class HtmlParserTest : KoinTest {
                 .setBody(Buffer().readFrom(stream))
         )
 
-        runBlocking {
-            val result = HtmlParser.getFaviconLink(mockServer.url("/rss").toString(), koinTestRule.koin.get())
-
-            assertNull(result)
-        }
+        val link = HtmlParser.getFaviconLink(mockServer.url("/rss").toString(), get())
+        assertNull(link)
     }
 }
