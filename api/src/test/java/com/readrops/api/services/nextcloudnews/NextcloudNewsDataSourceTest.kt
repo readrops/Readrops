@@ -107,7 +107,7 @@ class NextcloudNewsDataSourceTest : KoinTest {
         )
         val request = mockServer.takeRequest()
 
-        assertTrue { items.size == 3 }
+        assertTrue { items.size == 2 }
         with(request.requestUrl!!) {
             assertEquals("$type", queryParameter("type"))
             assertEquals("false", queryParameter("getRead"))
@@ -124,7 +124,7 @@ class NextcloudNewsDataSourceTest : KoinTest {
             nextcloudNewsDataSource.getNewItems(1512, NextcloudNewsDataSource.ItemQueryType.ALL)
         val request = mockServer.takeRequest()
 
-        assertTrue { items.size == 3 }
+        assertTrue { items.size == 2 }
         with(request.requestUrl!!) {
             assertEquals("1512", queryParameter("lastModified"))
             assertEquals("3", queryParameter("type"))
@@ -323,8 +323,8 @@ class NextcloudNewsDataSourceTest : KoinTest {
         with(result) {
             assertEquals(1, folders.size)
             assertEquals(3, feeds.size)
-            assertEquals(3, items.size)
-            assertEquals(3, starredItems.size)
+            assertEquals(2, items.size)
+            assertEquals(2, starredItems.size)
         }
     }
 
@@ -383,7 +383,7 @@ class NextcloudNewsDataSourceTest : KoinTest {
             assertEquals(4, setItemState)
             assertEquals(1, folders.size)
             assertEquals(3, feeds.size)
-            assertEquals(3, items.size)
+            assertEquals(2, items.size)
         }
     }
 }

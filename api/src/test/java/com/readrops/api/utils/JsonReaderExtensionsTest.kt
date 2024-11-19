@@ -2,6 +2,7 @@ package com.readrops.api.utils
 
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.extensions.nextNonEmptyString
+import com.readrops.api.utils.extensions.nextNullableLong
 import com.readrops.api.utils.extensions.nextNullableString
 import com.squareup.moshi.JsonReader
 import junit.framework.TestCase.assertEquals
@@ -85,4 +86,33 @@ class JsonReaderExtensionsTest {
         reader.nextNonEmptyString()
     }
 
+    @Test
+    fun nextNullableLongNormalCaseTest() {
+        val reader = JsonReader.of(Buffer().readFrom("""
+            {
+                "field": "5555555555555555555"
+            }
+        """.trimIndent().byteInputStream()))
+
+        reader.beginObject()
+        reader.nextName()
+
+        assertEquals(5555555555555555555L, reader.nextNullableLong())
+        reader.endObject()
+    }
+
+    @Test
+    fun nextNullableLongNullCaseTest() {
+        val reader = JsonReader.of(Buffer().readFrom("""
+            {
+                "field": null
+            }
+        """.trimIndent().byteInputStream()))
+
+        reader.beginObject()
+        reader.nextName()
+
+        assertNull(reader.nextNullableLong())
+        reader.endObject()
+    }
 }
