@@ -23,7 +23,7 @@ class FreshRSSFoldersAdapterTest {
 
         assertEquals(folders.size, 1)
 
-        with(folders[0]) {
+        with(folders.first()) {
             assertEquals(name, "Blogs")
             assertEquals(remoteId, "user/-/label/Blogs")
         }

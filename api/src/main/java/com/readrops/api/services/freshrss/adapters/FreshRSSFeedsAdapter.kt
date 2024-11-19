@@ -16,70 +16,84 @@ class FreshRSSFeedsAdapter {
 
     @SuppressLint("CheckResult")
     @FromJson
-    fun fromJson(reader: JsonReader): List<Feed> {
+    fun fromJson(reader: JsonReader): List<Feed> = with(reader) {
         val feeds = mutableListOf<Feed>()
 
         return try {
-            reader.beginObject()
-            reader.nextName() // "subscriptions", beginning of the feed array
-            reader.beginArray()
+            beginObject()
 
-            while (reader.hasNext()) {
-                reader.beginObject()
+            while (hasNext()) {
+                when (nextName()) {
+                    "subscriptions" -> {
+                        beginArray()
 
-                val feed = Feed()
-                while (reader.hasNext()) {
-                    with(feed) {
-                        when (reader.selectName(NAMES)) {
-                            0 -> name = reader.nextNonEmptyString()
-                            1 -> url = reader.nextNonEmptyString()
-                            2 -> siteUrl = reader.nextNullableString()
-                            3 -> iconUrl = reader.nextNullableString()
-                            4 -> remoteId = reader.nextNonEmptyString()
-                            5 -> remoteFolderId = getCategoryId(reader)
-                            else -> reader.skipValue()
+                        while (hasNext()) {
+                            beginObject()
+                            feeds += parseFeed(reader)
+
+                            endObject()
                         }
-                    }
-                }
 
-                feeds += feed
-                reader.endObject()
+                        endArray()
+                    }
+                    else -> skipValue()
+                }
             }
 
-            reader.endArray()
-            reader.endObject()
-
+            endObject()
             feeds
         } catch (e: Exception) {
             throw ParseException(e.message)
         }
     }
 
-    private fun getCategoryId(reader: JsonReader): String? {
+    private fun parseFeed(reader: JsonReader): Feed = with(reader) {
+        val feed = Feed()
+
+        while (hasNext()) {
+            with(feed) {
+                when (selectName(NAMES)) {
+                    0 -> name = nextNonEmptyString()
+                    1 -> url = nextNonEmptyString()
+                    2 -> siteUrl = nextNullableString()
+                    3 -> iconUrl = nextNullableString()
+                    4 -> remoteId = nextNonEmptyString()
+                    5 -> remoteFolderId = getCategoryId(reader)
+                    else -> skipValue()
+                }
+            }
+        }
+
+        return feed
+    }
+
+    private fun getCategoryId(reader: JsonReader): String? = with(reader) {
         var id: String? = null
-        reader.beginArray()
+        beginArray()
 
-        while (reader.hasNext()) {
-            reader.beginObject()
+        while (hasNext()) {
+            beginObject()
 
-            while (reader.hasNext()) {
-                when (reader.nextName()) {
-                    "id" -> id = reader.nextNullableString()
-                    else -> reader.skipValue()
+            while (hasNext()) {
+                when (nextName()) {
+                    "id" -> id = nextNullableString()
+                    else -> skipValue()
                 }
             }
 
-            reader.endObject()
+            endObject()
             if (!id.isNullOrEmpty())
                 break
         }
 
-        reader.endArray()
+        endArray()
         return id
     }
 
     companion object {
-        val NAMES: JsonReader.Options = JsonReader.Options.of("title", "url", "htmlUrl",
-                "iconUrl", "id", "categories")
+        val NAMES: JsonReader.Options = JsonReader.Options.of(
+            "title", "url", "htmlUrl",
+            "iconUrl", "id", "categories"
+        )
     }
 }

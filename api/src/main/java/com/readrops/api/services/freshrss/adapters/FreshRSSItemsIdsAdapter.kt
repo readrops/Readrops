@@ -19,40 +19,38 @@ class FreshRSSItemsIdsAdapter : JsonAdapter<List<String>>() {
 
         return try {
             beginObject()
-            nextName()
-            beginArray()
-
             while (hasNext()) {
-                beginObject()
-
                 when (nextName()) {
-                    "id" -> {
-                        val value = nextNonEmptyString()
-                        ids += "tag:google.com,2005:reader/item/${
-                            value.toLong()
-                                    .toString(16).padStart(value.length, '0')
-                        }"
+                    "itemRefs" -> {
+                        beginArray()
+
+                        while (hasNext()) {
+                            beginObject()
+
+                            when (nextName()) {
+                                "id" -> {
+                                    val value = nextNonEmptyString()
+                                    ids += "tag:google.com,2005:reader/item/" +
+                                            value.toLong()
+                                                .toString(16).padStart(value.length, '0')
+                                }
+
+                                else -> skipValue()
+                            }
+
+                            endObject()
+                        }
+
+                        endArray()
                     }
                     else -> skipValue()
                 }
-
-                endObject()
-            }
-
-            endArray()
-
-            // skip continuation
-            if (hasNext()) {
-                skipName()
-                skipValue()
             }
 
             endObject()
-
             ids
         } catch (e: Exception) {
             throw ParseException(e.message)
         }
     }
-
 }

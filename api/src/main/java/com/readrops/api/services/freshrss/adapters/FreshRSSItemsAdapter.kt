@@ -17,121 +17,123 @@ class FreshRSSItemsAdapter : JsonAdapter<List<Item>>() {
         // no need of this
     }
 
-    override fun fromJson(reader: JsonReader): List<Item>? {
+    override fun fromJson(reader: JsonReader): List<Item> = with(reader) {
         val items = mutableListOf<Item>()
 
         return try {
-            reader.beginObject()
-            while (reader.hasNext()) {
-                if (reader.nextName() == "items") parseItems(reader, items) else reader.skipValue()
+            beginObject()
+
+            while (hasNext()) {
+                when (nextName()) {
+                    "items" -> parseItems(reader, items)
+                    else -> skipValue()
+                }
             }
 
-            reader.endObject()
-
+            endObject()
             items
         } catch (e: Exception) {
             throw ParseException(e.message)
         }
     }
 
-    private fun parseItems(reader: JsonReader, items: MutableList<Item>) {
-        reader.beginArray()
+    private fun parseItems(reader: JsonReader, items: MutableList<Item>) = with(reader) {
+        beginArray()
 
-        while (reader.hasNext()) {
+        while (hasNext()) {
             val item = Item()
-            reader.beginObject()
+            beginObject()
 
-            while (reader.hasNext()) {
+            while (hasNext()) {
                 with(item) {
-                    when (reader.selectName(NAMES)) {
-                        0 -> remoteId = reader.nextNonEmptyString()
-                        1 -> pubDate = DateUtils.fromEpochSeconds(reader.nextLong())
-                        2 -> title = reader.nextNonEmptyString()
+                    when (selectName(NAMES)) {
+                        0 -> remoteId = nextNonEmptyString()
+                        1 -> pubDate = DateUtils.fromEpochSeconds(nextLong())
+                        2 -> title = nextNonEmptyString()
                         3 -> content = getContent(reader)
                         4 -> link = getLink(reader)
                         5 -> getStates(reader, this)
                         6 -> feedRemoteId = getRemoteFeedId(reader)
-                        7 -> author = reader.nextNullableString()
-                        else -> reader.skipValue()
+                        7 -> author = nextNullableString()
+                        else -> skipValue()
                     }
                 }
             }
 
             items += item
-            reader.endObject()
+            endObject()
         }
 
-        reader.endArray()
+        endArray()
     }
 
-    private fun getContent(reader: JsonReader): String? {
+    private fun getContent(reader: JsonReader): String? = with(reader) {
         var content: String? = null
-        reader.beginObject()
+        beginObject()
 
-        while (reader.hasNext()) {
-            when (reader.nextName()) {
-                "content" -> content = reader.nextNullableString()
-                else -> reader.skipValue()
+        while (hasNext()) {
+            when (nextName()) {
+                "content" -> content = nextNullableString()
+                else -> skipValue()
             }
         }
 
-        reader.endObject()
+        endObject()
         return content
     }
 
-    private fun getLink(reader: JsonReader): String? {
+    private fun getLink(reader: JsonReader): String? = with(reader) {
         var href: String? = null
-        reader.beginArray()
+        beginArray()
 
-        while (reader.hasNext()) {
-            reader.beginObject()
+        while (hasNext()) {
+            beginObject()
 
-            while (reader.hasNext()) {
-                when (reader.nextName()) {
-                    "href" -> href = reader.nextString()
-                    else -> reader.skipValue()
+            while (hasNext()) {
+                when (nextName()) {
+                    "href" -> href = nextString()
+                    else -> skipValue()
                 }
             }
 
-            reader.endObject()
+            endObject()
         }
 
-        reader.endArray()
+        endArray()
         return href
     }
 
-    private fun getStates(reader: JsonReader, item: Item) {
-        reader.beginArray()
+    private fun getStates(reader: JsonReader, item: Item) = with(reader) {
+        beginArray()
 
-        while (reader.hasNext()) {
-            when (reader.nextString()) {
+        while (hasNext()) {
+            when (nextString()) {
                 GOOGLE_READ -> item.isRead = true
                 GOOGLE_STARRED -> item.isStarred = true
             }
         }
 
-        reader.endArray()
+        endArray()
     }
 
-    private fun getRemoteFeedId(reader: JsonReader): String? {
+    private fun getRemoteFeedId(reader: JsonReader): String? = with(reader) {
         var remoteFeedId: String? = null
-        reader.beginObject()
+        beginObject()
 
-        while (reader.hasNext()) {
-            when (reader.nextName()) {
-                "streamId" -> remoteFeedId = reader.nextString()
-                else -> reader.skipValue()
+        while (hasNext()) {
+            when (nextName()) {
+                "streamId" -> remoteFeedId = nextString()
+                else -> skipValue()
             }
         }
 
-        reader.endObject()
+        endObject()
         return remoteFeedId
     }
 
     companion object {
-        val NAMES: JsonReader.Options = JsonReader.Options.of("id", "published", "title",
-                "summary", "alternate", "categories", "origin", "author")
-
-        val TAG: String = FreshRSSItemsAdapter::class.java.simpleName
+        val NAMES: JsonReader.Options = JsonReader.Options.of(
+            "id", "published", "title", "summary", "alternate", "categories", "origin", "author"
+        )
     }
 }

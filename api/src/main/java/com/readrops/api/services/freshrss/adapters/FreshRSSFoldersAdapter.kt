@@ -7,7 +7,7 @@ import com.readrops.db.entities.Folder
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.ToJson
-import java.util.*
+import java.util.StringTokenizer
 
 class FreshRSSFoldersAdapter {
 
@@ -16,48 +16,62 @@ class FreshRSSFoldersAdapter {
 
     @SuppressLint("CheckResult")
     @FromJson
-    fun fromJson(reader: JsonReader): List<Folder> {
+    fun fromJson(reader: JsonReader): List<Folder> = with(reader) {
         val folders = mutableListOf<Folder>()
 
         return try {
-            reader.beginObject()
-            reader.nextName() // "tags", beginning of folder array
-            reader.beginArray()
+            beginObject()
+            while (hasNext()) {
+                when (nextName()) {
+                    "tags" -> {
+                        beginArray()
 
-            while (reader.hasNext()) {
-                reader.beginObject()
+                        while (hasNext()) {
+                            beginObject()
+                            parseFolder(reader)?.let { folders += it }
 
-                val folder = Folder()
-                var type: String? = null
-
-                while (reader.hasNext()) {
-                    with(folder) {
-                        when (reader.selectName(NAMES)) {
-                            0 -> {
-                                val id = reader.nextNonEmptyString()
-                                name = StringTokenizer(id, "/")
-                                        .toList()
-                                        .last() as String
-                                remoteId = id
-                            }
-                            1 -> type = reader.nextString()
-                            else -> reader.skipValue()
+                            endObject()
                         }
+
+                        endArray()
                     }
+                    else -> skipValue()
                 }
-
-                if (type == "folder") // add only folders and avoid tags
-                    folders += folder
-
-                reader.endObject()
             }
 
-            reader.endArray()
-            reader.endObject()
-
+            endObject()
             folders
         } catch (e: Exception) {
             throw ParseException(e.message)
+        }
+    }
+
+    private fun parseFolder(reader: JsonReader): Folder? = with(reader) {
+        val folder = Folder()
+        var type: String? = null
+
+        while (hasNext()) {
+            with(folder) {
+                when (selectName(NAMES)) {
+                    0 -> {
+                        val id = nextNonEmptyString()
+                        name = StringTokenizer(id, "/")
+                            .toList()
+                            .last() as String
+                        remoteId = id
+                    }
+
+                    1 -> type = nextString()
+                    else -> skipValue()
+                }
+            }
+        }
+
+        // add only folders and avoid tags
+        if (type == "folder") {
+            folder
+        } else {
+            null
         }
     }
 

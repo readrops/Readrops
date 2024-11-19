@@ -23,7 +23,7 @@ class FreshRSSItemsAdapterTest {
 
         val items = adapter.fromJson(Buffer().readFrom(stream))!!
 
-        with(items[0]) {
+        with(items.first()) {
             assertEquals(remoteId, "tag:google.com,2005:reader/item/0005c62466ee28fe")
             assertEquals(title, "GNOME’s Default Theme is Getting a Revamp")
             assertNotNull(content)

@@ -19,7 +19,7 @@ class FreshRSSFeedsAdapterTest {
     fun validFeedsTest() {
         val stream = TestUtils.loadResource("services/freshrss/adapters/feeds.json")
 
-        val feed = adapter.fromJson(Buffer().readFrom(stream))!![0]
+        val feed = adapter.fromJson(Buffer().readFrom(stream))!!.first()
 
         with(feed) {
             assertEquals(remoteId, "feed/2")
