@@ -21,7 +21,9 @@ class NextcloudNewsItemsAdapterTest {
         val stream = TestUtils.loadResource("services/nextcloudnews/adapters/items.json")
 
         val items = adapter.fromJson(Buffer().readFrom(stream))!!
-        val item = items[0]
+        val item = items.first()
+
+        assertEquals(2, items.size)
 
         with(item) {
             assertEquals(remoteId, "3443")
@@ -33,11 +35,11 @@ class NextcloudNewsItemsAdapterTest {
             assertEquals(isRead, false)
             assertEquals(isStarred, false)
             assertEquals(pubDate, DateUtils.fromEpochSeconds(1367270544))
-            assertEquals(imageLink, null)
+            assertEquals(imageLink, "https://test.org/image.jpg")
         }
 
         with(items[1]) {
-            assertEquals(imageLink, "https://test.org/image.jpg")
+            assertEquals(imageLink, null)
         }
     }
 

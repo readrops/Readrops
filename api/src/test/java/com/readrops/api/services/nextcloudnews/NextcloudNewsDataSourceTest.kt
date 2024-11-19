@@ -4,11 +4,16 @@ import com.readrops.api.TestUtils
 import com.readrops.api.apiModule
 import com.readrops.api.enqueueOK
 import com.readrops.api.enqueueStream
+import com.readrops.api.okResponseWithBody
+import com.readrops.api.services.SyncType
 import com.readrops.db.entities.account.Account
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import kotlinx.coroutines.test.runTest
+import okhttp3.mockwebserver.Dispatcher
+import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.RecordedRequest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -93,12 +98,18 @@ class NextcloudNewsDataSourceTest : KoinTest {
         val stream = TestUtils.loadResource("services/nextcloudnews/adapters/items.json")
         mockServer.enqueueStream(stream)
 
-        val items = nextcloudNewsDataSource.getItems(NextcloudNewsDataSource.ItemQueryType.ALL.value, false, 10)
+        val type = NextcloudNewsDataSource.ItemQueryType.ALL.value
+
+        val items = nextcloudNewsDataSource.getItems(
+            type = type,
+            read = false,
+            batchSize = 10
+        )
         val request = mockServer.takeRequest()
 
-        assertTrue { items.size == 3 }
+        assertTrue { items.size == 2 }
         with(request.requestUrl!!) {
-            assertEquals("3", queryParameter("type"))
+            assertEquals("$type", queryParameter("type"))
             assertEquals("false", queryParameter("getRead"))
             assertEquals("10", queryParameter("batchSize"))
         }
@@ -113,7 +124,7 @@ class NextcloudNewsDataSourceTest : KoinTest {
             nextcloudNewsDataSource.getNewItems(1512, NextcloudNewsDataSource.ItemQueryType.ALL)
         val request = mockServer.takeRequest()
 
-        assertTrue { items.size == 3 }
+        assertTrue { items.size == 2 }
         with(request.requestUrl!!) {
             assertEquals("1512", queryParameter("lastModified"))
             assertEquals("3", queryParameter("type"))
@@ -125,13 +136,13 @@ class NextcloudNewsDataSourceTest : KoinTest {
         val stream = TestUtils.loadResource("services/nextcloudnews/adapters/feeds.json")
         mockServer.enqueueStream(stream)
 
-        val feeds = nextcloudNewsDataSource.createFeed("https://news.ycombinator.com/rss", null)
+        val feeds = nextcloudNewsDataSource.createFeed("https://news.ycombinator.com/rss", 100)
         val request = mockServer.takeRequest()
 
         assertTrue { feeds.isNotEmpty() }
         with(request.requestUrl!!) {
             assertEquals("https://news.ycombinator.com/rss", queryParameter("url"))
-            assertEquals(null, queryParameter("folderId"))
+            assertEquals("100", queryParameter("folderId"))
         }
     }
 
@@ -152,12 +163,11 @@ class NextcloudNewsDataSourceTest : KoinTest {
         nextcloudNewsDataSource.changeFeedFolder(15, 18)
         val request = mockServer.takeRequest()
 
-        val type =
-            Types.newParameterizedType(
-                Map::class.java,
-                String::class.java,
-                Int::class.javaObjectType
-            )
+        val type = Types.newParameterizedType(
+            Map::class.java,
+            String::class.java,
+            Int::class.javaObjectType
+        )
         val adapter = moshi.adapter<Map<String, Int>>(type)
         val body = adapter.fromJson(request.body)!!
 
@@ -267,12 +277,11 @@ class NextcloudNewsDataSourceTest : KoinTest {
         val starRequest = mockServer.takeRequest()
         val unstarRequest = mockServer.takeRequest()
 
-        val type =
-            Types.newParameterizedType(
-                Map::class.java,
-                String::class.java,
-                Types.newParameterizedType(List::class.java, Int::class.javaObjectType)
-            )
+        val type = Types.newParameterizedType(
+            Map::class.java,
+            String::class.java,
+            Types.newParameterizedType(List::class.java, Int::class.javaObjectType)
+        )
         val adapter = moshi.adapter<Map<String, List<Int>>>(type)
 
         val starBody = adapter.fromJson(starRequest.body)!!
@@ -280,5 +289,101 @@ class NextcloudNewsDataSourceTest : KoinTest {
 
         assertEquals(data.starredIds, starBody["itemIds"])
         assertEquals(data.unstarredIds, unstarBody["itemIds"])
+    }
+
+    @Test
+    fun initialSyncTest() = runTest {
+        mockServer.dispatcher = object : Dispatcher() {
+
+            override fun dispatch(request: RecordedRequest): MockResponse {
+                with(request.path!!) {
+                    return when {
+                        this == "/folders" -> {
+                            MockResponse.okResponseWithBody(TestUtils.loadResource("services/nextcloudnews/adapters/valid_folder.json"))
+                        }
+
+                        this == "/feeds" -> {
+                            MockResponse.okResponseWithBody(TestUtils.loadResource("services/nextcloudnews/adapters/feeds.json"))
+                        }
+
+                        contains("/items") -> {
+
+                            MockResponse.okResponseWithBody(TestUtils.loadResource("services/nextcloudnews/adapters/items.json"))
+                        }
+
+                        else -> MockResponse().setResponseCode(404)
+                    }
+                }
+            }
+        }
+
+        val result =
+            nextcloudNewsDataSource.synchronize(SyncType.INITIAL_SYNC, NextcloudNewsSyncData())
+
+        with(result) {
+            assertEquals(1, folders.size)
+            assertEquals(3, feeds.size)
+            assertEquals(2, items.size)
+            assertEquals(2, starredItems.size)
+        }
+    }
+
+    @Test
+    fun classicSyncTest() = runTest {
+        var setItemState = 0
+        val lastModified = 10L
+        val ids = listOf(1, 2, 3, 4)
+
+        mockServer.dispatcher = object : Dispatcher() {
+
+            override fun dispatch(request: RecordedRequest): MockResponse {
+                with(request.path!!) {
+                    // important, otherwise test fails and I don't know why
+                    println("request: ${request.path}")
+                    return when {
+                        this == "/folders" -> {
+                            MockResponse.okResponseWithBody(TestUtils.loadResource("services/nextcloudnews/adapters/valid_folder.json"))
+                        }
+
+                        this == "/feeds" -> {
+                            MockResponse.okResponseWithBody(TestUtils.loadResource("services/nextcloudnews/adapters/feeds.json"))
+                        }
+
+                        contains("/items/updated") -> {
+                            assertEquals(
+                                "$lastModified",
+                                request.requestUrl!!.queryParameter("lastModified")
+                            )
+                            MockResponse.okResponseWithBody(TestUtils.loadResource("services/nextcloudnews/adapters/items.json"))
+                        }
+
+                        this.matches(Regex("/items/(read|unread|star|unstar)/multiple")) -> {
+                            setItemState++
+                            MockResponse().setResponseCode(200)
+                        }
+
+                        else -> MockResponse().setResponseCode(404)
+                    }
+                }
+            }
+        }
+
+        val result = nextcloudNewsDataSource.synchronize(
+            SyncType.CLASSIC_SYNC,
+            NextcloudNewsSyncData(
+                lastModified = lastModified,
+                readIds = ids,
+                unreadIds = ids,
+                starredIds = ids,
+                unstarredIds = ids
+            )
+        )
+
+        with(result) {
+            assertEquals(4, setItemState)
+            assertEquals(1, folders.size)
+            assertEquals(3, feeds.size)
+            assertEquals(2, items.size)
+        }
     }
 }
