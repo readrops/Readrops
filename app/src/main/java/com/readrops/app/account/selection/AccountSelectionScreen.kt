@@ -38,6 +38,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.readrops.api.utils.ApiUtils
 import com.readrops.app.BuildConfig
+import com.readrops.app.MainActivity
 import com.readrops.app.R
 import com.readrops.app.account.OPMLImportProgressDialog
 import com.readrops.app.account.credentials.AccountCredentialsScreen
@@ -76,6 +77,11 @@ class AccountSelectionScreen : AndroidScreen() {
                 feedCount = state.feedCount,
                 feedMax = state.feedMax
             )
+        }
+
+        // remove splash screen when opening the app with no account available
+        LaunchedEffect(Unit) {
+            (context as MainActivity).ready = true
         }
 
         LaunchedEffect(state.exception) {

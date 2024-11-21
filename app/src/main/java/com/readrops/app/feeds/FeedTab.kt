@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
@@ -43,6 +44,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
+import com.readrops.app.MainActivity
 import com.readrops.app.R
 import com.readrops.app.feeds.dialogs.FeedModalBottomSheet
 import com.readrops.app.feeds.dialogs.UpdateFeedDialog
@@ -74,6 +76,7 @@ object FeedTab : Tab {
         val haptic = LocalHapticFeedback.current
         val uriHandler = LocalUriHandler.current
         val navigator = LocalNavigator.currentOrThrow
+        val context = LocalContext.current
 
         val screenModel = koinScreenModel<FeedScreenModel>()
         val state by screenModel.feedsState.collectAsStateWithLifecycle()
@@ -81,6 +84,11 @@ object FeedTab : Tab {
         val snackbarHostState = remember { SnackbarHostState() }
         val topAppBarScrollBehavior =
             TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+
+        // remove splash screen when opening the app from <new feed> intent
+        LaunchedEffect(Unit) {
+            (context as MainActivity).ready = true
+        }
 
         LaunchedEffect(state.error) {
             if (state.error != null) {

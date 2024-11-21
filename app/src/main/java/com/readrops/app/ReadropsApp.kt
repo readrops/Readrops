@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationManagerCompat
+import androidx.preference.PreferenceManager
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
@@ -16,7 +17,9 @@ import coil3.request.crossfade
 import com.readrops.api.apiModule
 import com.readrops.app.util.CrashActivity
 import com.readrops.app.util.FeverFaviconFetcher
+import com.readrops.app.util.Migrations
 import com.readrops.db.dbModule
+import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import org.koin.android.ext.android.get
 import org.koin.android.ext.koin.androidContext
@@ -52,6 +55,15 @@ open class ReadropsApp : Application(), KoinComponent, SingletonImageLoader.Fact
         }
 
         createNotificationChannels()
+
+        runBlocking {
+            Migrations.upgrade(
+                appPreferences = get(),
+                encryptedPreferences = get(),
+                oldPreferences = PreferenceManager.getDefaultSharedPreferences(this@ReadropsApp),
+                database = get(),
+            )
+        }
     }
 
     override fun newImageLoader(context: PlatformContext): ImageLoader {

@@ -56,6 +56,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
+import com.readrops.app.MainActivity
 import com.readrops.app.R
 import com.readrops.app.item.ItemScreen
 import com.readrops.app.timelime.drawer.TimelineDrawer
@@ -115,6 +116,14 @@ object TimelineTab : Tab {
                 lazyListState.scrollToItem(0)
                 screenModel.resetScrollToTop()
                 topAppBarState.contentOffset = 0f
+            }
+        }
+
+        // remove splash screen when opening the app
+        LaunchedEffect(items.isLoading()) {
+            val activity = (context as MainActivity)
+            if (!items.isLoading() && !activity.ready) {
+                activity.ready = true
             }
         }
 
