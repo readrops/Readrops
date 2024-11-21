@@ -213,6 +213,7 @@ abstract class BaseRepository(
         onUpdate: (Feed) -> Unit
     ): ErrorResult {
         val errors = hashMapOf<Feed, Exception>()
+        val feedsToInsert = arrayListOf<Feed>()
 
         for ((folder, feeds) in foldersAndFeeds) {
             if (folder != null) {
@@ -220,20 +221,17 @@ abstract class BaseRepository(
 
                 val dbFolder = database.folderDao().selectFolderByName(folder.name!!, account.id)
 
-                if (dbFolder != null) {
-                    folder.id = dbFolder.id
-                } else {
-                    folder.id = database.folderDao().insert(folder).toInt()
-                }
+                folder.id = dbFolder?.id ?: database.folderDao().insert(folder).toInt()
             }
 
             feeds.forEach { it.folderId = folder?.id }
-
-            errors += insertNewFeeds(
-                newFeeds = feeds,
-                onUpdate = onUpdate
-            )
+            feedsToInsert += feeds
         }
+
+        errors += insertNewFeeds(
+            newFeeds = feedsToInsert,
+            onUpdate = onUpdate
+        )
 
         return errors
     }
