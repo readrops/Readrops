@@ -185,4 +185,5 @@
     <string name="feed_already_exists">Le flux existe déjà</string>
     <string name="invalid_folder">Dossier invalide</string>
     <string name="invalid_feed">Flux invalide</string>
+    <string name="error_image_download">Une erreur s\'est produite lors du téléchargement de l\'image</string>
 </resources>

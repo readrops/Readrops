@@ -135,6 +135,12 @@ class ItemScreen(
             }
         }
 
+        LaunchedEffect(state.error) {
+            if (state.error != null) {
+                snackbarHostState.showSnackbar(state.error!!)
+            }
+        }
+
         if (state.itemWithFeed != null) {
             val itemWithFeed = state.itemWithFeed!!
             val item = itemWithFeed.item

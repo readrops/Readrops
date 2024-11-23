@@ -194,4 +194,5 @@
     <string name="feed_already_exists">Feed already exists</string>
     <string name="invalid_folder">Invalid folder</string>
     <string name="invalid_feed">Invalid feed</string>
+    <string name="error_image_download">An error occurred while downloading the image</string>
 </resources>

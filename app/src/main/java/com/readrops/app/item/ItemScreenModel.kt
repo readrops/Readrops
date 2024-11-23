@@ -1,9 +1,11 @@
 package com.readrops.app.item
 
+import android.content.ClipData
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Environment
 import androidx.compose.runtime.Stable
@@ -14,6 +16,7 @@ import coil3.imageLoader
 import coil3.request.ImageRequest
 import coil3.request.allowHardware
 import coil3.toBitmap
+import com.readrops.app.R
 import com.readrops.app.repositories.BaseRepository
 import com.readrops.app.util.Preferences
 import com.readrops.db.Database
@@ -33,7 +36,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
 import java.io.File
-import java.io.FileOutputStream
+import java.net.URI
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ItemScreenModel(
@@ -107,6 +110,7 @@ class ItemScreenModel(
             action = Intent.ACTION_SEND
             type = "text/plain"
             putExtra(Intent.EXTRA_TEXT, item.link)
+            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
         }.also {
             context.startActivity(Intent.createChooser(it, null))
         }
@@ -132,16 +136,23 @@ class ItemScreenModel(
         screenModelScope.launch(dispatcher) {
             val bitmap = getImage(url, context)
 
+            if (bitmap == null) {
+                mutableState.update { it.copy(error = context.getString(R.string.error_image_download)) }
+                return@launch
+            }
+
             val target = File(
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
                 url.substringAfterLast('/')
-            )
-            FileOutputStream(target).apply {
-                bitmap.compress(Bitmap.CompressFormat.PNG, 90, this)
-                flush()
-                close()
+            ).apply {
+                outputStream().apply {
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 90, this)
+                    flush()
+                    close()
+                }
             }
 
+            MediaScannerConnection.scanFile(context, arrayOf(target.absolutePath), null, null)
             mutableState.update { it.copy(fileDownloadedEvent = true) }
         }
     }
@@ -149,38 +160,51 @@ class ItemScreenModel(
     fun shareImage(url: String, context: Context) {
         screenModelScope.launch(dispatcher) {
             val bitmap = getImage(url, context)
+            if (bitmap == null) {
+                mutableState.update { it.copy(error = context.getString(R.string.error_image_download)) }
+                return@launch
+            }
+
             val uri = saveImageInCache(bitmap, url, context)
 
             Intent().apply {
                 action = Intent.ACTION_SEND
-                type = "image/*"
+
+                clipData = ClipData.newRawUri(null, uri)
                 putExtra(Intent.EXTRA_STREAM, uri)
+
+                type = "image/*"
+                flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
             }.also {
                 context.startActivity(Intent.createChooser(it, null))
             }
         }
     }
 
-    private suspend fun getImage(url: String, context: Context): Bitmap {
+    private suspend fun getImage(url: String, context: Context): Bitmap? {
         val downloader = context.imageLoader
 
-        return (downloader.execute(
+        val image = downloader.execute(
             ImageRequest.Builder(context)
                 .data(url)
                 .allowHardware(false)
                 .build()
-        ).image!!.toBitmap())
+        ).image
+
+        return image?.toBitmap()
     }
 
     private fun saveImageInCache(bitmap: Bitmap, url: String, context: Context): Uri {
         val imagesFolder = File(context.cacheDir.absolutePath, "images")
         if (!imagesFolder.exists()) imagesFolder.mkdirs()
 
-        val image = File(imagesFolder, url.substringAfterLast('/'))
-        FileOutputStream(image).apply {
-            bitmap.compress(Bitmap.CompressFormat.PNG, 90, this)
-            flush()
-            close()
+        val name = URI.create(url).path.substringAfterLast('/')
+        val image = File(imagesFolder, name).apply {
+            outputStream().apply {
+                bitmap.compress(Bitmap.CompressFormat.PNG, 90, this)
+                flush()
+                close()
+            }
         }
 
         return FileProvider.getUriForFile(context, context.packageName, image)
@@ -194,5 +218,6 @@ data class ItemState(
     val imageDialogUrl: String? = null,
     val fileDownloadedEvent: Boolean = false,
     val openInExternalBrowser: Boolean = false,
-    val theme: String? = ""
+    val theme: String? = "",
+    val error: String? = null
 )
