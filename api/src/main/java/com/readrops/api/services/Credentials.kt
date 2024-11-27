@@ -5,7 +5,7 @@ import com.readrops.api.services.freshrss.FreshRSSCredentials
 import com.readrops.api.services.freshrss.FreshRSSService
 import com.readrops.api.services.nextcloudnews.NextcloudNewsCredentials
 import com.readrops.api.services.nextcloudnews.NextcloudNewsService
-import com.readrops.api.utils.Utils
+import com.readrops.app.util.Utils
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
 
