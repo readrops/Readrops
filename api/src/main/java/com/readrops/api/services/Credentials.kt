@@ -13,7 +13,7 @@ abstract class Credentials(val authorization: String?, val url: String) {
     companion object {
         fun toCredentials(account: Account): Credentials {
             val endPoint = getEndPoint(account.type!!).removePrefix("/")
-            var accountUrl = account.url
+            var accountUrl = account.url!!
             if (!accountUrl.endsWith("/")) {
                 accountUrl += "/"
             }
