@@ -5,7 +5,6 @@ import com.readrops.api.services.freshrss.FreshRSSCredentials
 import com.readrops.api.services.freshrss.FreshRSSService
 import com.readrops.api.services.nextcloudnews.NextcloudNewsCredentials
 import com.readrops.api.services.nextcloudnews.NextcloudNewsService
-import com.readrops.app.util.Utils
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
 
@@ -14,7 +13,10 @@ abstract class Credentials(val authorization: String?, val url: String) {
     companion object {
         fun toCredentials(account: Account): Credentials {
             val endPoint = getEndPoint(account.type!!).removePrefix("/")
-            var accountUrl = Utils.normalizeUrl(account.url)
+            var accountUrl = account.url
+            if (!accountUrl.endsWith("/")) {
+                accountUrl += "/"
+            }
 
             return when (account.type) {
                 AccountType.NEXTCLOUD_NEWS -> NextcloudNewsCredentials(account.login, account.password, accountUrl + endPoint)
