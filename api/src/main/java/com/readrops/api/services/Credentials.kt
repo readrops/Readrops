@@ -13,15 +13,11 @@ abstract class Credentials(val authorization: String?, val url: String) {
     companion object {
         fun toCredentials(account: Account): Credentials {
             val endPoint = getEndPoint(account.type!!).removePrefix("/")
-            var accountUrl = account.url!!
-            if (!accountUrl.endsWith("/")) {
-                accountUrl += "/"
-            }
 
             return when (account.type) {
-                AccountType.NEXTCLOUD_NEWS -> NextcloudNewsCredentials(account.login, account.password, accountUrl + endPoint)
-                AccountType.FRESHRSS -> FreshRSSCredentials(account.token, accountUrl + endPoint)
-                AccountType.FEVER -> FeverCredentials(account.login, account.password, accountUrl + endPoint)
+                AccountType.NEXTCLOUD_NEWS -> NextcloudNewsCredentials(account.login, account.password, account.url + endPoint)
+                AccountType.FRESHRSS -> FreshRSSCredentials(account.token, account.url + endPoint)
+                AccountType.FEVER -> FeverCredentials(account.login, account.password, account.url + endPoint)
                 else -> throw IllegalArgumentException("Unknown account type")
             }
         }
