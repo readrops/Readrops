@@ -21,7 +21,7 @@ Steps to reproduce the behavior:
 A clear and concise description of what you expected to happen.
 
 **Environment information (please complete the following information):**
- - Account type: [e.g. Freshrss, Nextcloud News]
+ - Account type: [e.g. FreshRSS, Nextcloud News]
  - App version: [e.g. 2.0]
  - Android version: [e.g. Android 13, 14]
  - Device type: [e.g. One Plus 12, Samsung Galaxy S23]
