@@ -67,6 +67,7 @@ abstract class ItemDao : BaseDao<Item> {
     abstract fun selectFeedUnreadItemsCount(query: SupportSQLiteQuery):
             Flow<Map<@MapColumn(columnName = "feed_id") Int, @MapColumn(columnName = "item_count") Int>>
 
-    @Query("Select case When :remoteId In (Select Item.remote_id From Item Inner Join Feed on Item.feed_id = Feed.id and account_id = :accountId) Then 1 else 0 end")
+    @Query("""Select case When Exists(Select 1 From Item Inner Join Feed on Item.feed_id = Feed.id
+        Where Item.remote_id = :remoteId And account_id = :accountId) Then 1 else 0 end""")
     abstract suspend fun itemExists(remoteId: String, accountId: Int): Boolean
 }
