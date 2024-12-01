@@ -1,3 +1,8 @@
+# v2.0.3
+- Fix Fever API compatibility with TinyTiny RSS and yarr, should also fix other providers (#228 + #229) 
+- Fix Nextcloud News item duplicates when syncing which would made the app unusable
+- Fix Nextcloud News item parsing: items with no title will be ignored
+
 # v2.0.2
 - Fix crash when opening app from a notification (#223)
 - Fix Fever API synchronization error (#228)
