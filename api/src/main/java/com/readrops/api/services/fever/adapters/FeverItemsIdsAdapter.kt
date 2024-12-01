@@ -2,7 +2,6 @@ package com.readrops.api.services.fever.adapters
 
 import android.annotation.SuppressLint
 import com.readrops.api.utils.exceptions.ParseException
-import com.readrops.api.utils.extensions.skipField
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.ToJson
@@ -17,12 +16,14 @@ class FeverItemsIdsAdapter {
     fun fromJson(reader: JsonReader): List<String> = with(reader) {
         return try {
             beginObject()
-            repeat(3) {
-                skipField()
-            }
 
-            nextName() // (unread|saved)_item_ids field
-            val ids = nextString().split(",")
+            val ids = arrayListOf<String>()
+            while (hasNext()) {
+                when (nextName()) {
+                    "unread_item_ids" -> ids.addAll(nextString().split(","))
+                    else -> skipValue()
+                }
+            }
 
             endObject()
             ids

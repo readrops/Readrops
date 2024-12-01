@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.extensions.nextNonEmptyString
 import com.readrops.api.utils.extensions.nextNullableString
-import com.readrops.api.utils.extensions.skipField
 import com.readrops.db.entities.Feed
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
@@ -30,63 +29,34 @@ class FeverFeedsAdapter : JsonAdapter<FeverFeeds>() {
             val feedsGroups = mutableMapOf<Int, List<Int>>()
 
             beginObject()
-
-            while (nextName() != "feeds") {
-                skipValue()
-            }
-
-            // feeds array
-            beginArray()
             while (hasNext()) {
-                beginObject()
+                when (nextName()) {
+                    "feeds" -> {
+                        beginArray()
+                        while (hasNext()) {
+                            beginObject()
+                            feeds += parseFeed(reader, favicons)
 
-                val feed = Feed()
-                while (hasNext()) {
-                    with(feed) {
-                        when (selectName(NAMES)) {
-                            0 -> remoteId = nextInt().toString()
-                            1 -> favicons[nextInt()] = remoteId!!
-                            2 -> name = nextNonEmptyString()
-                            3 -> url = nextNonEmptyString()
-                            4 -> siteUrl = nextNullableString()
-                            else -> skipValue()
+                            endObject()
                         }
+
+                        endArray()
                     }
-                }
+                    "feeds_groups" -> {
+                        beginArray()
+                        while (hasNext()) {
+                            beginObject()
 
-                feeds += feed
-                endObject()
-            }
+                            val (folderId, feedsIds) = parseFeedsGroups(reader)
+                            folderId?.let { feedsGroups[it] = feedsIds }
 
-            endArray()
+                            endObject()
+                        }
 
-            while (nextName() != "feeds_groups") {
-                skipValue()
-            }
-
-            // feeds_groups array
-            beginArray()
-            while (hasNext()) {
-                beginObject()
-
-                var folderId: Int? = null
-                val feedsIds = mutableListOf<Int>()
-                while (hasNext()) {
-                    when (selectName(JsonReader.Options.of("group_id", "feed_ids"))) {
-                        0 -> folderId = nextInt()
-                        1 -> feedsIds += nextNonEmptyString().split(",").map { it.toInt() }
-                        else -> skipValue()
+                        endArray()
                     }
+                    else -> skipValue()
                 }
-
-                folderId?.let { feedsGroups[it] = feedsIds }
-                endObject()
-            }
-
-            endArray()
-
-            while (peek() != JsonReader.Token.END_OBJECT) {
-                skipField()
             }
 
             endObject()
@@ -99,6 +69,39 @@ class FeverFeedsAdapter : JsonAdapter<FeverFeeds>() {
         } catch (e: Exception) {
             throw ParseException(e.message)
         }
+    }
+
+    private fun parseFeed(reader: JsonReader, favicons: MutableMap<Int, String>): Feed = with(reader) {
+        val feed = Feed()
+        while (hasNext()) {
+            with(feed) {
+                when (selectName(NAMES)) {
+                    0 -> remoteId = nextInt().toString()
+                    1 -> favicons[nextInt()] = remoteId!!
+                    2 -> name = nextNonEmptyString()
+                    3 -> url = nextNonEmptyString()
+                    4 -> siteUrl = nextNullableString()
+                    else -> skipValue()
+                }
+            }
+        }
+
+        return feed
+    }
+
+    private fun parseFeedsGroups(reader: JsonReader): Pair<Int?, List<Int>> = with(reader) {
+        var folderId: Int? = null
+        val feedsIds = mutableListOf<Int>()
+
+        while (hasNext()) {
+            when (selectName(JsonReader.Options.of("group_id", "feed_ids"))) {
+                0 -> folderId = nextInt()
+                1 -> feedsIds += nextNonEmptyString().split(",").map { it.toInt() }
+                else -> skipValue()
+            }
+        }
+
+        folderId to feedsIds
     }
 
     companion object {

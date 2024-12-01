@@ -23,7 +23,7 @@ class FeverItemsAdapterTest {
 
         val items = adapter.fromJson(Buffer().readFrom(stream))!!
 
-        with(items[0]) {
+        with(items.first()) {
             assertEquals(title, "FreshRSS 1.9.0")
             assertEquals(author, "Alkarex")
             assertEquals(link, "https://github.com/FreshRSS/FreshRSS/releases/tag/1.9.0")

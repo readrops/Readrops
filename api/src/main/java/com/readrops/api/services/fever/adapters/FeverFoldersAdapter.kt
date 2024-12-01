@@ -3,8 +3,6 @@ package com.readrops.api.services.fever.adapters
 import android.annotation.SuppressLint
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.extensions.nextNonEmptyString
-import com.readrops.api.utils.extensions.skipField
-import com.readrops.api.utils.extensions.skipToEnd
 import com.readrops.db.entities.Folder
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonReader
@@ -22,35 +20,35 @@ class FeverFoldersAdapter {
             val folders = arrayListOf<Folder>()
 
             beginObject()
-
-            repeat(3) {
-                skipField()
-            }
-
-            nextName() // beginning of folders array
-            beginArray()
-
             while (hasNext()) {
-                beginObject()
+                when (nextName()) {
+                    "groups" -> {
+                        beginArray()
 
-                val folder = Folder()
-                while (hasNext()) {
-                    with(folder) {
-                        when (selectName(NAMES)) {
-                            0 -> remoteId = nextInt().toString()
-                            1 -> name = nextNonEmptyString()
+                        while (hasNext()) {
+                            beginObject()
+
+                            val folder = Folder()
+                            while (hasNext()) {
+                                with(folder) {
+                                    when (selectName(NAMES)) {
+                                        0 -> remoteId = nextInt().toString()
+                                        1 -> name = nextNonEmptyString()
+                                    }
+                                }
+                            }
+
+                            folders += folder
+                            endObject()
                         }
-                    }
-                }
 
-                folders += folder
-                endObject()
+                        endArray()
+                    }
+                    else -> skipValue()
+                }
             }
 
-            endArray()
-            skipToEnd()
             endObject()
-
             folders
         } catch (e: Exception) {
             throw ParseException(e.message)

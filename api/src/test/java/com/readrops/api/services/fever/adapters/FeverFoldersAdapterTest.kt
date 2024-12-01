@@ -21,7 +21,7 @@ class FeverFoldersAdapterTest {
 
         val folders = adapter.fromJson(Buffer().readFrom(stream))!!
 
-        with(folders[0]) {
+        with(folders.first()) {
             assertEquals(name, "Libre")
             assertEquals(remoteId, "4")
         }
