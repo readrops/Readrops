@@ -162,7 +162,7 @@ class NextcloudNewsRepository(
                 itemsFeedsIds[item.feedRemoteId] = feedId
             }
 
-            if (!initialSync && feedId > 0 && database.itemDao().itemExists(item.remoteId!!, feedId)) {
+            if (!initialSync && feedId > 0 && database.itemDao().itemExists(item.remoteId!!, account.id)) {
                 database.itemDao()
                     .updateReadAndStarState(item.remoteId!!, item.isRead, item.isStarred)
                 continue

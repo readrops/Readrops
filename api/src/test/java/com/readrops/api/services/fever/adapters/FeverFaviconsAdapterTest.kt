@@ -24,7 +24,7 @@ class FeverFaviconsAdapterTest {
 
         assertEquals(favicons.size, 3)
 
-        with(favicons[0]) {
+        with(favicons.first()) {
             assertEquals(id, 85)
             assertNotNull(data)
         }
