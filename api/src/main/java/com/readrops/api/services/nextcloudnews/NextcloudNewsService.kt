@@ -68,6 +68,6 @@ interface NextcloudNewsService {
     suspend fun renameFolder(@Path("folderId") folderId: Int, @Body folderName: Map<String, String>)
 
     companion object {
-        const val END_POINT = "/index.php/apps/news/api/v1-3/"
+        const val END_POINT = "index.php/apps/news/api/v1-3/"
     }
 }

@@ -92,6 +92,6 @@ interface FreshRSSService {
     suspend fun deleteFolder(@Field("T") token: String, @Field("s") folderId: String)
 
     companion object {
-        const val END_POINT = "/api/greader.php/"
+        const val END_POINT = "api/greader.php/"
     }
 }
