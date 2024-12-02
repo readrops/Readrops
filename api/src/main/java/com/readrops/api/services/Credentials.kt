@@ -12,7 +12,7 @@ abstract class Credentials(val authorization: String?, val url: String) {
 
     companion object {
         fun toCredentials(account: Account): Credentials {
-            val endPoint = getEndPoint(account.type!!).removePrefix("/")
+            val endPoint = getEndPoint(account.type!!)
 
             return when (account.type) {
                 AccountType.NEXTCLOUD_NEWS -> NextcloudNewsCredentials(account.login, account.password, account.url + endPoint)
