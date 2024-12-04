@@ -32,6 +32,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.readrops.app.R
+import com.readrops.app.util.components.SwitchText
 import com.readrops.app.util.theme.LargeSpacer
 import com.readrops.app.util.theme.MediumSpacer
 import com.readrops.app.util.theme.VeryShortSpacer
@@ -42,10 +43,12 @@ import com.readrops.db.entities.Feed
 @Composable
 fun FeedModalBottomSheet(
     feed: Feed,
+    accountNotificationsEnabled: Boolean,
     onDismissRequest: () -> Unit,
     onOpen: () -> Unit,
     onUpdate: () -> Unit,
     //onUpdateColor: () -> Unit,
+    onUpdateNotifications: (Boolean) -> Unit,
     onDelete: () -> Unit,
     canUpdateFeed: Boolean,
     canDeleteFeed: Boolean
@@ -133,7 +136,14 @@ fun FeedModalBottomSheet(
                 )
             }
 
-            MediumSpacer()
+            SwitchText(
+                title = stringResource(R.string.enable_notifications),
+                subtitle = if (!accountNotificationsEnabled) {
+                    stringResource(R.string.account_notifications_disabled)
+                } else null,
+                isChecked = feed.isNotificationEnabled,
+                onCheckedChange = onUpdateNotifications
+            )
 
             BottomSheetOption(
                 text = stringResource(R.string.open),

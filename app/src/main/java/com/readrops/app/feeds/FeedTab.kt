@@ -285,6 +285,7 @@ object FeedTab : Tab {
             is DialogState.FeedSheet -> {
                 FeedModalBottomSheet(
                     feed = dialog.feed,
+                    accountNotificationsEnabled = state.isAccountNotificationsEnabled,
                     onDismissRequest = { screenModel.closeDialog() },
                     onOpen = {
                         uriHandler.openUri(dialog.feed.siteUrl!!)
@@ -294,6 +295,9 @@ object FeedTab : Tab {
                         screenModel.openDialog(DialogState.UpdateFeed(dialog.feed, dialog.folder))
                     },
                     onDelete = { screenModel.openDialog(DialogState.DeleteFeed(dialog.feed)) },
+                    onUpdateNotifications = {
+                        screenModel.updateFeedNotifications(dialog.feed.id, it)
+                    },
                     canUpdateFeed = dialog.config.canUpdateFeed,
                     canDeleteFeed = dialog.config.canDeleteFeed
                 )

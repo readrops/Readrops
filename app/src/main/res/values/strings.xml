@@ -195,4 +195,6 @@
     <string name="invalid_folder">Invalid folder</string>
     <string name="invalid_feed">Invalid feed</string>
     <string name="error_image_download">An error occurred while downloading the image</string>
+    <string name="enable_notifications">Enable notifications</string>
+    <string name="account_notifications_disabled">Account notifications are currently disabled</string>
 </resources>

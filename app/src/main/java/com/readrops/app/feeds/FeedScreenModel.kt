@@ -25,7 +25,7 @@ import org.koin.core.component.KoinComponent
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class FeedScreenModel(
-    database: Database,
+    private val database: Database,
     private val getFoldersWithFeeds: GetFoldersWithFeeds,
     private val context: Context,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
@@ -44,7 +44,10 @@ class FeedScreenModel(
         screenModelScope.launch(dispatcher) {
             accountEvent.flatMapLatest { account ->
                 _feedState.update {
-                    it.copy(config = account.config)
+                    it.copy(
+                        isAccountNotificationsEnabled = account.isNotificationsEnabled,
+                        config = account.config
+                    )
                 }
 
                 _updateFeedDialogState.update {
@@ -65,8 +68,19 @@ class FeedScreenModel(
                     }
                 }
                 .collect { foldersAndFeeds ->
-                    _feedState.update {
-                        it.copy(foldersAndFeeds = FolderAndFeedsState.LoadedState(foldersAndFeeds))
+                    _feedState.update { state ->
+                        val dialog = if (state.dialog is DialogState.FeedSheet) {
+                            val feed = foldersAndFeeds.values.flatten()
+                                .first { it.id == state.dialog.feed.id }
+                            state.dialog.copy(feed = feed)
+                        } else {
+                            state.dialog
+                        }
+
+                        state.copy(
+                            foldersAndFeeds = FolderAndFeedsState.LoadedState(foldersAndFeeds),
+                            dialog = dialog
+                        )
                     }
                 }
         }
@@ -319,7 +333,13 @@ class FeedScreenModel(
         }
     }
 
+    //endregion
+
     fun resetException() = _feedState.update { it.copy(error = null) }
 
-    //endregion
+    fun updateFeedNotifications(feedId: Int, isEnabled: Boolean) {
+        screenModelScope.launch(dispatcher) {
+            database.feedDao().updateFeedNotificationState(feedId, isEnabled)
+        }
+    }
 }
