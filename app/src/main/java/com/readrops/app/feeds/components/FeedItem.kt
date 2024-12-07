@@ -1,4 +1,4 @@
-package com.readrops.app.feeds
+package com.readrops.app.feeds.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable

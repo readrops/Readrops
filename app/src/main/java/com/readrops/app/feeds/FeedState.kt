@@ -24,6 +24,7 @@ sealed interface DialogState {
     class DeleteFolder(val folder: Folder) : DialogState
     class UpdateFeed(val feed: Feed, val folder: Folder?) : DialogState
     class UpdateFolder(val folder: Folder) : DialogState
+    data class UpdateFeedOpenInSetting(val feed: Feed) : DialogState
 
     data class FeedSheet(
         val feed: Feed,

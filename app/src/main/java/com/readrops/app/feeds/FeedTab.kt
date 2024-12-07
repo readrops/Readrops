@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -29,7 +28,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -46,14 +44,13 @@ import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.readrops.app.MainActivity
 import com.readrops.app.R
-import com.readrops.app.feeds.dialogs.FeedModalBottomSheet
-import com.readrops.app.feeds.dialogs.UpdateFeedDialog
+import com.readrops.app.feeds.components.FeedItem
+import com.readrops.app.feeds.components.FolderExpandableItem
+import com.readrops.app.feeds.dialogs.FeedDialogs
 import com.readrops.app.feeds.newfeed.NewFeedScreen
 import com.readrops.app.util.components.CenteredProgressIndicator
 import com.readrops.app.util.components.ErrorMessage
 import com.readrops.app.util.components.Placeholder
-import com.readrops.app.util.components.dialog.TextFieldDialog
-import com.readrops.app.util.components.dialog.TwoChoicesDialog
 import com.readrops.app.util.theme.spacing
 import com.readrops.db.entities.Feed
 import kotlinx.coroutines.channels.Channel
@@ -260,98 +257,6 @@ object FeedTab : Tab {
         }
     }
 
-    @Composable
-    private fun FeedDialogs(state: FeedState, screenModel: FeedScreenModel) {
-        val uriHandler = LocalUriHandler.current
-
-        val folderState by screenModel.folderState.collectAsStateWithLifecycle()
-
-        when (val dialog = state.dialog) {
-            is DialogState.DeleteFeed -> {
-                TwoChoicesDialog(
-                    title = stringResource(R.string.delete_feed),
-                    text = stringResource(R.string.delete_feed_question, dialog.feed.name!!),
-                    icon = rememberVectorPainter(image = Icons.Default.Delete),
-                    confirmText = stringResource(R.string.delete),
-                    dismissText = stringResource(R.string.cancel),
-                    onDismiss = { screenModel.closeDialog() },
-                    onConfirm = {
-                        screenModel.deleteFeed(dialog.feed)
-                        screenModel.closeDialog()
-                    }
-                )
-            }
-
-            is DialogState.FeedSheet -> {
-                FeedModalBottomSheet(
-                    feed = dialog.feed,
-                    accountNotificationsEnabled = state.isAccountNotificationsEnabled,
-                    onDismissRequest = { screenModel.closeDialog() },
-                    onOpen = {
-                        uriHandler.openUri(dialog.feed.siteUrl!!)
-                        screenModel.closeDialog()
-                    },
-                    onUpdate = {
-                        screenModel.openDialog(DialogState.UpdateFeed(dialog.feed, dialog.folder))
-                    },
-                    onDelete = { screenModel.openDialog(DialogState.DeleteFeed(dialog.feed)) },
-                    onUpdateNotifications = {
-                        screenModel.updateFeedNotifications(dialog.feed.id, it)
-                    },
-                    canUpdateFeed = dialog.config.canUpdateFeed,
-                    canDeleteFeed = dialog.config.canDeleteFeed
-                )
-            }
-
-            is DialogState.UpdateFeed -> {
-                UpdateFeedDialog(
-                    viewModel = screenModel,
-                    onDismissRequest = { screenModel.closeDialog(dialog) }
-                )
-            }
-
-            DialogState.AddFolder -> {
-                TextFieldDialog(
-                    title = stringResource(id = R.string.add_folder),
-                    icon = painterResource(id = R.drawable.ic_new_folder),
-                    label = stringResource(id = R.string.name),
-                    state = folderState,
-                    onValueChange = { screenModel.setFolderName(it) },
-                    onValidate = { screenModel.folderValidate() },
-                    onDismiss = { screenModel.closeDialog(DialogState.AddFolder) }
-                )
-            }
-
-            is DialogState.DeleteFolder -> {
-                TwoChoicesDialog(
-                    title = stringResource(R.string.delete_folder),
-                    text = stringResource(R.string.delete_folder_question, dialog.folder.name!!),
-                    icon = rememberVectorPainter(image = Icons.Default.Delete),
-                    confirmText = stringResource(R.string.delete),
-                    dismissText = stringResource(R.string.cancel),
-                    onDismiss = { screenModel.closeDialog() },
-                    onConfirm = {
-                        screenModel.deleteFolder(dialog.folder)
-                        screenModel.closeDialog()
-                    }
-                )
-            }
-
-            is DialogState.UpdateFolder -> {
-                TextFieldDialog(
-                    title = stringResource(id = R.string.edit_folder),
-                    icon = painterResource(id = R.drawable.ic_folder_grey),
-                    label = stringResource(id = R.string.name),
-                    state = folderState,
-                    onValueChange = { screenModel.setFolderName(it) },
-                    onValidate = { screenModel.folderValidate(updateFolder = true) },
-                    onDismiss = { screenModel.closeDialog(DialogState.UpdateFolder(dialog.folder)) }
-                )
-            }
-
-            null -> {}
-        }
-    }
 
     suspend fun openAddFeedDialog(url: String) {
         addFeedDialogChannel.send(url)

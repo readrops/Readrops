@@ -7,6 +7,7 @@ import androidx.room.Transaction
 import androidx.sqlite.db.SupportSQLiteQuery
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Item
+import com.readrops.db.entities.OpenIn
 import com.readrops.db.entities.account.Account
 import com.readrops.db.pojo.FeedWithCount
 import com.readrops.db.pojo.FeedWithFolder
@@ -72,6 +73,9 @@ interface FeedDao : BaseDao<Feed> {
 
     @Query("Update Feed set icon_url = :iconUrl Where id = :feedId")
     suspend fun updateFeedIconUrl(feedId: Int, iconUrl: String)
+
+    @Query("Update Feed set open_in = :openIn Where id = :feedId")
+    suspend fun updateOpenInSetting(feedId: Int, openIn: OpenIn)
 
     /**
      * Insert, update and delete feeds by account

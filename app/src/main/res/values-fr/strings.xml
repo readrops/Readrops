@@ -188,4 +188,7 @@
     <string name="error_image_download">Une erreur s\'est produite lors du téléchargement de l\'image</string>
     <string name="enable_notifications">Activer les notifications</string>
     <string name="account_notifications_disabled">Les notifications du compte sont actuellement désactivées</string>
+    <string name="open_feed_in">Ouvrir le flux dans</string>
+    <string name="local_view">Vue locale</string>
+    <string name="external_view">Vue externe</string>
 </resources>

@@ -11,6 +11,7 @@ import com.readrops.app.util.components.dialog.TextFieldDialogState
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
+import com.readrops.db.entities.OpenIn
 import com.readrops.db.filters.MainFilter
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -69,12 +70,22 @@ class FeedScreenModel(
                 }
                 .collect { foldersAndFeeds ->
                     _feedState.update { state ->
-                        val dialog = if (state.dialog is DialogState.FeedSheet) {
-                            val feed = foldersAndFeeds.values.flatten()
-                                .first { it.id == state.dialog.feed.id }
-                            state.dialog.copy(feed = feed)
-                        } else {
-                            state.dialog
+                        val dialog = when (state.dialog) {
+                            is DialogState.FeedSheet -> {
+                                val feed = foldersAndFeeds.values.flatten()
+                                    .first { it.id == state.dialog.feed.id }
+                                state.dialog.copy(feed = feed)
+                            }
+
+                            is DialogState.UpdateFeedOpenInSetting -> {
+                                val feed = foldersAndFeeds.values.flatten()
+                                    .first { it.id == state.dialog.feed.id }
+                                state.dialog.copy(feed = feed)
+                            }
+
+                            else -> {
+                                state.dialog
+                            }
                         }
 
                         state.copy(
@@ -137,7 +148,19 @@ class FeedScreenModel(
             else -> {}
         }
 
-        _feedState.update { it.copy(dialog = null) }
+        if (dialog is DialogState.UpdateFeedOpenInSetting) {
+            _feedState.update {
+                it.copy(
+                    dialog = DialogState.FeedSheet(
+                        feed = dialog.feed,
+                        folder = null,
+                        config = currentAccount!!.config
+                    )
+                )
+            }
+        } else {
+            _feedState.update { it.copy(dialog = null) }
+        }
     }
 
     fun openDialog(state: DialogState) {
@@ -340,6 +363,12 @@ class FeedScreenModel(
     fun updateFeedNotifications(feedId: Int, isEnabled: Boolean) {
         screenModelScope.launch(dispatcher) {
             database.feedDao().updateFeedNotificationState(feedId, isEnabled)
+        }
+    }
+
+    fun updateFeedOpenInSetting(feedId: Int, openIn: OpenIn) {
+        screenModelScope.launch(dispatcher) {
+            database.feedDao().updateOpenInSetting(feedId, openIn)
         }
     }
 }

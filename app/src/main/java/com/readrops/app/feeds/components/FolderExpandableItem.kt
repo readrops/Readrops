@@ -1,4 +1,4 @@
-package com.readrops.app.feeds
+package com.readrops.app.feeds.components
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing

@@ -3,6 +3,7 @@ package com.readrops.app.repositories
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
+import com.readrops.db.entities.OpenIn
 import com.readrops.db.filters.MainFilter
 import com.readrops.db.queries.FeedUnreadCountQueryBuilder
 import com.readrops.db.queries.FoldersAndFeedsQueryBuilder
@@ -49,6 +50,11 @@ class GetFoldersWithFeeds(
                         siteUrl = it.feedSiteUrl,
                         description = it.feedDescription,
                         isNotificationEnabled = it.feedNotificationsEnabled,
+                        openIn = if (it.feedOpenIn != null) {
+                            it.feedOpenIn!!
+                        } else {
+                            OpenIn.LOCAL_VIEW
+                        },
                         remoteId = it.feedRemoteId,
                         unreadCount = itemCounts[it.feedId] ?: 0
                     )

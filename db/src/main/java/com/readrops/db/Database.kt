@@ -124,5 +124,8 @@ object MigrationFrom4To5 : Migration(4, 5) {
 
         // add image_url field
         db.execSQL("""ALTER TABLE `Feed` ADD `image_url` TEXT DEFAULT NULL""")
+
+        // add open_in field
+        db.execSQL("""ALTER TABLE `Feed` ADD `open_in` TEXT DEFAULT "LOCAL_VIEW" NOT NULL""")
     }
 }

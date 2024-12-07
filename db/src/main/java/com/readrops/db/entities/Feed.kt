@@ -8,6 +8,11 @@ import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.readrops.db.entities.account.Account
 
+enum class OpenIn {
+    LOCAL_VIEW,
+    EXTERNAL_VIEW
+}
+
 @Entity(
     foreignKeys = [
         ForeignKey(
@@ -42,6 +47,10 @@ data class Feed(
         name = "notification_enabled",
         defaultValue = "1"
     ) var isNotificationEnabled: Boolean = true,
+    @ColumnInfo(
+        name = "open_in",
+        defaultValue = "LOCAL_VIEW"
+    ) var openIn: OpenIn = OpenIn.LOCAL_VIEW,
     @Ignore var unreadCount: Int = 0,
     @Ignore var remoteFolderId: String? = null,
 )

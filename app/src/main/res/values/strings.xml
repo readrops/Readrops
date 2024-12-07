@@ -197,4 +197,7 @@
     <string name="error_image_download">An error occurred while downloading the image</string>
     <string name="enable_notifications">Enable notifications</string>
     <string name="account_notifications_disabled">Account notifications are currently disabled</string>
+    <string name="open_feed_in">Open Feed in</string>
+    <string name="local_view">Local view</string>
+    <string name="external_view">External view</string>
 </resources>
