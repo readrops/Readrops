@@ -47,10 +47,7 @@ data class Feed(
         name = "notification_enabled",
         defaultValue = "1"
     ) var isNotificationEnabled: Boolean = true,
-    @ColumnInfo(
-        name = "open_in",
-        defaultValue = "LOCAL_VIEW"
-    ) var openIn: OpenIn = OpenIn.LOCAL_VIEW,
+    @ColumnInfo(name = "open_in") var openIn: OpenIn = OpenIn.LOCAL_VIEW,
     @Ignore var unreadCount: Int = 0,
     @Ignore var remoteFolderId: String? = null,
 )
