@@ -24,6 +24,7 @@ object ItemsQueryBuilder {
         "read_time",
         "Feed.id as feedId",
         "Feed.account_id",
+        "Feed.open_in",
         "Folder.id as folder_id",
         "Folder.name as folder_name"
     )

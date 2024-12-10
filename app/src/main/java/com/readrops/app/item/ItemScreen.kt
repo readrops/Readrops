@@ -1,10 +1,6 @@
 package com.readrops.app.item
 
-import android.content.Intent
-import android.net.Uri
 import android.widget.RelativeLayout
-import androidx.browser.customtabs.CustomTabColorSchemeParams
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -39,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -52,7 +47,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.net.toUri
 import androidx.core.view.children
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.koin.koinScreenModel
@@ -66,6 +60,8 @@ import com.readrops.app.util.components.AndroidScreen
 import com.readrops.app.util.components.CenteredProgressIndicator
 import com.readrops.app.util.components.FeedIcon
 import com.readrops.app.util.components.IconText
+import com.readrops.app.util.openInCustomTab
+import com.readrops.app.util.openUrl
 import com.readrops.app.util.theme.MediumSpacer
 import com.readrops.app.util.theme.ShortSpacer
 import com.readrops.app.util.theme.spacing
@@ -151,29 +147,11 @@ class ItemScreen(
                 primaryColor
             }
 
-            val colorScheme = when (state.theme) {
-                "light" -> CustomTabsIntent.COLOR_SCHEME_LIGHT
-                "dark" -> CustomTabsIntent.COLOR_SCHEME_DARK
-                else -> CustomTabsIntent.COLOR_SCHEME_SYSTEM
-            }
-
             fun openUrl(url: String) {
                 if (state.openInExternalBrowser) {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                    context.startActivity(intent)
+                    context.openUrl(url)
                 } else {
-                    CustomTabsIntent.Builder()
-                        .setDefaultColorSchemeParams(
-                            CustomTabColorSchemeParams
-                                .Builder()
-                                .setToolbarColor(accentColor.toArgb())
-                                .build()
-                        )
-                        .setShareState(CustomTabsIntent.SHARE_STATE_ON)
-                        .setUrlBarHidingEnabled(true)
-                        .setColorScheme(colorScheme)
-                        .build()
-                        .launchUrl(context, url.toUri())
+                    context.openInCustomTab(url, state.theme, accentColor)
                 }
             }
 

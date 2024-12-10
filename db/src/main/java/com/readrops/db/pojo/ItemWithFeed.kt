@@ -5,6 +5,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
+import com.readrops.db.entities.OpenIn
 
 data class ItemWithFeed(
     @Embedded val item: Item,
@@ -19,5 +20,6 @@ data class ItemWithFeed(
     // as since kotlin 2.0.20 it wouldn't work anymore, because of Item properties mutability
     // TODO see how to resolve this by improving Item immutability
     @ColumnInfo(name = "is_starred") val isStarred: Boolean = false,
-    @ColumnInfo(name = "is_read") val isRead: Boolean = false
+    @ColumnInfo(name = "is_read") val isRead: Boolean = false,
+    @ColumnInfo(name = "open_in") val openIn: OpenIn?
 )

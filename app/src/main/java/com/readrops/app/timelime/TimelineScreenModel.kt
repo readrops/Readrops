@@ -127,6 +127,8 @@ class TimelineScreenModel(
             preferences.showReadItems.flow,
             preferences.orderField.flow,
             preferences.orderType.flow,
+            preferences.theme.flow,
+            preferences.openLinksWith.flow,
             transform = {
                 TimelinePreferences(
                     itemSize = when (it[0]) {
@@ -138,7 +140,9 @@ class TimelineScreenModel(
                     displayNotificationsPermission = it[2] as Boolean,
                     showReadItems = it[3] as Boolean,
                     orderField = OrderField.valueOf(it[4] as String),
-                    orderType = OrderType.valueOf(it[5] as String)
+                    orderType = OrderType.valueOf(it[5] as String),
+                    theme = it[6] as String,
+                    openInExternalBrowser = it[7] as String == "external_navigator"
                 )
             }
         )
@@ -473,7 +477,9 @@ data class TimelinePreferences(
     val displayNotificationsPermission: Boolean = false,
     val showReadItems: Boolean = true,
     val orderField: OrderField = OrderField.DATE,
-    val orderType: OrderType = OrderType.DESC
+    val orderType: OrderType = OrderType.DESC,
+    val theme: String = "light",
+    val openInExternalBrowser: Boolean = false
 )
 
 sealed interface DialogState {

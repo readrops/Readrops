@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
@@ -27,6 +26,7 @@ import com.readrops.app.util.DefaultPreview
 import com.readrops.app.util.theme.ReadropsTheme
 import com.readrops.app.util.theme.spacing
 import com.readrops.db.entities.Folder
+import com.readrops.db.entities.OpenIn
 import com.readrops.db.pojo.ItemWithFeed
 import java.time.LocalDateTime
 
@@ -38,7 +38,6 @@ enum class TimelineItemSize {
 
 const val readAlpha = 0.6f
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimelineItem(
     itemWithFeed: ItemWithFeed,
@@ -168,7 +167,8 @@ private val itemWithFeed = ItemWithFeed(
     feedId = 0,
     feedIconUrl = "",
     websiteUrl = "",
-    folder = Folder(name = "Folder name")
+    folder = Folder(name = "Folder name"),
+    openIn = OpenIn.LOCAL_VIEW
 )
 
 @DefaultPreview

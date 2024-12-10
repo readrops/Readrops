@@ -2,6 +2,7 @@ package com.readrops.app.timelime
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -40,6 +41,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -53,6 +55,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
@@ -64,7 +67,10 @@ import com.readrops.app.util.components.CenteredProgressIndicator
 import com.readrops.app.util.components.Placeholder
 import com.readrops.app.util.components.RefreshScreen
 import com.readrops.app.util.components.dialog.TwoChoicesDialog
+import com.readrops.app.util.openInCustomTab
+import com.readrops.app.util.openUrl
 import com.readrops.app.util.theme.spacing
+import com.readrops.db.entities.OpenIn
 import com.readrops.db.filters.MainFilter
 import com.readrops.db.filters.OrderField
 import com.readrops.db.filters.OrderType
@@ -99,9 +105,16 @@ object TimelineTab : Tab {
         val topAppBarState = rememberTopAppBarState()
         val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(topAppBarState)
 
-        val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {
-            screenModel.disableDisplayNotificationsPermission()
+        val lazyColumnPadding = if (preferences.itemSize == TimelineItemSize.COMPACT) {
+            0.dp
+        } else {
+            MaterialTheme.spacing.shortSpacing
         }
+
+        val launcher =
+            rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {
+                screenModel.disableDisplayNotificationsPermission()
+            }
 
         LaunchedEffect(preferences.displayNotificationsPermission) {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU
@@ -317,19 +330,8 @@ object TimelineTab : Tab {
 
                                     LazyColumn(
                                         state = lazyListState,
-                                        contentPadding = PaddingValues(
-                                            vertical = if (preferences.itemSize == TimelineItemSize.COMPACT) {
-                                                0.dp
-                                            } else {
-                                                MaterialTheme.spacing.shortSpacing
-                                            }
-                                        ),
-                                        verticalArrangement = Arrangement.spacedBy(
-                                            if (preferences.itemSize == TimelineItemSize.COMPACT) {
-                                                0.dp
-                                            } else
-                                                MaterialTheme.spacing.shortSpacing
-                                        )
+                                        contentPadding = PaddingValues(vertical = lazyColumnPadding),
+                                        verticalArrangement = Arrangement.spacedBy(lazyColumnPadding)
                                     ) {
                                         items(
                                             count = items.itemCount,
@@ -342,7 +344,12 @@ object TimelineTab : Tab {
                                                     itemWithFeed = itemWithFeed,
                                                     onClick = {
                                                         screenModel.setItemRead(itemWithFeed.item)
-                                                        navigator.push(ItemScreen(itemWithFeed.item.id))
+                                                        openItem(
+                                                            itemWithFeed = itemWithFeed,
+                                                            preferences = preferences,
+                                                            navigator = navigator,
+                                                            context = context
+                                                        )
                                                     },
                                                     onFavorite = {
                                                         screenModel.updateStarState(itemWithFeed.item)
@@ -430,7 +437,26 @@ object TimelineTab : Tab {
                     )
                 }
 
-                null -> {}
+                else -> {}
+            }
+        }
+    }
+
+    private fun openItem(
+        itemWithFeed: ItemWithFeed,
+        preferences: TimelinePreferences,
+        navigator: Navigator,
+        context: Context
+    ) {
+        val url = itemWithFeed.item.link!!
+
+        if (itemWithFeed.openIn == OpenIn.LOCAL_VIEW) {
+            navigator.push(ItemScreen(itemWithFeed.item.id))
+        } else {
+            if (preferences.openInExternalBrowser) {
+                context.openUrl(url)
+            } else {
+                context.openInCustomTab(url, preferences.theme, Color(itemWithFeed.color))
             }
         }
     }
