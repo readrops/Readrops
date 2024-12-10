@@ -2,11 +2,13 @@ package com.readrops.app.item.view
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.text.SpannedString
 import android.util.AttributeSet
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.core.text.HtmlCompat
 import androidx.core.text.layoutDirection
 import com.readrops.app.R
 import com.readrops.app.util.Utils
@@ -78,17 +80,22 @@ class ItemWebView(
     }
 
     private fun formatText(itemWithFeed: ItemWithFeed): String {
-        return if (itemWithFeed.item.text != null) {
-            val document = if (itemWithFeed.websiteUrl != null) Jsoup.parse(
-                Parser.unescapeEntities(itemWithFeed.item.text, false), itemWithFeed.websiteUrl
-            ) else Jsoup.parse(
-                Parser.unescapeEntities(itemWithFeed.item.text, false)
-            )
-
-            document.select("div,span").forEach { it.clearAttributes() }
-            return document.body().html()
+        val text = itemWithFeed.item.text ?: return ""
+        val unescapedText = Parser.unescapeEntities(text, false)
+        val document = if (itemWithFeed.websiteUrl != null) {
+            Jsoup.parse(unescapedText, itemWithFeed.websiteUrl!!)
         } else {
-            ""
+            Jsoup.parse(unescapedText)
+        }
+        // If body has no tags or all tags are unknown (and therefore likely not HTML tags at all),
+        // treat the whole thing as plain text and convert it to HTML turning newlines into <br>/<p> tags
+        val body = document.body()
+        val isPlainText = body.stream().skip(1).allMatch { !it.tag().isKnownTag }
+        return if (isPlainText) {
+            HtmlCompat.toHtml(SpannedString(unescapedText), HtmlCompat.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE)
+        } else {
+            body.select("div,span").forEach { it.clearAttributes() }
+            body.html()
         }
     }
 }
