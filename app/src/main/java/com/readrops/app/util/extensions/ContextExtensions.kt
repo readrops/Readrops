@@ -1,4 +1,4 @@
-package com.readrops.app.util
+package com.readrops.app.util.extensions
 
 import android.content.Context
 import android.content.Intent

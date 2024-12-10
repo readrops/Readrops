@@ -34,7 +34,7 @@ import com.readrops.app.account.selection.adaptiveIconPainterResource
 import com.readrops.app.more.preferences.PreferencesScreen
 import com.readrops.app.util.components.IconText
 import com.readrops.app.util.components.SelectableIconText
-import com.readrops.app.util.openUrl
+import com.readrops.app.util.extensions.openUrl
 import com.readrops.app.util.theme.LargeSpacer
 import com.readrops.app.util.theme.MediumSpacer
 import com.readrops.app.util.theme.ShortSpacer

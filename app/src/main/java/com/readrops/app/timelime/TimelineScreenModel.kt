@@ -14,8 +14,8 @@ import com.readrops.app.repositories.ErrorResult
 import com.readrops.app.repositories.GetFoldersWithFeeds
 import com.readrops.app.sync.SyncWorker
 import com.readrops.app.util.Preferences
-import com.readrops.app.util.clearSerializables
-import com.readrops.app.util.getSerializable
+import com.readrops.app.util.extensions.clearSerializables
+import com.readrops.app.util.extensions.getSerializable
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder

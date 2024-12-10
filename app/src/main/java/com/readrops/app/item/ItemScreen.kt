@@ -60,8 +60,8 @@ import com.readrops.app.util.components.AndroidScreen
 import com.readrops.app.util.components.CenteredProgressIndicator
 import com.readrops.app.util.components.FeedIcon
 import com.readrops.app.util.components.IconText
-import com.readrops.app.util.openInCustomTab
-import com.readrops.app.util.openUrl
+import com.readrops.app.util.extensions.openInCustomTab
+import com.readrops.app.util.extensions.openUrl
 import com.readrops.app.util.theme.MediumSpacer
 import com.readrops.app.util.theme.ShortSpacer
 import com.readrops.app.util.theme.spacing

@@ -22,7 +22,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import com.readrops.app.util.theme.spacing
-import com.readrops.app.util.toDp
+import com.readrops.app.util.extensions.toDp
 
 @Composable
 fun BaseText(

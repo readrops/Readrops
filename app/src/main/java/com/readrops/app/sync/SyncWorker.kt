@@ -25,7 +25,7 @@ import com.readrops.app.MainActivity
 import com.readrops.app.R
 import com.readrops.app.ReadropsApp
 import com.readrops.app.repositories.SyncResult
-import com.readrops.app.util.putSerializable
+import com.readrops.app.util.extensions.putSerializable
 import com.readrops.db.Database
 import com.readrops.db.entities.account.Account
 import kotlinx.coroutines.flow.first

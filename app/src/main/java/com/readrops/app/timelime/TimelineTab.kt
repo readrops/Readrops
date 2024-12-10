@@ -49,7 +49,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
@@ -67,8 +66,11 @@ import com.readrops.app.util.components.CenteredProgressIndicator
 import com.readrops.app.util.components.Placeholder
 import com.readrops.app.util.components.RefreshScreen
 import com.readrops.app.util.components.dialog.TwoChoicesDialog
-import com.readrops.app.util.openInCustomTab
-import com.readrops.app.util.openUrl
+import com.readrops.app.util.extensions.isError
+import com.readrops.app.util.extensions.isLoading
+import com.readrops.app.util.extensions.isNotEmpty
+import com.readrops.app.util.extensions.openInCustomTab
+import com.readrops.app.util.extensions.openUrl
 import com.readrops.app.util.theme.spacing
 import com.readrops.db.entities.OpenIn
 import com.readrops.db.filters.MainFilter
@@ -320,7 +322,7 @@ object TimelineTab : Tab {
                                 isRefreshing = state.isRefreshing,
                                 onRefresh = { screenModel.refreshTimeline() },
                             ) {
-                                if (items.itemCount > 0) {
+                                if (items.isNotEmpty()) {
                                     MarkItemsRead(
                                         lazyListState = lazyListState,
                                         items = items,
@@ -502,13 +504,4 @@ object TimelineTab : Tab {
                 }
         }
     }
-}
-
-
-fun <T : Any> LazyPagingItems<T>.isLoading(): Boolean {
-    return loadState.refresh is LoadState.Loading && itemCount == 0
-}
-
-fun <T : Any> LazyPagingItems<T>.isError(): Boolean {
-    return loadState.append is LoadState.Error //|| loadState.refresh is LoadState.Error
 }
