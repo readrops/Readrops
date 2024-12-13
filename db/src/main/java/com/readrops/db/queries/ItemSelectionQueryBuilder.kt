@@ -19,6 +19,7 @@ object ItemSelectionQueryBuilder {
         "color",
         "read_time",
         "Feed.name",
+        "Feed.open_in",
         "Feed.id as feedId",
         "siteUrl",
         "Folder.id as folder_id",

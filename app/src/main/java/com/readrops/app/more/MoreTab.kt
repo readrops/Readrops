@@ -31,6 +31,7 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.readrops.app.BuildConfig
 import com.readrops.app.R
 import com.readrops.app.account.selection.adaptiveIconPainterResource
+import com.readrops.app.more.debug.DebugScreen
 import com.readrops.app.more.preferences.PreferencesScreen
 import com.readrops.app.util.components.IconText
 import com.readrops.app.util.components.SelectableIconText
@@ -173,6 +174,18 @@ object MoreTab : Tab, KoinComponent {
                 tint = MaterialTheme.colorScheme.primary,
                 onClick = { showDonationDialog = true }
             )
+
+            if (BuildConfig.DEBUG) {
+                SelectableIconText(
+                    icon = painterResource(id = R.drawable.ic_bug),
+                    text = "Debug",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal),
+                    spacing = MaterialTheme.spacing.largeSpacing,
+                    padding = MaterialTheme.spacing.mediumSpacing,
+                    tint = MaterialTheme.colorScheme.primary,
+                    onClick = { navigator.push(DebugScreen()) }
+                )
+            }
         }
     }
 }

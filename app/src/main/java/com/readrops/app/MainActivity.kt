@@ -130,7 +130,7 @@ class MainActivity : ComponentActivity(), KoinComponent {
 
                     get<BaseRepository>(parameters = { parametersOf(account) })
                         .setItemReadState(item)
-                    HomeScreen.openItemScreen(itemId)
+                    HomeScreen.openItem(itemId)
                 }
             }
 

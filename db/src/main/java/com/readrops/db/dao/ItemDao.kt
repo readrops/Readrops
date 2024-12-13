@@ -19,6 +19,9 @@ interface ItemDao : BaseDao<Item> {
     @Query("Select * From Item Where id = :itemId")
     suspend fun select(itemId: Int): Item
 
+    @Query("Select * From Item Limit 1")
+    suspend fun selectFirst(): Item
+
     @RawQuery(observedEntities = [Item::class, Feed::class, Folder::class, ItemState::class])
     fun selectAll(query: SupportSQLiteQuery): PagingSource<Int, ItemWithFeed>
 

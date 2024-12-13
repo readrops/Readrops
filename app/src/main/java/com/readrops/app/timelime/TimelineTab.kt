@@ -78,10 +78,14 @@ import com.readrops.db.filters.OrderField
 import com.readrops.db.filters.OrderType
 import com.readrops.db.filters.SubFilter
 import com.readrops.db.pojo.ItemWithFeed
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.receiveAsFlow
 
 
 object TimelineTab : Tab {
+
+    private val openItemChannel = Channel<Int>()
 
     override val options: TabOptions
         @Composable
@@ -117,6 +121,14 @@ object TimelineTab : Tab {
             rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {
                 screenModel.disableDisplayNotificationsPermission()
             }
+
+        LaunchedEffect(Unit) {
+            openItemChannel.receiveAsFlow()
+                .collect { itemId ->
+                    screenModel.selectItemWithFeed(itemId)
+                        ?.let { openItem(it, preferences, navigator, context) }
+                }
+        }
 
         LaunchedEffect(preferences.displayNotificationsPermission) {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU
@@ -503,5 +515,9 @@ object TimelineTab : Tab {
                     screenModel.updateLastFirstVisibleItemIndex(newLastFirstVisibleItemIndex)
                 }
         }
+    }
+
+    suspend fun openItem(itemId: Int) {
+        openItemChannel.send(itemId)
     }
 }

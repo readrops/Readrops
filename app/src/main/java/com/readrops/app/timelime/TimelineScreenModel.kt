@@ -26,6 +26,7 @@ import com.readrops.db.filters.OrderType
 import com.readrops.db.filters.QueryFilters
 import com.readrops.db.filters.SubFilter
 import com.readrops.db.pojo.ItemWithFeed
+import com.readrops.db.queries.ItemSelectionQueryBuilder
 import com.readrops.db.queries.ItemsQueryBuilder
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -36,6 +37,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -440,6 +442,11 @@ class TimelineScreenModel(
         screenModelScope.launch {
             preferences.displayNotificationsPermission.write(false)
         }
+    }
+
+    suspend fun selectItemWithFeed(itemId: Int): ItemWithFeed? {
+        val query = ItemSelectionQueryBuilder.buildQuery(itemId, currentAccount!!.config.useSeparateState)
+        return database.itemDao().selectItemById(query).firstOrNull()
     }
 }
 

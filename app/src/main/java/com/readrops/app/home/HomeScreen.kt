@@ -31,7 +31,6 @@ import cafe.adriel.voyager.navigator.tab.TabNavigator
 import com.readrops.app.R
 import com.readrops.app.account.AccountTab
 import com.readrops.app.feeds.FeedTab
-import com.readrops.app.item.ItemScreen
 import com.readrops.app.more.MoreTab
 import com.readrops.app.timelime.TimelineTab
 import com.readrops.app.util.components.AndroidScreen
@@ -40,20 +39,12 @@ import kotlinx.coroutines.flow.receiveAsFlow
 
 object HomeScreen : AndroidScreen() {
 
-    private val itemChannel = Channel<Int>()
     private val tabChannel = Channel<Tab>()
 
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
         val scaffoldInsets = WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal)
-
-        LaunchedEffect(Unit) {
-            itemChannel.receiveAsFlow()
-                .collect {
-                    navigator.push(ItemScreen(it))
-                }
-        }
 
         TabNavigator(
             tab = TimelineTab
@@ -138,8 +129,9 @@ object HomeScreen : AndroidScreen() {
         }
     }
 
-    suspend fun openItemScreen(itemId: Int) {
-        itemChannel.send(itemId)
+    suspend fun openItem(itemId: Int) {
+        tabChannel.send(TimelineTab)
+        TimelineTab.openItem(itemId)
     }
 
     suspend fun openTab(tab: Tab) {
