@@ -27,12 +27,13 @@ class KonsumerExtensionsTest {
         val xml = """
             <description>
 description
+  description
 </description>
         """.trimIndent()
 
         xml.konsumeXml().apply {
             val description = child("description") { nonNullText() }
-            assertEquals(description, "description")
+            assertEquals("description\n  description", description)
         }
     }
 
@@ -53,12 +54,13 @@ description
         val xml = """
             <description>
 description
+  description
 </description>
         """.trimIndent()
 
         xml.konsumeXml().apply {
             val description = child("description") { nullableText() }
-            assertEquals(description, "description")
+            assertEquals("description\n  description", description)
         }
     }
 
@@ -79,12 +81,13 @@ description
         val xml = """
             <description>
 descrip<a>tion</a>
+  description
 </description>
         """.trimIndent()
 
         xml.konsumeXml().apply {
             val description = child("description") { nullableTextRecursively() }
-            assertEquals(description, "description")
+            assertEquals("description\n  description", description)
         }
     }
 }
