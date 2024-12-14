@@ -90,4 +90,6 @@
     <string name="add_feed_title">Feed hinzufügen</string>
     <string name="settings">Einstellungen</string>
     <string name="add_feed">Feed hinzufügen</string>
+    <string name="mark_all_articles_read">Alle Artikel als gelesen markieren</string>
+    <string name="mark_all_articles_read_question">Möchtest Du wirklich alle Artikel als gelesen markieren?</string>
 </resources>
