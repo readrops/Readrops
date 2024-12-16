@@ -85,9 +85,11 @@
     <string name="add_feed_connexion_error">Verbindungsfehler</string>
     <string name="wrong_url">Eingabe ist keine gültige URL</string>
     <string name="empty_field">Feld darf nicht leer sein</string>
-    <string name="validate">Validieren</string>
+    <string name="validate">OK</string>
     <string name="feed_url">Feed-URL</string>
     <string name="add_feed_title">Feed hinzufügen</string>
     <string name="settings">Einstellungen</string>
     <string name="add_feed">Feed hinzufügen</string>
+    <string name="mark_all_articles_read">Alle Artikel als gelesen markieren</string>
+    <string name="mark_all_articles_read_question">Möchtest Du wirklich alle Artikel als gelesen markieren?</string>
 </resources>
