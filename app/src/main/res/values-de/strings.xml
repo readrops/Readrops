@@ -92,4 +92,19 @@
     <string name="add_feed">Feed hinzufügen</string>
     <string name="mark_all_articles_read">Alle Artikel als gelesen markieren</string>
     <string name="mark_all_articles_read_question">Möchtest Du wirklich alle Artikel als gelesen markieren?</string>
+    <string name="no_article">Keine Artikel</string>
+    <string name="more">Mehr</string>
+    <string name="new_articles">Neue Artikel</string>
+    <string name="unread">%1$d ungelesen</string>
+    <string name="app_licence">Veröffentlicht unter der GPLv3-Lizenz</string>
+    <string name="open_source_libraries">Open-Source-Bibliotheken</string>
+    <string name="make_donation">Spenden</string>
+    <string name="filters">Filter</string>
+    <string name="order_by">Sortieren nach</string>
+    <string name="with_direction">Reihenfolge</string>
+    <string name="date">Datum</string>
+    <string name="identifier">ID</string>
+    <string name="ascending">Aufsteigend</string>
+    <string name="descending">Absteigend</string>
+    <string name="order_field_tooltip">RSS-Feeds enthalten immer alte Artikel, die Du wahrscheinlich nicht in Deiner Zeitleiste sehen wirst, wenn Du sie nach Datum sortierst. Mit der Sortierung nach ID kannst Du alle neu eingefügten Artikel anzeigen, unabhängig von ihrem Datum.</string>
 </resources>
