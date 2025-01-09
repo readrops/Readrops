@@ -156,6 +156,18 @@ class PreferencesScreen : AndroidScreen() {
                             PreferenceHeader(text = stringResource(id = R.string.timeline))
 
                             ListPreferenceWidget(
+                                preference = loadedState.mainFilterPref.second,
+                                selectedKey = loadedState.mainFilterPref.first,
+                                entries = mapOf(
+                                    "ALL" to stringResource(R.string.articles),
+                                    "NEW" to stringResource(R.string.new_articles),
+                                    "STARS" to stringResource(R.string.favorites)
+                                ),
+                                title = stringResource(R.string.default_category),
+                                onValueChange = {}
+                            )
+
+                            ListPreferenceWidget(
                                 preference = loadedState.timelineItemSize.second,
                                 selectedKey = loadedState.timelineItemSize.first,
                                 entries = mapOf(

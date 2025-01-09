@@ -39,6 +39,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
@@ -65,6 +66,17 @@ class TimelineScreenModel(
 
     init {
         screenModelScope.launch(dispatcher) {
+            val mainFilter = MainFilter.valueOf(preferences.mainFilter.flow.first())
+            _timelineState.update {
+                it.copy(
+                    filters = updateFilters {
+                        it.filters.copy(
+                            mainFilter = mainFilter
+                        )
+                    }
+                )
+            }
+
             combine(
                 accountEvent,
                 filters
@@ -123,17 +135,17 @@ class TimelineScreenModel(
         }
     }
 
-    private fun getTimelinePreferences(): Flow<TimelinePreferences> {
+    private fun getTimelinePreferences(): Flow<TimelinePreferences> = with(preferences) {
         return combine(
-            preferences.timelineItemSize.flow,
-            preferences.scrollRead.flow,
-            preferences.displayNotificationsPermission.flow,
-            preferences.showReadItems.flow,
-            preferences.orderField.flow,
-            preferences.orderType.flow,
-            preferences.theme.flow,
-            preferences.openLinksWith.flow,
-            preferences.globalOpenInAsk.flow,
+            timelineItemSize.flow,
+            scrollRead.flow,
+            displayNotificationsPermission.flow,
+            showReadItems.flow,
+            orderField.flow,
+            orderType.flow,
+            theme.flow,
+            openLinksWith.flow,
+            globalOpenInAsk.flow,
             transform = {
                 TimelinePreferences(
                     itemSize = when (it[0]) {
@@ -148,7 +160,7 @@ class TimelineScreenModel(
                     orderType = OrderType.valueOf(it[5] as String),
                     theme = it[6] as String,
                     openInExternalBrowser = it[7] as String == "external_navigator",
-                    openInAsk = it[8] as Boolean
+                    openInAsk = it[8] as Boolean,
                 )
             }
         )

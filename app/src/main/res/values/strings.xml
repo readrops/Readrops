@@ -201,4 +201,5 @@
     <string name="local_view">Local view</string>
     <string name="external_view">External view</string>
     <string name="do_not_ask_again_next_feeds">Do not ask me again for next feeds</string>
+    <string name="default_category">Default category</string>
 </resources>

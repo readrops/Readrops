@@ -97,6 +97,12 @@ class Preferences(
         key = booleanPreferencesKey("open_in_ask"),
         default = true
     )
+
+    val mainFilter = Preference(
+        dataStore = dataStore,
+        key = stringPreferencesKey("main_filter"),
+        default = "ALL" // uppercase important, used with Enum.valueOf()
+    )
 }
 
 
