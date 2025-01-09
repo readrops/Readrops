@@ -26,7 +26,7 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
       - name: Android Emulator Runner
-        uses: ReactiveCircus/android-emulator-runner@v2.30.1
+        uses: ReactiveCircus/android-emulator-runner@v2.33.0
         with:
           api-level: 29
           script: ./gradlew clean build connectedCheck jacocoFullReport
