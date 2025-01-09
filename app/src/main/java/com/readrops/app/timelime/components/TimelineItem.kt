@@ -1,4 +1,4 @@
-package com.readrops.app.timelime
+package com.readrops.app.timelime.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background

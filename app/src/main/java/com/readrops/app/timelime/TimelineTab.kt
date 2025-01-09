@@ -8,20 +8,16 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
@@ -29,8 +25,6 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberDrawerState
@@ -46,7 +40,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
@@ -61,14 +54,14 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.readrops.app.MainActivity
 import com.readrops.app.R
 import com.readrops.app.item.ItemScreen
-import com.readrops.app.timelime.dialog.ErrorListDialog
-import com.readrops.app.timelime.dialog.FilterBottomSheet
-import com.readrops.app.timelime.dialog.OpenInParameterDialog
+import com.readrops.app.timelime.components.TimelineAppBar
+import com.readrops.app.timelime.components.TimelineItem
+import com.readrops.app.timelime.components.TimelineItemSize
+import com.readrops.app.timelime.dialog.TimelineDialogs
 import com.readrops.app.timelime.drawer.TimelineDrawer
 import com.readrops.app.util.components.CenteredProgressIndicator
 import com.readrops.app.util.components.Placeholder
 import com.readrops.app.util.components.RefreshScreen
-import com.readrops.app.util.components.dialog.TwoChoicesDialog
 import com.readrops.app.util.extensions.isError
 import com.readrops.app.util.extensions.isLoading
 import com.readrops.app.util.extensions.isNotEmpty
@@ -77,9 +70,6 @@ import com.readrops.app.util.extensions.openUrl
 import com.readrops.app.util.theme.spacing
 import com.readrops.db.entities.OpenIn
 import com.readrops.db.filters.MainFilter
-import com.readrops.db.filters.OrderField
-import com.readrops.db.filters.OrderType
-import com.readrops.db.filters.SubFilter
 import com.readrops.db.pojo.ItemWithFeed
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.filter
@@ -210,6 +200,20 @@ object TimelineTab : Tab {
             }
         }
 
+        TimelineDialogs(
+            state = state,
+            screenModel = screenModel,
+            onOpenItem = { itemWithFeed, openIn ->
+                openItem(
+                    itemWithFeed = itemWithFeed,
+                    openIn = openIn,
+                    preferences = preferences,
+                    navigator = navigator,
+                    context = context
+                )
+            }
+        )
+
         ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
@@ -229,63 +233,12 @@ object TimelineTab : Tab {
         ) {
             Scaffold(
                 topBar = {
-                    TopAppBar(
-                        title = {
-                            Column {
-                                Text(
-                                    text = when (state.filters.mainFilter) {
-                                        MainFilter.STARS -> stringResource(R.string.favorites)
-                                        MainFilter.ALL -> stringResource(R.string.articles)
-                                        MainFilter.NEW -> stringResource(R.string.new_articles)
-                                    },
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-
-                                if (state.showSubtitle) {
-                                    Text(
-                                        text = when (state.filters.subFilter) {
-                                            SubFilter.FEED -> state.filterFeedName
-                                            SubFilter.FOLDER -> state.filterFolderName
-                                            else -> ""
-                                        },
-                                        style = MaterialTheme.typography.labelLarge,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                }
-                            }
-                        },
-                        navigationIcon = {
-                            IconButton(
-                                onClick = { screenModel.openDrawer() }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Menu,
-                                    contentDescription = null
-                                )
-                            }
-                        },
-                        actions = {
-                            IconButton(
-                                onClick = { screenModel.openDialog(DialogState.FilterSheet) }
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_filter_list),
-                                    contentDescription = null
-                                )
-                            }
-
-                            IconButton(
-                                onClick = { screenModel.refreshTimeline() }
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_sync),
-                                    contentDescription = null
-                                )
-                            }
-                        },
-                        scrollBehavior = topAppBarScrollBehavior
+                    TimelineAppBar(
+                        state = state,
+                        topAppBarScrollBehavior = topAppBarScrollBehavior,
+                        onOpenDrawer = { screenModel.openDrawer() },
+                        onOpenFilterSheet = { screenModel.openDialog(DialogState.FilterSheet) },
+                        onRefreshTimeline = { screenModel.refreshTimeline() }
                     )
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -410,87 +363,6 @@ object TimelineTab : Tab {
                         }
                     }
                 }
-            }
-
-            when (val dialog = state.dialog) {
-                is DialogState.ConfirmDialog -> {
-                    TwoChoicesDialog(
-                        title = stringResource(R.string.mark_all_articles_read),
-                        text = stringResource(R.string.mark_all_articles_read_question),
-                        icon = painterResource(id = R.drawable.ic_rss_feed_grey),
-                        confirmText = stringResource(id = R.string.validate),
-                        dismissText = stringResource(id = R.string.cancel),
-                        onDismiss = { screenModel.closeDialog() },
-                        onConfirm = {
-                            screenModel.closeDialog()
-                            screenModel.setAllItemsRead()
-                        }
-                    )
-                }
-
-                is DialogState.FilterSheet -> {
-                    FilterBottomSheet(
-                        filters = state.filters,
-                        onSetShowReadItems = {
-                            screenModel.setShowReadItemsState(!state.filters.showReadItems)
-                        },
-                        onSetOrderField = {
-                            screenModel.setOrderFieldState(
-                                if (state.filters.orderField == OrderField.ID) {
-                                    OrderField.DATE
-                                } else {
-                                    OrderField.ID
-                                }
-                            )
-                        },
-                        onSetOrderType = {
-                            screenModel.setOrderTypeState(
-                                if (state.filters.orderType == OrderType.DESC) {
-                                    OrderType.ASC
-                                } else {
-                                    OrderType.DESC
-                                }
-                            )
-                        },
-                        onDismiss = { screenModel.closeDialog() }
-                    )
-                }
-
-                is DialogState.ErrorList -> {
-                    ErrorListDialog(
-                        errorResult = dialog.errorResult,
-                        onDismiss = { screenModel.closeDialog(dialog) }
-                    )
-                }
-
-                is DialogState.OpenIn -> {
-                    val itemWithFeed = dialog.itemWithFeed
-
-                    OpenInParameterDialog(
-                        openIn = itemWithFeed.openIn!!,
-                        onValidate = { openIn, openInAsk ->
-                            screenModel.updateOpenInParameter(
-                                feedId = itemWithFeed.feedId,
-                                openIn = openIn,
-                                openInAsk = openInAsk
-                            )
-
-                            screenModel.closeDialog(dialog)
-
-                            openItem(
-                                itemWithFeed = itemWithFeed,
-                                openIn = openIn,
-                                preferences = preferences,
-                                navigator = navigator,
-                                context = context
-                            )
-                            screenModel.setItemRead(itemWithFeed.item)
-                        },
-                        onDismiss = { screenModel.closeDialog(dialog) }
-                    )
-                }
-
-                else -> {}
             }
         }
     }

@@ -13,6 +13,7 @@ import com.readrops.app.home.TabScreenModel
 import com.readrops.app.repositories.ErrorResult
 import com.readrops.app.repositories.GetFoldersWithFeeds
 import com.readrops.app.sync.SyncWorker
+import com.readrops.app.timelime.components.TimelineItemSize
 import com.readrops.app.util.Preferences
 import com.readrops.app.util.extensions.clearSerializables
 import com.readrops.app.util.extensions.getSerializable

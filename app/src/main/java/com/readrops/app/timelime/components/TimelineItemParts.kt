@@ -1,4 +1,4 @@
-package com.readrops.app.timelime
+package com.readrops.app.timelime.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
