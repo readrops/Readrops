@@ -1,4 +1,4 @@
-package com.readrops.app.timelime
+package com.readrops.app.timelime.dialog
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column

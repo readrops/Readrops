@@ -53,7 +53,7 @@ import com.readrops.app.account.selection.AccountSelectionScreen
 import com.readrops.app.account.selection.adaptiveIconPainterResource
 import com.readrops.app.notifications.NotificationsScreen
 import com.readrops.app.repositories.ErrorResult
-import com.readrops.app.timelime.ErrorListDialog
+import com.readrops.app.timelime.dialog.ErrorListDialog
 import com.readrops.app.util.components.SelectableIconText
 import com.readrops.app.util.components.SelectableImageText
 import com.readrops.app.util.components.ThreeDotsMenu

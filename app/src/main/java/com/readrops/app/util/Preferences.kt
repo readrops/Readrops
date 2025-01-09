@@ -27,10 +27,10 @@ class Preferences(
 ) {
 
     val theme = Preference(
-            dataStore = dataStore,
-            key = stringPreferencesKey("theme"),
-            default = "system"
-        )
+        dataStore = dataStore,
+        key = stringPreferencesKey("theme"),
+        default = "system"
+    )
 
     val backgroundSynchronization = Preference(
         dataStore = dataStore,
@@ -90,6 +90,12 @@ class Preferences(
         dataStore = dataStore,
         key = stringPreferencesKey("order_type"),
         default = "DESC" // or "ASC", uppercase important, used with Enum.valueOf()
+    )
+
+    val globalOpenInAsk = Preference(
+        dataStore = dataStore,
+        key = booleanPreferencesKey("open_in_ask"),
+        default = true
     )
 }
 

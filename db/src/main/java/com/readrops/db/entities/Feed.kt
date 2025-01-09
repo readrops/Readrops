@@ -48,6 +48,7 @@ data class Feed(
         defaultValue = "1"
     ) var isNotificationEnabled: Boolean = true,
     @ColumnInfo(name = "open_in") var openIn: OpenIn = OpenIn.LOCAL_VIEW,
+    @ColumnInfo(name = "open_in_ask", defaultValue = "1") var openInAsk: Boolean = true,
     @Ignore var unreadCount: Int = 0,
     @Ignore var remoteFolderId: String? = null,
 )

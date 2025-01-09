@@ -21,5 +21,6 @@ data class ItemWithFeed(
     // TODO see how to resolve this by improving Item immutability
     @ColumnInfo(name = "is_starred") val isStarred: Boolean = false,
     @ColumnInfo(name = "is_read") val isRead: Boolean = false,
-    @ColumnInfo(name = "open_in") val openIn: OpenIn?
+    @ColumnInfo(name = "open_in") val openIn: OpenIn?,
+    @ColumnInfo(name = "open_in_ask") val openInAsk: Boolean = true
 )

@@ -20,6 +20,7 @@ import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
+import com.readrops.db.entities.OpenIn
 import com.readrops.db.filters.MainFilter
 import com.readrops.db.filters.OrderField
 import com.readrops.db.filters.OrderType
@@ -131,6 +132,7 @@ class TimelineScreenModel(
             preferences.orderType.flow,
             preferences.theme.flow,
             preferences.openLinksWith.flow,
+            preferences.globalOpenInAsk.flow,
             transform = {
                 TimelinePreferences(
                     itemSize = when (it[0]) {
@@ -144,7 +146,8 @@ class TimelineScreenModel(
                     orderField = OrderField.valueOf(it[4] as String),
                     orderType = OrderType.valueOf(it[5] as String),
                     theme = it[6] as String,
-                    openInExternalBrowser = it[7] as String == "external_navigator"
+                    openInExternalBrowser = it[7] as String == "external_navigator",
+                    openInAsk = it[8] as Boolean
                 )
             }
         )
@@ -448,6 +451,14 @@ class TimelineScreenModel(
         val query = ItemSelectionQueryBuilder.buildQuery(itemId, currentAccount!!.config.useSeparateState)
         return database.itemDao().selectItemById(query).firstOrNull()
     }
+
+    fun updateOpenInParameter(feedId: Int, openIn: OpenIn, openInAsk: Boolean) {
+        screenModelScope.launch(dispatcher) {
+            database.feedDao().updateOpenInSetting(feedId, openIn)
+            database.feedDao().updateOpenInAsk(feedId, false)
+            preferences.globalOpenInAsk.write(openInAsk)
+        }
+    }
 }
 
 @Stable
@@ -486,11 +497,13 @@ data class TimelinePreferences(
     val orderField: OrderField = OrderField.DATE,
     val orderType: OrderType = OrderType.DESC,
     val theme: String = "light",
-    val openInExternalBrowser: Boolean = false
+    val openInExternalBrowser: Boolean = false,
+    val openInAsk: Boolean = true
 )
 
 sealed interface DialogState {
     data object ConfirmDialog : DialogState
     data object FilterSheet : DialogState
     class ErrorList(val errorResult: ErrorResult) : DialogState
+    class OpenIn(val itemWithFeed: ItemWithFeed) : DialogState
 }

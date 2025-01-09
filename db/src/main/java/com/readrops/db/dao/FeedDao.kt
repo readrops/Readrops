@@ -77,6 +77,9 @@ interface FeedDao : BaseDao<Feed> {
     @Query("Update Feed set open_in = :openIn Where id = :feedId")
     suspend fun updateOpenInSetting(feedId: Int, openIn: OpenIn)
 
+    @Query("Update Feed set open_in_ask = :openInAsk Where id = :feedId")
+    suspend fun updateOpenInAsk(feedId: Int, openInAsk: Boolean)
+
     /**
      * Insert, update and delete feeds by account
      *

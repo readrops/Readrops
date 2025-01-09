@@ -127,5 +127,8 @@ object MigrationFrom4To5 : Migration(4, 5) {
 
         // add open_in field
         db.execSQL("""ALTER TABLE `Feed` ADD `open_in` TEXT DEFAULT 'LOCAL_VIEW' NOT NULL""")
+
+        // add open_in_ask field
+        db.execSQL("""ALTER TABLE `Feed` ADD `open_in_ask` INTEGER NOT NULL DEFAULT 1""")
     }
 }

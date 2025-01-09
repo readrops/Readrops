@@ -25,6 +25,7 @@ object ItemsQueryBuilder {
         "Feed.id as feedId",
         "Feed.account_id",
         "Feed.open_in",
+        "Feed.open_in_ask",
         "Folder.id as folder_id",
         "Folder.name as folder_name"
     )

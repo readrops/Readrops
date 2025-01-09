@@ -61,6 +61,9 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.readrops.app.MainActivity
 import com.readrops.app.R
 import com.readrops.app.item.ItemScreen
+import com.readrops.app.timelime.dialog.ErrorListDialog
+import com.readrops.app.timelime.dialog.FilterBottomSheet
+import com.readrops.app.timelime.dialog.OpenInParameterDialog
 import com.readrops.app.timelime.drawer.TimelineDrawer
 import com.readrops.app.util.components.CenteredProgressIndicator
 import com.readrops.app.util.components.Placeholder
@@ -350,20 +353,29 @@ object TimelineTab : Tab {
                                         items(
                                             count = items.itemCount,
                                             key = items.itemKey { it.item.id },
-                                        ) { itemCount ->
-                                            val itemWithFeed = items[itemCount]
+                                        ) { index ->
+                                            val itemWithFeed = items[index]
 
                                             if (itemWithFeed != null) {
                                                 TimelineItem(
                                                     itemWithFeed = itemWithFeed,
                                                     onClick = {
-                                                        screenModel.setItemRead(itemWithFeed.item)
-                                                        openItem(
-                                                            itemWithFeed = itemWithFeed,
-                                                            preferences = preferences,
-                                                            navigator = navigator,
-                                                            context = context
-                                                        )
+                                                        if (itemWithFeed.openInAsk && preferences.openInAsk) {
+                                                            screenModel.openDialog(
+                                                                DialogState.OpenIn(
+                                                                    itemWithFeed
+                                                                )
+                                                            )
+                                                        } else {
+                                                            screenModel.setItemRead(itemWithFeed.item)
+
+                                                            openItem(
+                                                                itemWithFeed = itemWithFeed,
+                                                                preferences = preferences,
+                                                                navigator = navigator,
+                                                                context = context
+                                                            )
+                                                        }
                                                     },
                                                     onFavorite = {
                                                         screenModel.updateStarState(itemWithFeed.item)
@@ -451,6 +463,33 @@ object TimelineTab : Tab {
                     )
                 }
 
+                is DialogState.OpenIn -> {
+                    val itemWithFeed = dialog.itemWithFeed
+
+                    OpenInParameterDialog(
+                        openIn = itemWithFeed.openIn!!,
+                        onValidate = { openIn, openInAsk ->
+                            screenModel.updateOpenInParameter(
+                                feedId = itemWithFeed.feedId,
+                                openIn = openIn,
+                                openInAsk = openInAsk
+                            )
+
+                            screenModel.closeDialog(dialog)
+
+                            openItem(
+                                itemWithFeed = itemWithFeed,
+                                openIn = openIn,
+                                preferences = preferences,
+                                navigator = navigator,
+                                context = context
+                            )
+                            screenModel.setItemRead(itemWithFeed.item)
+                        },
+                        onDismiss = { screenModel.closeDialog(dialog) }
+                    )
+                }
+
                 else -> {}
             }
         }
@@ -460,11 +499,12 @@ object TimelineTab : Tab {
         itemWithFeed: ItemWithFeed,
         preferences: TimelinePreferences,
         navigator: Navigator,
-        context: Context
+        context: Context,
+        openIn: OpenIn? = itemWithFeed.openIn,
     ) {
         val url = itemWithFeed.item.link!!
 
-        if (itemWithFeed.openIn == OpenIn.LOCAL_VIEW) {
+        if (openIn == OpenIn.LOCAL_VIEW) {
             navigator.push(ItemScreen(itemWithFeed.item.id))
         } else {
             if (preferences.openInExternalBrowser) {

@@ -168,7 +168,8 @@ private val itemWithFeed = ItemWithFeed(
     feedIconUrl = "",
     websiteUrl = "",
     folder = Folder(name = "Folder name"),
-    openIn = OpenIn.LOCAL_VIEW
+    openIn = OpenIn.LOCAL_VIEW,
+    openInAsk = true
 )
 
 @DefaultPreview
