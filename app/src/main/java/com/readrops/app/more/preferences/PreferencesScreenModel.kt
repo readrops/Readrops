@@ -19,30 +19,34 @@ class PreferencesScreenModel(
 
     init {
         screenModelScope.launch(dispatcher) {
-            val flows = listOf(
-                preferences.theme.flow,
-                preferences.backgroundSynchronization.flow,
-                preferences.scrollRead.flow,
-                preferences.hideReadFeeds.flow,
-                preferences.openLinksWith.flow,
-                preferences.timelineItemSize.flow,
-                preferences.mainFilter.flow
-            )
-
-            combine(
-                flows
-            ) { list ->
-                PreferencesScreenState.Loaded(
-                    themePref = (list[0] as String) to preferences.theme,
-                    backgroundSyncPref = (list[1] as String) to preferences.backgroundSynchronization,
-                    scrollReadPref = (list[2] as Boolean) to preferences.scrollRead,
-                    hideReadFeeds = (list[3] as Boolean) to preferences.hideReadFeeds,
-                    openLinksWith = (list[4] as String) to preferences.openLinksWith,
-                    timelineItemSize = (list[5] as String) to preferences.timelineItemSize,
-                    mainFilterPref = (list[6] as String) to preferences.mainFilter
+            with(preferences) {
+                val flows = listOf(
+                    theme.flow,
+                    backgroundSynchronization.flow,
+                    scrollRead.flow,
+                    hideReadFeeds.flow,
+                    openLinksWith.flow,
+                    timelineItemSize.flow,
+                    mainFilter.flow,
+                    synchAtLaunch.flow
                 )
-            }.collect { theme ->
-                mutableState.update { theme }
+
+                combine(
+                    flows
+                ) { list ->
+                    PreferencesScreenState.Loaded(
+                        themePref = (list[0] as String) to theme,
+                        backgroundSyncPref = (list[1] as String) to backgroundSynchronization,
+                        scrollReadPref = (list[2] as Boolean) to scrollRead,
+                        hideReadFeeds = (list[3] as Boolean) to hideReadFeeds,
+                        openLinksWith = (list[4] as String) to openLinksWith,
+                        timelineItemSize = (list[5] as String) to timelineItemSize,
+                        mainFilterPref = (list[6] as String) to mainFilter,
+                        syncAtLaunchPref = (list[7] as Boolean) to synchAtLaunch
+                    )
+                }.collect { theme ->
+                    mutableState.update { theme }
+                }
             }
         }
     }
@@ -61,6 +65,7 @@ sealed class PreferencesScreenState {
         val openLinksWith: PreferenceState<String>,
         val timelineItemSize: PreferenceState<String>,
         val mainFilterPref: PreferenceState<String>,
+        val syncAtLaunchPref: PreferenceState<Boolean>
     ) : PreferencesScreenState()
 
 }

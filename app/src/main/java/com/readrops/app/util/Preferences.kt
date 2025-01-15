@@ -103,6 +103,12 @@ class Preferences(
         key = stringPreferencesKey("main_filter"),
         default = "ALL" // uppercase important, used with Enum.valueOf()
     )
+
+    val synchAtLaunch = Preference(
+        dataStore = dataStore,
+        key = booleanPreferencesKey("sync_at_launch"),
+        default = false
+    )
 }
 
 

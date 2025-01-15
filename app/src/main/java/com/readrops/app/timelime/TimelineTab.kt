@@ -140,10 +140,15 @@ object TimelineTab : Tab {
         }
 
         // remove splash screen when opening the app
-        LaunchedEffect(items.isLoading()) {
+        LaunchedEffect(items.isLoading(), preferences.syncAtLaunch) {
             val activity = (context as MainActivity)
-            if (!items.isLoading() && !activity.ready) {
+
+            if (preferences.syncAtLaunch) {
                 activity.ready = true
+            } else {
+                if (!items.isLoading() && !activity.ready) {
+                    activity.ready = true
+                }
             }
         }
 

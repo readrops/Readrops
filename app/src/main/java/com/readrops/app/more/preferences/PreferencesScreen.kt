@@ -155,6 +155,12 @@ class PreferencesScreen : AndroidScreen() {
 
                             PreferenceHeader(text = stringResource(id = R.string.timeline))
 
+                            SwitchPreferenceWidget(
+                                preference = loadedState.syncAtLaunchPref.second,
+                                isChecked = loadedState.syncAtLaunchPref.first,
+                                title = stringResource(R.string.synchronize_at_launch)
+                            )
+
                             ListPreferenceWidget(
                                 preference = loadedState.mainFilterPref.second,
                                 selectedKey = loadedState.mainFilterPref.first,

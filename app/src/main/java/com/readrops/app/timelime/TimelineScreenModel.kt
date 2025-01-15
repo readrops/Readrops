@@ -67,24 +67,33 @@ class TimelineScreenModel(
     init {
         screenModelScope.launch(dispatcher) {
             val mainFilter = MainFilter.valueOf(preferences.mainFilter.flow.first())
-            _timelineState.update {
-                it.copy(
-                    filters = updateFilters {
-                        it.filters.copy(
-                            mainFilter = mainFilter
-                        )
-                    }
-                )
-            }
+            var syncAtLaunch = preferences.synchAtLaunch.flow.first()
 
             combine(
                 accountEvent,
-                filters
-            ) { account, filters ->
-                account to filters.copy(accountId = account.id)
-            }.collectLatest { (account, filters) ->
-                this@TimelineScreenModel.filters.update { filters }
-                buildPager()
+                filters,
+                getTimelinePreferences()
+            ) { account, filters, timelinePreferences ->
+                Triple(account, filters.copy(accountId = account.id), timelinePreferences)
+            }.collectLatest { (account, filters, timelinePreferences) ->
+                _timelineState.update {
+                    it.copy(
+                        preferences = timelinePreferences,
+                        filters = filters.copy(
+                            mainFilter = mainFilter,
+                            showReadItems = timelinePreferences.showReadItems,
+                            orderField = timelinePreferences.orderField,
+                            orderType = timelinePreferences.orderType
+                        )
+                    )
+                }
+
+                if (syncAtLaunch) {
+                    refreshTimeline()
+                    syncAtLaunch = false
+                } else {
+                    buildPager()
+                }
 
                 preferences.hideReadFeeds.flow
                     .flatMapLatest { hideReadFeeds ->
@@ -102,7 +111,6 @@ class TimelineScreenModel(
                             )
                         }
                     }
-
             }
         }
 
@@ -114,24 +122,6 @@ class TimelineScreenModel(
                     it.copy(unreadNewItemsCount = count)
                 }
             }
-        }
-
-        screenModelScope.launch(dispatcher) {
-            getTimelinePreferences()
-                .collect { preferences ->
-                    _timelineState.update {
-                        it.copy(
-                            preferences = preferences,
-                            filters = updateFilters {
-                                it.filters.copy(
-                                    showReadItems = preferences.showReadItems,
-                                    orderField = preferences.orderField,
-                                    orderType = preferences.orderType
-                                )
-                            }
-                        )
-                    }
-                }
         }
     }
 
@@ -146,6 +136,7 @@ class TimelineScreenModel(
             theme.flow,
             openLinksWith.flow,
             globalOpenInAsk.flow,
+            synchAtLaunch.flow,
             transform = {
                 TimelinePreferences(
                     itemSize = when (it[0]) {
@@ -161,6 +152,7 @@ class TimelineScreenModel(
                     theme = it[6] as String,
                     openInExternalBrowser = it[7] as String == "external_navigator",
                     openInAsk = it[8] as Boolean,
+                    syncAtLaunch = it[9] as Boolean
                 )
             }
         )
@@ -168,7 +160,7 @@ class TimelineScreenModel(
 
     private fun buildPager(empty: Boolean = false) {
         val query = ItemsQueryBuilder.buildItemsQuery(
-            queryFilters = filters.value,
+            queryFilters = _timelineState.value.filters,
             separateState = currentAccount!!.config.useSeparateState
         )
 
@@ -205,7 +197,7 @@ class TimelineScreenModel(
         buildPager(empty = true)
 
         screenModelScope.launch(dispatcher) {
-            val filterPair = with(filters.value) {
+            val filterPair = with(_timelineState.value.filters) {
                 when (subFilter) {
                     SubFilter.FEED -> SyncWorker.FEED_ID_KEY to feedId
                     SubFilter.FOLDER -> SyncWorker.FOLDER_ID_KEY to folderId
@@ -511,7 +503,8 @@ data class TimelinePreferences(
     val orderType: OrderType = OrderType.DESC,
     val theme: String = "light",
     val openInExternalBrowser: Boolean = false,
-    val openInAsk: Boolean = true
+    val openInAsk: Boolean = true,
+    val syncAtLaunch: Boolean = false
 )
 
 sealed interface DialogState {

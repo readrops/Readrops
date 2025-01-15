@@ -193,4 +193,5 @@
     <string name="external_view">Vue externe</string>
     <string name="do_not_ask_again_next_feeds">Ne pas me redemander pour les autres flux</string>
     <string name="default_category">Catégorie par défaut</string>
+    <string name="synchronize_at_launch">Synchroniser au démarrage</string>
 </resources>
