@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,7 +26,6 @@ import com.readrops.app.R
 import com.readrops.app.feeds.components.FeedBanner
 import com.readrops.app.more.preferences.components.BasePreference
 import com.readrops.app.util.components.SwitchText
-import com.readrops.app.util.theme.LargeSpacer
 import com.readrops.app.util.theme.MediumSpacer
 import com.readrops.app.util.theme.spacing
 import com.readrops.db.entities.Feed
@@ -47,6 +47,7 @@ fun FeedModalBottomSheet(
     canDeleteFeed: Boolean
 ) {
     ModalBottomSheet(
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         dragHandle = null,
         onDismissRequest = { onDismissRequest() }
     ) {
@@ -105,7 +106,7 @@ fun FeedModalBottomSheet(
             }
         }
 
-        LargeSpacer()
+        MediumSpacer()
     }
 }
 

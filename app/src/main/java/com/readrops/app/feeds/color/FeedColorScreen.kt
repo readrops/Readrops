@@ -54,7 +54,9 @@ class FeedColorScreen(val feed: Feed) : AndroidScreen() {
         val screenModel = koinScreenModel<FeedColorScreenModel> { parametersOf(feed) }
 
         val state by screenModel.state.collectAsStateWithLifecycle()
+
         val snackbarHostState = remember { SnackbarHostState() }
+        val defaultColor = MaterialTheme.colorScheme.primary
 
         if (state.canExit) {
             navigator.pop()
@@ -99,9 +101,7 @@ class FeedColorScreen(val feed: Feed) : AndroidScreen() {
             Column(
                 modifier = Modifier
                     .padding(innerPadding)
-                    .padding(
-                        vertical = MaterialTheme.spacing.shortSpacing
-                    )
+                    .padding(vertical = MaterialTheme.spacing.shortSpacing)
             ) {
                 Text(
                     text = stringResource(R.string.preview),
@@ -170,6 +170,17 @@ class FeedColorScreen(val feed: Feed) : AndroidScreen() {
                 )
 
                 SelectableIconText(
+                    icon = painterResource(R.drawable.ic_reset_color),
+                    text = stringResource(R.string.use_default_color),
+                    style = MaterialTheme.typography.titleSmall,
+                    padding = MaterialTheme.spacing.mediumSpacing,
+                    spacing = MaterialTheme.spacing.mediumSpacing,
+                    iconSize = 24.dp,
+                    tint = MaterialTheme.colorScheme.primary,
+                    onClick = { screenModel.setNewColor(defaultColor) },
+                )
+
+                SelectableIconText(
                     icon = painterResource(R.drawable.ic_color),
                     text = stringResource(R.string.select_color),
                     style = MaterialTheme.typography.titleSmall,
@@ -180,7 +191,7 @@ class FeedColorScreen(val feed: Feed) : AndroidScreen() {
                     onClick = { screenModel.showColorPickerDialog() }
                 )
 
-                SelectableIconText(
+                /*SelectableIconText(
                     icon = painterResource(R.drawable.ic_download),
                     text = stringResource(R.string.load_color_new_favicon),
                     style = MaterialTheme.typography.titleSmall,
@@ -189,7 +200,7 @@ class FeedColorScreen(val feed: Feed) : AndroidScreen() {
                     iconSize = 24.dp,
                     tint = MaterialTheme.colorScheme.primary,
                     onClick = { }
-                )
+                )*/
 
                 LargeSpacer()
 

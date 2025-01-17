@@ -202,4 +202,5 @@
     <string name="reload_color_favicon">Recharger la couleur à partir de la favicône</string>
     <string name="load_color_new_favicon">Charger la couleur depuis une nouvelle favicône</string>
     <string name="error_occurred_reloading_favicon_color">Une erreur est survenue lors du rechargement de la couleur de la favicône</string>
+    <string name="use_default_color">Utiliser la couleur par défaut</string>
 </resources>

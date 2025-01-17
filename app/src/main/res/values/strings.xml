@@ -211,4 +211,5 @@
     <string name="reload_color_favicon">Reload color from Favicon</string>
     <string name="load_color_new_favicon">Load color from a new favicon</string>
     <string name="error_occurred_reloading_favicon_color">An error occurred while reloading favicon color</string>
+    <string name="use_default_color">Use default color</string>
 </resources>
