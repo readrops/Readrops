@@ -50,13 +50,13 @@ interface FeedDao : BaseDao<Feed> {
     suspend fun selectRemoteFeedLocalId(remoteId: String, accountId: Int): Int
 
     @Query("Update Feed set name = :name, folder_id = :folderId Where remote_id = :remoteFeedId And account_id = :accountId")
-    fun updateFeedNameAndFolder(remoteFeedId: String, accountId: Int, name: String, folderId: Int?)
+    suspend fun updateFeedNameAndFolder(remoteFeedId: String, accountId: Int, name: String, folderId: Int?)
 
     @Query("Delete from Feed Where remote_id in (:ids) And account_id = :accountId")
-    fun deleteByIds(ids: List<String>, accountId: Int)
+    suspend fun deleteByIds(ids: List<String>, accountId: Int)
 
     @Query("Update Feed set color = :color Where id = :feedId")
-    fun updateFeedColor(feedId: Int, color: Int)
+    suspend fun updateFeedColor(feedId: Int, color: Int)
 
     @Query("""Select Feed.*, Folder.name as folder_name From Feed Left Join Folder On Feed.folder_id = Folder.id 
         Where Feed.account_id = :accountId Order By Feed.name, Folder.name""")

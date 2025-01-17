@@ -45,6 +45,7 @@ class GetFoldersWithFeeds(
                         id = it.feedId,
                         name = it.feedName,
                         iconUrl = it.feedIcon,
+                        color = it.feedColor,
                         imageUrl = it.feedImage,
                         url = it.feedUrl,
                         siteUrl = it.feedSiteUrl,

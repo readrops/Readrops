@@ -107,6 +107,8 @@ ext-runner = "androidx.test:runner:1.6.2"
 ext-rules = "androidx.test:rules:1.6.1"
 expressocore = "androidx.test.espresso:espresso-core:3.6.1"
 
+colorpicker = "com.github.skydoves:colorpicker-compose:1.1.2"
+
 [bundles]
 compose = ["compose-foundation", "compose-runtime", "compose-animation",
     "compose-ui", "compose-ui-tooling", "compose-ui-tooling-preview", "compose-material3", "compose-activity", "compose-permissions"]

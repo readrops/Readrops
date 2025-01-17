@@ -9,10 +9,13 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import com.readrops.app.R
 import com.readrops.app.feeds.DialogState
 import com.readrops.app.feeds.FeedScreenModel
 import com.readrops.app.feeds.FeedState
+import com.readrops.app.feeds.color.FeedColorScreen
 import com.readrops.app.more.preferences.components.RadioButtonPreferenceDialog
 import com.readrops.app.more.preferences.components.ToggleableInfo
 import com.readrops.app.util.components.dialog.TextFieldDialog
@@ -22,6 +25,7 @@ import com.readrops.db.entities.OpenIn
 @Composable
 fun FeedDialogs(state: FeedState, screenModel: FeedScreenModel) {
     val uriHandler = LocalUriHandler.current
+    val navigator = LocalNavigator.currentOrThrow
 
     val folderState by screenModel.folderState.collectAsStateWithLifecycle()
 
@@ -59,6 +63,10 @@ fun FeedDialogs(state: FeedState, screenModel: FeedScreenModel) {
                 },
                 onOpenInClick = {
                     screenModel.openDialog(DialogState.UpdateFeedOpenInSetting(dialog.feed))
+                },
+                onUpdateColor = {
+                    navigator.push(FeedColorScreen(dialog.feed))
+                    screenModel.closeDialog(dialog)
                 },
                 canUpdateFeed = dialog.config.canUpdateFeed,
                 canDeleteFeed = dialog.config.canDeleteFeed

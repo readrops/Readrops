@@ -15,6 +15,7 @@ import com.readrops.app.account.credentials.AccountCredentialsScreenMode
 import com.readrops.app.account.credentials.AccountCredentialsScreenModel
 import com.readrops.app.account.selection.AccountSelectionScreenModel
 import com.readrops.app.feeds.FeedScreenModel
+import com.readrops.app.feeds.color.FeedColorScreenModel
 import com.readrops.app.feeds.newfeed.NewFeedScreenModel
 import com.readrops.app.item.ItemScreenModel
 import com.readrops.app.more.preferences.PreferencesScreenModel
@@ -29,6 +30,7 @@ import com.readrops.app.sync.Synchronizer
 import com.readrops.app.timelime.TimelineScreenModel
 import com.readrops.app.util.DataStorePreferences
 import com.readrops.app.util.Preferences
+import com.readrops.db.entities.Feed
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
 import kotlinx.coroutines.CoroutineScope
@@ -59,6 +61,8 @@ val appModule = module {
     factory { (account: Account) -> NotificationsScreenModel(account, get(), get(), get()) }
 
     factory { PreferencesScreenModel(get()) }
+
+    factory { (feed: Feed) -> FeedColorScreenModel(feed, get()) }
 
     single { GetFoldersWithFeeds(get()) }
 

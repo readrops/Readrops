@@ -194,4 +194,12 @@
     <string name="do_not_ask_again_next_feeds">Ne pas me redemander pour les autres flux</string>
     <string name="default_category">Catégorie par défaut</string>
     <string name="synchronize_at_launch">Synchroniser au démarrage</string>
+    <string name="feed_color">Couleur de flux</string>
+    <string name="preview">Prévisualisation</string>
+    <string name="select_color">Choisir une couleur</string>
+    <string name="reset">Réinitialiser</string>
+    <string name="actions">Actions</string>
+    <string name="reload_color_favicon">Recharger la couleur à partir de la favicône</string>
+    <string name="load_color_new_favicon">Charger la couleur depuis une nouvelle favicône</string>
+    <string name="error_occurred_reloading_favicon_color">Une erreur est survenue lors du rechargement de la couleur de la favicône</string>
 </resources>

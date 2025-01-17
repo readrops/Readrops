@@ -38,7 +38,7 @@ fun FeedModalBottomSheet(
     onDismissRequest: () -> Unit,
     onOpen: () -> Unit,
     onUpdate: () -> Unit,
-    //onUpdateColor: () -> Unit,
+    onUpdateColor: () -> Unit,
     onUpdateNotifications: (Boolean) -> Unit,
     onOpenInClick: () -> Unit,
     onDelete: () -> Unit,
@@ -90,11 +90,11 @@ fun FeedModalBottomSheet(
                 )
             }
 
-            /*BottomSheetOption(
+            BottomSheetOption(
                 text = stringResource(R.string.update_color),
                 icon = ImageVector.vectorResource(R.drawable.ic_color),
                 onClick = onUpdateColor
-            )*/
+            )
 
             if (canDeleteFeed) {
                 BottomSheetOption(
