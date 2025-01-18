@@ -4,6 +4,7 @@ import com.gitlab.mvysny.konsumexml.Konsumer
 import com.gitlab.mvysny.konsumexml.KonsumerException
 import com.gitlab.mvysny.konsumexml.Names
 import com.gitlab.mvysny.konsumexml.allChildrenAutoIgnore
+import com.readrops.api.localfeed.RSSMedia
 import com.readrops.api.localfeed.XmlAdapter
 import com.readrops.api.localfeed.XmlAdapter.Companion.AUTHORS_MAX
 import com.readrops.api.utils.ApiUtils
@@ -35,9 +36,9 @@ class RSS2ItemAdapter : XmlAdapter<Item> {
                         "guid" -> remoteId = nullableText()
                         "description" -> description = nullableTextRecursively()
                         "content:encoded" -> content = nullableTextRecursively()
-                        "enclosure" -> parseMediaContent(this, item = this@apply)
-                        "media:content" -> parseMediaContent(this, item = this@apply)
-                        "media:group" -> parseMediaGroup(this, item = this@apply)
+                        "enclosure" -> RSSMedia.parseMediaContent(this, item = this@apply)
+                        "media:content" -> RSSMedia.parseMediaContent(this, item = this@apply)
+                        "media:group" -> RSSMedia.parseMediaGroup(this, item = this@apply)
                         else -> skipContents() // for example media:description
                     }
                 }
@@ -47,29 +48,6 @@ class RSS2ItemAdapter : XmlAdapter<Item> {
             item
         } catch (e: KonsumerException) {
             throw ParseException(e.message)
-        }
-    }
-
-    private fun isUrlImage(url: String): Boolean = with(url) {
-        return endsWith(".jpg") || endsWith(".jpeg") || endsWith(".png")
-    }
-
-    private fun parseMediaContent(konsumer: Konsumer, item: Item) = with(konsumer) {
-        val url = attributes.getValueOrNull("url")
-
-        if (url != null && isUrlImage(url) && item.imageLink == null) {
-            item.imageLink = url
-        }
-
-        konsumer.skipContents() // ignore media content sub elements
-    }
-
-    private fun parseMediaGroup(konsumer: Konsumer, item: Item) = with(konsumer) {
-        allChildrenAutoIgnore("content") {
-            when (tagName) {
-                "media:content" -> parseMediaContent(this, item)
-                else -> skipContents()
-            }
         }
     }
 

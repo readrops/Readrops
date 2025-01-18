@@ -3,6 +3,7 @@ package com.readrops.api.localfeed.atom
 import com.gitlab.mvysny.konsumexml.Konsumer
 import com.gitlab.mvysny.konsumexml.Names
 import com.gitlab.mvysny.konsumexml.allChildrenAutoIgnore
+import com.readrops.api.localfeed.RSSMedia
 import com.readrops.api.localfeed.XmlAdapter
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.extensions.nonNullText
@@ -23,11 +24,18 @@ class ATOMItemAdapter : XmlAdapter<Item> {
                     when (tagName) {
                         "title" -> title = nonNullText()
                         "id" -> remoteId = nullableText()
-                        "updated" -> pubDate = DateUtils.parse(nullableText())
+                        "published" -> pubDate = DateUtils.parse(nullableText())
+                        "updated" -> {
+                            val updated = nullableText()
+                            if (pubDate == null) {
+                                pubDate = DateUtils.parse(updated)
+                            }
+                        }
                         "link" -> parseLink(this, this@apply)
                         "author" -> allChildrenAutoIgnore("name") { author = nullableText() }
                         "summary" -> description = nullableTextRecursively()
                         "content" -> content = nullableTextRecursively()
+                        "media:group" -> RSSMedia.parseMediaGroup(this, item)
                         else -> skipContents()
                     }
                 }
@@ -57,6 +65,7 @@ class ATOMItemAdapter : XmlAdapter<Item> {
     }
 
     companion object {
-        val names = Names.of("title", "id", "updated", "link", "author", "summary", "content")
+        val names = Names.of("title", "id", "updated", "link", "author", "summary",
+            "content", "group", "published")
     }
 }
