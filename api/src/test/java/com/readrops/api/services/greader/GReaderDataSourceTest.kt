@@ -1,4 +1,4 @@
-package com.readrops.api.services.freshrss
+package com.readrops.api.services.greader
 
 import com.readrops.api.TestUtils
 import com.readrops.api.apiModule
@@ -26,9 +26,9 @@ import java.net.URLEncoder
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class FreshRSSDataSourceTest : KoinTest {
+class GReaderDataSourceTest : KoinTest {
 
-    private lateinit var freshRSSDataSource: FreshRSSDataSource
+    private lateinit var freshRSSDataSource: GReaderDataSource
     private val mockServer = MockWebServer()
 
     @get:Rule
@@ -40,7 +40,7 @@ class FreshRSSDataSourceTest : KoinTest {
                     .client(get())
                     .addConverterFactory(MoshiConverterFactory.create(get(named("freshrssMoshi"))))
                     .build()
-                    .create(FreshRSSService::class.java)
+                    .create(GReaderService::class.java)
             }
         })
     }
@@ -48,7 +48,7 @@ class FreshRSSDataSourceTest : KoinTest {
     @Before
     fun before() {
         mockServer.start(8080)
-        freshRSSDataSource = FreshRSSDataSource(get())
+        freshRSSDataSource = GReaderDataSource(get())
     }
 
     @After
@@ -121,8 +121,8 @@ class FreshRSSDataSourceTest : KoinTest {
 
         val items = freshRSSDataSource.getItems(
             excludeTargets = listOf(
-                FreshRSSDataSource.GOOGLE_READ,
-                FreshRSSDataSource.GOOGLE_STARRED
+                GReaderDataSource.GOOGLE_READ,
+                GReaderDataSource.GOOGLE_STARRED
             ),
             max = 100,
             lastModified = 21343321321321
@@ -133,7 +133,7 @@ class FreshRSSDataSourceTest : KoinTest {
 
         with(request.requestUrl!!) {
             assertEquals(
-                listOf(FreshRSSDataSource.GOOGLE_READ, FreshRSSDataSource.GOOGLE_STARRED),
+                listOf(GReaderDataSource.GOOGLE_READ, GReaderDataSource.GOOGLE_STARRED),
                 queryParameterValues("xt")
             )
             assertEquals("100", queryParameter("n"))
@@ -161,16 +161,16 @@ class FreshRSSDataSourceTest : KoinTest {
         mockServer.enqueueOKStream(stream)
 
         val ids = freshRSSDataSource.getItemsIds(
-            excludeTarget = FreshRSSDataSource.GOOGLE_READ,
-            includeTarget = FreshRSSDataSource.GOOGLE_READING_LIST,
+            excludeTarget = GReaderDataSource.GOOGLE_READ,
+            includeTarget = GReaderDataSource.GOOGLE_READING_LIST,
             max = 100
         )
         assertTrue { ids.size == 5 }
 
         val request = mockServer.takeRequest()
         with(request.requestUrl!!) {
-            assertEquals(FreshRSSDataSource.GOOGLE_READ, queryParameter("xt"))
-            assertEquals(FreshRSSDataSource.GOOGLE_READING_LIST, queryParameter("s"))
+            assertEquals(GReaderDataSource.GOOGLE_READ, queryParameter("xt"))
+            assertEquals(GReaderDataSource.GOOGLE_READING_LIST, queryParameter("s"))
             assertEquals("100", queryParameter("n"))
         }
     }
@@ -189,7 +189,7 @@ class FreshRSSDataSourceTest : KoinTest {
                 contains(
                     "s=${
                         URLEncoder.encode(
-                            "${FreshRSSDataSource.FEED_PREFIX}https://feed.url", "UTF-8"
+                            "${GReaderDataSource.FEED_PREFIX}https://feed.url", "UTF-8"
                         )
                     }"
                 )
@@ -211,7 +211,7 @@ class FreshRSSDataSourceTest : KoinTest {
                 contains(
                     "s=${
                         URLEncoder.encode(
-                            "${FreshRSSDataSource.FEED_PREFIX}https://feed.url",
+                            "${GReaderDataSource.FEED_PREFIX}https://feed.url",
                             "UTF-8"
                         )
                     }"
@@ -234,7 +234,7 @@ class FreshRSSDataSourceTest : KoinTest {
                 contains(
                     "s=${
                         URLEncoder.encode(
-                            "${FreshRSSDataSource.FEED_PREFIX}https://feed.url",
+                            "${GReaderDataSource.FEED_PREFIX}https://feed.url",
                             "UTF-8"
                         )
                     }"
@@ -259,7 +259,7 @@ class FreshRSSDataSourceTest : KoinTest {
                 contains(
                     "a=${
                         URLEncoder.encode(
-                            "${FreshRSSDataSource.FOLDER_PREFIX}folder",
+                            "${GReaderDataSource.FOLDER_PREFIX}folder",
                             "UTF-8"
                         )
                     }"
@@ -282,7 +282,7 @@ class FreshRSSDataSourceTest : KoinTest {
                 contains(
                     "dest=${
                         URLEncoder.encode(
-                            "${FreshRSSDataSource.FOLDER_PREFIX}folder",
+                            "${GReaderDataSource.FOLDER_PREFIX}folder",
                             "UTF-8"
                         )
                     }"
@@ -341,7 +341,7 @@ class FreshRSSDataSourceTest : KoinTest {
         }
 
         val result =
-            freshRSSDataSource.synchronize(SyncType.INITIAL_SYNC, FreshRSSSyncData(), "writeToken")
+            freshRSSDataSource.synchronize(SyncType.INITIAL_SYNC, GReaderSyncData(), "writeToken")
 
         with(result) {
             assertEquals(1, folders.size)
@@ -398,7 +398,7 @@ class FreshRSSDataSourceTest : KoinTest {
 
         val result = freshRSSDataSource.synchronize(
             syncType = SyncType.CLASSIC_SYNC,
-            syncData = FreshRSSSyncData(
+            syncData = GReaderSyncData(
                 lastModified = 10L,
                 readIds = ids,
                 unreadIds = ids,

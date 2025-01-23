@@ -1,4 +1,4 @@
-package com.readrops.api.services.freshrss.adapters
+package com.readrops.api.services.greader.adapters
 
 import android.annotation.SuppressLint
 import com.readrops.api.utils.exceptions.ParseException
@@ -9,7 +9,7 @@ import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.ToJson
 
-class FreshRSSFeedsAdapter {
+class GReaderFeedsAdapter {
 
     @ToJson
     fun toJson(feeds: List<Feed>): String = ""

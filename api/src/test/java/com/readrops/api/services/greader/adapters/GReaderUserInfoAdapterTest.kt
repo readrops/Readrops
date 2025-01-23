@@ -1,4 +1,4 @@
-package com.readrops.api.services.freshrss.adapters
+package com.readrops.api.services.greader.adapters
 
 import com.readrops.api.TestUtils
 import com.squareup.moshi.Moshi
@@ -6,7 +6,7 @@ import junit.framework.TestCase.assertEquals
 import okio.Buffer
 import org.junit.Test
 
-class FreshRSSUserInfoAdapterTest {
+class GReaderUserInfoAdapterTest {
 
     private val adapter = Moshi.Builder()
             .add(FreshRSSUserInfoAdapter())

@@ -1,4 +1,4 @@
-package com.readrops.api.services.freshrss.adapters
+package com.readrops.api.services.greader.adapters
 
 import com.readrops.api.TestUtils
 import com.readrops.db.entities.Item
@@ -10,10 +10,10 @@ import junit.framework.TestCase.assertNotNull
 import okio.Buffer
 import org.junit.Test
 
-class FreshRSSItemsAdapterTest {
+class GReaderItemsAdapterTest {
 
     private val adapter = Moshi.Builder()
-            .add(Types.newParameterizedType(List::class.java, Item::class.java), FreshRSSItemsAdapter())
+            .add(Types.newParameterizedType(List::class.java, Item::class.java), GReaderItemsAdapter())
             .build()
             .adapter<List<Item>>(Types.newParameterizedType(List::class.java, Item::class.java))
 

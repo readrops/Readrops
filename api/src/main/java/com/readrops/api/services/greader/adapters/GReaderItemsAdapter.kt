@@ -1,7 +1,7 @@
-package com.readrops.api.services.freshrss.adapters
+package com.readrops.api.services.greader.adapters
 
-import com.readrops.api.services.freshrss.FreshRSSDataSource.Companion.GOOGLE_READ
-import com.readrops.api.services.freshrss.FreshRSSDataSource.Companion.GOOGLE_STARRED
+import com.readrops.api.services.greader.GReaderDataSource.Companion.GOOGLE_READ
+import com.readrops.api.services.greader.GReaderDataSource.Companion.GOOGLE_STARRED
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.extensions.nextNonEmptyString
 import com.readrops.api.utils.extensions.nextNullableString
@@ -11,7 +11,7 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 
-class FreshRSSItemsAdapter : JsonAdapter<List<Item>>() {
+class GReaderItemsAdapter : JsonAdapter<List<Item>>() {
 
     override fun toJson(writer: JsonWriter, value: List<Item>?) {
         // no need of this

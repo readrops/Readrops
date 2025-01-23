@@ -1,8 +1,8 @@
-package com.readrops.api.services.freshrss
+package com.readrops.api.services.greader
 
 import com.readrops.api.services.DataSourceResult
 import com.readrops.api.services.SyncType
-import com.readrops.api.services.freshrss.adapters.FreshRSSUserInfo
+import com.readrops.api.services.greader.adapters.FreshRSSUserInfo
 import com.readrops.db.entities.Item
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,7 +12,7 @@ import okhttp3.MultipartBody
 import java.io.StringReader
 import java.util.Properties
 
-class FreshRSSDataSource(private val service: FreshRSSService) {
+class GReaderDataSource(private val service: GReaderService) {
 
     suspend fun login(login: String, password: String): String {
         val requestBody = MultipartBody.Builder()
@@ -36,7 +36,7 @@ class FreshRSSDataSource(private val service: FreshRSSService) {
 
     suspend fun synchronize(
         syncType: SyncType,
-        syncData: FreshRSSSyncData,
+        syncData: GReaderSyncData,
         writeToken: String
     ): DataSourceResult = with(CoroutineScope(Dispatchers.IO)) {
         return if (syncType == SyncType.INITIAL_SYNC) {
@@ -130,7 +130,7 @@ class FreshRSSDataSource(private val service: FreshRSSService) {
         service.deleteFolder(token, folderId)
     }
 
-    private suspend fun setItemsReadState(syncData: FreshRSSSyncData, token: String) {
+    private suspend fun setItemsReadState(syncData: GReaderSyncData, token: String) {
         if (syncData.readIds.isNotEmpty()) {
             setItemsReadState(true, syncData.readIds, token)
         }
@@ -140,7 +140,7 @@ class FreshRSSDataSource(private val service: FreshRSSService) {
         }
     }
 
-    private suspend fun setItemsStarState(syncData: FreshRSSSyncData, token: String) {
+    private suspend fun setItemsStarState(syncData: GReaderSyncData, token: String) {
         if (syncData.starredIds.isNotEmpty()) {
             setItemStarState(true, syncData.starredIds, token)
         }

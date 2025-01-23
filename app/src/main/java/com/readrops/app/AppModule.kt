@@ -22,7 +22,7 @@ import com.readrops.app.more.preferences.PreferencesScreenModel
 import com.readrops.app.notifications.NotificationsScreenModel
 import com.readrops.app.repositories.BaseRepository
 import com.readrops.app.repositories.FeverRepository
-import com.readrops.app.repositories.FreshRSSRepository
+import com.readrops.app.repositories.GReaderRepository
 import com.readrops.app.repositories.GetFoldersWithFeeds
 import com.readrops.app.repositories.LocalRSSRepository
 import com.readrops.app.repositories.NextcloudNewsRepository
@@ -69,7 +69,7 @@ val appModule = module {
     factory<BaseRepository> { (account: Account) ->
         when (account.type) {
             AccountType.LOCAL -> LocalRSSRepository(get(), get(), account)
-            AccountType.FRESHRSS -> FreshRSSRepository(
+            AccountType.FRESHRSS, AccountType.GREADER -> GReaderRepository(
                 database = get(),
                 account = account,
                 dataSource = get(parameters = { parametersOf(Credentials.toCredentials(account)) })

@@ -7,5 +7,5 @@
 
     <string name="local_account">Local account</string>
     <string name="fever" translatable="false">Fever</string>
-
+    <string name="greader" translatable="false">Google Reader</string>
 </resources>

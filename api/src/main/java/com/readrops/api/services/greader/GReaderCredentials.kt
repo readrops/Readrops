@@ -1,8 +1,8 @@
-package com.readrops.api.services.freshrss
+package com.readrops.api.services.greader
 
 import com.readrops.api.services.Credentials
 
-class FreshRSSCredentials(token: String?, url: String) :
+class GReaderCredentials(token: String?, url: String) :
         Credentials(token?.let { AUTH_PREFIX + it }, url) {
 
     companion object {

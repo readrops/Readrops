@@ -29,7 +29,7 @@
 
 -keep class org.simpleframework.xml.** { *; }
 
--keep class com.readrops.api.services.freshrss.json.** { *; }
+-keep class com.readrops.api.services.greader.json.** { *; }
 -keep class com.readrops.api.services.nextcloudnews.json.** { *; }
 
 -keep class com.readrops.api.localfeed.** { *; }

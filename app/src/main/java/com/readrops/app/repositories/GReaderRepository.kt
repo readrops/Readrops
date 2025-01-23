@@ -2,8 +2,8 @@ package com.readrops.app.repositories
 
 import com.readrops.api.services.Credentials
 import com.readrops.api.services.SyncType
-import com.readrops.api.services.freshrss.FreshRSSDataSource
-import com.readrops.api.services.freshrss.FreshRSSSyncData
+import com.readrops.api.services.greader.GReaderDataSource
+import com.readrops.api.services.greader.GReaderSyncData
 import com.readrops.api.utils.AuthInterceptor
 import com.readrops.app.util.Utils
 import com.readrops.db.Database
@@ -13,16 +13,18 @@ import com.readrops.db.entities.Item
 import com.readrops.db.entities.ItemState
 import com.readrops.db.entities.account.Account
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
-class FreshRSSRepository(
+class GReaderRepository(
     database: Database,
     account: Account,
-    private val dataSource: FreshRSSDataSource,
+    private val dataSource: GReaderDataSource,
 ) : BaseRepository(database, account), KoinComponent {
 
     override suspend fun login(account: Account) {
-        val authInterceptor = getKoin().get<AuthInterceptor>()
-        authInterceptor.credentials = Credentials.toCredentials(account)
+        val authInterceptor = get<AuthInterceptor>().apply {
+            credentials = Credentials.toCredentials(account)
+        }
 
         account.token = dataSource.login(account.login!!, account.password!!)
         // we got the authToken, time to provide it to make real calls
@@ -43,7 +45,7 @@ class FreshRSSRepository(
         val itemStateChanges = database.itemStateChangeDao()
             .selectItemStateChanges(account.id)
 
-        val syncData = FreshRSSSyncData(
+        val syncData = GReaderSyncData(
             readIds = itemStateChanges.filter { it.readChange && it.read }
                 .map { it.remoteId },
             unreadIds = itemStateChanges.filter { it.readChange && !it.read }
@@ -116,7 +118,7 @@ class FreshRSSRepository(
 
     override suspend fun updateFolder(folder: Folder) {
         dataSource.updateFolder(account.writeToken!!, folder.remoteId!!, folder.name!!)
-        folder.remoteId = FreshRSSDataSource.FOLDER_PREFIX + folder.name
+        folder.remoteId = GReaderDataSource.FOLDER_PREFIX + folder.name
 
         super.updateFolder(folder)
     }

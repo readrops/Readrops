@@ -1,4 +1,4 @@
-package com.readrops.api.services.freshrss.adapters
+package com.readrops.api.services.greader.adapters
 
 import com.readrops.api.TestUtils
 import com.readrops.db.entities.Feed
@@ -8,10 +8,10 @@ import junit.framework.TestCase.assertEquals
 import okio.Buffer
 import org.junit.Test
 
-class FreshRSSFeedsAdapterTest {
+class GReaderFeedsAdapterTest {
 
     private val adapter = Moshi.Builder()
-            .add(FreshRSSFeedsAdapter())
+            .add(GReaderFeedsAdapter())
             .build()
             .adapter<List<Feed>>(Types.newParameterizedType(List::class.java, Feed::class.java))
 

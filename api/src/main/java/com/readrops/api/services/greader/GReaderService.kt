@@ -1,6 +1,6 @@
-package com.readrops.api.services.freshrss
+package com.readrops.api.services.greader
 
-import com.readrops.api.services.freshrss.adapters.FreshRSSUserInfo
+import com.readrops.api.services.greader.adapters.FreshRSSUserInfo
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
@@ -13,7 +13,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
 
-interface FreshRSSService {
+interface GReaderService {
 
     @POST("accounts/ClientLogin")
     suspend fun login(@Body body: RequestBody?): ResponseBody
@@ -90,8 +90,4 @@ interface FreshRSSService {
     @FormUrlEncoded
     @POST("reader/api/0/disable-tag")
     suspend fun deleteFolder(@Field("T") token: String, @Field("s") folderId: String)
-
-    companion object {
-        const val END_POINT = "api/greader.php/"
-    }
 }
