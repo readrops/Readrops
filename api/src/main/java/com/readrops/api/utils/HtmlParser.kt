@@ -18,9 +18,22 @@ data class ParsingResult(
 object HtmlParser {
 
     @Throws(FormatException::class)
-    suspend fun getFaviconLink(url: String, client: OkHttpClient): String? {
+    suspend fun getFeedLink(url: String, client: OkHttpClient): List<ParsingResult> {
         val document = getHTMLHeadFromUrl(url, client)
 
+        return document.select("link")
+            .filter { element ->
+                val type = element.attributes()["type"]
+                LocalRSSHelper.isRSSType(type)
+            }.map {
+                ParsingResult(
+                    url = it.absUrl("href"),
+                    label = it.attributes()["title"]
+                )
+            }
+    }
+
+    fun getFaviconLink(document: Document): String? {
         val links = document.select("link")
             .filter { element -> element.attributes()["rel"].contains("icon") }
             .sortedWith(compareByDescending<Element> {
@@ -44,23 +57,25 @@ object HtmlParser {
             ?.absUrl("href")
     }
 
-    @Throws(FormatException::class)
-    suspend fun getFeedLink(url: String, client: OkHttpClient): List<ParsingResult> {
-        val document = getHTMLHeadFromUrl(url, client)
-
-        return document.select("link")
-            .filter { element ->
-                val type = element.attributes()["type"]
-                LocalRSSHelper.isRSSType(type)
-            }.map {
-                ParsingResult(
-                    url = it.absUrl("href"),
-                    label = it.attributes()["title"]
-                )
+    fun getFeedImage(document: Document): String? {
+        return document.select("meta")
+            .firstOrNull { element ->
+                val property = element.attr("property")
+                listOf("og:image", "twitter:image").any { it == property }
             }
+            ?.absUrl("content")
     }
 
-    private suspend fun getHTMLHeadFromUrl(url: String, client: OkHttpClient): Document =
+    fun getFeedDescription(document: Document): String? {
+        return document.select("meta")
+            .firstOrNull { element ->
+                val property = element.attr("property")
+                listOf("og:title", "twitter:title").any { it == property }
+            }
+            ?.attr("content")
+    }
+
+    suspend fun getHTMLHeadFromUrl(url: String, client: OkHttpClient): Document =
         withContext(Dispatchers.IO) {
             client.newCall(
                 Request.Builder()

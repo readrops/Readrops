@@ -146,7 +146,16 @@ class LocalRSSRepository(
             lastModified = null
 
             try {
-                iconUrl = HtmlParser.getFaviconLink(siteUrl!!, get()).also { feedUrl ->
+                val document = HtmlParser.getHTMLHeadFromUrl(siteUrl!!, get())
+                if (imageUrl == null) {
+                    imageUrl = HtmlParser.getFeedImage(document)
+                }
+
+                if (description == null) {
+                    description = HtmlParser.getFeedDescription(document)
+                }
+
+                iconUrl = HtmlParser.getFaviconLink(document).also { feedUrl ->
                     feedUrl?.let { color = FeedColors.getFeedColor(it) }
                 }
             } catch (e: Exception) {
