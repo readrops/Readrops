@@ -38,7 +38,7 @@ class GReaderDataSourceTest : KoinTest {
                 Retrofit.Builder()
                     .baseUrl("http://localhost:8080/")
                     .client(get())
-                    .addConverterFactory(MoshiConverterFactory.create(get(named("freshrssMoshi"))))
+                    .addConverterFactory(MoshiConverterFactory.create(get(named("greaderMoshi"))))
                     .build()
                     .create(GReaderService::class.java)
             }
