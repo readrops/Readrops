@@ -94,5 +94,6 @@ class OPMLParserTest {
         assertEquals(foldersAndFeeds[null]?.size, foldersAndFeeds2[null]?.size)
 
         inputStream.close()
+        file.delete()
     }
 }
