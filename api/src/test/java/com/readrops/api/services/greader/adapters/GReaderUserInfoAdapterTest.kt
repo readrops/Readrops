@@ -15,7 +15,7 @@ class GReaderUserInfoAdapterTest {
 
     @Test
     fun userInfoTest() {
-        val stream = TestUtils.loadResource("services/freshrss/adapters/user_info.json")
+        val stream = TestUtils.loadResource("services/greader/adapters/user_info.json")
 
         val userInfo = adapter.fromJson(Buffer().readFrom(stream))!!
 

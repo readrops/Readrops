@@ -17,7 +17,7 @@ class GReaderFeedsAdapterTest {
 
     @Test
     fun validFeedsTest() {
-        val stream = TestUtils.loadResource("services/freshrss/adapters/feeds.json")
+        val stream = TestUtils.loadResource("services/greader/adapters/feeds.json")
 
         val feed = adapter.fromJson(Buffer().readFrom(stream))!!.first()
 

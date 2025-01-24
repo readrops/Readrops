@@ -15,7 +15,7 @@ class GReaderItemsIdsAdapterTest {
 
     @Test
     fun validIdsTest() {
-        val stream = javaClass.classLoader!!.getResourceAsStream("services/freshrss/adapters/items_starred_ids.json")
+        val stream = javaClass.classLoader!!.getResourceAsStream("services/greader/adapters/items_starred_ids.json")
 
         val ids = adapter.fromJson(Buffer().readFrom(stream))!!
 

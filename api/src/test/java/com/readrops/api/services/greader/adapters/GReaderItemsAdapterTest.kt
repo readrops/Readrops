@@ -19,7 +19,7 @@ class GReaderItemsAdapterTest {
 
     @Test
     fun validItemsTest() {
-        val stream = TestUtils.loadResource("services/freshrss/adapters/items.json")
+        val stream = TestUtils.loadResource("services/greader/adapters/items.json")
 
         val items = adapter.fromJson(Buffer().readFrom(stream))!!
 

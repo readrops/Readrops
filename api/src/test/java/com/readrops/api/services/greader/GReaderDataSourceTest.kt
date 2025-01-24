@@ -58,7 +58,7 @@ class GReaderDataSourceTest : KoinTest {
 
     @Test
     fun loginTest() = runTest {
-        val responseBody = TestUtils.loadResource("services/freshrss/login_response_body")
+        val responseBody = TestUtils.loadResource("services/greader/login_response_body")
         mockServer.enqueueOKStream(responseBody)
 
         val authString = freshRSSDataSource.login("Login", "Password")
@@ -78,7 +78,7 @@ class GReaderDataSourceTest : KoinTest {
 
     @Test
     fun writeTokenTest() = runTest {
-        val responseBody = TestUtils.loadResource("services/freshrss/writetoken_response_body")
+        val responseBody = TestUtils.loadResource("services/greader/writetoken_response_body")
         mockServer.enqueueOKStream(responseBody)
 
         val writeToken = freshRSSDataSource.getWriteToken()
@@ -88,7 +88,7 @@ class GReaderDataSourceTest : KoinTest {
 
     @Test
     fun userInfoTest() = runTest {
-        val responseBody = TestUtils.loadResource("services/freshrss/adapters/user_info.json")
+        val responseBody = TestUtils.loadResource("services/greader/adapters/user_info.json")
         mockServer.enqueueOKStream(responseBody)
 
         val userInfo = freshRSSDataSource.getUserInfo()
@@ -98,7 +98,7 @@ class GReaderDataSourceTest : KoinTest {
 
     @Test
     fun foldersTest() = runTest {
-        val stream = TestUtils.loadResource("services/freshrss/adapters/folders.json")
+        val stream = TestUtils.loadResource("services/greader/adapters/folders.json")
         mockServer.enqueueOKStream(stream)
 
         val folders = freshRSSDataSource.getFolders()
@@ -107,7 +107,7 @@ class GReaderDataSourceTest : KoinTest {
 
     @Test
     fun feedsTest() = runTest {
-        val stream = TestUtils.loadResource("services/freshrss/adapters/feeds.json")
+        val stream = TestUtils.loadResource("services/greader/adapters/feeds.json")
         mockServer.enqueueOKStream(stream)
 
         val feeds = freshRSSDataSource.getFeeds()
@@ -116,7 +116,7 @@ class GReaderDataSourceTest : KoinTest {
 
     @Test
     fun itemsTest() = runTest {
-        val stream = TestUtils.loadResource("services/freshrss/adapters/items.json")
+        val stream = TestUtils.loadResource("services/greader/adapters/items.json")
         mockServer.enqueueOKStream(stream)
 
         val items = freshRSSDataSource.getItems(
@@ -144,7 +144,7 @@ class GReaderDataSourceTest : KoinTest {
 
     @Test
     fun starredItemsTest() = runTest {
-        val stream = TestUtils.loadResource("services/freshrss/adapters/items.json")
+        val stream = TestUtils.loadResource("services/greader/adapters/items.json")
         mockServer.enqueueOKStream(stream)
 
         val items = freshRSSDataSource.getStarredItems(100)
@@ -157,7 +157,7 @@ class GReaderDataSourceTest : KoinTest {
 
     @Test
     fun getItemsIdsTest() = runTest {
-        val stream = TestUtils.loadResource("services/freshrss/adapters/items_starred_ids.json")
+        val stream = TestUtils.loadResource("services/greader/adapters/items_starred_ids.json")
         mockServer.enqueueOKStream(stream)
 
         val ids = freshRSSDataSource.getItemsIds(
@@ -312,26 +312,26 @@ class GReaderDataSourceTest : KoinTest {
                 with(request.path!!) {
                     return when {
                         contains("tag/list") -> {
-                            MockResponse.okResponseWithBody(TestUtils.loadResource("services/freshrss/adapters/folders.json"))
+                            MockResponse.okResponseWithBody(TestUtils.loadResource("services/greader/adapters/folders.json"))
                         }
 
                         contains("subscription/list") -> {
-                            MockResponse.okResponseWithBody(TestUtils.loadResource("services/freshrss/adapters/feeds.json"))
+                            MockResponse.okResponseWithBody(TestUtils.loadResource("services/greader/adapters/feeds.json"))
                         }
 
                         // items
                         contains("contents/user/-/state/com.google/reading-list") -> {
-                            MockResponse.okResponseWithBody(TestUtils.loadResource("services/freshrss/adapters/items.json"))
+                            MockResponse.okResponseWithBody(TestUtils.loadResource("services/greader/adapters/items.json"))
                         }
 
                         // starred items
                         contains("contents/user/-/state/com.google/starred") -> {
-                            MockResponse.okResponseWithBody(TestUtils.loadResource("services/freshrss/adapters/items.json"))
+                            MockResponse.okResponseWithBody(TestUtils.loadResource("services/greader/adapters/items.json"))
                         }
 
                         // unread ids & starred ids
                         contains("stream/items/ids") -> {
-                            MockResponse.okResponseWithBody(TestUtils.loadResource("services/freshrss/adapters/items_starred_ids.json"))
+                            MockResponse.okResponseWithBody(TestUtils.loadResource("services/greader/adapters/items_starred_ids.json"))
                         }
 
                         else -> MockResponse().setResponseCode(404)
@@ -372,22 +372,22 @@ class GReaderDataSourceTest : KoinTest {
                         }
 
                         contains("tag/list") -> {
-                            MockResponse.okResponseWithBody(TestUtils.loadResource("services/freshrss/adapters/folders.json"))
+                            MockResponse.okResponseWithBody(TestUtils.loadResource("services/greader/adapters/folders.json"))
                         }
 
                         contains("subscription/list") -> {
-                            MockResponse.okResponseWithBody(TestUtils.loadResource("services/freshrss/adapters/feeds.json"))
+                            MockResponse.okResponseWithBody(TestUtils.loadResource("services/greader/adapters/feeds.json"))
                         }
 
                         // items
                         contains("contents/user/-/state/com.google/reading-list") -> {
                             assertTrue { request.path!!.contains("ot=$lastModified") }
-                            MockResponse.okResponseWithBody(TestUtils.loadResource("services/freshrss/adapters/items.json"))
+                            MockResponse.okResponseWithBody(TestUtils.loadResource("services/greader/adapters/items.json"))
                         }
 
                         // unread & read ids
                         contains("stream/items/ids") -> {
-                            MockResponse.okResponseWithBody(TestUtils.loadResource("services/freshrss/adapters/items_starred_ids.json"))
+                            MockResponse.okResponseWithBody(TestUtils.loadResource("services/greader/adapters/items_starred_ids.json"))
                         }
 
                         else -> MockResponse().setResponseCode(404)

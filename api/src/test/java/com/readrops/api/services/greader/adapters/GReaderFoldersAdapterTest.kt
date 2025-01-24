@@ -17,7 +17,7 @@ class GReaderFoldersAdapterTest {
 
     @Test
     fun validFoldersTest() {
-        val stream = TestUtils.loadResource("services/freshrss/adapters/folders.json")
+        val stream = TestUtils.loadResource("services/greader/adapters/folders.json")
 
         val folders = adapter.fromJson(Buffer().readFrom(stream))!!
 
