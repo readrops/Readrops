@@ -38,17 +38,17 @@ class AccountSelectionScreenModel(
         if (accountType == AccountType.LOCAL) {
             screenModelScope.launch(dispatcher) {
                 createLocalAccount()
-                mutableState.update { it.copy(navState = NavState.GoToHomeScreen) }
+                mutableState.update { it.copy(navigation = Navigation.HomeScreen) }
             }
         } else {
             mutableState.update {
-                it.copy(navState = NavState.GoToAccountCredentialsScreen(accountType))
+                it.copy(navigation = Navigation.AccountCredentialsScreen(accountType))
             }
         }
     }
 
-    fun resetNavState() {
-        mutableState.update { it.copy(navState = NavState.Idle) }
+    fun resetNavigation() {
+        mutableState.update { it.copy(navigation = null) }
     }
 
     private suspend fun createLocalAccount(): Account {
@@ -83,7 +83,7 @@ class AccountSelectionScreenModel(
 
             mutableState.update {
                 it.copy(
-                    showOPMLImportDialog = true,
+                    dialog = DialogState.OPMLImport,
                     currentFeed = foldersAndFeeds.values.first().first().name,
                     feedCount = 0,
                     feedMax = foldersAndFeeds.values.flatten().size
@@ -107,27 +107,35 @@ class AccountSelectionScreenModel(
 
             mutableState.update {
                 it.copy(
-                    showOPMLImportDialog = false,
-                    navState = NavState.GoToHomeScreen
+                    dialog = null,
+                    navigation = Navigation.HomeScreen
                 )
             }
         }
     }
 
     fun resetException() = mutableState.update { it.copy(exception = null) }
+
+    fun openDialog(dialog: DialogState) = mutableState.update { it.copy(dialog = dialog) }
+
+    fun closeDialog() = mutableState.update { it.copy(dialog = null) }
 }
 
 data class AccountSelectionState(
-    val showOPMLImportDialog: Boolean = false,
-    val navState: NavState = NavState.Idle,
     val exception: Exception? = null,
     val currentFeed: String? = null,
     val feedCount: Int = 0,
-    val feedMax: Int = 0
+    val feedMax: Int = 0,
+    val dialog: DialogState? = null,
+    val navigation: Navigation? = null
 )
 
-sealed class NavState {
-    data object Idle : NavState()
-    data object GoToHomeScreen : NavState()
-    class GoToAccountCredentialsScreen(val accountType: AccountType) : NavState()
+sealed class Navigation {
+    data object HomeScreen : Navigation()
+    data class AccountCredentialsScreen(val type: AccountType) : Navigation()
+}
+
+sealed interface DialogState {
+    data object OPMLImport : DialogState
+    data class AccountWarning(val type: AccountType) : DialogState
 }

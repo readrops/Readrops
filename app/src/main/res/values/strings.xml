@@ -212,4 +212,9 @@
     <string name="load_color_new_favicon">Load color from a new favicon</string>
     <string name="error_occurred_reloading_favicon_color">An error occurred while reloading favicon color</string>
     <string name="use_default_color">Use default color</string>
+    <string name="warning">Warning</string>
+    <string name="understand">I understand</string>
+    <string name="greader_warning">Google Reader is a very old API and lack documentation. It may not be implemented in every aggregator the same way and thus might not work well.\n\nIf you encounter any synchronization problem, please report them to Readrops Github repository.</string>
+    <string name="fever_warning">Fever is a very old, limited and depreciated API. It doesn\'t support feed and folder management. It is also poorly documented, may not be implemented in every aggregator the same way and thus might not work well.\n\nIf you encounter any synchronization problem, please report them to Readrops Github repository.</string>
+    <string name="api">API</string>
 </resources>

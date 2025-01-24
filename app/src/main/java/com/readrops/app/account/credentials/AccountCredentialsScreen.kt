@@ -48,6 +48,7 @@ import com.readrops.app.util.components.AndroidScreen
 import com.readrops.app.util.theme.MediumSpacer
 import com.readrops.app.util.theme.ShortSpacer
 import com.readrops.app.util.theme.spacing
+import com.readrops.db.entities.account.ACCOUNT_APIS
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
 import org.koin.core.parameter.parametersOf
@@ -155,7 +156,7 @@ class AccountCredentialsScreen(
                                 state.urlError != null -> {
                                     Text(text = state.urlError!!.errorText())
                                 }
-                                listOf(AccountType.FEVER, AccountType.GREADER).any { it == account.type }  -> {
+                                ACCOUNT_APIS.any { it == account.type }  -> {
                                     Text(text = stringResource(R.string.provide_full_url))
                                 }
                                 else -> {

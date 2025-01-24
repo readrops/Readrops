@@ -1,4 +1,4 @@
-package com.readrops.app.account
+package com.readrops.app.account.dialog
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box

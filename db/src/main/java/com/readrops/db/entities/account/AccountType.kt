@@ -15,3 +15,5 @@ enum class AccountType(
     FEVER(R.drawable.ic_fever, R.string.fever, AccountConfig.FEVER),
     GREADER(R.drawable.ic_google_reader, R.string.greader, AccountConfig.GREADER)
 }
+
+val ACCOUNT_APIS = listOf(AccountType.GREADER, AccountType.FEVER)

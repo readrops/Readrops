@@ -1,5 +1,6 @@
 package com.readrops.app.account
 
+import android.content.Context
 import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -41,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
@@ -48,7 +50,11 @@ import com.readrops.api.utils.ApiUtils
 import com.readrops.app.R
 import com.readrops.app.account.credentials.AccountCredentialsScreen
 import com.readrops.app.account.credentials.AccountCredentialsScreenMode
-import com.readrops.app.account.selection.AccountSelectionDialog
+import com.readrops.app.account.dialog.AccountSelectionDialog
+import com.readrops.app.account.dialog.AccountWarningDialog
+import com.readrops.app.account.dialog.OPML
+import com.readrops.app.account.dialog.OPMLChoiceDialog
+import com.readrops.app.account.dialog.OPMLImportProgressDialog
 import com.readrops.app.account.selection.AccountSelectionScreen
 import com.readrops.app.account.selection.adaptiveIconPainterResource
 import com.readrops.app.notifications.NotificationsScreen
@@ -64,6 +70,7 @@ import com.readrops.app.util.theme.LargeSpacer
 import com.readrops.app.util.theme.MediumSpacer
 import com.readrops.app.util.theme.VeryShortSpacer
 import com.readrops.app.util.theme.spacing
+import com.readrops.db.entities.account.ACCOUNT_APIS
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
 
@@ -134,7 +141,7 @@ object AccountTab : Tab {
         LaunchedEffect(state.opmlExportSuccess) {
             if (state.opmlExportSuccess) {
                 val action = snackbarHostState.showSnackbar(
-                    message = context.getString(R.string.opml_export_success), 
+                    message = context.getString(R.string.opml_export_success),
                     actionLabel = context.resources.getString(R.string.open)
                 )
 
@@ -357,19 +364,32 @@ object AccountTab : Tab {
                         if (accountType == AccountType.LOCAL) {
                             screenModel.createLocalAccount()
                         } else {
-                            val account = Account(
-                                type = accountType,
-                                name = context.resources.getString(accountType.nameRes)
-                            )
-                            navigator.push(
-                                AccountCredentialsScreen(
-                                    account,
-                                    AccountCredentialsScreenMode.NEW_CREDENTIALS
+                            if (ACCOUNT_APIS.any { it == accountType }) {
+                                screenModel.openDialog(DialogState.AccountWarning(accountType))
+                            } else {
+                                pushAccount(
+                                    type = accountType,
+                                    context = context,
+                                    navigator = navigator
                                 )
-                            )
+                            }
                         }
-
                     }
+                )
+            }
+
+            is DialogState.AccountWarning -> {
+                AccountWarningDialog(
+                    type = dialog.type,
+                    onConfirm = {
+                        screenModel.closeDialog()
+                        pushAccount(
+                            type = dialog.type,
+                            context = context,
+                            navigator = navigator
+                        )
+                    },
+                    onDismiss = { screenModel.closeDialog(dialog) }
                 )
             }
 
@@ -424,5 +444,19 @@ object AccountTab : Tab {
 
             else -> {}
         }
+    }
+
+    private fun pushAccount(type: AccountType, context: Context, navigator: Navigator) {
+        val account = Account(
+            type = type,
+            name = context.resources.getString(type.nameRes)
+        )
+
+        navigator.push(
+            AccountCredentialsScreen(
+                account = account,
+                mode = AccountCredentialsScreenMode.NEW_CREDENTIALS
+            )
+        )
     }
 }
