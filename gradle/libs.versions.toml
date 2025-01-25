@@ -33,6 +33,7 @@ compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 # specify material3 version is required for gradle to find the dependency
 compose-material3 = { module = "androidx.compose.material3:material3", version = "1.3.0" }
+compose-material3-navigation-suite = { module = "androidx.compose.material3:material3-adaptive-navigation-suite" }
 compose-activity = "androidx.activity:activity-compose:1.9.2"
 compose-permissions = "com.google.accompanist:accompanist-permissions:0.36.0"
 
@@ -111,7 +112,8 @@ colorpicker = "com.github.skydoves:colorpicker-compose:1.1.2"
 
 [bundles]
 compose = ["compose-foundation", "compose-runtime", "compose-animation",
-    "compose-ui", "compose-ui-tooling", "compose-ui-tooling-preview", "compose-material3", "compose-activity", "compose-permissions"]
+    "compose-ui", "compose-ui-tooling", "compose-ui-tooling-preview", "compose-material3",
+    "compose-activity", "compose-permissions", "compose-material3-navigation-suite"]
 voyager = ["voyager-navigator", "voyager-screenmodel", "voyager-tab-navigator", "voyager-koin", "voyager-transitions"]
 lifecycle = ["lifecycle-viewmodel-ktx", "lifecycle-viewmodel-compose", "lifecycle-viewmodel-savedstate",
     "lifecyle-runtime-compose"]

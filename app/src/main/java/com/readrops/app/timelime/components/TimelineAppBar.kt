@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import com.readrops.app.R
 import com.readrops.app.timelime.TimelineState
+import com.readrops.app.util.extensions.isTabletUi
 import com.readrops.db.filters.MainFilter
 import com.readrops.db.filters.SubFilter
 
@@ -56,13 +57,15 @@ fun TimelineAppBar(
             }
         },
         navigationIcon = {
-            IconButton(
-                onClick = onOpenDrawer
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Menu,
-                    contentDescription = null
-                )
+            if (!isTabletUi()) {
+                IconButton(
+                    onClick = onOpenDrawer
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Menu,
+                        contentDescription = null
+                    )
+                }
             }
         },
         actions = {

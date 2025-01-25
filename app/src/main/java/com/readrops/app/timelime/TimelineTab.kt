@@ -19,7 +19,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -219,22 +218,12 @@ object TimelineTab : Tab {
             }
         )
 
-        ModalNavigationDrawer(
+        TimelineDrawer(
+            state = state,
             drawerState = drawerState,
-            drawerContent = {
-                TimelineDrawer(
-                    state = state,
-                    onClickDefaultItem = {
-                        screenModel.updateDrawerDefaultItem(it)
-                    },
-                    onFolderClick = {
-                        screenModel.updateDrawerFolderSelection(it)
-                    },
-                    onFeedClick = {
-                        screenModel.updateDrawerFeedSelection(it)
-                    }
-                )
-            }
+            onClickDefaultItem = { screenModel.updateDrawerDefaultItem(it) },
+            onFolderClick = { screenModel.updateDrawerFolderSelection(it) },
+            onFeedClick = { screenModel.updateDrawerFeedSelection(it) }
         ) {
             Scaffold(
                 topBar = {
