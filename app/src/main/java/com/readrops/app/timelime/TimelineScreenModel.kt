@@ -69,6 +69,8 @@ class TimelineScreenModel(
             val mainFilter = MainFilter.valueOf(preferences.mainFilter.flow.first())
             var syncAtLaunch = preferences.synchAtLaunch.flow.first()
 
+            _timelineState.update { it.copy(filters = it.filters.copy(mainFilter = mainFilter)) }
+
             combine(
                 accountEvent,
                 filters,
@@ -80,7 +82,6 @@ class TimelineScreenModel(
                     it.copy(
                         preferences = timelinePreferences,
                         filters = filters.copy(
-                            mainFilter = mainFilter,
                             showReadItems = timelinePreferences.showReadItems,
                             orderField = timelinePreferences.orderField,
                             orderType = timelinePreferences.orderType
