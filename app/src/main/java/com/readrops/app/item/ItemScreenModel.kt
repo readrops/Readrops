@@ -25,6 +25,7 @@ import com.readrops.app.repositories.BaseRepository
 import com.readrops.app.util.PAGING_PAGE_SIZE
 import com.readrops.app.util.PAGING_PREFETCH_DISTANCE
 import com.readrops.app.util.Preferences
+import com.readrops.app.util.Utils
 import com.readrops.db.Database
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
@@ -36,10 +37,12 @@ import com.readrops.db.queries.ItemsQueryBuilder
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
@@ -60,6 +63,14 @@ class ItemScreenModel(
     //TODO Is this really the best solution?
     lateinit var account: Account
     lateinit var repository: BaseRepository
+
+
+    private var useCustomShareIntentTpl = preferences.useCustomShareIntentTpl.flow.stateIn(
+        screenModelScope, SharingStarted.Eagerly, false
+    )
+    private var customShareIntentTpl = preferences.customShareIntentTpl.flow.stateIn(
+        screenModelScope, SharingStarted.Eagerly, ""
+    )
 
     init {
         screenModelScope.launch(dispatcher) {
@@ -138,16 +149,9 @@ class ItemScreenModel(
             .cachedIn(screenModelScope)
     }
 
-    fun shareItem(item: Item, context: Context) {
-        Intent().apply {
-            action = Intent.ACTION_SEND
-            type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, item.link)
-            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-        }.also {
-            context.startActivity(Intent.createChooser(it, null))
-        }
-    }
+    fun shareItem(item: Item, context: Context) = Utils.shareItem(
+        item, context, useCustomShareIntentTpl.value, customShareIntentTpl.value
+    )
 
     fun setItemReadState(item: Item) {
         screenModelScope.launch(dispatcher) {

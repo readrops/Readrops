@@ -18,6 +18,8 @@ import com.readrops.app.util.PAGING_INITIAL_SIZE
 import com.readrops.app.util.PAGING_PAGE_SIZE
 import com.readrops.app.util.PAGING_PREFETCH_DISTANCE
 import com.readrops.app.util.Preferences
+import com.readrops.app.util.ShareIntentTextRenderer
+import com.readrops.app.util.Utils
 import com.readrops.app.util.extensions.clearSerializables
 import com.readrops.app.util.extensions.getSerializable
 import com.readrops.db.Database
@@ -38,6 +40,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -45,6 +48,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -66,6 +70,13 @@ class TimelineScreenModel(
     val listIndexState = _listIndexState.asStateFlow()
 
     private val filters = MutableStateFlow(_timelineState.value.filters)
+
+    private var useCustomShareIntentTpl = preferences.useCustomShareIntentTpl.flow.stateIn(
+        screenModelScope, SharingStarted.Eagerly, false
+    )
+    private var customShareIntentTpl = preferences.customShareIntentTpl.flow.stateIn(
+        screenModelScope, SharingStarted.Eagerly, ""
+    )
 
     init {
         screenModelScope.launch(dispatcher) {
@@ -363,15 +374,7 @@ class TimelineScreenModel(
         }
     }
 
-    fun shareItem(item: Item, context: Context) {
-        Intent().apply {
-            action = Intent.ACTION_SEND
-            type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, item.link)
-        }.also {
-            context.startActivity(Intent.createChooser(it, null))
-        }
-    }
+
 
     fun setAllItemsRead() {
         screenModelScope.launch(dispatcher) {
@@ -468,6 +471,10 @@ class TimelineScreenModel(
             preferences.globalOpenInAsk.write(openInAsk)
         }
     }
+
+    fun shareItem(item: Item, context: Context) = Utils.shareItem(
+        item, context, useCustomShareIntentTpl.value, customShareIntentTpl.value
+    )
 }
 
 @Stable

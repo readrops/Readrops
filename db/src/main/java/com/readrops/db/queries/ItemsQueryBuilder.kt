@@ -14,6 +14,7 @@ object ItemsQueryBuilder {
         "Item.id",
         "Item.remote_id",
         "title",
+        "author",
         "clean_description",
         "content",
         "image_link",

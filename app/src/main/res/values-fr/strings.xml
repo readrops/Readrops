@@ -208,4 +208,17 @@
     <string name="greader_warning">"Google Reader est une très vielle API et reste peu documentée. Il est probable qu'elle ne soit pas implémentée de la même manière dans chaque agrégateur et ainsi ne pas fonctionner correctement.\n\nSi vous rencontrez des problèmes de synchronisation, merci de les remonter sur le dépôt Github de Readrops. "</string>
     <string name="fever_warning">Fever est une vielle API, limitée et dépréciée. Elle ne supporte pas la gestion des flux et des dossiers. Elle est également mal documentée et risque de ne pas être implémentée de la même manière chez chaque agrégateur, ne permettant pas son bon fonctionnement.\n\nSi vous rencontrez des problèmes de synchronisation, merci de les remonter sur le dépôt Github de Readrops.</string>
     <string name="api">API</string>
+
+    <!-- custom share intent text -->
+    <string name="use_custom_share_intent_tpl">Personnaliser le texte du partage entre applications</string>
+    <string name="use_custom_share_intent_tpl_explenation">Cette option vous permet de personnaliser le texte lorsque vous partagez un article avec d\'autres applications Android. La référence de la syntaxe possible &lt;a href=https://pebbletemplates.io/wiki/guide/basic-usage/#syntax-reference>est disponible ici&lt;/a>.</string>
+    <string name="preview_shared_text">Voir le texte généré</string>
+    <string name="edit_shared_text_template">Editer le template</string>
+    <string name="example_item_title">Excellente nouvelle tout le monde !</string>
+    <string name="example_item_author">Vidéaste incroyable</string>
+    <string name="example_item_content">"Cela s\'est passé la semaine dernière sur terre.\n\nC'est la chose la plus impressionnante qui se soit produite cette semaine</string>
+    <string name="example_item_explanation">Les variables disponibles dans le contexte du template sont les suivantes : %s. Vous pouvez utiliser tous les filtres de template &lt;a href=https://pebbletemplates.io/wiki/>documentés ici&lt;/a>. En plus des filtres standard, vous pouvez utiliser &lt;tt>remove_author&lt;/tt> qui, lorsqu\'appliqué à une variable, en retire le contenu de la variable &lt;tt>author&lt;/tt>.</string>
+    <string name="try_the_default_template">Remplir avec le template par défaut</string>
+    <string name="render_template">Visualiser le résultat</string>
+    <string name="edit_template">Editer le template</string>
 </resources>

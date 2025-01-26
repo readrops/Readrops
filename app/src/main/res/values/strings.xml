@@ -90,6 +90,7 @@
     <string name="enable_auto_synchro_text">To be displayed, notifications need background synchronization to be activated.\nDo you want to open settings?</string>
     <string name="open">Open</string>
     <string name="back">Back</string>
+    <string name="save">Save</string>
     <string name="synchronize">Synchronize</string>
     <string name="navigator_view">Navigator view</string>
     <string name="favorites">Favorites</string>
@@ -217,4 +218,17 @@
     <string name="greader_warning">Google Reader is a very old API and lack documentation. It may not be implemented in every aggregator the same way and thus might not work well.\n\nIf you encounter any synchronization problem, please report them to Readrops Github repository.</string>
     <string name="fever_warning">Fever is a very old, limited and depreciated API. It doesn\'t support feed and folder management. It is also poorly documented, may not be implemented in every aggregator the same way and thus might not work well.\n\nIf you encounter any synchronization problem, please report them to Readrops Github repository.</string>
     <string name="api">API</string>
+
+    <!-- custom share intent text -->
+    <string name="use_custom_share_intent_tpl">Customize the text when sharing to other apps</string>
+    <string name="use_custom_share_intent_tpl_explenation">This option lets you customize the text when sharing an article with other Android applications. Check &lt;a href="https://pebbletemplates.io/wiki/guide/basic-usage/#syntax-reference">the available synthax here&lt;/a>.</string>
+    <string name="preview_shared_text">Preview shared text</string>
+    <string name="edit_shared_text_template">Edit shared text template</string>
+    <string name="example_item_title">Good news, everyone!</string>
+    <string name="example_item_author">Awesome content creator</string>
+    <string name="example_item_content">This happenned last week on earth.\n\nThis is the most awesome thing that happened this week.</string>
+    <string name="example_item_explanation">The variables that are available in context are: %s. You can use all the template filters &lt;a href=https://pebbletemplates.io/wiki/>documented here&lt;/a> in addition to &lt;tt>remove_author&lt;/tt> which, when applied to any variable, removes from it the content of the variable &lt;tt>author&lt;/tt>.</string>
+    <string name="try_the_default_template">Fill with the default template</string>
+    <string name="render_template">See the result</string>
+    <string name="edit_template">Edit template</string>
 </resources>

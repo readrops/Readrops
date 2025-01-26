@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -35,16 +36,19 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.readrops.app.R
 import com.readrops.app.more.preferences.components.BasePreference
+import com.readrops.app.more.preferences.components.CustomShareIntentTextWidget
 import com.readrops.app.more.preferences.components.ListPreferenceWidget
 import com.readrops.app.more.preferences.components.PreferenceHeader
 import com.readrops.app.more.preferences.components.SwitchPreferenceWidget
 import com.readrops.app.sync.SyncWorker
 import com.readrops.app.util.components.AndroidScreen
 import com.readrops.app.util.components.CenteredProgressIndicator
+import com.readrops.db.entities.Item
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
 
 
-class PreferencesScreen : AndroidScreen() {
+class PreferencesScreen : AndroidScreen(), KoinComponent {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -56,6 +60,16 @@ class PreferencesScreen : AndroidScreen() {
         val scrollState = rememberScrollState()
         val coroutineScope = rememberCoroutineScope()
         val snackbarHostState = remember { SnackbarHostState() }
+        var showDialog by remember { screenModel.showDialog }
+        val exampleItem by screenModel.exampleItem.collectAsStateWithLifecycle(
+            Item(
+                title = stringResource(R.string.example_item_title),
+                author = stringResource(R.string.example_item_author),
+                content = stringResource(R.string.example_item_content),
+                link = "https://example.org"
+
+            )
+        )
 
         val state by screenModel.state.collectAsStateWithLifecycle()
 
@@ -210,6 +224,22 @@ class PreferencesScreen : AndroidScreen() {
                                 title = stringResource(id = R.string.open_items_in),
                                 onValueChange = {}
                             )
+
+                            SwitchPreferenceWidget(
+                                preference = loadedState.useCustomShareIntentTpl.second,
+                                isChecked = loadedState.useCustomShareIntentTpl.first,
+                                title = stringResource(id = R.string.use_custom_share_intent_tpl),
+                                onValueChanged = { showDialog = it }
+                            )
+
+                            if (showDialog) {
+                                CustomShareIntentTextWidget(
+                                    preference = loadedState.customShareIntentTpl.second,
+                                    template = loadedState.customShareIntentTpl.first,
+                                    exampleItem = exampleItem,
+                                    onDismiss = { showDialog = false },
+                                )
+                            }
                         }
                     }
                 }

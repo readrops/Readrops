@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ItemDao : BaseDao<Item> {
+    @Query("Select Count(id) From Item")
+    suspend fun count(): Int
 
     @Query("Select * From Item Where id = :itemId")
     suspend fun select(itemId: Int): Item

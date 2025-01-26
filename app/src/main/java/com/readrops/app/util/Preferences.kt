@@ -109,6 +109,18 @@ class Preferences(
         key = booleanPreferencesKey("sync_at_launch"),
         default = false
     )
+
+    val useCustomShareIntentTpl = Preference(
+        dataStore = dataStore,
+        key = booleanPreferencesKey("use_custom_share_intent_tpl"),
+        default = false
+    )
+
+    val customShareIntentTpl = Preference(
+        dataStore = dataStore,
+        key = stringPreferencesKey("custom_share_intent_tpl"),
+        default = ""
+    )
 }
 
 
