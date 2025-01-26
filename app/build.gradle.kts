@@ -96,4 +96,6 @@ dependencies {
 
     implementation(libs.aboutlibraries.composem3)
     implementation(libs.colorpicker)
+
+    implementation(libs.autofill)
 }

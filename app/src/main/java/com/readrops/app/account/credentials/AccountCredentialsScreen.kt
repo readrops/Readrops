@@ -27,8 +27,18 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.autofill.AutofillNode
+import androidx.compose.ui.autofill.AutofillType
+import androidx.compose.ui.composed
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalAutofill
+import androidx.compose.ui.platform.LocalAutofillTree
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -40,6 +50,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.google.android.material.textfield.TextInputEditText
 import com.readrops.app.R
 import com.readrops.app.account.selection.adaptiveIconPainterResource
 import com.readrops.app.home.HomeScreen
@@ -58,12 +69,35 @@ enum class AccountCredentialsScreenMode {
     EDIT_CREDENTIALS
 }
 
+
+@OptIn(ExperimentalComposeUiApi::class)
+fun Modifier.autofill(
+    autofillTypes: List<AutofillType>,
+    onFill: ((String) -> Unit),
+) = composed {
+    val autofill = LocalAutofill.current
+    val autofillNode = AutofillNode(onFill = onFill, autofillTypes = autofillTypes)
+    LocalAutofillTree.current += autofillNode
+
+    this.onGloballyPositioned {
+        autofillNode.boundingBox = it.boundsInWindow()
+    }.onFocusChanged { focusState ->
+        autofill?.run {
+            if (focusState.isFocused) {
+                requestAutofillForNode(autofillNode)
+            } else {
+                cancelAutofillForNode(autofillNode)
+            }
+        }
+    }
+}
+
 class AccountCredentialsScreen(
     private val account: Account,
     private val mode: AccountCredentialsScreenMode
 ) : AndroidScreen() {
 
-    @OptIn(ExperimentalMaterial3Api::class)
+    @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
@@ -178,7 +212,10 @@ class AccountCredentialsScreen(
                         isError = state.isLoginError,
                         supportingText = { Text(text = state.loginError?.errorText().orEmpty()) },
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.autofill(
+                            listOf(AutofillType.Username),
+                            onFill = { screenModel.onEvent(Event.LoginEvent(it)) }
+                        ).fillMaxWidth()
                     )
 
                     ShortSpacer()
@@ -221,7 +258,10 @@ class AccountCredentialsScreen(
                             keyboardType = KeyboardType.Password,
                             imeAction = ImeAction.Done
                         ),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.autofill(
+                            listOf(AutofillType.Password),
+                            onFill = { screenModel.onEvent(Event.PasswordEvent(it)) }
+                        ).fillMaxWidth()
                     )
 
                     ShortSpacer()
