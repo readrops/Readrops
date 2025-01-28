@@ -100,6 +100,7 @@ datastore = "androidx.datastore:datastore-preferences:1.1.1"
 browser = "androidx.browser:browser:1.8.0"
 splashscreen = "androidx.core:core-splashscreen:1.0.1"
 preferences = "androidx.preference:preference-ktx:1.2.1"
+autofill = "androidx.autofill:autofill:1.1.0"
 
 # test
 junit4 = "junit:junit:4.13.2"
