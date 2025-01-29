@@ -122,4 +122,27 @@
     <string name="item_size">アイテムの大きさ</string>
     <string name="background_sync_already_running">バックグラウンド同期は既に実行中です</string>
     <string name="disable_battery_optimization">バッテリー最適化を無効にする</string>
+    <string name="litecoin_copy_address">Litecoin (アドレスをコピー)</string>
+    <string name="feed_url_read_only">API がフィード URL の編集を許可していません</string>
+    <string name="system_notifications_disabled">システム通知が無効になっています。ここをクリックして通知を有効にしてください</string>
+    <string name="disable_battery_optimization_subtitle">バックグラウンド同期がシステムに停止されなくなります</string>
+    <string name="grant_access_notifications">通知へのアクセスを許可</string>
+    <string name="unable_open_file">ファイルを開けませんでした</string>
+    <string name="http_error_400">HTTP エラー 400、サーバーの URL を確認してください</string>
+    <string name="more">詳細</string>
+    <string name="http_error_401">HTTP エラー 401、認証情報を確認してください</string>
+    <string name="http_error_403">HTTP エラー 403、アクセスが禁止されています</string>
+    <string name="http_error_404">HTTP エラー 403、URL が見つかりませんでした</string>
+    <string name="http_error_4XX">HTTP エラー %1$d、フィールドを確認してください</string>
+    <string name="http_error_5XX">HTTP エラー %1$d、サーバーエラー</string>
+    <string name="http_error">HTTP エラー %1$d</string>
+    <string name="other_accounts">他のアカウント</string>
+    <string name="preferences">設定</string>
+    <string name="battery_optimization_already_disabled">このアプリのバッテリー最適化は無効になっています</string>
+    <string name="opml_export_success">OPML エクスポートが完了しました</string>
+    <string name="add_to_favorite">お気に入りに追加</string>
+    <string name="bitcoin_copy_address">Bitcoin (アドレスをコピー)</string>
+    <string name="copy_error_clipboard">クリップボードにエラーをコピー</string>
+    <string name="copied">コピーしました！</string>
+    <string name="report_error_github">Github でエラーを報告</string>
 </resources>
