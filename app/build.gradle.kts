@@ -95,4 +95,7 @@ dependencies {
     androidTestImplementation(libs.okhttp.mockserver)
 
     implementation(libs.aboutlibraries.composem3)
+    implementation(libs.colorpicker)
+
+    implementation(libs.autofill)
 }

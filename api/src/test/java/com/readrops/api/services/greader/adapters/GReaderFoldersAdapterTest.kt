@@ -1,4 +1,4 @@
-package com.readrops.api.services.freshrss.adapters
+package com.readrops.api.services.greader.adapters
 
 import com.readrops.api.TestUtils
 import com.readrops.db.entities.Folder
@@ -8,16 +8,16 @@ import junit.framework.TestCase.assertEquals
 import okio.Buffer
 import org.junit.Test
 
-class FreshRSSFoldersAdapterTest {
+class GReaderFoldersAdapterTest {
 
     private val adapter = Moshi.Builder()
-            .add(FreshRSSFoldersAdapter())
+            .add(GReaderFoldersAdapter())
             .build()
             .adapter<List<Folder>>(Types.newParameterizedType(List::class.java, Folder::class.java))
 
     @Test
     fun validFoldersTest() {
-        val stream = TestUtils.loadResource("services/freshrss/adapters/folders.json")
+        val stream = TestUtils.loadResource("services/greader/adapters/folders.json")
 
         val folders = adapter.fromJson(Buffer().readFrom(stream))!!
 

@@ -9,12 +9,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
+import androidx.compose.material3.PermanentNavigationDrawer
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -26,13 +29,52 @@ import androidx.compose.ui.unit.dp
 import com.readrops.app.R
 import com.readrops.app.timelime.TimelineState
 import com.readrops.app.util.components.FeedIcon
+import com.readrops.app.util.extensions.isTabletUi
 import com.readrops.app.util.theme.spacing
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.filters.MainFilter
 
+
 @Composable
 fun TimelineDrawer(
+    state: TimelineState,
+    drawerState: DrawerState,
+    onClickDefaultItem: (MainFilter) -> Unit,
+    onFolderClick: (Folder) -> Unit,
+    onFeedClick: (Feed) -> Unit,
+    content: @Composable () -> Unit,
+) {
+    if (isTabletUi()) {
+        PermanentNavigationDrawer(
+            drawerContent = {
+                TimelineDrawerContent(
+                    state = state,
+                    onClickDefaultItem = onClickDefaultItem,
+                    onFolderClick = onFolderClick,
+                    onFeedClick = onFeedClick
+                )
+            },
+            content = content
+        )
+    } else {
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            drawerContent = {
+                TimelineDrawerContent(
+                    state = state,
+                    onClickDefaultItem = onClickDefaultItem,
+                    onFolderClick = onFolderClick,
+                    onFeedClick = onFeedClick
+                )
+            },
+            content = content
+        )
+    }
+}
+
+@Composable
+fun TimelineDrawerContent(
     state: TimelineState,
     onClickDefaultItem: (MainFilter) -> Unit,
     onFolderClick: (Folder) -> Unit,

@@ -194,4 +194,18 @@
     <string name="do_not_ask_again_next_feeds">Ne pas me redemander pour les autres flux</string>
     <string name="default_category">Catégorie par défaut</string>
     <string name="synchronize_at_launch">Synchroniser au démarrage</string>
+    <string name="feed_color">Couleur de flux</string>
+    <string name="preview">Prévisualisation</string>
+    <string name="select_color">Choisir une couleur</string>
+    <string name="reset">Réinitialiser</string>
+    <string name="actions">Actions</string>
+    <string name="reload_color_favicon">Recharger la couleur à partir de la favicône</string>
+    <string name="load_color_new_favicon">Charger la couleur depuis une nouvelle favicône</string>
+    <string name="error_occurred_reloading_favicon_color">Une erreur est survenue lors du rechargement de la couleur de la favicône</string>
+    <string name="use_default_color">Utiliser la couleur par défaut</string>
+    <string name="warning">Attention</string>
+    <string name="understand">J\'accepte</string>
+    <string name="greader_warning">"Google Reader est une très vielle API et reste peu documentée. Il est probable qu'elle ne soit pas implémentée de la même manière dans chaque agrégateur et ainsi ne pas fonctionner correctement.\n\nSi vous rencontrez des problèmes de synchronisation, merci de les remonter sur le dépôt Github de Readrops. "</string>
+    <string name="fever_warning">Fever est une vielle API, limitée et dépréciée. Elle ne supporte pas la gestion des flux et des dossiers. Elle est également mal documentée et risque de ne pas être implémentée de la même manière chez chaque agrégateur, ne permettant pas son bon fonctionnement.\n\nSi vous rencontrez des problèmes de synchronisation, merci de les remonter sur le dépôt Github de Readrops.</string>
+    <string name="api">API</string>
 </resources>

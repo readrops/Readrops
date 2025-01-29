@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xml:lang="en-US">
+    <id>tag:github.com,2008:/readrops/Readrops/commits/develop</id>
+    <link type="text/html" rel="alternate" href="https://github.com/readrops/Readrops/commits/develop"/>
+    <link type="application/atom+xml" rel="self" href="https://github.com/readrops/Readrops/commits/develop.atom"/>
+    <title>Recent Commits to Readrops:develop</title>
+    <updated>2020-09-06T21:09:59Z</updated>
+    <subtitle>Here is a subtitle</subtitle>
+    <logo>https://github.com/readrops/Readrops/blob/develop/images/readrops_logo.png</logo>
+    <entry>
+        <id>tag:github.com,2008:Grit::Commit/c15f093a1bc4211e85f8d1817c9073e307afe5ac</id>
+        <link type="text/html" rel="alternate" href="https://github.com/readrops/Readrops/commit/c15f093a1bc4211e85f8d1817c9073e307afe5ac"/>
+        <title>Add an option to open item url in custom tab</title>
+        <updated>2020-09-06T21:09:59Z</updated>
+        <media:thumbnail height="30" width="30" url="https://avatars2.githubusercontent.com/u/18555673?s=30&amp;u=c56b216e8d128d0ec217062feeace9faca4dc893&amp;v=4"/>
+        <author>
+            <name>Shinokuni</name>
+            <uri>https://github.com/Shinokuni</uri>
+        </author>
+        <media:group>
+            <media:title>media title</media:title>
+            <media:content url="https://www.youtube.com/v/...?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+            <media:thumbnail url="https://i3.ytimg.com/vi/.../hqdefault.jpg" width="480" height="360"/>
+            <media:description>description</media:description>
+            <media:community>
+                <media:starRating count="947923" average="5.00" min="1" max="5"/>
+                <media:statistics views="10761364"/>
+            </media:community>
+        </media:group>
+    </entry>
+</feed>

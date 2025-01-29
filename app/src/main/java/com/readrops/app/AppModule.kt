@@ -15,13 +15,14 @@ import com.readrops.app.account.credentials.AccountCredentialsScreenMode
 import com.readrops.app.account.credentials.AccountCredentialsScreenModel
 import com.readrops.app.account.selection.AccountSelectionScreenModel
 import com.readrops.app.feeds.FeedScreenModel
+import com.readrops.app.feeds.color.FeedColorScreenModel
 import com.readrops.app.feeds.newfeed.NewFeedScreenModel
 import com.readrops.app.item.ItemScreenModel
 import com.readrops.app.more.preferences.PreferencesScreenModel
 import com.readrops.app.notifications.NotificationsScreenModel
 import com.readrops.app.repositories.BaseRepository
 import com.readrops.app.repositories.FeverRepository
-import com.readrops.app.repositories.FreshRSSRepository
+import com.readrops.app.repositories.GReaderRepository
 import com.readrops.app.repositories.GetFoldersWithFeeds
 import com.readrops.app.repositories.LocalRSSRepository
 import com.readrops.app.repositories.NextcloudNewsRepository
@@ -29,6 +30,7 @@ import com.readrops.app.sync.Synchronizer
 import com.readrops.app.timelime.TimelineScreenModel
 import com.readrops.app.util.DataStorePreferences
 import com.readrops.app.util.Preferences
+import com.readrops.db.entities.Feed
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
 import kotlinx.coroutines.CoroutineScope
@@ -60,12 +62,14 @@ val appModule = module {
 
     factory { PreferencesScreenModel(get()) }
 
+    factory { (feed: Feed) -> FeedColorScreenModel(feed, get()) }
+
     single { GetFoldersWithFeeds(get()) }
 
     factory<BaseRepository> { (account: Account) ->
         when (account.type) {
             AccountType.LOCAL -> LocalRSSRepository(get(), get(), account)
-            AccountType.FRESHRSS -> FreshRSSRepository(
+            AccountType.FRESHRSS, AccountType.GREADER -> GReaderRepository(
                 database = get(),
                 account = account,
                 dataSource = get(parameters = { parametersOf(Credentials.toCredentials(account)) })

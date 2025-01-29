@@ -1,4 +1,4 @@
-package com.readrops.api.services.freshrss.adapters
+package com.readrops.api.services.greader.adapters
 
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.extensions.nextNullableString

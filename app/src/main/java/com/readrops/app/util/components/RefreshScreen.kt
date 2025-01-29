@@ -2,6 +2,7 @@ package com.readrops.app.util.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -9,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
+import com.readrops.app.util.theme.MediumSpacer
 import com.readrops.app.util.theme.VeryShortSpacer
 import com.readrops.app.util.theme.spacing
 
@@ -48,5 +50,23 @@ fun RefreshIndicator(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
+    }
+}
+
+@Composable
+fun LoadingScreen(
+    isRefreshing: Boolean
+) {
+    CenteredColumn {
+
+        if (isRefreshing) {
+            Text(
+                text = "Refreshing...",
+                style = MaterialTheme.typography.labelLarge
+            )
+
+            MediumSpacer()
+        }
+        CircularProgressIndicator()
     }
 }

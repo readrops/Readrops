@@ -28,7 +28,7 @@ data class AccountConfig(
             useSeparateState = false,
         )
 
-        val FRESHRSS = AccountConfig(
+        val GREADER = AccountConfig(
             isFeedUrlReadOnly = true,
             canCreateFolder = false,
             addNoFolder = false,

@@ -4,6 +4,7 @@ import com.gitlab.mvysny.konsumexml.Konsumer
 import com.gitlab.mvysny.konsumexml.KonsumerException
 import com.gitlab.mvysny.konsumexml.Names
 import com.gitlab.mvysny.konsumexml.allChildrenAutoIgnore
+import com.readrops.api.localfeed.RSSMedia
 import com.readrops.api.localfeed.XmlAdapter
 import com.readrops.api.localfeed.XmlAdapter.Companion.AUTHORS_MAX
 import com.readrops.api.utils.ApiUtils
@@ -21,7 +22,6 @@ class RSS2ItemAdapter : XmlAdapter<Item> {
         val item = Item()
 
         return try {
-            //konsumer.checkCurrent("item")
             val creators = arrayListOf<String?>()
 
             item.apply {
@@ -36,9 +36,9 @@ class RSS2ItemAdapter : XmlAdapter<Item> {
                         "guid" -> remoteId = nullableText()
                         "description" -> description = nullableTextRecursively()
                         "content:encoded" -> content = nullableTextRecursively()
-                        "enclosure" -> parseEnclosure(this, item = this@apply)
-                        "media:content" -> parseMediaContent(this, item = this@apply)
-                        "media:group" -> parseMediaGroup(this, item = this@apply)
+                        "enclosure" -> RSSMedia.parseMediaContent(this, item = this@apply)
+                        "media:content" -> RSSMedia.parseMediaContent(this, item = this@apply)
+                        "media:group" -> RSSMedia.parseMediaGroup(this, item = this@apply)
                         else -> skipContents() // for example media:description
                     }
                 }
@@ -48,36 +48,6 @@ class RSS2ItemAdapter : XmlAdapter<Item> {
             item
         } catch (e: KonsumerException) {
             throw ParseException(e.message)
-        }
-    }
-
-    private fun parseEnclosure(konsumer: Konsumer, item: Item) = with(konsumer) {
-        if (attributes.getValueOrNull("type") != null
-                && ApiUtils.isMimeImage(attributes["type"]) && item.imageLink == null)
-            item.imageLink = attributes.getValueOrNull("url")
-    }
-
-    private fun isMediumImage(konsumer: Konsumer) = with(konsumer) {
-        attributes.getValueOrNull("medium") != null && ApiUtils.isMimeImage(attributes["medium"])
-    }
-
-    private fun isTypeImage(konsumer: Konsumer) = with(konsumer) {
-        attributes.getValueOrNull("type") != null && ApiUtils.isMimeImage(attributes["type"])
-    }
-
-    private fun parseMediaContent(konsumer: Konsumer, item: Item) = with(konsumer) {
-        if ((isMediumImage(konsumer) || isTypeImage(konsumer)) && item.imageLink == null)
-            item.imageLink = konsumer.attributes.getValueOrNull("url")
-
-        konsumer.skipContents() // ignore media content sub elements
-    }
-
-    private fun parseMediaGroup(konsumer: Konsumer, item: Item) = with(konsumer) {
-        allChildrenAutoIgnore("content") {
-            when (tagName) {
-                "media:content" -> parseMediaContent(this, item)
-                else -> skipContents()
-            }
         }
     }
 

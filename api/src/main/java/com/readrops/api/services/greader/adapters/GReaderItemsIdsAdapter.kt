@@ -1,4 +1,4 @@
-package com.readrops.api.services.freshrss.adapters
+package com.readrops.api.services.greader.adapters
 
 import android.annotation.SuppressLint
 import com.readrops.api.utils.exceptions.ParseException
@@ -7,7 +7,7 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 
-class FreshRSSItemsIdsAdapter : JsonAdapter<List<String>>() {
+class GReaderItemsIdsAdapter : JsonAdapter<List<String>>() {
 
     override fun toJson(writer: JsonWriter, value: List<String>?) {
         // not useful here

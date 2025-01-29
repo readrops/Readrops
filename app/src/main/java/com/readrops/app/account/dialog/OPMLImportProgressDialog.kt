@@ -1,4 +1,4 @@
-package com.readrops.app.account
+package com.readrops.app.account.dialog
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource

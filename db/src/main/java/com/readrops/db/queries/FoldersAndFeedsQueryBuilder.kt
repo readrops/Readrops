@@ -10,6 +10,7 @@ object FoldersAndFeedsQueryBuilder {
         "Feed.id As feedId",
         "Feed.name As feedName",
         "Feed.icon_url As feedIcon",
+        "Feed.color As feedColor",
         "Feed.url As feedUrl",
         "Feed.image_url as feedImage",
         "Feed.siteUrl As feedSiteUrl",

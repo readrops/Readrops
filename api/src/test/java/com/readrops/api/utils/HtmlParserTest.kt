@@ -17,6 +17,7 @@ import org.koin.test.KoinTestRule
 import org.koin.test.get
 import java.net.HttpURLConnection
 import java.util.concurrent.TimeUnit
+import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -95,7 +96,8 @@ class HtmlParserTest : KoinTest {
                 .setBody(Buffer().readFrom(stream))
         )
 
-        val link = HtmlParser.getFaviconLink(mockServer.url("/rss").toString(), get())
+        val document = HtmlParser.getHTMLHeadFromUrl(mockServer.url("/rss").toString(), get())
+        val link = HtmlParser.getFaviconLink(document)
         assertTrue { link!!.contains("apple-touch-icon") }
     }
 
@@ -109,7 +111,43 @@ class HtmlParserTest : KoinTest {
                 .setBody(Buffer().readFrom(stream))
         )
 
-        val link = HtmlParser.getFaviconLink(mockServer.url("/rss").toString(), get())
+        val document = HtmlParser.getHTMLHeadFromUrl(mockServer.url("/rss").toString(), get())
+        val link = HtmlParser.getFaviconLink(document)
         assertNull(link)
+    }
+
+    @Test
+    fun getFeedImageLinkTest() = runTest {
+        val stream = TestUtils.loadResource("utils/file.html")
+
+        mockServer.enqueue(
+            MockResponse().setResponseCode(HttpURLConnection.HTTP_OK)
+                .addHeader(ApiUtils.CONTENT_TYPE_HEADER, ApiUtils.HTML_CONTENT_TYPE)
+                .setBody(Buffer().readFrom(stream))
+        )
+
+        val document = HtmlParser.getHTMLHeadFromUrl(mockServer.url("/rss").toString(), get())
+        val link = HtmlParser.getFeedImage(document)
+
+        assertEquals(
+            "https://blog.mozilla.org/wp-content/blogs.dir/278/files/2021/02/moz_blog_header_som_002_1200x600.jpg",
+            link
+        )
+    }
+
+    @Test
+    fun getFeedDescriptionTest() = runTest {
+        val stream = TestUtils.loadResource("utils/file.html")
+
+        mockServer.enqueue(
+            MockResponse().setResponseCode(HttpURLConnection.HTTP_OK)
+                .addHeader(ApiUtils.CONTENT_TYPE_HEADER, ApiUtils.HTML_CONTENT_TYPE)
+                .setBody(Buffer().readFrom(stream))
+        )
+
+        val document = HtmlParser.getHTMLHeadFromUrl(mockServer.url("/rss").toString(), get())
+        val description = HtmlParser.getFeedDescription(document)
+
+        assertEquals("The Mozilla Blog", description)
     }
 }

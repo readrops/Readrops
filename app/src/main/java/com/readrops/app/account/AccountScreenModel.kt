@@ -234,6 +234,7 @@ data class AccountState(
 sealed interface DialogState {
     data object DeleteAccount : DialogState
     data object NewAccount : DialogState
+    data class AccountWarning(val type: AccountType) : DialogState
     data class OPMLImport(val currentFeed: String?, val feedCount: Int, val feedMax: Int) :
         DialogState
 

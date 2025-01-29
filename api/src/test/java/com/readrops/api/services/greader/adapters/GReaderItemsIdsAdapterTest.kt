@@ -1,4 +1,4 @@
-package com.readrops.api.services.freshrss.adapters
+package com.readrops.api.services.greader.adapters
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
@@ -6,16 +6,16 @@ import junit.framework.TestCase.assertEquals
 import okio.Buffer
 import org.junit.Test
 
-class FreshRSSItemsIdsAdapterTest {
+class GReaderItemsIdsAdapterTest {
 
     private val adapter = Moshi.Builder()
-            .add(Types.newParameterizedType(List::class.java, String::class.java), FreshRSSItemsIdsAdapter())
+            .add(Types.newParameterizedType(List::class.java, String::class.java), GReaderItemsIdsAdapter())
             .build()
             .adapter<List<String>>(Types.newParameterizedType(List::class.java, String::class.java))
 
     @Test
     fun validIdsTest() {
-        val stream = javaClass.classLoader!!.getResourceAsStream("services/freshrss/adapters/items_starred_ids.json")
+        val stream = javaClass.classLoader!!.getResourceAsStream("services/greader/adapters/items_starred_ids.json")
 
         val ids = adapter.fromJson(Buffer().readFrom(stream))!!
 
