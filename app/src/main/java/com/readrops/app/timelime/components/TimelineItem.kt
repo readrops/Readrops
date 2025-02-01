@@ -102,9 +102,9 @@ fun TimelineItem(
                     Icon(
                         painter = painterResource(
                             id = if (itemWithFeed.item.isRead) {
-                                R.drawable.ic_remove_done
+                                R.drawable.ic_read
                             } else {
-                                R.drawable.ic_done_all
+                                R.drawable.ic_unread
                             }
                         ),
                         contentDescription = null,

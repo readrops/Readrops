@@ -55,8 +55,8 @@ fun ItemScreenBottomBar(
                 Icon(
                     painter = painterResource(
                         id = if (state.isRead)
-                            R.drawable.ic_remove_done
-                        else R.drawable.ic_done_all
+                            R.drawable.ic_read
+                        else R.drawable.ic_unread
                     ),
                     tint = tint,
                     contentDescription = null
