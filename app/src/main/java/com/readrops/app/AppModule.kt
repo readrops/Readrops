@@ -33,6 +33,7 @@ import com.readrops.app.util.Preferences
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
+import com.readrops.db.filters.QueryFilters
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -52,7 +53,14 @@ val appModule = module {
 
     factory { AccountScreenModel(get(), androidContext()) }
 
-    factory { (itemId: Int) -> ItemScreenModel(get(), itemId, get()) }
+    factory { (itemIndex: Int, queryFilters: QueryFilters) ->
+        ItemScreenModel(
+            itemIndex = itemIndex,
+            queryFilters = queryFilters,
+            database = get(),
+            preferences = get()
+        )
+    }
 
     factory { (accountType: Account, mode: AccountCredentialsScreenMode) ->
         AccountCredentialsScreenModel(accountType, mode, get())

@@ -10,6 +10,10 @@ import android.net.Uri
 import android.os.Environment
 import androidx.compose.runtime.Stable
 import androidx.core.content.FileProvider
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import coil3.imageLoader
@@ -18,18 +22,21 @@ import coil3.request.allowHardware
 import coil3.toBitmap
 import com.readrops.app.R
 import com.readrops.app.repositories.BaseRepository
+import com.readrops.app.util.PAGING_PAGE_SIZE
+import com.readrops.app.util.PAGING_PREFETCH_DISTANCE
 import com.readrops.app.util.Preferences
 import com.readrops.db.Database
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
+import com.readrops.db.filters.QueryFilters
 import com.readrops.db.pojo.ItemWithFeed
-import com.readrops.db.queries.ItemSelectionQueryBuilder
+import com.readrops.db.queries.ItemsQueryBuilder
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
@@ -38,10 +45,10 @@ import org.koin.core.parameter.parametersOf
 import java.io.File
 import java.net.URI
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class ItemScreenModel(
+    private val itemIndex: Int,
+    private val queryFilters: QueryFilters,
     private val database: Database,
-    private val itemId: Int,
     private val preferences: Preferences,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : StateScreenModel<ItemState>(ItemState()), KoinComponent {
@@ -53,9 +60,11 @@ class ItemScreenModel(
     init {
         screenModelScope.launch(dispatcher) {
             database.accountDao().selectCurrentAccount()
-                .flatMapLatest { account ->
+                .collect { account ->
                     this@ItemScreenModel.account = account!!
 
+                    // With Fever, we notify directly the server about state changes
+                    // so we need account credentials
                     if (account.type == AccountType.FEVER) {
                         get<SharedPreferences>().apply {
                             account.login = getString(account.loginKey, null)
@@ -65,22 +74,8 @@ class ItemScreenModel(
 
                     repository = get { parametersOf(account) }
 
-                    val query = ItemSelectionQueryBuilder.buildQuery(
-                        itemId = itemId,
-                        separateState = account.config.useSeparateState
-                    )
-
-                    database.itemDao().selectItemById(query)
-                }
-                .collect { itemWithFeed ->
                     mutableState.update {
-                        it.copy(
-                            itemWithFeed = itemWithFeed,
-                            bottomBarState = BottomBarState(
-                                isRead = itemWithFeed.item.isRead,
-                                isStarred = itemWithFeed.item.isStarred
-                            )
-                        )
+                        it.copy(itemState = buildPager())
                     }
                 }
         }
@@ -103,6 +98,27 @@ class ItemScreenModel(
                 }
             }
         }
+    }
+
+    private fun buildPager(): Flow<PagingData<ItemWithFeed>> {
+        val query = ItemsQueryBuilder.buildItemsQuery(
+            queryFilters = queryFilters,
+            separateState = account.config.useSeparateState
+        )
+
+        val pageNb = (((itemIndex + PAGING_PAGE_SIZE - 1) / PAGING_PAGE_SIZE) + 1)
+            .coerceAtLeast(1)
+
+        return Pager(
+            config = PagingConfig(
+                initialLoadSize = PAGING_PAGE_SIZE * pageNb,
+                pageSize = PAGING_PAGE_SIZE,
+                prefetchDistance = PAGING_PREFETCH_DISTANCE
+            ),
+            pagingSourceFactory = { database.itemDao().selectAll(query) }
+        )
+            .flow
+            .cachedIn(screenModelScope)
     }
 
     fun shareItem(item: Item, context: Context) {
@@ -213,11 +229,10 @@ class ItemScreenModel(
 
 @Stable
 data class ItemState(
-    val itemWithFeed: ItemWithFeed? = null,
-    val bottomBarState: BottomBarState = BottomBarState(),
+    val itemState: Flow<PagingData<ItemWithFeed>> = emptyFlow(),
     val imageDialogUrl: String? = null,
     val fileDownloadedEvent: Boolean = false,
     val openInExternalBrowser: Boolean = false,
     val theme: String? = "",
-    val error: String? = null
+    val error: String? = null,
 )
