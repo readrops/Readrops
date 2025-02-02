@@ -31,12 +31,15 @@ import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
 import com.readrops.db.filters.QueryFilters
 import com.readrops.db.pojo.ItemWithFeed
+import com.readrops.db.queries.ItemSelectionQueryBuilder
 import com.readrops.db.queries.ItemsQueryBuilder
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
@@ -46,6 +49,7 @@ import java.io.File
 import java.net.URI
 
 class ItemScreenModel(
+    private val itemId: Int,
     private val itemIndex: Int,
     private val queryFilters: QueryFilters,
     private val database: Database,
@@ -74,8 +78,21 @@ class ItemScreenModel(
 
                     repository = get { parametersOf(account) }
 
-                    mutableState.update {
-                        it.copy(itemState = buildPager())
+                    if (itemIndex > -1) {
+                        mutableState.update { it.copy(itemState = buildPager()) }
+                    } else {
+                        val query = ItemSelectionQueryBuilder.buildQuery(
+                            itemId = itemId,
+                            separateState = account.config.useSeparateState
+                        )
+
+                        database.itemDao().selectItemById(query)
+                            .distinctUntilChanged()
+                            .collect { itemWithFeed ->
+                                mutableState.update {
+                                    it.copy(itemState = flowOf(PagingData.from(listOf(itemWithFeed))))
+                                }
+                            }
                     }
                 }
         }

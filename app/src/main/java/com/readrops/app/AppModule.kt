@@ -53,8 +53,9 @@ val appModule = module {
 
     factory { AccountScreenModel(get(), androidContext()) }
 
-    factory { (itemIndex: Int, queryFilters: QueryFilters) ->
+    factory { (itemId: Int, itemIndex: Int, queryFilters: QueryFilters) ->
         ItemScreenModel(
+            itemId = itemId,
             itemIndex = itemIndex,
             queryFilters = queryFilters,
             database = get(),

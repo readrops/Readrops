@@ -387,7 +387,7 @@ object TimelineTab : Tab {
         val url = itemWithFeed.item.link!!
 
         if (openIn == OpenIn.LOCAL_VIEW) {
-            navigator.push(ItemScreen(itemIndex, queryFilters))
+            navigator.push(ItemScreen(itemWithFeed.item.id, itemIndex, queryFilters))
         } else {
             if (preferences.openInExternalBrowser) {
                 context.openUrl(url)

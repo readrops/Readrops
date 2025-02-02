@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import org.koin.core.parameter.parametersOf
 
 class ItemScreen(
+    private val itemId: Int,
     private val itemIndex: Int,
     private val queryFilters: QueryFilters
 ) : AndroidScreen() {
@@ -42,7 +43,7 @@ class ItemScreen(
         val navigator = LocalNavigator.currentOrThrow
 
         val screenModel =
-            koinScreenModel<ItemScreenModel>(parameters = { parametersOf(itemIndex, queryFilters) })
+            koinScreenModel<ItemScreenModel>(parameters = { parametersOf(itemId, itemIndex, queryFilters) })
         val state by screenModel.state.collectAsStateWithLifecycle()
         val items = state.itemState.collectAsLazyPagingItems()
 
