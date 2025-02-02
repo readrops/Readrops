@@ -153,7 +153,7 @@
     <string name="system_notifications_disabled">System notifications are currently disabled. Click here to enable them</string>
     <string name="show_notifications_background_sync">Show notifications after background synchronization</string>
     <string name="background_sync_new_articles">Be notified of new articles after background synchronization</string>
-    <string name="no_article">No article</string>
+    <string name="no_article">No articles</string>
     <string name="no_rss_feed_found">No RSS feed found</string>
     <string name="not_valid_rss_feed">The provided URL is not a valid RSS feed</string>
     <string name="error_occurred">An error occurred</string>
