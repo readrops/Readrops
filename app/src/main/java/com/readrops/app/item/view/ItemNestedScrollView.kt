@@ -22,6 +22,7 @@ class ItemNestedScrollView(
         addView(
             RelativeLayout(context).apply {
                 ViewCompat.setNestedScrollingEnabled(this, true)
+                descendantFocusability = FOCUS_BLOCK_DESCENDANTS
 
                 val composeView = ComposeView(context).apply {
                     id = 1
