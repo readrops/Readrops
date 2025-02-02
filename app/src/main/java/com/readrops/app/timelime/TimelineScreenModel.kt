@@ -71,10 +71,10 @@ class TimelineScreenModel(
 
     private val filters = MutableStateFlow(_timelineState.value.filters)
 
-    private var useCustomShareIntentTpl = preferences.useCustomShareIntentTpl.flow.stateIn(
+    private val useCustomShareIntentTpl = preferences.useCustomShareIntentTpl.flow.stateIn(
         screenModelScope, SharingStarted.Eagerly, false
     )
-    private var customShareIntentTpl = preferences.customShareIntentTpl.flow.stateIn(
+    private val customShareIntentTpl = preferences.customShareIntentTpl.flow.stateIn(
         screenModelScope, SharingStarted.Eagerly, ""
     )
 

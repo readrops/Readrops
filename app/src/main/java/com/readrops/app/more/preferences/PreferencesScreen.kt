@@ -26,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -48,7 +47,7 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 
 
-class PreferencesScreen : AndroidScreen(), KoinComponent {
+class PreferencesScreen : AndroidScreen() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -60,16 +59,6 @@ class PreferencesScreen : AndroidScreen(), KoinComponent {
         val scrollState = rememberScrollState()
         val coroutineScope = rememberCoroutineScope()
         val snackbarHostState = remember { SnackbarHostState() }
-        var showDialog by remember { screenModel.showDialog }
-        val exampleItem by screenModel.exampleItem.collectAsStateWithLifecycle(
-            Item(
-                title = stringResource(R.string.example_item_title),
-                author = stringResource(R.string.example_item_author),
-                content = stringResource(R.string.example_item_content),
-                link = "https://example.org"
-
-            )
-        )
 
         val state by screenModel.state.collectAsStateWithLifecycle()
 
@@ -229,15 +218,15 @@ class PreferencesScreen : AndroidScreen(), KoinComponent {
                                 preference = loadedState.useCustomShareIntentTpl.second,
                                 isChecked = loadedState.useCustomShareIntentTpl.first,
                                 title = stringResource(id = R.string.use_custom_share_intent_tpl),
-                                onValueChanged = { showDialog = it }
+                                onValueChanged = screenModel::updateDialog
                             )
 
-                            if (showDialog) {
+                            if (loadedState.showDialog) {
                                 CustomShareIntentTextWidget(
                                     preference = loadedState.customShareIntentTpl.second,
                                     template = loadedState.customShareIntentTpl.first,
-                                    exampleItem = exampleItem,
-                                    onDismiss = { showDialog = false },
+                                    exampleItem = loadedState.exampleItem,
+                                    onDismiss = { screenModel.updateDialog(false) },
                                 )
                             }
                         }

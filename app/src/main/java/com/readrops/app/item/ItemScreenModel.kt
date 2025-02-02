@@ -64,11 +64,10 @@ class ItemScreenModel(
     lateinit var account: Account
     lateinit var repository: BaseRepository
 
-
-    private var useCustomShareIntentTpl = preferences.useCustomShareIntentTpl.flow.stateIn(
+    private val useCustomShareIntentTpl = preferences.useCustomShareIntentTpl.flow.stateIn(
         screenModelScope, SharingStarted.Eagerly, false
     )
-    private var customShareIntentTpl = preferences.customShareIntentTpl.flow.stateIn(
+    private val customShareIntentTpl = preferences.customShareIntentTpl.flow.stateIn(
         screenModelScope, SharingStarted.Eagerly, ""
     )
 

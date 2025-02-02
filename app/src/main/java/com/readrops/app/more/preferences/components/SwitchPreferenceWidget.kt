@@ -1,5 +1,6 @@
 package com.readrops.app.more.preferences.components
 
+import android.util.Log
 import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -18,28 +19,21 @@ fun SwitchPreferenceWidget(
 ) {
     val coroutineScope = rememberCoroutineScope()
 
-    suspend fun changeValue() {
-        val newValue = !isChecked
-        preference.write(newValue)
-        onValueChanged?.let { it(newValue) }
+    fun changeValue(newValue: Boolean) {
+        coroutineScope.launch {
+            preference.write(newValue)
+            onValueChanged?.let { it(newValue) }
+        }
     }
 
     BasePreference(
         title = title,
         subtitle = subtitle,
-        onClick = {
-            coroutineScope.launch {
-                changeValue()
-            }
-        },
+        onClick = { changeValue(!isChecked) },
         rightComponent = {
             Switch(
                 checked = isChecked,
-                onCheckedChange = {
-                    coroutineScope.launch {
-                        changeValue()
-                    }
-                }
+                onCheckedChange = ::changeValue
             )
         },
         modifier = modifier

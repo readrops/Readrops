@@ -1,5 +1,6 @@
 package com.readrops.app.more.preferences
 
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -24,19 +25,11 @@ import org.koin.core.component.inject
 typealias PreferenceState<T> = Pair<T, Preference<T>>
 
 class PreferencesScreenModel(
+    database: Database,
+    context: Context,
     preferences: Preferences,
     dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : StateScreenModel<PreferencesScreenState>(PreferencesScreenState.Loading), KoinComponent {
-    val exampleItem = flow<Item> {
-        val database = get<Database>()
-        if(database.itemDao().count() > 0) {
-            emit(database.itemDao().selectFirst())
-        }
-    }
-
-
-    val showDialog = mutableStateOf(false)
-
+) : StateScreenModel<PreferencesScreenState>(PreferencesScreenState.Loading) {
     init {
         screenModelScope.launch(dispatcher) {
             with(preferences) {
@@ -67,14 +60,37 @@ class PreferencesScreenModel(
                         syncAtLaunchPref = (list[7] as Boolean) to synchAtLaunch,
                         useCustomShareIntentTpl = (list[8] as Boolean) to useCustomShareIntentTpl,
                         customShareIntentTpl = (list[9] as String) to customShareIntentTpl,
+                        exampleItem = if (database.itemDao().count() > 0) {
+                            database.itemDao().selectFirst()
+                        } else {
+                            Item(
+                                title = context.getString(R.string.example_item_title),
+                                author = context.getString(R.string.example_item_author),
+                                content = context.getString(R.string.example_item_content),
+                                link = "https://example.org"
+                            )
+                        }
                     )
                 }.collect { theme ->
-                    mutableState.update { theme }
+                    mutableState.update { previous ->
+                        (previous as? PreferencesScreenState.Loaded)?.let {
+                            theme.copy(showDialog = previous.showDialog)
+                        } ?: theme
+                    }
                 }
             }
         }
     }
 
+    fun updateDialog(isVisible: Boolean) {
+        if (mutableState.value is PreferencesScreenState.Loaded) {
+            mutableState.update {
+                (mutableState.value as PreferencesScreenState.Loaded).copy(
+                    showDialog = isVisible
+                )
+            }
+        }
+    }
 }
 
 sealed class PreferencesScreenState {
@@ -92,6 +108,8 @@ sealed class PreferencesScreenState {
         val syncAtLaunchPref: PreferenceState<Boolean>,
         val useCustomShareIntentTpl: PreferenceState<Boolean>,
         val customShareIntentTpl: PreferenceState<String>,
+        val exampleItem: Item,
+        val showDialog: Boolean = false
     ) : PreferencesScreenState()
 
 }
