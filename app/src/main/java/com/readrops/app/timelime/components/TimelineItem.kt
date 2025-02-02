@@ -151,7 +151,7 @@ fun TimelineItem(
     }
 }
 
-private val itemWithFeed = ItemWithFeed(
+val itemWithFeed = ItemWithFeed(
     item = com.readrops.db.entities.Item(
         title = "This is a not so long item title",
         pubDate = LocalDateTime.now(),

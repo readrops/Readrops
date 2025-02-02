@@ -1,113 +1,53 @@
 package com.readrops.app.item
 
-import android.widget.RelativeLayout
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.view.children
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import coil3.compose.AsyncImage
 import com.readrops.app.R
-import com.readrops.app.item.view.ItemNestedScrollView
-import com.readrops.app.item.view.ItemWebView
 import com.readrops.app.util.components.AndroidScreen
 import com.readrops.app.util.components.CenteredProgressIndicator
-import com.readrops.app.util.components.FeedIcon
-import com.readrops.app.util.components.IconText
+import com.readrops.app.util.components.Placeholder
+import com.readrops.app.util.extensions.isError
+import com.readrops.app.util.extensions.isLoading
 import com.readrops.app.util.extensions.openInCustomTab
 import com.readrops.app.util.extensions.openUrl
-import com.readrops.app.util.theme.MediumSpacer
-import com.readrops.app.util.theme.ShortSpacer
-import com.readrops.app.util.theme.spacing
-import com.readrops.db.pojo.ItemWithFeed
-import com.readrops.db.util.DateUtils
+import com.readrops.db.filters.QueryFilters
+import kotlinx.coroutines.flow.distinctUntilChanged
 import org.koin.core.parameter.parametersOf
-import kotlin.math.roundToInt
 
 class ItemScreen(
-    private val itemId: Int
+    private val itemId: Int,
+    private val itemIndex: Int,
+    private val queryFilters: QueryFilters
 ) : AndroidScreen() {
 
     @Composable
     override fun Content() {
         val context = LocalContext.current
-        val density = LocalDensity.current
         val navigator = LocalNavigator.currentOrThrow
 
         val screenModel =
-            koinScreenModel<ItemScreenModel>(parameters = { parametersOf(itemId) })
+            koinScreenModel<ItemScreenModel>(parameters = { parametersOf(itemId, itemIndex, queryFilters) })
         val state by screenModel.state.collectAsStateWithLifecycle()
-
-        val primaryColor = MaterialTheme.colorScheme.primary
-        val backgroundColor = MaterialTheme.colorScheme.background
-        val onBackgroundColor = MaterialTheme.colorScheme.onBackground
+        val items = state.itemState.collectAsLazyPagingItems()
 
         val snackbarHostState = remember { SnackbarHostState() }
-        var isScrollable by remember { mutableStateOf(true) }
-        var refreshAndroidView by remember { mutableStateOf(true) }
-
-        // https://developer.android.com/develop/ui/compose/touch-input/pointer-input/scroll#parent-compose-child-view
-        val bottomBarHeight = 64.dp
-        val bottomBarHeightPx = with(density) { bottomBarHeight.roundToPx().toFloat() }
-        val bottomBarOffsetHeightPx = remember { mutableFloatStateOf(0f) }
-
-        val nestedScrollConnection = remember {
-            object : NestedScrollConnection {
-                override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                    val delta = available.y
-                    val newOffset = bottomBarOffsetHeightPx.floatValue + delta
-                    bottomBarOffsetHeightPx.floatValue = newOffset.coerceIn(-bottomBarHeightPx, 0f)
-
-                    return Offset.Zero
-                }
-            }
-        }
 
         if (state.imageDialogUrl != null) {
             ItemImageDialog(
@@ -116,7 +56,6 @@ class ItemScreen(
                         screenModel.shareImage(state.imageDialogUrl!!, context)
                     } else {
                         screenModel.downloadImage(state.imageDialogUrl!!, context)
-
                     }
 
                     screenModel.closeImageDialog()
@@ -137,254 +76,75 @@ class ItemScreen(
             }
         }
 
-        if (state.itemWithFeed != null) {
-            val itemWithFeed = state.itemWithFeed!!
-            val item = itemWithFeed.item
-
-            val accentColor = if (itemWithFeed.color != 0) {
-                Color(itemWithFeed.color)
-            } else {
-                primaryColor
+        when {
+            items.isLoading() -> {
+                CenteredProgressIndicator()
             }
 
-            fun openUrl(url: String) {
-                if (state.openInExternalBrowser) {
-                    context.openUrl(url)
-                } else {
-                    context.openInCustomTab(url, state.theme, accentColor)
-                }
-            }
-
-            Scaffold(
-                modifier = Modifier.nestedScroll(nestedScrollConnection),
-                snackbarHost = { SnackbarHost(snackbarHostState) },
-                bottomBar = {
-                    ItemScreenBottomBar(
-                        state = state.bottomBarState,
-                        accentColor = accentColor,
-                        modifier = Modifier
-                            .navigationBarsPadding()
-                            .height(bottomBarHeight)
-                            .offset {
-                                if (isScrollable) {
-                                    IntOffset(
-                                        x = 0,
-                                        y = -bottomBarOffsetHeightPx.floatValue.roundToInt()
-                                    )
-                                } else {
-                                    IntOffset(0, 0)
-                                }
-                            },
-                        onShare = { screenModel.shareItem(item, context) },
-                        onOpenUrl = { openUrl(item.link!!) },
-                        onChangeReadState = {
-                            screenModel.setItemReadState(item.apply { isRead = it })
-                        },
-                        onChangeStarState = {
-                            screenModel.setItemStarState(item.apply { isStarred = it })
-                        }
-                    )
-                }
-            ) { paddingValues ->
-                Box(
-                    modifier = Modifier.padding(paddingValues)
-                ) {
-                    AndroidView(
-                        factory = { context ->
-                            ItemNestedScrollView(
-                                context = context,
-                                useBackgroundTitle = item.imageLink != null,
-                                onGlobalLayoutListener = { viewHeight, contentHeight ->
-                                    isScrollable = viewHeight - contentHeight < 0
-                                },
-                                onUrlClick = { url -> openUrl(url) },
-                                onImageLongPress = { url -> screenModel.openImageDialog(url) }
-                            ) {
-                                if (item.imageLink != null) {
-                                    BackgroundTitle(itemWithFeed = itemWithFeed)
-                                } else {
-                                    Box {
-                                        IconButton(
-                                            onClick = { navigator.pop() },
-                                            modifier = Modifier
-                                                .statusBarsPadding()
-                                                .align(Alignment.TopStart)
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                                                contentDescription = null,
-                                            )
-                                        }
-
-                                        SimpleTitle(
-                                            itemWithFeed = itemWithFeed,
-                                            titleColor = accentColor,
-                                            accentColor = accentColor,
-                                            baseColor = MaterialTheme.colorScheme.onBackground,
-                                            bottomPadding = true
-                                        )
-                                    }
-                                }
-                            }
-                        },
-                        update = { nestedScrollView ->
-                            if (refreshAndroidView) {
-                                val relativeLayout =
-                                    (nestedScrollView.children.toList()[0] as RelativeLayout)
-                                val webView = relativeLayout.children.toList()[1] as ItemWebView
-
-                                webView.loadText(
-                                    itemWithFeed = itemWithFeed,
-                                    accentColor = accentColor,
-                                    backgroundColor = backgroundColor,
-                                    onBackgroundColor = onBackgroundColor
-                                )
-
-                                refreshAndroidView = false
-                            }
-                        }
-                    )
-                }
-            }
-        } else {
-            CenteredProgressIndicator()
-        }
-    }
-}
-
-@Composable
-fun BackgroundTitle(
-    itemWithFeed: ItemWithFeed,
-) {
-    val navigator = LocalNavigator.currentOrThrow
-
-    val onScrimColor = Color.White.copy(alpha = 0.85f)
-    val accentColor = if (itemWithFeed.color != 0) {
-        Color(itemWithFeed.color)
-    } else {
-        onScrimColor
-    }
-
-    Surface(
-        shape = RoundedCornerShape(
-            bottomStart = 24.dp,
-            bottomEnd = 24.dp
-        ),
-        modifier = Modifier.height(IntrinsicSize.Max)
-    ) {
-        AsyncImage(
-            model = itemWithFeed.item.imageLink,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            error = painterResource(id = R.drawable.ic_broken_image),
-            modifier = Modifier
-                .fillMaxSize()
-        )
-
-        Surface(
-            color = Color.Black.copy(alpha = 0.6f),
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            Box {
-                IconButton(
-                    onClick = { navigator.pop() },
-                    modifier = Modifier
-                        .statusBarsPadding()
-                        .align(Alignment.TopStart)
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                        contentDescription = null,
-                        tint = Color.White
-                    )
-                }
-
-                SimpleTitle(
-                    itemWithFeed = itemWithFeed,
-                    titleColor = onScrimColor,
-                    accentColor = accentColor,
-                    baseColor = onScrimColor,
-                    bottomPadding = true
+            items.isError() -> {
+                Placeholder(
+                    text = stringResource(R.string.error_occured),
+                    painter = painterResource(id = R.drawable.ic_error)
                 )
             }
+
+            else -> {
+                val pagerState = rememberPagerState(
+                    initialPage = if (itemIndex > -1) itemIndex else 0,
+                    pageCount = { items.itemCount }
+                )
+
+                LaunchedEffect(pagerState.currentPage) {
+                    snapshotFlow { pagerState.currentPage }
+                        .distinctUntilChanged()
+                        .collect { pageIndex ->
+                            items[pageIndex]?.let {
+                                if (!it.isRead) {
+                                    screenModel.setItemReadState(it.item.apply { isRead = true })
+                                }
+                            }
+                        }
+                }
+
+                HorizontalPager(
+                    state = pagerState,
+                    beyondViewportPageCount = 2,
+                    key = items.itemKey { it.item.id }
+                ) { page ->
+                    val itemWithFeed = items[page]
+
+                    if (itemWithFeed != null) {
+                        val accentColor = if (itemWithFeed.color != 0) {
+                            Color(itemWithFeed.color)
+                        } else {
+                            MaterialTheme.colorScheme.primary
+                        }
+
+                        val item = itemWithFeed.item
+
+                        ItemScreenPage(
+                            itemWithFeed = itemWithFeed,
+                            snackbarHostState = snackbarHostState,
+                            onOpenUrl = { url ->
+                                if (state.openInExternalBrowser) {
+                                    context.openUrl(url)
+                                } else {
+                                    context.openInCustomTab(url, state.theme, accentColor)
+                                }
+                            },
+                            onShareItem = { screenModel.shareItem(item, context) },
+                            onSetReadState = {
+                                screenModel.setItemReadState(item.apply { isRead = it })
+                            },
+                            onSetStarState = {
+                                screenModel.setItemStarState(item.apply { isStarred = it })
+                            },
+                            onOpenImageDialog = { screenModel.openImageDialog(it) },
+                            onPop = { navigator.pop() },
+                        )
+                    }
+                }
+            }
         }
-    }
-
-    MediumSpacer()
-}
-
-@Composable
-fun SimpleTitle(
-    itemWithFeed: ItemWithFeed,
-    titleColor: Color,
-    accentColor: Color,
-    baseColor: Color,
-    bottomPadding: Boolean,
-) {
-    val item = itemWithFeed.item
-    val spacing = MaterialTheme.spacing.mediumSpacing
-
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                start = spacing,
-                end = spacing,
-                top = spacing,
-                bottom = if (bottomPadding) spacing else 0.dp
-            )
-    ) {
-        FeedIcon(
-            iconUrl = itemWithFeed.feedIconUrl,
-            name = itemWithFeed.feedName,
-            size = 48.dp,
-            modifier = Modifier.clip(CircleShape)
-        )
-
-        ShortSpacer()
-
-        Text(
-            text = itemWithFeed.feedName,
-            style = MaterialTheme.typography.labelLarge,
-            color = baseColor,
-            textAlign = TextAlign.Center
-        )
-
-        ShortSpacer()
-
-        Text(
-            text = item.title!!,
-            style = MaterialTheme.typography.headlineMedium,
-            color = titleColor,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
-
-        if (item.author != null) {
-            ShortSpacer()
-
-            IconText(
-                icon = painterResource(id = R.drawable.ic_person),
-                text = itemWithFeed.item.author!!,
-                style = MaterialTheme.typography.labelMedium,
-                color = baseColor,
-                tint = accentColor
-            )
-        }
-
-        ShortSpacer()
-
-        val readTime = if (item.readTime > 1) {
-            stringResource(id = R.string.read_time, item.readTime.roundToInt())
-        } else {
-            stringResource(id = R.string.read_time_lower_than_1)
-        }
-        Text(
-            text = "${DateUtils.formattedDate(item.pubDate!!)} ${stringResource(id = R.string.interpoint)} $readTime",
-            style = MaterialTheme.typography.labelMedium,
-            color = baseColor
-        )
     }
 }

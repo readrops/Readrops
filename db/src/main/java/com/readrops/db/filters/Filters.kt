@@ -1,5 +1,7 @@
 package com.readrops.db.filters
 
+import java.io.Serializable
+
 enum class MainFilter {
     STARS,
     NEW,
@@ -31,4 +33,4 @@ data class QueryFilters(
     val subFilter: SubFilter = SubFilter.ALL,
     val orderField: OrderField = OrderField.DATE,
     val orderType: OrderType = OrderType.DESC,
-)
+) : Serializable

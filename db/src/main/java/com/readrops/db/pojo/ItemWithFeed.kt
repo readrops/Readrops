@@ -23,4 +23,23 @@ data class ItemWithFeed(
     @ColumnInfo(name = "is_read") val isRead: Boolean = false,
     @ColumnInfo(name = "open_in") val openIn: OpenIn?,
     @ColumnInfo(name = "open_in_ask") val openInAsk: Boolean = true
-)
+) {
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ItemWithFeed
+
+        return item.id == other.item.id
+                && isRead == other.isRead
+                && isStarred == other.isStarred
+    }
+
+    override fun hashCode(): Int {
+        var result = item.id.hashCode()
+        result = 31 * result + isStarred.hashCode()
+        result = 31 * result + isRead.hashCode()
+        return result
+    }
+}

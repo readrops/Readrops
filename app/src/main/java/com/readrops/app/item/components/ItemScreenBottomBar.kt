@@ -1,4 +1,4 @@
-package com.readrops.app.item
+package com.readrops.app.item.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -16,7 +16,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import com.readrops.app.R
+import com.readrops.app.util.DefaultPreview
 import com.readrops.app.util.FeedColors
+import com.readrops.app.util.theme.ReadropsTheme
 import com.readrops.app.util.theme.spacing
 
 data class BottomBarState(
@@ -95,5 +97,23 @@ fun ItemScreenBottomBar(
                 )
             }
         }
+    }
+}
+
+@DefaultPreview
+@Composable
+private fun ItemScreenBottomBarPreview() {
+    ReadropsTheme {
+        ItemScreenBottomBar(
+            state = BottomBarState(
+                isRead = false,
+                isStarred = false
+            ),
+            accentColor = MaterialTheme.colorScheme.primary,
+            onShare = {},
+            onOpenUrl = {},
+            onChangeReadState = {},
+            onChangeStarState = {},
+        )
     }
 }

@@ -14,6 +14,9 @@ import com.readrops.app.repositories.ErrorResult
 import com.readrops.app.repositories.GetFoldersWithFeeds
 import com.readrops.app.sync.SyncWorker
 import com.readrops.app.timelime.components.TimelineItemSize
+import com.readrops.app.util.PAGING_INITIAL_SIZE
+import com.readrops.app.util.PAGING_PAGE_SIZE
+import com.readrops.app.util.PAGING_PREFETCH_DISTANCE
 import com.readrops.app.util.Preferences
 import com.readrops.app.util.extensions.clearSerializables
 import com.readrops.app.util.extensions.getSerializable
@@ -167,9 +170,9 @@ class TimelineScreenModel(
 
         val pager = Pager(
             config = PagingConfig(
-                initialLoadSize = 50,
-                pageSize = 50,
-                prefetchDistance = 15
+                initialLoadSize = PAGING_INITIAL_SIZE,
+                pageSize = PAGING_PAGE_SIZE,
+                prefetchDistance = PAGING_PREFETCH_DISTANCE
             ),
             pagingSourceFactory = {
                 database.itemDao().selectAll(query)

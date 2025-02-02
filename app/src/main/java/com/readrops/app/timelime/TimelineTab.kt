@@ -69,6 +69,7 @@ import com.readrops.app.util.extensions.openUrl
 import com.readrops.app.util.theme.spacing
 import com.readrops.db.entities.OpenIn
 import com.readrops.db.filters.MainFilter
+import com.readrops.db.filters.QueryFilters
 import com.readrops.db.pojo.ItemWithFeed
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.filter
@@ -118,7 +119,16 @@ object TimelineTab : Tab {
             openItemChannel.receiveAsFlow()
                 .collect { itemId ->
                     screenModel.selectItemWithFeed(itemId)
-                        ?.let { openItem(it, preferences, navigator, context) }
+                        ?.let {
+                            openItem(
+                                itemWithFeed = it,
+                                itemIndex = items.itemSnapshotList.indexOf(it),
+                                queryFilters = state.filters,
+                                preferences = preferences,
+                                navigator = navigator,
+                                context = context
+                            )
+                        }
                 }
         }
 
@@ -210,6 +220,8 @@ object TimelineTab : Tab {
             onOpenItem = { itemWithFeed, openIn ->
                 openItem(
                     itemWithFeed = itemWithFeed,
+                    itemIndex = items.itemSnapshotList.indexOf(itemWithFeed),
+                    queryFilters = state.filters,
                     openIn = openIn,
                     preferences = preferences,
                     navigator = navigator,
@@ -318,6 +330,8 @@ object TimelineTab : Tab {
 
                                                             openItem(
                                                                 itemWithFeed = itemWithFeed,
+                                                                itemIndex = index,
+                                                                queryFilters = state.filters,
                                                                 preferences = preferences,
                                                                 navigator = navigator,
                                                                 context = context
@@ -363,6 +377,8 @@ object TimelineTab : Tab {
 
     private fun openItem(
         itemWithFeed: ItemWithFeed,
+        itemIndex: Int,
+        queryFilters: QueryFilters,
         preferences: TimelinePreferences,
         navigator: Navigator,
         context: Context,
@@ -371,7 +387,7 @@ object TimelineTab : Tab {
         val url = itemWithFeed.item.link!!
 
         if (openIn == OpenIn.LOCAL_VIEW) {
-            navigator.push(ItemScreen(itemWithFeed.item.id))
+            navigator.push(ItemScreen(itemWithFeed.item.id, itemIndex, queryFilters))
         } else {
             if (preferences.openInExternalBrowser) {
                 context.openUrl(url)
