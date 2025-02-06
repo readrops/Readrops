@@ -1,6 +1,7 @@
 package com.readrops.app
 
 import android.content.Context
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.NotificationManagerCompat
 import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.preferences.SharedPreferencesMigration
@@ -64,7 +65,7 @@ val appModule = module {
     }
 
     factory { (accountType: Account, mode: AccountCredentialsScreenMode) ->
-        AccountCredentialsScreenModel(accountType, mode, get())
+        AccountCredentialsScreenModel(accountType, mode, get(), context = get())
     }
 
     factory { (account: Account) -> NotificationsScreenModel(account, get(), get(), get()) }

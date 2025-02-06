@@ -6,6 +6,7 @@ import androidx.room.RawQuery
 import androidx.room.Transaction
 import androidx.sqlite.db.SupportSQLiteQuery
 import com.readrops.db.entities.Feed
+import com.readrops.db.entities.FeedAndUnreadCount
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.OpenIn
 import com.readrops.db.entities.account.Account
@@ -79,6 +80,9 @@ interface FeedDao : BaseDao<Feed> {
 
     @Query("Update Feed set open_in_ask = :openInAsk Where id = :feedId")
     suspend fun updateOpenInAsk(feedId: Int, openInAsk: Boolean)
+
+    @Query("Select * from FeedAndUnreadCount Where FeedAndUnreadCount.account_id = :accountId")
+    suspend fun feedAndUnreadCount(accountId: Int): List<FeedAndUnreadCount>
 
     /**
      * Insert, update and delete feeds by account

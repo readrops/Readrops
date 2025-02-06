@@ -3,74 +3,39 @@ package com.readrops.app.repositories
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
-import com.readrops.db.entities.OpenIn
+import com.readrops.db.entities.FoldersWithFeedAndUnreadCount
+import com.readrops.db.entities.unbox
 import com.readrops.db.filters.MainFilter
-import com.readrops.db.queries.FeedUnreadCountQueryBuilder
-import com.readrops.db.queries.FoldersAndFeedsQueryBuilder
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlin.collections.map
 
 class GetFoldersWithFeeds(
     private val database: Database,
 ) {
-
+    @Deprecated("Use GetFoldersWithFeeds#get2")
     fun get(
         accountId: Int,
         mainFilter: MainFilter,
-        useSeparateState: Boolean,
         hideReadFeeds: Boolean = false
     ): Flow<Map<Folder?, List<Feed>>> {
-        val foldersAndFeedsQuery = FoldersAndFeedsQueryBuilder.build(accountId, hideReadFeeds)
-        val unreadItemsCountQuery = FeedUnreadCountQueryBuilder.build(accountId, mainFilter, useSeparateState)
-
-        return combine(
-            flow = database.folderDao().selectFoldersAndFeeds(foldersAndFeedsQuery),
-            flow2 = database.itemDao().selectFeedUnreadItemsCount(unreadItemsCountQuery)
-        ) { folders, itemCounts ->
-            val foldersWithFeeds = folders.groupBy(
-                keySelector = {
-                    if (it.folderId != null) {
-                        Folder(
-                            id = it.folderId!!,
-                            name = it.folderName,
-                            remoteId = it.folderRemoteId,
-                            accountId = it.accountId
-                        )
-                    } else {
-                        null
-                    }
-                },
-                valueTransform = {
-                    Feed(
-                        id = it.feedId,
-                        name = it.feedName,
-                        iconUrl = it.feedIcon,
-                        color = it.feedColor,
-                        imageUrl = it.feedImage,
-                        url = it.feedUrl,
-                        siteUrl = it.feedSiteUrl,
-                        description = it.feedDescription,
-                        isNotificationEnabled = it.feedNotificationsEnabled,
-                        openIn = if (it.feedOpenIn != null) {
-                            it.feedOpenIn!!
-                        } else {
-                            OpenIn.LOCAL_VIEW
-                        },
-                        remoteId = it.feedRemoteId,
-                        unreadCount = itemCounts[it.feedId] ?: 0
-                    )
+        return database.folderDao().selectFolders2(accountId).map { foldersAndFeeds ->
+            foldersAndFeeds.associate { folderAndFeeds ->
+                var unreadCount = 0
+                val resultFeeds = folderAndFeeds.feeds.map {
+                    unreadCount += it.unreadCount
+                    it.feed.copy(unreadCount = it.unreadCount)
                 }
-            ).mapValues { listEntry ->
-                // Empty folder case
-                if (listEntry.value.any { it.id == 0 }) {
-                    listOf()
-                } else {
-                    listEntry.value
-                }
+                folderAndFeeds.folder?.copy(unreadCount = unreadCount) to resultFeeds
             }
-
-            foldersWithFeeds.toSortedMap(nullsLast(Folder::compareTo))
         }
+    }
+    fun get2(
+        accountId: Int,
+        mainFilter: MainFilter,
+        hideReadFeeds: Boolean = false
+    ): Flow<FoldersWithFeedAndUnreadCount> = database.folderDao().selectFolders2(accountId).map {
+        it.unbox()
     }
 
     fun getNewItemsUnreadCount(accountId: Int, useSeparateState: Boolean): Flow<Int> =

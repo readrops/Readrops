@@ -7,6 +7,7 @@ import androidx.room.Transaction
 import androidx.sqlite.db.SupportSQLiteQuery
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
+import com.readrops.db.entities.FolderWithFeedAndUnreadCount
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
 import com.readrops.db.pojo.FolderWithFeed
@@ -18,6 +19,14 @@ interface FolderDao : BaseDao<Folder> {
     // TODO react to Item changes when this table is not part of the query might be a perf issue
     @RawQuery(observedEntities = [Folder::class, Feed::class, Item::class])
     fun selectFoldersAndFeeds(query: SupportSQLiteQuery): Flow<List<FolderWithFeed>>
+
+    @Transaction
+    @Query("""
+        SELECT FeedAndUnreadCount.*, Folder.* FROM FeedAndUnreadCount 
+        LEFT JOIN Folder ON FeedAndUnreadCount.folder_id = Folder.id
+        WHERE FeedAndUnreadCount.accountId = :accountId
+    """)
+    fun selectFolders2(accountId: Int): Flow<List<FolderWithFeedAndUnreadCount>>
 
     @Query("Select * From Folder Where account_id = :accountId")
     fun selectFolders(accountId: Int): Flow<List<Folder>>

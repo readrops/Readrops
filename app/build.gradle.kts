@@ -1,8 +1,17 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     kotlin("android")
     alias(libs.plugins.compose.compiler)
     id("com.mikepenz.aboutlibraries.plugin")
+}
+
+val props = Properties().apply {
+    runCatching {
+        load(FileInputStream(rootProject.file("local.properties")))
+    }
 }
 
 
@@ -21,7 +30,10 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
 
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
 
         debug {
@@ -40,6 +52,21 @@ android {
 
             applicationIdSuffix = ".beta"
             signingConfig = signingConfigs.getByName("debug")
+        }
+
+        configureEach {
+            val shouldSource = name == "debug" || name == "beta"
+            listOf(
+                "url" to "https://",
+                "login" to "",
+                "password" to ""
+            ).forEach { (k, v) ->
+                resValue(
+                    "string",
+                    "debug.${k}",
+                    if (shouldSource) props.getProperty("debug.$k", v) else v
+                )
+            }
         }
     }
 

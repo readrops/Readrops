@@ -2,6 +2,7 @@ package com.readrops.app.timelime
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -101,17 +102,17 @@ class TimelineScreenModel(
 
                 preferences.hideReadFeeds.flow
                     .flatMapLatest { hideReadFeeds ->
-                        getFoldersWithFeeds.get(
+                        getFoldersWithFeeds.get2(
                             accountId = account.id,
                             mainFilter = filters.mainFilter,
-                            useSeparateState = account.config.useSeparateState,
                             hideReadFeeds = hideReadFeeds
                         )
                     }
                     .collect { foldersAndFeeds ->
                         _timelineState.update {
                             it.copy(
-                                foldersAndFeeds = foldersAndFeeds
+                                unreadNewItemsCount = foldersAndFeeds.totalUnreadCount,
+                                foldersAndFeeds = foldersAndFeeds.foldersAndFeeds
                             )
                         }
                     }

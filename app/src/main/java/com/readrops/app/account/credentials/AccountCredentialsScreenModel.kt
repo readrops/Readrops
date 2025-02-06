@@ -1,5 +1,6 @@
 package com.readrops.app.account.credentials
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.util.Patterns
 import cafe.adriel.voyager.core.model.StateScreenModel
@@ -16,14 +17,22 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
+import com.readrops.app.R
+
 
 class AccountCredentialsScreenModel(
     private val account: Account,
     private val mode: AccountCredentialsScreenMode,
     private val database: Database,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : StateScreenModel<AccountCredentialsState>(AccountCredentialsState()), KoinComponent {
-
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    context: Context,
+) : StateScreenModel<AccountCredentialsState>(
+    AccountCredentialsState(
+        url = context.getString(R.string.debug_url),
+        login = context.getString(R.string.debug_login),
+        password = context.getString(R.string.debug_password),
+    )
+), KoinComponent {
     init {
         if (mode == AccountCredentialsScreenMode.EDIT_CREDENTIALS) {
             mutableState.update {
@@ -35,7 +44,9 @@ class AccountCredentialsScreenModel(
                 )
             }
         } else {
-            mutableState.update { it.copy(name = account.name!!) }
+            mutableState.update {
+                it.copy(name = account.name!!)
+            }
         }
     }
 
