@@ -62,7 +62,20 @@
     <string name="crash_message">如果您看見此訊息，意味著應用程式遇到意料之外的錯誤。有空的話請您幫忙在 Github 上回報錯誤。</string>
     <string name="unable_open_file">無法開啟檔案</string>
     <string name="notifications">通知</string>
-    <string name="delete_account_question">確定真的要刪除帳戶？</string>
+    <string name="delete_account_question">確定要刪除帳戶？</string>
     <string name="other_accounts">其他帳戶</string>
     <string name="compact">小</string>
+    <string name="add_feed">新增 feed</string>
+    <string name="delete_feed">確定要刪除 feed？</string>
+    <string name="password_helper">這是你的 FreshRSS API 密碼 ( 帳號&gt;使用者資訊 )</string>
+    <string name="no_feed">沒有 feed</string>
+    <string name="delete_folder">確定要刪除資料夾？</string>
+    <string name="feeds">Feeds</string>
+    <string name="new_feed">新 feed</string>
+    <string name="http_error_403">HTTP 錯誤 403，無法存取</string>
+    <string name="http_error_404">HTTP 錯誤 404，找不到 URL</string>
+    <string name="feed_url_read_only">這個 API 不支援修改 Feed URL</string>
+    <string name="show_notifications_background_sync">在背景同步完成後顯示通知</string>
+    <string name="select_color">選擇顏色</string>
+    <string name="use_default_color">使用預設顏色</string>
 </resources>
