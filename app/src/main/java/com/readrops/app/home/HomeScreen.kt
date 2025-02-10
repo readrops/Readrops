@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
@@ -12,6 +13,7 @@ import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuite
@@ -112,7 +114,14 @@ object HomeScreen : AndroidScreen() {
                     )
 
                     Box(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize().run {
+                            // Navigation bar already applies bottom inset, so make sure that tabs don't apply it too
+                            if (layoutType == NavigationSuiteType.NavigationBar) {
+                                consumeWindowInsets(ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Bottom))
+                            } else {
+                                this
+                            }
+                        }
                     ) {
                         CurrentTab()
                     }
