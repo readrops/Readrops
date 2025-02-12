@@ -35,13 +35,16 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.readrops.app.R
 import com.readrops.app.more.preferences.components.BasePreference
+import com.readrops.app.more.preferences.components.CustomShareIntentTextWidget
 import com.readrops.app.more.preferences.components.ListPreferenceWidget
 import com.readrops.app.more.preferences.components.PreferenceHeader
 import com.readrops.app.more.preferences.components.SwitchPreferenceWidget
 import com.readrops.app.sync.SyncWorker
 import com.readrops.app.util.components.AndroidScreen
 import com.readrops.app.util.components.CenteredProgressIndicator
+import com.readrops.db.entities.Item
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
 
 
 class PreferencesScreen : AndroidScreen() {
@@ -210,6 +213,22 @@ class PreferencesScreen : AndroidScreen() {
                                 title = stringResource(id = R.string.open_items_in),
                                 onValueChange = {}
                             )
+
+                            SwitchPreferenceWidget(
+                                preference = loadedState.useCustomShareIntentTpl.second,
+                                isChecked = loadedState.useCustomShareIntentTpl.first,
+                                title = stringResource(id = R.string.use_custom_share_intent_tpl),
+                                onValueChanged = screenModel::updateDialog
+                            )
+
+                            if (loadedState.showDialog) {
+                                CustomShareIntentTextWidget(
+                                    preference = loadedState.customShareIntentTpl.second,
+                                    template = loadedState.customShareIntentTpl.first,
+                                    exampleItem = loadedState.exampleItem,
+                                    onDismiss = { screenModel.updateDialog(false) },
+                                )
+                            }
                         }
                     }
                 }

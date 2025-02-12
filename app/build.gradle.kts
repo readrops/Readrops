@@ -98,4 +98,6 @@ dependencies {
     implementation(libs.colorpicker)
 
     implementation(libs.autofill)
+    implementation(libs.template)
+    implementation(libs.slf4j.android)
 }

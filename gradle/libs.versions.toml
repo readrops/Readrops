@@ -89,6 +89,9 @@ jdk-desugar = "com.android.tools:desugar_jdk_libs_nio:2.1.2"
 jsoup = "org.jsoup:jsoup:1.18.1"
 moshi = "com.squareup.moshi:moshi:1.15.1"
 
+template = "io.pebbletemplates:pebble:3.2.2"
+slf4j-android = "org.slf4j:slf4j-android:1.7.36"
+
 # androidx
 corektx = "androidx.core:core-ktx:1.13.1"
 appcompat = "androidx.appcompat:appcompat:1.7.0"

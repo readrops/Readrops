@@ -69,7 +69,7 @@ val appModule = module {
 
     factory { (account: Account) -> NotificationsScreenModel(account, get(), get(), get()) }
 
-    factory { PreferencesScreenModel(get()) }
+    factory { PreferencesScreenModel(get(), get(), get()) }
 
     factory { (feed: Feed) -> FeedColorScreenModel(feed, get()) }
 
