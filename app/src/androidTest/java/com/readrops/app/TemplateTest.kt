@@ -1,5 +1,6 @@
 package com.readrops.app
 
+import com.readrops.app.util.FrenchTypography
 import com.readrops.app.util.RemoveAuthorFilter
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
@@ -21,5 +22,14 @@ class TemplateTest {
             "Series | My title",
             RemoveAuthorFilter.filter("Series | AUTHOR | My title", "Author")
         )
+    }
+
+    @Test
+    fun testFrenchTypography() = runTest {
+        assertEquals(" ?", FrenchTypography.filter("   ?"))
+        assertEquals(" !", FrenchTypography.filter("   !"))
+        assertEquals(" !?", FrenchTypography.filter("   !?"))
+        assertEquals(" :", FrenchTypography.filter("  :"))
+        assertEquals(" ;", FrenchTypography.filter("  ;"))
     }
 }

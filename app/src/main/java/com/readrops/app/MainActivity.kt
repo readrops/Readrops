@@ -8,10 +8,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
@@ -38,6 +40,7 @@ import org.koin.androidx.compose.KoinAndroidContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
+import java.nio.file.WatchEvent
 
 class MainActivity : ComponentActivity(), KoinComponent {
 
@@ -95,6 +98,7 @@ class MainActivity : ComponentActivity(), KoinComponent {
 
                         SlideTransition(
                             navigator = navigator,
+                            modifier = Modifier.imePadding(),
                             disposeScreenAfterTransitionEnd = true
                         )
                     }

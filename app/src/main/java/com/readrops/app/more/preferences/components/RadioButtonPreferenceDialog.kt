@@ -6,7 +6,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.window.DialogProperties
 import com.readrops.app.R
 import com.readrops.app.util.theme.LargeSpacer
 import com.readrops.app.util.theme.MediumSpacer
@@ -32,8 +36,12 @@ fun PreferenceBaseDialog(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
+    val scrollState = rememberScrollState()
+
     BasicAlertDialog(
-        onDismissRequest = onDismiss
+        onDismissRequest = onDismiss,
+        modifier = Modifier.imePadding(),
+        properties = DialogProperties(decorFitsSystemWindows = false),
     ) {
         Surface(
             tonalElevation = AlertDialogDefaults.TonalElevation,
@@ -44,6 +52,7 @@ fun PreferenceBaseDialog(
                 horizontalAlignment = Alignment.Start,
                 modifier = modifier
                     .padding(MaterialTheme.spacing.largeSpacing)
+                    .verticalScroll(scrollState)
             ) {
                 Text(
                     text = title,
