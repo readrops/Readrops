@@ -10,7 +10,7 @@ data class AccountConfig(
     val canUpdateFeed: Boolean = true,
     val canDeleteFeed: Boolean = true,
     val canDeleteFolder: Boolean = true,
-    val canMarkAllItemsAsRead: Boolean = true
+    val canMarkAllItemsAsRead: Boolean = true,
 ) {
 
     companion object {

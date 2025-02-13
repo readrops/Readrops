@@ -7,7 +7,9 @@ import com.readrops.db.R
 enum class AccountType(
     @DrawableRes val iconRes: Int,
     @StringRes val nameRes: Int,
-    val config: AccountConfig
+    val config: AccountConfig,
+    @DrawableRes val readIcon: Int = R.drawable.ic_read,
+    @DrawableRes val unreadIcon: Int = R.drawable.ic_unread,
 ) {
     LOCAL(R.mipmap.ic_launcher, R.string.local_account, AccountConfig.LOCAL),
     NEXTCLOUD_NEWS(R.drawable.ic_nextcloud_news, R.string.nextcloud_news, AccountConfig.NEXTCLOUD_NEWS),

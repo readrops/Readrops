@@ -1,7 +1,6 @@
 package com.readrops.app.timelime
 
 import android.content.Context
-import android.content.Intent
 import androidx.compose.runtime.Stable
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -18,7 +17,6 @@ import com.readrops.app.util.PAGING_INITIAL_SIZE
 import com.readrops.app.util.PAGING_PAGE_SIZE
 import com.readrops.app.util.PAGING_PREFETCH_DISTANCE
 import com.readrops.app.util.Preferences
-import com.readrops.app.util.ShareIntentTextRenderer
 import com.readrops.app.util.Utils
 import com.readrops.app.util.extensions.clearSerializables
 import com.readrops.app.util.extensions.getSerializable
@@ -27,6 +25,8 @@ import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.OpenIn
+import com.readrops.db.entities.account.AccountConfig
+import com.readrops.db.entities.account.AccountType
 import com.readrops.db.filters.MainFilter
 import com.readrops.db.filters.OrderField
 import com.readrops.db.filters.OrderType
@@ -61,7 +61,7 @@ class TimelineScreenModel(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : TabScreenModel(database, context) {
 
-    private val _timelineState = MutableStateFlow(TimelineState())
+    private val _timelineState = MutableStateFlow(TimelineState(AccountType.LOCAL))
     val timelineState = _timelineState.asStateFlow()
 
     // separate this from main Timeline state for performances
@@ -94,6 +94,7 @@ class TimelineScreenModel(
             }.collectLatest { (account, filters, timelinePreferences) ->
                 _timelineState.update {
                     it.copy(
+                        accountType = account.type!!,
                         preferences = timelinePreferences,
                         filters = filters.copy(
                             showReadItems = timelinePreferences.showReadItems,
@@ -479,6 +480,7 @@ class TimelineScreenModel(
 
 @Stable
 data class TimelineState(
+    val accountType: AccountType,
     val isRefreshing: Boolean = false,
     val isDrawerOpen: Boolean = false,
     val currentFeed: String = "",
@@ -496,7 +498,7 @@ data class TimelineState(
     val dialog: DialogState? = null,
     val isAccountLocal: Boolean = false,
     val hideReadAllFAB: Boolean = false,
-    val preferences: TimelinePreferences = TimelinePreferences()
+    val preferences: TimelinePreferences = TimelinePreferences(),
 ) {
 
     val showSubtitle = filters.subFilter != SubFilter.ALL
