@@ -1,12 +1,14 @@
 package com.readrops.api.utils
 
+import okhttp3.MediaType
 import org.jsoup.Jsoup
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.regex.Pattern
 
 object ApiUtils {
-    const val HTML_CONTENT_TYPE = "text/html"
+    val MediaType.isHtml: Boolean
+        get() = type == "text" && subtype == "html"
 
     const val CONTENT_TYPE_HEADER = "content-type"
     const val ETAG_HEADER = "ETag"
