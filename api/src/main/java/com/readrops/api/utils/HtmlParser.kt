@@ -93,12 +93,12 @@ object HtmlParser {
                             val currentLine = body.readUtf8LineStrict()
 
                             when {
-                                currentLine.contains("<head>") -> {
+                                currentLine.contains("<head>", ignoreCase = true) -> {
                                     stringBuilder.append(currentLine)
                                     collectionStarted = true
                                 }
 
-                                currentLine.contains("</head>") -> {
+                                currentLine.contains("</head>", ignoreCase = true) -> {
                                     stringBuilder.append(currentLine)
                                     break
                                 }
@@ -109,7 +109,7 @@ object HtmlParser {
                             }
                         }
 
-                        if (!stringBuilder.contains("<head>") || !stringBuilder.contains("</head>")) {
+                        if (!stringBuilder.contains("<head>", ignoreCase = true) || !stringBuilder.contains("</head>", ignoreCase = true)) {
                             throw FormatException("Failed to get HTML head from $url")
                         }
 
