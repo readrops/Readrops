@@ -151,7 +151,24 @@ class HtmlParserTest : KoinTest {
         assertEquals("The Mozilla Blog", description)
     }
 
+    @Test
+    fun getFeedDescriptionNonUnicodeTest() = runTest {
+        val stream = TestUtils.loadResource("utils/file_cp1253.html")
+
+        mockServer.enqueue(
+            MockResponse().setResponseCode(HttpURLConnection.HTTP_OK)
+                .addHeader(ApiUtils.CONTENT_TYPE_HEADER, CONTENT_TYPE_HTML_CP1253)
+                .setBody(Buffer().readFrom(stream))
+        )
+
+        val document = HtmlParser.getHTMLHeadFromUrl(mockServer.url("/rss").toString(), get())
+        val description = HtmlParser.getFeedDescription(document)
+
+        assertEquals("Μενέξενς", description)
+    }
+
     private companion object {
         val CONTENT_TYPE_HTML = "text/html"
+        val CONTENT_TYPE_HTML_CP1253 = "text/html; charset=cp1253"
     }
 }

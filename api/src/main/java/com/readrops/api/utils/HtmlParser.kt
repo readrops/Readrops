@@ -89,9 +89,7 @@ object HtmlParser {
                         val stringBuilder = StringBuilder()
                         var collectionStarted = false
 
-                        while (!body.exhausted()) {
-                            val currentLine = body.readUtf8LineStrict()
-
+                        for (currentLine in body.charStream().buffered().lineSequence()) {
                             when {
                                 currentLine.contains("<head>", ignoreCase = true) -> {
                                     stringBuilder.append(currentLine)
