@@ -29,4 +29,22 @@ class ApiUtilsTest {
 
         assertEquals(value, "98f6bcd4621d373cade4e832627b4f6")
     }
+
+    @Test
+    fun handleRssSpecialCases() {
+        assertEquals("https://example.com", ApiUtils.handleRssSpecialCases("https://example.com"))
+        assertEquals(
+            "https://www.youtube.com/@user",
+            ApiUtils.handleRssSpecialCases("https://www.youtube.com/@user")
+        )
+        val playlistId = "qog2gifixwn3vitjneusb9xl"
+        assertEquals(
+            "https://www.youtube.com/feeds/videos.xml?playlist_id=$playlistId",
+            ApiUtils.handleRssSpecialCases("https://www.youtube.com/watch?v=qjshdbmlk&list=$playlistId")
+        )
+        assertEquals(
+            "https://www.youtube.com/feeds/videos.xml?playlist_id=$playlistId",
+            ApiUtils.handleRssSpecialCases("https://youtu.be/watch?v=qjshdbmlk&list=$playlistId")
+        )
+    }
 }
