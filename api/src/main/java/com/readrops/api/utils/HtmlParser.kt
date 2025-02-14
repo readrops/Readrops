@@ -110,14 +110,11 @@ object HtmlParser {
                         }
 
                         if (!stringBuilder.contains("<head>") || !stringBuilder.contains("</head>")) {
-                            body.close()
                             throw FormatException("Failed to get HTML head from $url")
                         }
 
-                        body.close()
                         Jsoup.parse(stringBuilder.toString(), url)
                     } else {
-                        response.close()
                         throw FormatException("Response from $url is not a html file")
                     }
                 }
