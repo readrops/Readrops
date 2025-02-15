@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -65,126 +66,129 @@ object MoreTab : Tab, KoinComponent {
             )
         }
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxSize()
-                .statusBarsPadding()
-        ) {
-            LargeSpacer()
-
-            Image(
-                painter = adaptiveIconPainterResource(id = R.mipmap.ic_launcher),
-                contentDescription = null,
-                modifier = Modifier.size(64.dp)
-            )
-
-            MediumSpacer()
-
-            Text(
-                text = stringResource(R.string.app_name),
-                style = MaterialTheme.typography.titleLarge
-            )
-
-            ShortSpacer()
-
-            IconText(
-                text = if (BuildConfig.DEBUG) {
-                    "v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
-                } else {
-                    "v${BuildConfig.VERSION_NAME}"
-                },
-                icon = painterResource(id = R.drawable.ic_version),
-                style = MaterialTheme.typography.labelLarge
-            )
-
-            ShortSpacer()
-
-            Text(
-                text = stringResource(id = R.string.app_licence),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            ShortSpacer()
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
+        Surface(color = MaterialTheme.colorScheme.background) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .statusBarsPadding()
             ) {
-                IconButton(
-                    onClick = { context.openUrl(context.getString(R.string.app_url)) }
+                LargeSpacer()
+
+                Image(
+                    painter = adaptiveIconPainterResource(id = R.mipmap.ic_launcher),
+                    contentDescription = null,
+                    modifier = Modifier.size(64.dp)
+                )
+
+                MediumSpacer()
+
+                Text(
+                    text = stringResource(R.string.app_name),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+
+                ShortSpacer()
+
+                IconText(
+                    text = if (BuildConfig.DEBUG) {
+                        "v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
+                    } else {
+                        "v${BuildConfig.VERSION_NAME}"
+                    },
+                    icon = painterResource(id = R.drawable.ic_version),
+                    style = MaterialTheme.typography.labelLarge
+                )
+
+                ShortSpacer()
+
+                Text(
+                    text = stringResource(id = R.string.app_licence),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                ShortSpacer()
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_github),
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
+                    IconButton(
+                        onClick = { context.openUrl(context.getString(R.string.app_url)) }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_github),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+
+                    IconButton(
+                        onClick = { context.openUrl(context.getString(R.string.changelog_url)) }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_changelog),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+
+                    IconButton(
+                        onClick = { context.openUrl(context.getString(R.string.app_issues_url)) }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_bug_report),
+                            contentDescription = null
+                        )
+                    }
                 }
 
-                IconButton(
-                    onClick = { context.openUrl(context.getString(R.string.changelog_url)) }
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_changelog),
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
+                MediumSpacer()
 
-                IconButton(
-                    onClick = { context.openUrl(context.getString(R.string.app_issues_url)) }
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_bug_report),
-                        contentDescription = null
-                    )
-                }
-            }
-
-            MediumSpacer()
-
-            SelectableIconText(
-                icon = painterResource(id = R.drawable.ic_settings),
-                text = stringResource(R.string.settings),
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal),
-                spacing = MaterialTheme.spacing.largeSpacing,
-                padding = MaterialTheme.spacing.mediumSpacing,
-                tint = MaterialTheme.colorScheme.primary,
-                onClick = { navigator.push(PreferencesScreen()) }
-            )
-
-            SelectableIconText(
-                icon = painterResource(id = R.drawable.ic_library),
-                text = stringResource(id = R.string.open_source_libraries),
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal),
-                spacing = MaterialTheme.spacing.largeSpacing,
-                padding = MaterialTheme.spacing.mediumSpacing,
-                tint = MaterialTheme.colorScheme.primary,
-                onClick = { navigator.push(AboutLibrariesScreen()) }
-            )
-
-            SelectableIconText(
-                icon = painterResource(id = R.drawable.ic_donation),
-                text = stringResource(id = R.string.make_donation),
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal),
-                spacing = MaterialTheme.spacing.largeSpacing,
-                padding = MaterialTheme.spacing.mediumSpacing,
-                tint = MaterialTheme.colorScheme.primary,
-                onClick = { showDonationDialog = true }
-            )
-
-            if (BuildConfig.DEBUG) {
                 SelectableIconText(
-                    icon = painterResource(id = R.drawable.ic_bug),
-                    text = "Debug",
+                    icon = painterResource(id = R.drawable.ic_settings),
+                    text = stringResource(R.string.settings),
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal),
                     spacing = MaterialTheme.spacing.largeSpacing,
                     padding = MaterialTheme.spacing.mediumSpacing,
                     tint = MaterialTheme.colorScheme.primary,
-                    onClick = { navigator.push(DebugScreen()) }
+                    onClick = { navigator.push(PreferencesScreen()) }
                 )
+
+                SelectableIconText(
+                    icon = painterResource(id = R.drawable.ic_library),
+                    text = stringResource(id = R.string.open_source_libraries),
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal),
+                    spacing = MaterialTheme.spacing.largeSpacing,
+                    padding = MaterialTheme.spacing.mediumSpacing,
+                    tint = MaterialTheme.colorScheme.primary,
+                    onClick = { navigator.push(AboutLibrariesScreen()) }
+                )
+
+                SelectableIconText(
+                    icon = painterResource(id = R.drawable.ic_donation),
+                    text = stringResource(id = R.string.make_donation),
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal),
+                    spacing = MaterialTheme.spacing.largeSpacing,
+                    padding = MaterialTheme.spacing.mediumSpacing,
+                    tint = MaterialTheme.colorScheme.primary,
+                    onClick = { showDonationDialog = true }
+                )
+
+                if (BuildConfig.DEBUG) {
+                    SelectableIconText(
+                        icon = painterResource(id = R.drawable.ic_bug),
+                        text = "Debug",
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal),
+                        spacing = MaterialTheme.spacing.largeSpacing,
+                        padding = MaterialTheme.spacing.mediumSpacing,
+                        tint = MaterialTheme.colorScheme.primary,
+                        onClick = { navigator.push(DebugScreen()) }
+                    )
+                }
             }
         }
     }
