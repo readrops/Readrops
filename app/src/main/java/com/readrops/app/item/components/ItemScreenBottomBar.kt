@@ -20,10 +20,12 @@ import com.readrops.app.util.DefaultPreview
 import com.readrops.app.util.FeedColors
 import com.readrops.app.util.theme.ReadropsTheme
 import com.readrops.app.util.theme.spacing
+import com.readrops.db.entities.account.AccountType
 
 data class BottomBarState(
     val isRead: Boolean = false,
-    val isStarred: Boolean = false
+    val isStarred: Boolean = false,
+    val accountType: AccountType,
 )
 
 @Composable
@@ -54,9 +56,11 @@ fun ItemScreenBottomBar(
             ) {
                 Icon(
                     painter = painterResource(
-                        id = if (state.isRead)
-                            R.drawable.ic_remove_done
-                        else R.drawable.ic_done_all
+                        id = if (state.isRead) {
+                            state.accountType.readIcon
+                        } else {
+                            state.accountType.unreadIcon
+                        }
                     ),
                     tint = tint,
                     contentDescription = null
@@ -107,7 +111,8 @@ private fun ItemScreenBottomBarPreview() {
         ItemScreenBottomBar(
             state = BottomBarState(
                 isRead = false,
-                isStarred = false
+                isStarred = false,
+                accountType = AccountType.GREADER
             ),
             accentColor = MaterialTheme.colorScheme.primary,
             onShare = {},

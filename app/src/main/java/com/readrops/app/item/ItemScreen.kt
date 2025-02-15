@@ -124,6 +124,7 @@ class ItemScreen(
 
                         ItemScreenPage(
                             itemWithFeed = itemWithFeed,
+                            accountType = screenModel.account.type!!,
                             snackbarHostState = snackbarHostState,
                             onOpenUrl = { url ->
                                 if (state.openInExternalBrowser) {

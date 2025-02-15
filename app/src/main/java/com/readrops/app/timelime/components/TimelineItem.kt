@@ -21,12 +21,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.readrops.app.R
 import com.readrops.app.util.DefaultPreview
 import com.readrops.app.util.theme.ReadropsTheme
 import com.readrops.app.util.theme.spacing
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.OpenIn
+import com.readrops.db.entities.account.AccountType
 import com.readrops.db.pojo.ItemWithFeed
 import java.time.LocalDateTime
 
@@ -41,6 +41,7 @@ const val readAlpha = 0.6f
 @Composable
 fun TimelineItem(
     itemWithFeed: ItemWithFeed,
+    accoutType: AccountType,
     onClick: () -> Unit,
     onFavorite: () -> Unit,
     onShare: () -> Unit,
@@ -102,9 +103,9 @@ fun TimelineItem(
                     Icon(
                         painter = painterResource(
                             id = if (itemWithFeed.item.isRead) {
-                                R.drawable.ic_remove_done
+                                accoutType.readIcon
                             } else {
-                                R.drawable.ic_done_all
+                                accoutType.unreadIcon
                             }
                         ),
                         contentDescription = null,

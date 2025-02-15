@@ -34,11 +34,13 @@ import com.readrops.app.item.components.SimpleTitle
 import com.readrops.app.item.components.rememberBottomBarNestedScrollConnection
 import com.readrops.app.item.view.ItemNestedScrollView
 import com.readrops.app.item.view.ItemWebView
+import com.readrops.db.entities.account.AccountType
 import com.readrops.db.pojo.ItemWithFeed
 
 @Composable
 fun ItemScreenPage(
     itemWithFeed: ItemWithFeed,
+    accountType: AccountType,
     snackbarHostState: SnackbarHostState,
     onOpenUrl: (String) -> Unit,
     onShareItem: () -> Unit,
@@ -72,7 +74,8 @@ fun ItemScreenPage(
             ItemScreenBottomBar(
                 state = BottomBarState(
                     isRead = itemWithFeed.item.isRead,
-                    isStarred = itemWithFeed.item.isStarred
+                    isStarred = itemWithFeed.item.isStarred,
+                    accountType = accountType,
                 ),
                 accentColor = accentColor,
                 modifier = Modifier

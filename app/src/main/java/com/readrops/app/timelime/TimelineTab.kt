@@ -318,6 +318,7 @@ object TimelineTab : Tab {
                                             if (itemWithFeed != null) {
                                                 TimelineItem(
                                                     itemWithFeed = itemWithFeed,
+                                                    accoutType = state.accountType,
                                                     onClick = {
                                                         if (itemWithFeed.openInAsk && preferences.openInAsk) {
                                                             screenModel.openDialog(
