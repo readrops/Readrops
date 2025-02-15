@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -79,9 +80,9 @@ fun CustomShareIntentTextWidget(
 
             TextField(
                 value = (
-                        if(generateTemplate) renderer.renderOrError(localTemplate)
+                        if (generateTemplate) renderer.renderOrError(localTemplate)
                         else localTemplate
-                ),
+                        ),
                 onValueChange = { localTemplate = it },
                 readOnly = generateTemplate,
                 minLines = 3,
@@ -103,7 +104,7 @@ fun CustomShareIntentTextWidget(
                             
                             {{ url }}
                         """.trimIndent()
-                      },
+                    },
                 ) {
                     Text(text = stringResource(R.string.try_the_default_template))
                 }
@@ -127,7 +128,8 @@ fun CustomShareIntentTextWidget(
                 AnnotatedString.fromHtml(
                     stringResource(
                         R.string.example_item_explanation,
-                        renderer.context.keys.joinToString(transform = { "<tt>$it</tt>" })
+                        renderer.context.keys.joinToString(transform = { "<tt>$it</tt>" }),
+                        renderer.documentation
                     ),
                     linkStyles = TextLinkStyles(
                         style = SpanStyle(

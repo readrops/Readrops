@@ -217,8 +217,12 @@
     <string name="example_item_title">Excellente nouvelle tout le monde !</string>
     <string name="example_item_author">Vidéaste incroyable</string>
     <string name="example_item_content">"Cela s\'est passé la semaine dernière sur terre.\n\nC'est la chose la plus impressionnante qui se soit produite cette semaine</string>
-    <string name="example_item_explanation">Les variables disponibles dans le contexte du template sont les suivantes : %s. Vous pouvez utiliser tous les filtres de template &lt;a href=https://pebbletemplates.io/wiki/>documentés ici&lt;/a>. En plus des filtres standard, vous pouvez utiliser &lt;tt>remove_author&lt;/tt> qui, lorsqu\'appliqué à une variable, en retire le contenu de la variable &lt;tt>author&lt;/tt>.</string>
+    <string name="example_item_explanation">Les variables disponibles dans le contexte du template sont les suivantes : %s. Vous pouvez utiliser tous les filtres de template &lt;a href=https://pebbletemplates.io/wiki/>documentés ici&lt;/a>. En plus des filtres standard, vous pouvez utiliser : %s.</string>
+    <string name="fr_typo_documentation">lorsqu\'appliqué à n\'importe quelle variable, placera un espace insécable avant %s</string>
     <string name="try_the_default_template">Remplir avec le template par défaut</string>
     <string name="render_template">Visualiser le résultat</string>
     <string name="edit_template">Editer le template</string>
+    <string name="remove_author_documentation">lorsqu\'appliqué à une variable, en retire le contenu de la variable &lt;tt>author&lt;/tt></string>
+    <string name="localised_quotes">« %s »</string>
+    <string name="localised_dict_item">%s : %s</string>
 </resources>

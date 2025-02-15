@@ -227,8 +227,13 @@
     <string name="example_item_title">Good news, everyone!</string>
     <string name="example_item_author">Awesome content creator</string>
     <string name="example_item_content">This happenned last week on earth.\n\nThis is the most awesome thing that happened this week.</string>
-    <string name="example_item_explanation">The variables that are available in context are: %s. You can use all the template filters &lt;a href=https://pebbletemplates.io/wiki/>documented here&lt;/a> in addition to &lt;tt>remove_author&lt;/tt> which, when applied to any variable, removes from it the content of the variable &lt;tt>author&lt;/tt>.</string>
+    <string name="example_item_explanation">The variables that are available in context are: %s. You can use all the template filters &lt;a href=https://pebbletemplates.io/wiki/>documented here&lt;/a> in addition to: %s.</string>
+    <string name="remove_author_documentation">when applied to any variable, this filter will remove from it the content of the variable &lt;tt>author&lt;/tt></string>
+    <string name="fr_typo_documentation">when applied to any variable, will put an unbreakable space before %s</string>
     <string name="try_the_default_template">Fill with the default template</string>
     <string name="render_template">See the result</string>
     <string name="edit_template">Edit template</string>
+    <string name="localised_quotes">"%s"</string>
+    <string name="localised_dict_item">%s: %s</string>
+
 </resources>
