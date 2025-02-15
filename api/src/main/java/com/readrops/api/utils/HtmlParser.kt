@@ -2,6 +2,7 @@ package com.readrops.api.utils
 
 import android.nfc.FormatException
 import com.readrops.api.localfeed.LocalRSSHelper
+import com.readrops.api.utils.ApiUtils.isHtml
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -83,24 +84,19 @@ object HtmlParser {
                     .build()
             ).execute()
                 .use { response ->
-                    if (response.header(ApiUtils.CONTENT_TYPE_HEADER)!!
-                            .contains(ApiUtils.HTML_CONTENT_TYPE)
-                    ) {
-                        val body = response.body!!.source()
-
+                    val body = response.body
+                    if (body?.contentType()?.isHtml == true) {
                         val stringBuilder = StringBuilder()
                         var collectionStarted = false
 
-                        while (!body.exhausted()) {
-                            val currentLine = body.readUtf8LineStrict()
-
+                        for (currentLine in body.charStream().buffered().lineSequence()) {
                             when {
-                                currentLine.contains("<head>") -> {
+                                currentLine.contains("<head>", ignoreCase = true) -> {
                                     stringBuilder.append(currentLine)
                                     collectionStarted = true
                                 }
 
-                                currentLine.contains("</head>") -> {
+                                currentLine.contains("</head>", ignoreCase = true) -> {
                                     stringBuilder.append(currentLine)
                                     break
                                 }
@@ -111,15 +107,12 @@ object HtmlParser {
                             }
                         }
 
-                        if (!stringBuilder.contains("<head>") || !stringBuilder.contains("</head>")) {
-                            body.close()
+                        if (!stringBuilder.contains("<head>", ignoreCase = true) || !stringBuilder.contains("</head>", ignoreCase = true)) {
                             throw FormatException("Failed to get HTML head from $url")
                         }
 
-                        body.close()
                         Jsoup.parse(stringBuilder.toString(), url)
                     } else {
-                        response.close()
                         throw FormatException("Response from $url is not a html file")
                     }
                 }
