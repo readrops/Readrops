@@ -1,10 +1,6 @@
 package com.readrops.app.more.preferences
 
 import android.content.Context
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
-import androidx.compose.ui.res.stringResource
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.readrops.app.R
@@ -15,12 +11,8 @@ import com.readrops.db.entities.Item
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
-import org.koin.core.component.inject
 
 typealias PreferenceState<T> = Pair<T, Preference<T>>
 
@@ -44,6 +36,8 @@ class PreferencesScreenModel(
                     synchAtLaunch.flow,
                     useCustomShareIntentTpl.flow,
                     customShareIntentTpl.flow,
+                    swipeToLeft.flow,
+                    swipeToRight.flow
                 )
 
                 combine(
@@ -60,6 +54,8 @@ class PreferencesScreenModel(
                         syncAtLaunchPref = (list[7] as Boolean) to synchAtLaunch,
                         useCustomShareIntentTpl = (list[8] as Boolean) to useCustomShareIntentTpl,
                         customShareIntentTpl = (list[9] as String) to customShareIntentTpl,
+                        swipeToLeft = (list[10] as String) to swipeToLeft,
+                        swipeToRight = (list[11] as String) to swipeToRight,
                         exampleItem = if (database.itemDao().count() > 0) {
                             database.itemDao().selectFirst()
                         } else {
@@ -108,6 +104,8 @@ sealed class PreferencesScreenState {
         val syncAtLaunchPref: PreferenceState<Boolean>,
         val useCustomShareIntentTpl: PreferenceState<Boolean>,
         val customShareIntentTpl: PreferenceState<String>,
+        val swipeToLeft: PreferenceState<String>,
+        val swipeToRight: PreferenceState<String>,
         val exampleItem: Item,
         val showDialog: Boolean = false
     ) : PreferencesScreenState()

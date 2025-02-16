@@ -121,6 +121,18 @@ class Preferences(
         key = stringPreferencesKey("custom_share_intent_tpl"),
         default = ""
     )
+
+    val swipeToRight = Preference(
+        dataStore = dataStore,
+        key = stringPreferencesKey("swipe_to_right"),
+        default = "DISABLED"
+    )
+
+    val swipeToLeft = Preference(
+        dataStore = dataStore,
+        key = stringPreferencesKey("swipe_to_left_action"),
+        default = "READ"
+    )
 }
 
 

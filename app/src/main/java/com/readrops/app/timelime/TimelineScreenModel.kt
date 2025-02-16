@@ -1,7 +1,6 @@
 package com.readrops.app.timelime
 
 import android.content.Context
-import android.content.Intent
 import androidx.compose.runtime.Stable
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -13,12 +12,12 @@ import com.readrops.app.home.TabScreenModel
 import com.readrops.app.repositories.ErrorResult
 import com.readrops.app.repositories.GetFoldersWithFeeds
 import com.readrops.app.sync.SyncWorker
+import com.readrops.app.timelime.components.SwipeAction
 import com.readrops.app.timelime.components.TimelineItemSize
 import com.readrops.app.util.PAGING_INITIAL_SIZE
 import com.readrops.app.util.PAGING_PAGE_SIZE
 import com.readrops.app.util.PAGING_PREFETCH_DISTANCE
 import com.readrops.app.util.Preferences
-import com.readrops.app.util.ShareIntentTextRenderer
 import com.readrops.app.util.Utils
 import com.readrops.app.util.extensions.clearSerializables
 import com.readrops.app.util.extensions.getSerializable
@@ -152,6 +151,8 @@ class TimelineScreenModel(
             openLinksWith.flow,
             globalOpenInAsk.flow,
             synchAtLaunch.flow,
+            swipeToLeft.flow,
+            swipeToRight.flow,
             transform = {
                 TimelinePreferences(
                     itemSize = when (it[0]) {
@@ -167,7 +168,9 @@ class TimelineScreenModel(
                     theme = it[6] as String,
                     openInExternalBrowser = it[7] as String == "external_navigator",
                     openInAsk = it[8] as Boolean,
-                    syncAtLaunch = it[9] as Boolean
+                    syncAtLaunch = it[9] as Boolean,
+                    swipeToLeft = SwipeAction.valueOf(it[10] as String),
+                    swipeToRight = SwipeAction.valueOf(it[11] as String)
                 )
             }
         )
@@ -515,7 +518,9 @@ data class TimelinePreferences(
     val theme: String = "light",
     val openInExternalBrowser: Boolean = false,
     val openInAsk: Boolean = true,
-    val syncAtLaunch: Boolean = false
+    val syncAtLaunch: Boolean = false,
+    val swipeToLeft: SwipeAction = SwipeAction.READ,
+    val swipeToRight: SwipeAction = SwipeAction.DISABLED
 )
 
 sealed interface DialogState {

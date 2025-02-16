@@ -225,4 +225,7 @@
     <string name="remove_author_documentation">lorsqu\'appliqué à une variable, en retire le contenu de la variable &lt;tt>author&lt;/tt></string>
     <string name="localised_quotes">« %s »</string>
     <string name="localised_dict_item">%s : %s</string>
+    <string name="disabled">Désactivé</string>
+    <string name="swipe_to_right_action">Action de glisser à droite</string>
+    <string name="swipe_to_left_action">Action de glisser à gauche</string>
 </resources>

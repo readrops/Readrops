@@ -36,11 +36,20 @@ enum class TimelineItemSize {
     LARGE
 }
 
+enum class SwipeAction {
+    READ,
+    FAVORITE,
+    DISABLED
+}
+
 const val readAlpha = 0.6f
+
 
 @Composable
 fun TimelineItem(
     itemWithFeed: ItemWithFeed,
+    swipeToLeft: SwipeAction,
+    swipeToRight: SwipeAction,
     onClick: () -> Unit,
     onFavorite: () -> Unit,
     onShare: () -> Unit,
@@ -48,22 +57,51 @@ fun TimelineItem(
     modifier: Modifier = Modifier,
     size: TimelineItemSize = TimelineItemSize.LARGE
 ) {
+
+    fun handleSwipeAction(swipeAction: SwipeAction) {
+        when (swipeAction) {
+            SwipeAction.READ -> onSetReadState()
+            SwipeAction.FAVORITE -> onFavorite()
+            else -> {}
+        }
+    }
+
     val swipeState = rememberSwipeToDismissBoxState()
 
     LaunchedEffect(swipeState.currentValue) {
         if (swipeState.currentValue == SwipeToDismissBoxValue.EndToStart) {
-            onSetReadState()
-            swipeState.snapTo(SwipeToDismissBoxValue.Settled)
+            handleSwipeAction(swipeToLeft)
+            swipeState.dismiss(SwipeToDismissBoxValue.Settled)
+        } else if (swipeState.currentValue == SwipeToDismissBoxValue.StartToEnd) {
+            handleSwipeAction(swipeToRight)
+            swipeState.dismiss(SwipeToDismissBoxValue.Settled)
+        }
+    }
+
+    fun getSwipeIcon(swipeAction: SwipeAction): Int {
+        return if (swipeAction == SwipeAction.READ) {
+            if (itemWithFeed.isRead) {
+                R.drawable.ic_remove_done
+            } else {
+                R.drawable.ic_done_all
+            }
+        } else {
+            if (itemWithFeed.isStarred) {
+                R.drawable.ic_star_outline
+            } else {
+                R.drawable.ic_star
+            }
         }
     }
 
     SwipeToDismissBox(
         state = swipeState,
-        enableDismissFromStartToEnd = false,
+        enableDismissFromStartToEnd = swipeToRight != SwipeAction.DISABLED,
+        enableDismissFromEndToStart = swipeToLeft != SwipeAction.DISABLED,
         backgroundContent = {
             val color by animateColorAsState(
                 targetValue = when (swipeState.targetValue) {
-                    SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.primary
+                    SwipeToDismissBoxValue.EndToStart, SwipeToDismissBoxValue.StartToEnd -> MaterialTheme.colorScheme.primary
                     else -> Color.Transparent
                 },
                 label = "Swipe to dismiss background color"
@@ -71,11 +109,17 @@ fun TimelineItem(
 
             val iconColor by animateColorAsState(
                 targetValue = when (swipeState.targetValue) {
-                    SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.onPrimary
+                    SwipeToDismissBoxValue.EndToStart, SwipeToDismissBoxValue.StartToEnd -> MaterialTheme.colorScheme.onPrimary
                     else -> Color.Transparent
                 },
                 label = "Swipe to dismiss icon color"
             )
+
+            val icon = when (swipeState.targetValue) {
+                SwipeToDismissBoxValue.EndToStart -> getSwipeIcon(swipeToLeft)
+                SwipeToDismissBoxValue.StartToEnd -> getSwipeIcon(swipeToRight)
+                else -> null
+            }
 
             Box(
                 modifier = Modifier.padding(
@@ -87,7 +131,11 @@ fun TimelineItem(
                 )
             ) {
                 Box(
-                    contentAlignment = Alignment.CenterEnd,
+                    contentAlignment = if (swipeState.targetValue == SwipeToDismissBoxValue.EndToStart) {
+                        Alignment.CenterEnd
+                    } else {
+                        Alignment.CenterStart
+                    },
                     modifier = Modifier
                         .fillMaxSize()
                         .then(
@@ -99,20 +147,16 @@ fun TimelineItem(
                         )
                         .background(color)
                 ) {
-                    Icon(
-                        painter = painterResource(
-                            id = if (itemWithFeed.item.isRead) {
-                                R.drawable.ic_remove_done
-                            } else {
-                                R.drawable.ic_done_all
-                            }
-                        ),
-                        contentDescription = null,
-                        tint = iconColor,
-                        modifier = Modifier
-                            .minimumInteractiveComponentSize()
-                            .padding(end = MaterialTheme.spacing.mediumSpacing)
-                    )
+                    if (icon != null) {
+                        Icon(
+                            painter = painterResource(id = icon),
+                            contentDescription = null,
+                            tint = iconColor,
+                            modifier = Modifier
+                                .minimumInteractiveComponentSize()
+                                .padding(horizontal = MaterialTheme.spacing.mediumSpacing)
+                        )
+                    }
                 }
             }
         }

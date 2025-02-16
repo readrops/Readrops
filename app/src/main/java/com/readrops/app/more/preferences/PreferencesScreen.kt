@@ -40,11 +40,10 @@ import com.readrops.app.more.preferences.components.ListPreferenceWidget
 import com.readrops.app.more.preferences.components.PreferenceHeader
 import com.readrops.app.more.preferences.components.SwitchPreferenceWidget
 import com.readrops.app.sync.SyncWorker
+import com.readrops.app.timelime.components.SwipeAction
 import com.readrops.app.util.components.AndroidScreen
 import com.readrops.app.util.components.CenteredProgressIndicator
-import com.readrops.db.entities.Item
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
 
 
 class PreferencesScreen : AndroidScreen() {
@@ -199,6 +198,30 @@ class PreferencesScreen : AndroidScreen() {
                                 preference = loadedState.scrollReadPref.second,
                                 isChecked = loadedState.scrollReadPref.first,
                                 title = stringResource(id = R.string.mark_items_read_on_scroll)
+                            )
+
+                            ListPreferenceWidget(
+                                preference = loadedState.swipeToLeft.second,
+                                selectedKey = loadedState.swipeToLeft.first,
+                                entries = mapOf(
+                                    SwipeAction.DISABLED.name to stringResource(R.string.disabled),
+                                    SwipeAction.READ.name to stringResource(R.string.mark_read),
+                                    SwipeAction.FAVORITE.name to stringResource(R.string.add_to_favorite)
+                                ),
+                                title = stringResource(R.string.swipe_to_left_action),
+                                onValueChange = {}
+                            )
+
+                            ListPreferenceWidget(
+                                preference = loadedState.swipeToRight.second,
+                                selectedKey = loadedState.swipeToRight.first,
+                                entries = mapOf(
+                                    SwipeAction.DISABLED.name to stringResource(R.string.disabled),
+                                    SwipeAction.READ.name to stringResource(R.string.mark_read),
+                                    SwipeAction.FAVORITE.name to stringResource(R.string.add_to_favorite)
+                                ),
+                                title = stringResource(R.string.swipe_to_right_action),
+                                onValueChange = {}
                             )
 
                             PreferenceHeader(text = stringResource(id = R.string.item_view))

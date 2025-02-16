@@ -318,6 +318,8 @@ object TimelineTab : Tab {
                                             if (itemWithFeed != null) {
                                                 TimelineItem(
                                                     itemWithFeed = itemWithFeed,
+                                                    swipeToLeft = state.preferences.swipeToLeft,
+                                                    swipeToRight = state.preferences.swipeToRight,
                                                     onClick = {
                                                         if (itemWithFeed.openInAsk && preferences.openInAsk) {
                                                             screenModel.openDialog(

@@ -235,5 +235,7 @@
     <string name="edit_template">Edit template</string>
     <string name="localised_quotes">"%s"</string>
     <string name="localised_dict_item">%s: %s</string>
-
+    <string name="disabled">Disabled</string>
+    <string name="swipe_to_right_action">Swipe to right action</string>
+    <string name="swipe_to_left_action">Swipe to left action</string>
 </resources>
