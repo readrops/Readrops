@@ -40,7 +40,6 @@ import org.koin.androidx.compose.KoinAndroidContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
-import java.nio.file.WatchEvent
 
 class MainActivity : ComponentActivity(), KoinComponent {
 
@@ -51,7 +50,11 @@ class MainActivity : ComponentActivity(), KoinComponent {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
 
-        splashScreen.setKeepOnScreenCondition { !ready }
+        // Disable waiting for timeline tab list to be populated before removing splash screen
+        // Because of process death, you can come back in another screen, which require for each screen
+        // to manually remove the splash screen.
+        // As this doesn't scale up and can lead to a completely frozen state, I prefer to
+        //splashScreen.setKeepOnScreenCondition { !ready }
 
         val screenModel = get<AccountSelectionScreenModel>()
         val accountExists = screenModel.accountExists()
