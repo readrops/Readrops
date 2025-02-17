@@ -8,6 +8,7 @@ import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
 import com.readrops.db.entities.Item
+import com.readrops.db.entities.ItemState
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
 import com.readrops.db.filters.MainFilter
@@ -16,6 +17,7 @@ import kotlinx.coroutines.test.runTest
 import java.time.LocalDateTime
 import org.junit.Before
 import org.junit.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class GetFoldersWithFeedsTest {
@@ -67,14 +69,34 @@ class GetFoldersWithFeedsTest {
                         )
                     )
             }
+
+            // insert 4 read items items linked to second feed (feed 1)
+            repeat(4) { time ->
+                val item = Item(
+                    title = "Item ${time + 3}",
+                    feedId = 4,
+                    isRead = true,
+                    pubDate = LocalDateTime.now(),
+                    remoteId = "remote/$time"
+                )
+                database.itemDao().insert(item)
+                database.itemStateDao().insert(
+                    ItemState(
+                        read = false,
+                        remoteId = "remote/$time",
+                        accountId = account.id
+                    )
+                )
+
+            }
         }
     }
 
     @Test
     fun getFoldersWithFeedsTest() = runTest {
         getFoldersWithFeeds = GetFoldersWithFeeds(database)
-        val foldersAndFeeds =
-            getFoldersWithFeeds.get(account.id, MainFilter.ALL, account.config.useSeparateState)
+        var foldersAndFeeds =
+            getFoldersWithFeeds.get(account.id, MainFilter.ALL, false)
                 .first()
 
         assertTrue { foldersAndFeeds.size == 4 }
@@ -82,5 +104,9 @@ class GetFoldersWithFeedsTest {
         assertTrue { foldersAndFeeds.entries.last().key == null }
         assertTrue { foldersAndFeeds[null]!!.size == 2 }
         assertTrue { foldersAndFeeds[null]!!.first().unreadCount == 3 }
+
+        foldersAndFeeds = getFoldersWithFeeds.get(account.id, MainFilter.ALL, true).first()
+        val feed = foldersAndFeeds.values.flatten().first { it.id == 4 }
+        assertEquals(4, feed.unreadCount)
     }
 }
