@@ -51,9 +51,6 @@ class MainActivity : ComponentActivity(), KoinComponent {
         super.onCreate(savedInstanceState)
 
         // Disable waiting for timeline tab list to be populated before removing splash screen
-        // Because of process death, you can come back in another screen, which require for each screen
-        // to manually remove the splash screen.
-        // As this doesn't scale up and can lead to a completely frozen state, I prefer to
         //splashScreen.setKeepOnScreenCondition { !ready }
 
         val screenModel = get<AccountSelectionScreenModel>()

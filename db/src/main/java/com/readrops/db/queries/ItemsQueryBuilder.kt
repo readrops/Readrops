@@ -16,6 +16,7 @@ object ItemsQueryBuilder {
         "title",
         "author",
         "clean_description",
+        "Item.description",
         "content",
         "image_link",
         "pub_date",
