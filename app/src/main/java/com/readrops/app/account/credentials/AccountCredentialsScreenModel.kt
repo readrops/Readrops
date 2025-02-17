@@ -1,5 +1,6 @@
 package com.readrops.app.account.credentials
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.util.Patterns
 import cafe.adriel.voyager.core.model.StateScreenModel
@@ -16,14 +17,19 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
+import com.readrops.app.R
+import com.readrops.db.entities.account.AccountType
+
 
 class AccountCredentialsScreenModel(
     private val account: Account,
     private val mode: AccountCredentialsScreenMode,
     private val database: Database,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : StateScreenModel<AccountCredentialsState>(AccountCredentialsState()), KoinComponent {
-
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    context: Context,
+) : StateScreenModel<AccountCredentialsState>(
+    initAccountCredentialsState(account, context)
+), KoinComponent {
     init {
         if (mode == AccountCredentialsScreenMode.EDIT_CREDENTIALS) {
             mutableState.update {
@@ -130,6 +136,36 @@ class AccountCredentialsScreenModel(
         }
 
         return validate
+    }
+
+    companion object {
+        fun initAccountCredentialsState(account: Account, context: Context): AccountCredentialsState = when(account.type) {
+            AccountType.NEXTCLOUD_NEWS -> AccountCredentialsState(
+                url = context.getString(R.string.debug_nextcloud_news_url),
+                login = context.getString(R.string.debug_nextcloud_news_login),
+                password = context.getString(R.string.debug_nextcloud_news_password),
+            )
+            AccountType.FRESHRSS -> AccountCredentialsState(
+                url = context.getString(R.string.debug_freshrss_url),
+                login = context.getString(R.string.debug_freshrss_login),
+                password = context.getString(R.string.debug_freshrss_password),
+            )
+            AccountType.FEVER -> AccountCredentialsState(
+                url = context.getString(R.string.debug_fever_url),
+                login = context.getString(R.string.debug_fever_login),
+                password = context.getString(R.string.debug_fever_password),
+            )
+            AccountType.GREADER -> AccountCredentialsState(
+                url = context.getString(R.string.debug_greader_url),
+                login = context.getString(R.string.debug_greader_login),
+                password = context.getString(R.string.debug_greader_password),
+            )
+            null, AccountType.LOCAL -> AccountCredentialsState(
+                url = context.getString(R.string.debug_local_url),
+                login = context.getString(R.string.debug_local_login),
+                password = context.getString(R.string.debug_local_password),
+            )
+        }
     }
 }
 
