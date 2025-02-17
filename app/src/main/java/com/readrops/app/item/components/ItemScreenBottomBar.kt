@@ -23,7 +23,8 @@ import com.readrops.app.util.theme.spacing
 
 data class BottomBarState(
     val isRead: Boolean = false,
-    val isStarred: Boolean = false
+    val isStarred: Boolean = false,
+    val isOpenUrlVisible: Boolean = true
 )
 
 @Composable
@@ -87,14 +88,16 @@ fun ItemScreenBottomBar(
                 )
             }
 
-            IconButton(
-                onClick = onOpenUrl
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_open_in_browser),
-                    tint = tint,
-                    contentDescription = null
-                )
+            if (state.isOpenUrlVisible) {
+                IconButton(
+                    onClick = onOpenUrl
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_open_in_browser),
+                        tint = tint,
+                        contentDescription = null
+                    )
+                }
             }
         }
     }

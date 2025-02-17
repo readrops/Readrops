@@ -72,7 +72,8 @@ fun ItemScreenPage(
             ItemScreenBottomBar(
                 state = BottomBarState(
                     isRead = itemWithFeed.item.isRead,
-                    isStarred = itemWithFeed.item.isStarred
+                    isStarred = itemWithFeed.item.isStarred,
+                    isOpenUrlVisible = !item.link.isNullOrEmpty()
                 ),
                 accentColor = accentColor,
                 modifier = Modifier
