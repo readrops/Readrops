@@ -1,5 +1,6 @@
 package com.readrops.api.utils
 
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType
 import org.jsoup.Jsoup
 import java.math.BigInteger
@@ -48,5 +49,19 @@ object ApiUtils {
                 .digest(value.toByteArray())
 
         return BigInteger(1, bytes).toString(16)
+    }
+
+    fun handleRssSpecialCases(url: String): String {
+        val uri = url.toHttpUrlOrNull() ?: return url
+
+        val domain = uri.host.split(".").let { it.getOrNull(it.size - 2) }
+
+        if (domain == "youtube" || uri.host.endsWith("youtu.be")) {
+            return uri.queryParameter("list")?.let {
+                "https://www.youtube.com/feeds/videos.xml?playlist_id=$it"
+            } ?: url
+        }
+
+        return url
     }
 }
