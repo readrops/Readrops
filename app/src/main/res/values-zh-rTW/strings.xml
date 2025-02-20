@@ -17,7 +17,7 @@
     <string name="filter_oldest">舊到新</string>
     <string name="local">本機</string>
     <string name="global">全域</string>
-    <string name="app_licence">此應用程式在 GPLv3 許可證下發佈</string>
+    <string name="app_licence">此應用程式在 GPLv3 授權條款下發佈</string>
     <string name="delete">刪除</string>
     <string name="download_image">下載圖片</string>
     <string name="image_options">圖片選項</string>
@@ -127,4 +127,35 @@
     <string name="no_rss_feed_found">找不到 RSS feed</string>
     <string name="http_error_5XX">HTTP 錯誤 %1$d， 伺服器端錯誤</string>
     <string name="disabled">停用</string>
+    <string name="share_article">分享文章</string>
+    <string name="feed_insertion_network_failed">存取 feed %1$s 時發生網路錯誤</string>
+    <string name="feed_insertion_successfull">成功新增 feed %1$s</string>
+    <string name="feed_insertion_parse_failed">解析 feed %1$s 失敗</string>
+    <string name="feed_insertion_unknown_error">Feed %1$s 發生未知錯誤</string>
+    <string name="show_read_articles">顯示已讀文章</string>
+    <string name="feed_deleted">已刪除 feed %1$s</string>
+    <string name="feed_doesnt_exist">伺服器端不存在 feed %1$s</string>
+    <string name="new_items">%1$s 新文章</string>
+    <string name="synchronize">同步</string>
+    <string name="new_articles">新文章</string>
+    <string name="error_occurred">An error occurred</string>
+    <string name="unreachable_feed_http_error">無法存取的 feed，HTTP 錯誤 %1$s</string>
+    <plurals name="error_occurred_feed">
+        <item quantity="other">以下 feed(s) 發生一個或多個錯誤:</item>
+    </plurals>
+    <string name="unreachable_url">無法存取的 URL</string>
+    <string name="timeline">時間軸</string>
+    <string name="disable_battery_optimization_subtitle">可以幫助背景同步不被系統終止</string>
+    <string name="background_sync_already_running">背景同步已經在執行中</string>
+    <string name="background_sync_new_articles">背景同步完成後通知新文章</string>
+    <string name="mark_all_articles_read_question">您真的想要將所有文章標記為已讀嗎？</string>
+    <string name="mark_all_articles_read">將所有文章標記為已讀</string>
+    <string name="downloaded_file">檔案已下載！</string>
+    <string name="invalid_feed">不可用的 feed</string>
+    <string name="invalid_folder">不可用的資料夾</string>
+    <string name="error_image_download">下載圖片時發生錯誤</string>
+    <string name="actions">動作</string>
+    <string name="no_article">沒有文章</string>
+    <string name="processing_feed_error">處理 feed 時發生錯誤</string>
+    <string name="network_failure">網路錯誤: %1$s</string>
 </resources>
