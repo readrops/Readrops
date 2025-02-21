@@ -21,6 +21,8 @@ import org.jsoup.Jsoup
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
+class FeedExistException : Exception()
+
 class LocalRSSRepository(
     private val dataSource: LocalRSSDataSource,
     database: Database,
@@ -134,9 +136,8 @@ class LocalRSSRepository(
     }
 
     private suspend fun insertFeed(feed: Feed): Feed {
-        // TODO better handle this case
-        require(!database.feedDao().feedExists(feed.url!!, account.id)) {
-            "Feed already exists for account ${account.name}"
+        if (database.feedDao().feedExists(feed.url!!, account.id)) {
+            throw FeedExistException()
         }
 
         return feed.apply {

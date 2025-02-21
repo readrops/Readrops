@@ -6,6 +6,7 @@ import com.readrops.api.utils.exceptions.LoginFailedException
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.api.utils.exceptions.UnknownFormatException
 import com.readrops.app.R
+import com.readrops.app.repositories.FeedExistException
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
 import java.io.IOException
@@ -36,6 +37,7 @@ abstract class AccountError(protected val context: Context) {
 
         is ParseException, is UnknownFormatException -> context.resources.getString(R.string.processing_feed_error)
         is LoginFailedException -> context.getString(R.string.login_failed)
+        is FeedExistException -> context.getString(R.string.feed_already_exists)
         else -> "${exception.javaClass.simpleName}: ${exception.message}"
     }
 
