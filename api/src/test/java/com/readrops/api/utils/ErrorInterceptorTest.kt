@@ -21,6 +21,7 @@ class ErrorInterceptorTest {
         client = OkHttpClient.Builder()
                 .addInterceptor(interceptor)
                 .build()
+
         server.start(8080)
     }
 
@@ -30,10 +31,16 @@ class ErrorInterceptorTest {
     }
 
     @Test(expected = HttpException::class)
-    fun interceptorTest() {
+    fun interceptorErrorTest() {
         server.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_NOT_FOUND))
 
         client.newCall(Request.Builder().url(server.url("/url")).build()).execute()
-        //val request = server.takeRequest()
+    }
+
+    @Test
+    fun interceptorSuccessTest() {
+        server.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_NOT_MODIFIED))
+
+        client.newCall(Request.Builder().url(server.url("/url")).build()).execute()
     }
 }

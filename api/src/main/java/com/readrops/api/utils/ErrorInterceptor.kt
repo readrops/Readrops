@@ -10,8 +10,7 @@ class ErrorInterceptor : Interceptor {
         val request = chain.request()
         val response = chain.proceed(request)
 
-        // TODO cover all cases
-        if (!response.isSuccessful && response.code != 304) {
+        if (!response.isSuccessful && response.code !in 300..308) {
             throw HttpException(response)
         }
 
