@@ -41,7 +41,7 @@ interface FeedDao : BaseDao<Feed> {
     suspend fun selectFeedCount(accountId: Int): Int
 
     @Query("Select remote_id From Feed Where account_id = :accountId")
-    suspend fun selectFeedRemoteIds(accountId: Int): MutableList<String>
+    suspend fun selectFeedRemoteIds(accountId: Int): List<String>
 
     @Query("Select id From Folder Where remoteId = :remoteId And account_id = :accountId")
     suspend fun selectRemoteFolderLocalId(remoteId: String, accountId: Int): Int
@@ -82,6 +82,8 @@ interface FeedDao : BaseDao<Feed> {
 
     /**
      * Insert, update and delete feeds by account
+     *
+     * This method must always be called with the full [feeds] list
      *
      * @param feeds   feeds to insert or update
      * @param account owner of the feeds
