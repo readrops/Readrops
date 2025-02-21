@@ -7,6 +7,7 @@ import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.readrops.api.localfeed.LocalRSSDataSource
 import com.readrops.api.services.Credentials
+import com.readrops.api.utils.ApiUtils
 import com.readrops.api.utils.AuthInterceptor
 import com.readrops.api.utils.HtmlParser
 import com.readrops.app.R
@@ -88,7 +89,7 @@ class NewFeedScreenModel(
     }
 
     fun validate() {
-        val url = mutableState.value.url
+        val url = mutableState.value.actualUrl
 
         if (state.value.selectedResultsCount > 0) {
             mutableState.update {
@@ -136,7 +137,7 @@ class NewFeedScreenModel(
     private fun loadFeeds() {
         screenModelScope.launch(dispatcher) {
             mutableState.update { it.copy(error = null, isLoading = true) }
-            val url = state.value.url
+            val url = state.value.actualUrl
 
             try {
                 if (dataSource.isUrlRSSResource(url)) {
@@ -322,7 +323,7 @@ class NewFeedScreenModel(
 }
 
 data class State(
-    val url: String = "",
+    private val url: String = "",
     val selectedAccount: Account? = null,
     val selectedFolder: Folder? = null,
     val accounts: List<Account> = listOf(),
@@ -335,12 +336,17 @@ data class State(
     val popScreen: Boolean = false,
     val parsingResults: List<ParsingResultState> = listOf()
 ) {
-
     val isURLError: Boolean get() = urlError != null
 
     val selectedResultsCount: Int get() = parsingResults.count { it.isSelected }
 
     val folderId: Int? get() = selectedFolder?.id.takeUnless { it == 0 }
+
+    /**
+     * Handles known special cases where RSS source can not be deduced via standard methods but
+     * methods to deduce it is known. Currently used to deduce RSS feeds from Youtube playlists
+     */
+    val actualUrl: String get() = ApiUtils.handleRssSpecialCases(url)
 }
 
 data class ParsingResultState(

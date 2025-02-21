@@ -2,6 +2,7 @@ package com.readrops.app.util
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
+import androidx.compose.ui.util.fastJoinToString
 import com.readrops.db.entities.Item
 import io.pebbletemplates.pebble.PebbleEngine
 import io.pebbletemplates.pebble.extension.AbstractExtension
@@ -69,15 +70,17 @@ class FrenchTypography : DocumentedFilter() {
 
     override fun generateDocumentation(context: Context) = context.getString(
         R.string.fr_typo_documentation,
-        TOKENS.toCharArray().joinToString { context.getString(R.string.localised_quotes, it) }
+        (leftTokens + rightTokens).joinToString { context.getString(R.string.localised_quotes, it) }
     )
 
     companion object {
-        private const val TOKENS = "!?;:"
-        private val regex = "\\s+([$TOKENS]+)".toRegex()
+        private val leftTokens = listOf("«")
+        private val rightTokens = listOf("»", "!", "?", ";", ":")
+        private val leftRegex = "([${leftTokens.joinToString("")}]+)\\s+".toRegex()
+        private val rightRegex = "\\s+([${rightTokens.joinToString("")}]+)".toRegex()
 
         @VisibleForTesting
-        fun filter(input: String) = input.replace(regex, " $1")
+        fun filter(input: String) = input.replace(leftRegex, "$1 ").replace(rightRegex, " $1")
     }
 }
 

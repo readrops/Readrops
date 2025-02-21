@@ -89,12 +89,12 @@ class NewFeedScreen(val url: String? = null) : AndroidScreen() {
                     .fillMaxSize(),
             ) {
                 OutlinedTextField(
-                    value = state.url,
+                    value = state.actualUrl,
                     label = { Text(text = stringResource(R.string.enter_url)) },
                     onValueChange = { screenModel.updateUrl(it) },
                     singleLine = true,
                     trailingIcon = {
-                        if (state.url.isNotEmpty()) {
+                        if (state.actualUrl.isNotEmpty()) {
                             IconButton(
                                 onClick = { screenModel.updateUrl("") }
                             ) {
