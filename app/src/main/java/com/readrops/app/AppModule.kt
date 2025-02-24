@@ -64,7 +64,7 @@ val appModule = module {
     }
 
     factory { (accountType: Account, mode: AccountCredentialsScreenMode) ->
-        AccountCredentialsScreenModel(accountType, mode, get())
+        AccountCredentialsScreenModel(accountType, mode, get(), context = androidContext())
     }
 
     factory { (account: Account) -> NotificationsScreenModel(account, get(), get(), get()) }

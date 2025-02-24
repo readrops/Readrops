@@ -45,6 +45,21 @@
 
 This project is released under the GPLv3 licence.
 
+# Develop
+
+During development, you can autofill the app's login form by filling the project's `local.properties` like so:
+
+```properties
+debug.<account_type>.login=<login>
+debug.<account_type>.password=<password>
+debug.<account_type>.url=https\://<your_instance>
+
+# For instance:
+debug.nextcloud_news.login=Test user
+debug.nextcloud_news.password=1234
+debug.nextcloud_news.url=https\://rss.example.com
+```
+
 # Donations
 
 [<img src="images/paypal-badge.png" width=250>](https://paypal.me/readropsapp)
