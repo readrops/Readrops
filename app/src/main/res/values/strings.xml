@@ -238,4 +238,5 @@
     <string name="disabled">Disabled</string>
     <string name="swipe_to_right_action">Swipe to right action</string>
     <string name="swipe_to_left_action">Swipe to left action</string>
+    <string name="freshrss_delete_folder_question">Do you want to delete folder %1$s? All linked feeds will be put in the default folder.</string>
 </resources>

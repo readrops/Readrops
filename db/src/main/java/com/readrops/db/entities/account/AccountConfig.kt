@@ -10,7 +10,8 @@ data class AccountConfig(
     val canUpdateFeed: Boolean = true,
     val canDeleteFeed: Boolean = true,
     val canDeleteFolder: Boolean = true,
-    val canMarkAllItemsAsRead: Boolean = true
+    val canMarkAllItemsAsRead: Boolean = true,
+    val showCustomFolderDeleteMessage: Boolean = false
 ) {
 
     companion object {
@@ -33,6 +34,10 @@ data class AccountConfig(
             canCreateFolder = false,
             addNoFolder = false,
             useSeparateState = true,
+        )
+
+        val FRESHRSS = GREADER.copy(
+            showCustomFolderDeleteMessage = true
         )
 
         val FEVER = AccountConfig(

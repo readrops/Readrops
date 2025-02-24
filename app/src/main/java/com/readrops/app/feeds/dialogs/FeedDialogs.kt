@@ -95,7 +95,11 @@ fun FeedDialogs(state: FeedState, screenModel: FeedScreenModel) {
         is DialogState.DeleteFolder -> {
             TwoChoicesDialog(
                 title = stringResource(R.string.delete_folder),
-                text = stringResource(R.string.delete_folder_question, dialog.folder.name!!),
+                text = if (state.config?.showCustomFolderDeleteMessage == true) {
+                    stringResource(R.string.freshrss_delete_folder_question, dialog.folder.name!!)
+                } else {
+                    stringResource(R.string.delete_folder_question, dialog.folder.name!!)
+                },
                 icon = rememberVectorPainter(image = Icons.Default.Delete),
                 confirmText = stringResource(R.string.delete),
                 dismissText = stringResource(R.string.cancel),
