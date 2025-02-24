@@ -112,7 +112,7 @@ class LocalRSSRepository(
         for (item in items) {
             if (!database.itemDao().itemExists(item.remoteId!!, feed.accountId)) {
                 if (item.description != null) {
-                    item.cleanDescription = Jsoup.parse(item.description).text()
+                    item.cleanDescription = Jsoup.parse(item.description!!).text()
                 }
 
                 if (item.content != null) {
