@@ -1,7 +1,6 @@
 package com.readrops.app.account.credentials
 
 import android.content.SharedPreferences
-import android.util.Patterns
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.readrops.app.repositories.BaseRepository
@@ -53,26 +52,25 @@ class AccountCredentialsScreenModel(
     }
 
     fun login() {
-        if (validateFields()) {
-            mutableState.update { it.copy(isLoginOnGoing = true) }
+        screenModelScope.launch(dispatcher) {
+            if (validateFields()) {
+                mutableState.update { it.copy(isLoginOnGoing = true) }
 
-            with(state.value) {
-                val normalizedUrl = Utils.normalizeUrl(url)
+                with(state.value) {
+                    val normalizedUrl = Utils.normalizeUrl(url)
 
-                val newAccount = account.copy(
-                    url = normalizedUrl,
-                    name = name,
-                    login = login,
-                    password = password,
-                    type = account.type,
-                    isCurrentAccount = true
-                )
+                    val newAccount = account.copy(
+                        url = normalizedUrl,
+                        name = name,
+                        login = login,
+                        password = password,
+                        type = account.type,
+                        isCurrentAccount = true
+                    )
 
-                val repository = get<BaseRepository> { parametersOf(newAccount) }
-
-                screenModelScope.launch(dispatcher) {
                     try {
-                        repository.login(newAccount)
+                        get<BaseRepository> { parametersOf(newAccount) }
+                            .login(newAccount)
                     } catch (e: Exception) {
                         mutableState.update {
                             it.copy(
@@ -102,6 +100,8 @@ class AccountCredentialsScreenModel(
     }
 
     private fun validateFields(): Boolean = with(mutableState.value) {
+        mutableState.update { it.copy(loginException = null) }
+
         var validate = true
 
         if (url.isEmpty()) {
@@ -121,11 +121,6 @@ class AccountCredentialsScreenModel(
 
         if (password.isEmpty()) {
             mutableState.update { it.copy(passwordError = TextFieldError.EmptyField) }
-            validate = false
-        }
-
-        if (url.isNotEmpty() && !Patterns.WEB_URL.matcher(url).matches()) {
-            mutableState.update { it.copy(urlError = TextFieldError.BadUrl) }
             validate = false
         }
 
