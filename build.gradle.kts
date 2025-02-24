@@ -57,12 +57,12 @@ subprojects {
 }
 
 fun configure(extension: BaseExtension) = with(extension) {
-    compileSdkVersion(34)
+    compileSdkVersion(35)
 
     defaultConfig {
         minSdk = 21
-        targetSdk = 34
-        buildToolsVersion = "34.0.0"
+        targetSdk = 35
+        buildToolsVersion = "35.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
