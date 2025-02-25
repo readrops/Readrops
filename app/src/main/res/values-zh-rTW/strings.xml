@@ -163,4 +163,5 @@
     <string name="feed_color">Feed 顏色</string>
     <string name="warning">警告</string>
     <string name="synchronize_at_launch">在應用程式啟動時同步</string>
+    <string name="greader_warning">Google Reader API 非常老舊且缺乏文檔，每個聚合器實作方式可能都不一樣，因此可能不起作用。\n\n如果您遇到任何同步問題，請將其回報至 Readrops 的 Github 倉庫。</string>
 </resources>
