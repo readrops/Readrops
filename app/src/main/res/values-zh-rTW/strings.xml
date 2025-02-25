@@ -167,4 +167,5 @@
     <string name="fever_warning">Fever API 非常老舊、備受限制且已被棄用，不支持管理 feed 和資料夾，文檔狀態也很糟糕，每個聚合器實作方式可能都不一樣，因此可能不起作用。\n\n如果您遇到任何同步問題，請將其回報至 Readrops 的 Github 倉庫。</string>
     <string name="reset">重置</string>
     <string name="understand">我了解</string>
+    <string name="default_category">預設類別</string>
 </resources>
