@@ -98,6 +98,7 @@ fun TimelineItem(
         state = swipeState,
         enableDismissFromStartToEnd = swipeToRight != SwipeAction.DISABLED,
         enableDismissFromEndToStart = swipeToLeft != SwipeAction.DISABLED,
+        modifier = modifier,
         backgroundContent = {
             val color by animateColorAsState(
                 targetValue = when (swipeState.targetValue) {

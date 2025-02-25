@@ -85,7 +85,6 @@ fun TimelineDialogs(
                     screenModel.closeDialog(dialog)
 
                     onOpenItem(itemWithFeed, openIn)
-                    screenModel.setItemRead(itemWithFeed.item)
                 },
                 onDismiss = { screenModel.closeDialog(dialog) }
             )

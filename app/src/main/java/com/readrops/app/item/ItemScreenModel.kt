@@ -13,7 +13,9 @@ import androidx.core.content.FileProvider
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.PagingSource
 import androidx.paging.cachedIn
+import androidx.paging.map
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import coil3.imageLoader
@@ -30,21 +32,25 @@ import com.readrops.db.Database
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
+import com.readrops.db.filters.MainFilter
 import com.readrops.db.filters.QueryFilters
 import com.readrops.db.pojo.ItemWithFeed
 import com.readrops.db.queries.ItemSelectionQueryBuilder
 import com.readrops.db.queries.ItemsQueryBuilder
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
@@ -60,9 +66,10 @@ class ItemScreenModel(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : StateScreenModel<ItemState>(ItemState()), KoinComponent {
 
-    //TODO Is this really the best solution?
-    lateinit var account: Account
-    lateinit var repository: BaseRepository
+    //TODO Is <lateinit var> really the best solution?
+    private lateinit var account: Account
+    private lateinit var repository: BaseRepository
+    private lateinit var pagingSource: PagingSource<Int, ItemWithFeed>
 
     private val useCustomShareIntentTpl = preferences.useCustomShareIntentTpl.flow.stateIn(
         screenModelScope, SharingStarted.Eagerly, false
@@ -70,6 +77,9 @@ class ItemScreenModel(
     private val customShareIntentTpl = preferences.customShareIntentTpl.flow.stateIn(
         screenModelScope, SharingStarted.Eagerly, ""
     )
+
+    private val useStateChanges = itemIndex > -1 && (queryFilters.mainFilter != MainFilter.ALL
+            || !queryFilters.showReadItems)
 
     init {
         screenModelScope.launch(dispatcher) {
@@ -127,12 +137,18 @@ class ItemScreenModel(
         }
     }
 
-    private fun buildPager(): Flow<PagingData<ItemWithFeed>> {
+    private fun createPagingSource(): PagingSource<Int, ItemWithFeed> {
         val query = ItemsQueryBuilder.buildItemsQuery(
             queryFilters = queryFilters,
             separateState = account.config.useSeparateState
         )
 
+        return database.itemDao().selectAll(query).apply {
+            pagingSource = this
+        }
+    }
+
+    private fun buildPager(): Flow<PagingData<ItemWithFeed>> {
         val pageNb = (((itemIndex + PAGING_PAGE_SIZE - 1) / PAGING_PAGE_SIZE) + 1)
             .coerceAtLeast(1)
 
@@ -142,25 +158,99 @@ class ItemScreenModel(
                 pageSize = PAGING_PAGE_SIZE,
                 prefetchDistance = PAGING_PREFETCH_DISTANCE
             ),
-            pagingSourceFactory = { database.itemDao().selectAll(query) }
+            pagingSourceFactory = { createPagingSource() }
         )
             .flow
+            .map {
+                it.map { itemWithFeed ->
+                    val stateChange =
+                        state.value.stateChanges.firstOrNull { stateChange -> stateChange.itemId == itemWithFeed.item.id }
+
+                    if (stateChange != null) {
+                        itemWithFeed.copy(
+                            isRead = if (stateChange.readChange) {
+                                !itemWithFeed.isRead
+                            } else {
+                                itemWithFeed.isRead
+                            },
+                            isStarred = if (stateChange.starChange) {
+                                !itemWithFeed.isStarred
+                            } else {
+                                itemWithFeed.isStarred
+                            }
+                        )
+                    } else {
+                        itemWithFeed
+                    }
+                }
+            }
             .cachedIn(screenModelScope)
     }
 
-    fun shareItem(item: Item, context: Context) = Utils.shareItem(
-        item, context, useCustomShareIntentTpl.value, customShareIntentTpl.value
-    )
+    // TODO this must be tested one way or another
+    private fun updateStateChange(item: Item, readChange: Boolean) {
+        val stateChange = state.value.stateChanges.firstOrNull { it.itemId == item.id }
+
+        if (stateChange != null) {
+            val newStateChange = if (readChange) {
+                stateChange.copy(readChange = !stateChange.readChange)
+            } else {
+                stateChange.copy(starChange = !stateChange.starChange)
+            }
+
+            if (!newStateChange.readChange && !newStateChange.starChange) {
+                mutableState.update {
+                    it.copy(stateChanges = it.stateChanges.filterNot { stateChange -> stateChange.itemId == item.id })
+                }
+            } else {
+                mutableState.update {
+                    it.copy(stateChanges = it.stateChanges.map { mapStateChange ->
+                        if (mapStateChange.itemId == item.id) {
+                            newStateChange
+                        } else {
+                            mapStateChange
+                        }
+                    })
+                }
+            }
+        } else {
+            mutableState.update {
+                it.copy(
+                    stateChanges = it.stateChanges + if (readChange) {
+                        StateChange(
+                            item = item,
+                            readChange = true
+                        )
+                    } else {
+                        StateChange(
+                            item = item,
+                            starChange = true
+                        )
+                    }
+                )
+            }
+        }
+    }
 
     fun setItemReadState(item: Item) {
-        screenModelScope.launch(dispatcher) {
-            repository.setItemReadState(item)
+        if (useStateChanges) {
+            updateStateChange(item, readChange = true)
+            pagingSource.invalidate()
+        } else {
+            screenModelScope.launch(dispatcher) {
+                repository.setItemReadState(item.apply { isRead = !isRead })
+            }
         }
     }
 
     fun setItemStarState(item: Item) {
-        screenModelScope.launch(dispatcher) {
-            repository.setItemStarState(item)
+        if (useStateChanges) {
+            updateStateChange(item, readChange = false)
+            pagingSource.invalidate()
+        } else {
+            screenModelScope.launch(dispatcher) {
+                 repository.setItemStarState(item.apply { isStarred = !isStarred })
+             }
         }
     }
 
@@ -245,6 +335,26 @@ class ItemScreenModel(
 
         return FileProvider.getUriForFile(context, context.packageName, image)
     }
+
+    fun shareItem(item: Item, context: Context) = Utils.shareItem(
+        item, context, useCustomShareIntentTpl.value, customShareIntentTpl.value
+    )
+
+    override fun onDispose() {
+        screenModelScope.launch(dispatcher) {
+            withContext(NonCancellable) {
+                for (stateChange in state.value.stateChanges) {
+                    if (stateChange.readChange) {
+                        repository.setItemReadState(stateChange.item.apply { isRead = !isRead })
+                    }
+
+                    if (stateChange.starChange) {
+                        repository.setItemStarState(stateChange.item.apply { isStarred = !isStarred })
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Stable
@@ -255,4 +365,16 @@ data class ItemState(
     val openInExternalBrowser: Boolean = false,
     val theme: String? = "",
     val error: String? = null,
+    val stateChanges: List<StateChange> = listOf()
 )
+
+@Stable
+data class StateChange(
+    val item: Item,
+    val starChange: Boolean = false,
+    val readChange: Boolean = false
+) {
+
+    val itemId: Int
+        get() = item.id
+}

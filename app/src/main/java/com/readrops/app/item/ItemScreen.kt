@@ -28,7 +28,6 @@ import com.readrops.app.util.extensions.isLoading
 import com.readrops.app.util.extensions.openInCustomTab
 import com.readrops.app.util.extensions.openUrl
 import com.readrops.db.filters.QueryFilters
-import kotlinx.coroutines.flow.distinctUntilChanged
 import org.koin.core.parameter.parametersOf
 
 class ItemScreen(
@@ -96,11 +95,10 @@ class ItemScreen(
 
                 LaunchedEffect(pagerState.currentPage) {
                     snapshotFlow { pagerState.currentPage }
-                        .distinctUntilChanged()
                         .collect { pageIndex ->
                             items[pageIndex]?.let {
                                 if (!it.isRead) {
-                                    screenModel.setItemReadState(it.item.apply { isRead = true })
+                                    screenModel.setItemReadState(it.item)
                                 }
                             }
                         }
@@ -133,12 +131,8 @@ class ItemScreen(
                                 }
                             },
                             onShareItem = { screenModel.shareItem(item, context) },
-                            onSetReadState = {
-                                screenModel.setItemReadState(item.apply { isRead = it })
-                            },
-                            onSetStarState = {
-                                screenModel.setItemStarState(item.apply { isStarred = it })
-                            },
+                            onSetReadState = { screenModel.setItemReadState(item) },
+                            onSetStarState = { screenModel.setItemStarState(item) },
                             onOpenImageDialog = { screenModel.openImageDialog(it) },
                             onPop = { navigator.pop() },
                         )

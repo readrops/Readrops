@@ -45,8 +45,8 @@ object ItemSelectionQueryBuilder {
         val tables = if (separateState) JOIN + SEPARATE_STATE_JOIN else JOIN
         val columns =
             if (separateState) COLUMNS.plus(SEPARATE_STATE_COLUMNS) else COLUMNS + arrayOf(
-                "Item.read",
-                "starred"
+                "Item.read AS is_read",
+                "starred AS is_starred"
             )
 
         return SupportSQLiteQueryBuilder.builder(tables).run {

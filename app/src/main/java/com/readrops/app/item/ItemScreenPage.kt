@@ -71,8 +71,8 @@ fun ItemScreenPage(
         bottomBar = {
             ItemScreenBottomBar(
                 state = BottomBarState(
-                    isRead = itemWithFeed.item.isRead,
-                    isStarred = itemWithFeed.item.isStarred,
+                    isRead = itemWithFeed.isRead,
+                    isStarred = itemWithFeed.isStarred,
                     isOpenUrlVisible = !item.link.isNullOrEmpty()
                 ),
                 accentColor = accentColor,
@@ -143,10 +143,8 @@ fun ItemScreenPage(
                 update = { nestedScrollView ->
                     if (refreshAndroidView) {
                         val relativeLayout =
-                            (nestedScrollView.children.toList()
-                                .first() as RelativeLayout)
-                        val webView =
-                            relativeLayout.children.toList()[1] as ItemWebView
+                            (nestedScrollView.children.toList().first() as RelativeLayout)
+                        val webView = relativeLayout.children.toList()[1] as ItemWebView
 
                         webView.loadText(
                             itemWithFeed = itemWithFeed,

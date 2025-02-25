@@ -122,7 +122,7 @@ object TimelineTab : Tab {
                         ?.let {
                             openItem(
                                 itemWithFeed = it,
-                                itemIndex = items.itemSnapshotList.indexOf(it),
+                                itemIndex = items.itemSnapshotList.indexOfFirst { itemWithFeed -> itemWithFeed?.item?.id == itemId },
                                 queryFilters = state.filters,
                                 preferences = preferences,
                                 navigator = navigator,
@@ -220,7 +220,7 @@ object TimelineTab : Tab {
             onOpenItem = { itemWithFeed, openIn ->
                 openItem(
                     itemWithFeed = itemWithFeed,
-                    itemIndex = items.itemSnapshotList.indexOf(itemWithFeed),
+                    itemIndex = items.itemSnapshotList.indexOfFirst { it?.item?.id == itemWithFeed.item.id },
                     queryFilters = state.filters,
                     openIn = openIn,
                     preferences = preferences,
@@ -328,8 +328,6 @@ object TimelineTab : Tab {
                                                                 )
                                                             )
                                                         } else {
-                                                            screenModel.setItemRead(itemWithFeed.item)
-
                                                             openItem(
                                                                 itemWithFeed = itemWithFeed,
                                                                 itemIndex = index,
@@ -352,7 +350,8 @@ object TimelineTab : Tab {
                                                     onSetReadState = {
                                                         screenModel.updateItemReadState(itemWithFeed.item)
                                                     },
-                                                    size = preferences.itemSize
+                                                    size = preferences.itemSize,
+                                                    modifier = Modifier.animateItem()
                                                 )
                                             }
                                         }
