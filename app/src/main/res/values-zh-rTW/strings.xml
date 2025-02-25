@@ -158,4 +158,9 @@
     <string name="no_article">沒有文章</string>
     <string name="processing_feed_error">處理 feed 時發生錯誤</string>
     <string name="network_failure">網路錯誤: %1$s</string>
+    <string name="feed_insertion_wrong_format">Feed %1$s 格式錯誤</string>
+    <string name="grant_access_notifications">授予此應用程式存取通知的權限</string>
+    <string name="feed_color">Feed 顏色</string>
+    <string name="warning">警告</string>
+    <string name="synchronize_at_launch">在應用程式啟動時同步</string>
 </resources>
