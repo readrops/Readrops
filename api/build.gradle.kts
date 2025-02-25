@@ -30,6 +30,9 @@ android {
 
     lint {
         abortOnError = false
+
+        // disable lint rule which isn't supposed to be applied on a non compose module
+        disable.add("CoroutineCreationDuringComposition")
     }
 }
 
