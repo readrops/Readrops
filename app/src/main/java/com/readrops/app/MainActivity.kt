@@ -8,8 +8,16 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.BottomAppBarDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -96,11 +104,22 @@ class MainActivity : ComponentActivity(), KoinComponent {
                             handleIntent(intent)
                         }
 
-                        SlideTransition(
-                            navigator = navigator,
-                            modifier = Modifier.imePadding(),
-                            disposeScreenAfterTransitionEnd = true
-                        )
+                        Box(
+                            modifier = Modifier
+                                .background(MaterialTheme.colorScheme.background)
+                                // custom safe drawing to be able to draw behind the status bar
+                                .windowInsetsPadding(
+                                    WindowInsets.safeDrawing.only(
+                                        WindowInsetsSides.Start + WindowInsetsSides.End
+                                    )
+                                )
+                        ) {
+                            SlideTransition(
+                                navigator = navigator,
+                                modifier = Modifier.imePadding(),
+                                disposeScreenAfterTransitionEnd = true
+                            )
+                        }
                     }
                 }
             }

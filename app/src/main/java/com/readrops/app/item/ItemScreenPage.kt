@@ -64,9 +64,9 @@ fun ItemScreenPage(
     var refreshAndroidView by remember { mutableStateOf(true) }
     var isScrollable by remember { mutableStateOf(true) }
 
-
     Scaffold(
-        modifier = modifier.nestedScroll(nestedScrollConnection),
+        modifier = modifier.nestedScroll(nestedScrollConnection)
+            .navigationBarsPadding(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             ItemScreenBottomBar(
