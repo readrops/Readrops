@@ -5,7 +5,7 @@
     <string name="no_folder">沒有資料夾</string>
     <string name="mark_unread">標記為未讀</string>
     <string name="mark_read">標記為已讀</string>
-    <string name="login">登入</string>
+    <string name="login">登入帳號</string>
     <string name="password">密碼</string>
     <string name="add_account">新增帳戶</string>
     <string name="account_name">帳戶名稱</string>
@@ -168,4 +168,6 @@
     <string name="reset">重置</string>
     <string name="understand">我了解</string>
     <string name="default_category">預設類別</string>
+    <string name="example_item_title">好消息，各位！</string>
+    <string name="example_item_author">令人驚嘆的內容創作者</string>
 </resources>
