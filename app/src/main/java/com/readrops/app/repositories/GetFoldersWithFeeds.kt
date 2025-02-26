@@ -69,7 +69,13 @@ class GetFoldersWithFeeds(
                 }
             }
 
-            foldersWithFeeds.toSortedMap(nullsLast(Folder::compareTo))
+            // Nextcloud News case, no need to add a config parameter
+            val comparator = compareByDescending<Folder?> {
+                it?.name?.startsWith("_")
+            }
+                .then(nullsLast(Folder::compareTo))
+
+            foldersWithFeeds.toSortedMap(comparator)
         }
     }
 
