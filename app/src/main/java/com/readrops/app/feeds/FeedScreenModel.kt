@@ -8,6 +8,7 @@ import com.readrops.app.home.TabScreenModel
 import com.readrops.app.repositories.GetFoldersWithFeeds
 import com.readrops.app.util.components.TextFieldError
 import com.readrops.app.util.components.dialog.TextFieldDialogState
+import com.readrops.app.util.extensions.isConnected
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
@@ -193,6 +194,10 @@ class FeedScreenModel(
     }
 
     fun deleteFeed(feed: Feed) {
+        if (!checkInternetConnection()) {
+            return
+        }
+
         screenModelScope.launch(dispatcher) {
             try {
                 repository?.deleteFeed(feed)
@@ -203,6 +208,10 @@ class FeedScreenModel(
     }
 
     fun deleteFolder(folder: Folder) {
+        if (!checkInternetConnection()) {
+            return
+        }
+
         screenModelScope.launch(dispatcher) {
             try {
                 repository?.deleteFolder(folder)
@@ -271,7 +280,12 @@ class FeedScreenModel(
             }
 
             else -> {
-                _updateFeedDialogState.update { it.copy(error = null, isLoading = true) }
+                if (!context.isConnected()) {
+                    _updateFeedDialogState.update { it.copy(error = context.getString(R.string.no_network)) }
+                    return
+                } else {
+                    _updateFeedDialogState.update { it.copy(error = null, isLoading = true) }
+                }
 
                 screenModelScope.launch(dispatcher) {
                     with(_updateFeedDialogState.value) {
@@ -317,7 +331,6 @@ class FeedScreenModel(
     }
 
     fun folderValidate(updateFolder: Boolean = false) {
-        _folderState.update { it.copy(isLoading = true) }
         val name = _folderState.value.value
 
         if (name.isEmpty()) {
@@ -328,6 +341,13 @@ class FeedScreenModel(
                 )
             }
             return
+        }
+
+        if (!context.isConnected()) {
+            _folderState.update { it.copy(error = context.getString(R.string.no_network)) }
+            return
+        } else {
+            _folderState.update { it.copy(isLoading = true) }
         }
 
         screenModelScope.launch(dispatcher) {
@@ -370,5 +390,19 @@ class FeedScreenModel(
         screenModelScope.launch(dispatcher) {
             database.feedDao().updateOpenInSetting(feedId, openIn)
         }
+    }
+
+    private fun checkInternetConnection(): Boolean {
+        if (!currentAccount!!.isLocal) {
+            return true
+        }
+
+        val isConnected = context.isConnected()
+
+        if (!isConnected) {
+            _feedState.update { it.copy(error = context.getString(R.string.no_network)) }
+        }
+
+        return isConnected
     }
 }

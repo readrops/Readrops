@@ -14,6 +14,7 @@ import com.readrops.app.R
 import com.readrops.app.repositories.BaseRepository
 import com.readrops.app.util.accounterror.AccountError
 import com.readrops.app.util.components.TextFieldError
+import com.readrops.app.util.extensions.isConnected
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
@@ -89,6 +90,11 @@ class NewFeedScreenModel(
     }
 
     fun validate() {
+        if (!context.isConnected()) {
+            mutableState.update { it.copy(error = context.getString(R.string.no_network)) }
+            return
+        }
+
         val url = mutableState.value.actualUrl
 
         if (state.value.selectedResultsCount > 0) {

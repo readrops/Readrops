@@ -1,7 +1,11 @@
+@file:Suppress("DEPRECATION")
+
 package com.readrops.app.util.extensions
 
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
@@ -10,6 +14,7 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.getSystemService
 import androidx.core.net.toUri
 
 fun Context.openUrl(url: String) = startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
@@ -44,3 +49,13 @@ fun Context.isTabletUi(): Boolean {
 @Composable
 @ReadOnlyComposable
 fun isTabletUi(): Boolean = LocalContext.current.isTabletUi()
+
+
+// non depreciated APIs are only available from API 23
+@Suppress("DEPRECATION")
+fun Context.isConnected(): Boolean {
+    val connectivityManager = getSystemService<ConnectivityManager>()!!
+    val networkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo
+
+    return networkInfo?.isConnected == true
+}

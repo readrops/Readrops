@@ -8,6 +8,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.work.workDataOf
 import cafe.adriel.voyager.core.model.screenModelScope
+import com.readrops.app.R
 import com.readrops.app.home.TabScreenModel
 import com.readrops.app.repositories.ErrorResult
 import com.readrops.app.repositories.GetFoldersWithFeeds
@@ -21,6 +22,7 @@ import com.readrops.app.util.Preferences
 import com.readrops.app.util.Utils
 import com.readrops.app.util.extensions.clearSerializables
 import com.readrops.app.util.extensions.getSerializable
+import com.readrops.app.util.extensions.isConnected
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
@@ -212,6 +214,11 @@ class TimelineScreenModel(
 
     @Suppress("UNCHECKED_CAST")
     fun refreshTimeline() {
+        if (!context.isConnected()) {
+            _timelineState.update { it.copy(syncError = context.getString(R.string.no_network)) }
+            return
+        }
+
         buildPager(empty = true)
 
         screenModelScope.launch(dispatcher) {
