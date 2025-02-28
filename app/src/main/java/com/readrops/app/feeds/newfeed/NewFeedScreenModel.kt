@@ -71,7 +71,10 @@ class NewFeedScreenModel(
                                 Folder(name = context.resources.getString(R.string.no_folder))
                     } else {
                         database.folderDao().selectFolders(selectedAccount.id).first()
-                    }
+                    }.sortedWith(
+                        compareByDescending<Folder> { it.name?.startsWith("_") }
+                            .then(Folder::compareTo)
+                    )
 
                     val newParsingResults = mutableState.value.parsingResults.map {
                         it.copy(folder = folders.firstOrNull())

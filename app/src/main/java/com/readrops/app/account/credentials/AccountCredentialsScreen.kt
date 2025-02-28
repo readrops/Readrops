@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -38,6 +39,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalAutofill
 import androidx.compose.ui.platform.LocalAutofillTree
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -101,6 +103,8 @@ class AccountCredentialsScreen(
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
+        val keyboardController = LocalSoftwareKeyboardController.current
+
         val screenModel =
             koinScreenModel<AccountCredentialsScreenModel>(parameters = { parametersOf(account, mode) })
 
@@ -198,7 +202,10 @@ class AccountCredentialsScreen(
                                 }
                             }
                         },
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Uri,
+                            imeAction = ImeAction.Next
+                        ),
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -258,8 +265,14 @@ class AccountCredentialsScreen(
                             keyboardType = KeyboardType.Password,
                             imeAction = ImeAction.Done
                         ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                keyboardController?.hide()
+                                screenModel.login()
+                            }
+                        ),
                         modifier = Modifier.autofill(
-                            listOf(AutofillType.Password),
+                            autofillTypes = listOf(AutofillType.Password),
                             onFill = { screenModel.onEvent(Event.PasswordEvent(it)) }
                         ).fillMaxWidth()
                     )
