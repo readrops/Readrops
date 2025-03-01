@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -20,6 +21,7 @@ import com.readrops.app.timelime.components.itemWithFeed
 import com.readrops.app.util.DefaultPreview
 import com.readrops.app.util.components.FeedIcon
 import com.readrops.app.util.components.IconText
+import com.readrops.app.util.extensions.displayColor
 import com.readrops.app.util.theme.ReadropsTheme
 import com.readrops.app.util.theme.ShortSpacer
 import com.readrops.app.util.theme.spacing
@@ -31,8 +33,7 @@ import kotlin.math.roundToInt
 fun SimpleTitle(
     itemWithFeed: ItemWithFeed,
     titleColor: Color,
-    accentColor: Color,
-    baseColor: Color,
+    onBackgroundColor: Color,
     bottomPadding: Boolean,
 ) {
     val item = itemWithFeed.item
@@ -61,7 +62,7 @@ fun SimpleTitle(
         Text(
             text = itemWithFeed.feedName,
             style = MaterialTheme.typography.labelLarge,
-            color = baseColor,
+            color = onBackgroundColor,
             textAlign = TextAlign.Center
         )
 
@@ -82,8 +83,8 @@ fun SimpleTitle(
                 icon = painterResource(id = R.drawable.ic_person),
                 text = itemWithFeed.item.author!!,
                 style = MaterialTheme.typography.labelMedium,
-                color = baseColor,
-                tint = accentColor
+                color = onBackgroundColor,
+                tint = itemWithFeed.displayColor(MaterialTheme.colorScheme.background.toArgb())
             )
         }
 
@@ -97,7 +98,7 @@ fun SimpleTitle(
         Text(
             text = "${DateUtils.formattedDate(item.pubDate!!)} ${stringResource(id = R.string.interpoint)} $readTime",
             style = MaterialTheme.typography.labelMedium,
-            color = baseColor
+            color = onBackgroundColor
         )
     }
 }
@@ -109,8 +110,7 @@ private fun SimpleTitlePreview() {
         SimpleTitle(
             itemWithFeed = itemWithFeed,
             titleColor = MaterialTheme.colorScheme.primary,
-            accentColor = MaterialTheme.colorScheme.primary,
-            baseColor = MaterialTheme.colorScheme.onBackground,
+            onBackgroundColor = MaterialTheme.colorScheme.onBackground,
             bottomPadding = true
         )
     }

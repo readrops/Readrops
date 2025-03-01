@@ -2,7 +2,6 @@ package com.readrops.app.util
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import androidx.annotation.ColorInt
 import androidx.palette.graphics.Palette
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -23,35 +22,13 @@ object FeedColors : KoinComponent {
         ).execute()
 
         val bitmap = BitmapFactory.decodeStream(response.body?.byteStream()) ?: return 0
+
         return getFeedColor(bitmap)
     }
 
-    suspend fun getFeedColor(bitmap: Bitmap): Int = withContext(Dispatchers.Main) {
+    suspend fun getFeedColor(bitmap: Bitmap): Int = withContext(Dispatchers.Default) {
         val palette = Palette.from(bitmap).generate()
 
-        val dominantSwatch = palette.dominantSwatch
-        if (dominantSwatch != null && !isColorTooBright(dominantSwatch.rgb)
-            && !isColorTooDark(dominantSwatch.rgb)
-        ) {
-            dominantSwatch.rgb
-        } else 0
+        palette.dominantSwatch?.rgb ?: 0
     }
-
-    private fun isColorTooBright(@ColorInt color: Int): Boolean {
-        return getColorLuma(color) > 210
-    }
-
-    private fun isColorTooDark(@ColorInt color: Int): Boolean {
-        return getColorLuma(color) < 40
-    }
-
-    private fun getColorLuma(@ColorInt color: Int): Double {
-        val r = color shr 16 and 0xff
-        val g = color shr 8 and 0xff
-        val b = color shr 0 and 0xff
-        return 0.2126 * r + 0.7152 * g + 0.0722 * b
-    }
-
-    fun isColorDark(color: Int) = getColorLuma(color) < 130
-
 }

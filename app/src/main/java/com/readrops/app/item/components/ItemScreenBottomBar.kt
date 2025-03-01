@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import com.readrops.app.R
 import com.readrops.app.util.DefaultPreview
-import com.readrops.app.util.FeedColors
+import com.readrops.app.util.extensions.canDisplayOnBackground
 import com.readrops.app.util.theme.ReadropsTheme
 import com.readrops.app.util.theme.spacing
 
@@ -37,10 +37,9 @@ fun ItemScreenBottomBar(
     onChangeStarState: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val tint = if (FeedColors.isColorDark(accentColor.toArgb()))
-        Color.White
-    else
-        Color.Black
+    val onAccentColor =
+        if (Color.White.toArgb().canDisplayOnBackground(accentColor.toArgb(), threshold = 2.5f))
+            Color.White else Color.Black
 
     Surface(
         color = accentColor,
@@ -59,7 +58,7 @@ fun ItemScreenBottomBar(
                             R.drawable.ic_remove_done
                         else R.drawable.ic_done_all
                     ),
-                    tint = tint,
+                    tint = onAccentColor,
                     contentDescription = null
                 )
             }
@@ -73,7 +72,7 @@ fun ItemScreenBottomBar(
                             R.drawable.ic_star
                         else R.drawable.ic_star_outline
                     ),
-                    tint = tint,
+                    tint = onAccentColor,
                     contentDescription = null
                 )
             }
@@ -83,7 +82,7 @@ fun ItemScreenBottomBar(
             ) {
                 Icon(
                     imageVector = Icons.Default.Share,
-                    tint = tint,
+                    tint = onAccentColor,
                     contentDescription = null
                 )
             }
@@ -94,7 +93,7 @@ fun ItemScreenBottomBar(
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_open_in_browser),
-                        tint = tint,
+                        tint = onAccentColor,
                         contentDescription = null
                     )
                 }

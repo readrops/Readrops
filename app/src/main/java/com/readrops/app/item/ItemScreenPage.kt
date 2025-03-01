@@ -22,7 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.viewinterop.AndroidView
@@ -34,6 +34,7 @@ import com.readrops.app.item.components.SimpleTitle
 import com.readrops.app.item.components.rememberBottomBarNestedScrollConnection
 import com.readrops.app.item.view.ItemNestedScrollView
 import com.readrops.app.item.view.ItemWebView
+import com.readrops.app.util.extensions.displayColor
 import com.readrops.db.pojo.ItemWithFeed
 
 @Composable
@@ -50,15 +51,10 @@ fun ItemScreenPage(
 ) {
     val item = itemWithFeed.item
 
-    val primaryColor = MaterialTheme.colorScheme.primary
     val backgroundColor = MaterialTheme.colorScheme.background
     val onBackgroundColor = MaterialTheme.colorScheme.onBackground
 
-    val accentColor = if (itemWithFeed.color != 0) {
-        Color(itemWithFeed.color)
-    } else {
-        primaryColor
-    }
+    val accentColor = itemWithFeed.displayColor(MaterialTheme.colorScheme.background.toArgb())
 
     val nestedScrollConnection = rememberBottomBarNestedScrollConnection()
     var refreshAndroidView by remember { mutableStateOf(true) }
@@ -132,8 +128,7 @@ fun ItemScreenPage(
                                 SimpleTitle(
                                     itemWithFeed = itemWithFeed,
                                     titleColor = accentColor,
-                                    accentColor = accentColor,
-                                    baseColor = MaterialTheme.colorScheme.onBackground,
+                                    onBackgroundColor = MaterialTheme.colorScheme.onBackground,
                                     bottomPadding = true
                                 )
                             }

@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,6 +26,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -37,6 +39,8 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import com.readrops.app.R
 import com.readrops.app.util.components.FeedIcon
+import com.readrops.app.util.extensions.canDisplayOnBackground
+import com.readrops.app.util.extensions.displayColor
 import com.readrops.app.util.theme.ShortSpacer
 import com.readrops.app.util.theme.spacing
 import com.readrops.db.pojo.ItemWithFeed
@@ -52,6 +56,8 @@ fun RegularTimelineItem(
     onShare: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val displayColor = itemWithFeed.displayColor(CardDefaults.cardColors().containerColor.toArgb())
+
     TimelineItemContainer(
         isRead = itemWithFeed.isRead,
         onClick = onClick,
@@ -63,7 +69,7 @@ fun RegularTimelineItem(
             TimelineItemHeader(
                 feedName = itemWithFeed.feedName,
                 feedIconUrl = itemWithFeed.feedIconUrl,
-                feedColor = itemWithFeed.color,
+                feedColor = displayColor,
                 folderName = itemWithFeed.folder?.name,
                 date = itemWithFeed.item.pubDate!!,
                 duration = itemWithFeed.item.readTime,
@@ -81,7 +87,7 @@ fun RegularTimelineItem(
             TimelineItemBadge(
                 date = itemWithFeed.item.pubDate!!,
                 duration = itemWithFeed.item.readTime,
-                color = itemWithFeed.color
+                color = displayColor
             )
         }
     }
@@ -96,6 +102,7 @@ fun CompactTimelineItem(
     modifier: Modifier = Modifier
 ) {
     val containerColor = MaterialTheme.colorScheme.background
+    val displayColor = itemWithFeed.displayColor(CardDefaults.cardColors().containerColor.toArgb())
 
     Surface(
         color = MaterialTheme.colorScheme.surfaceVariant,
@@ -119,7 +126,7 @@ fun CompactTimelineItem(
             TimelineItemHeader(
                 feedName = itemWithFeed.feedName,
                 feedIconUrl = itemWithFeed.feedIconUrl,
-                feedColor = itemWithFeed.color,
+                feedColor = displayColor,
                 folderName = itemWithFeed.folder?.name,
                 onFavorite = onFavorite,
                 onShare = onShare,
@@ -150,6 +157,8 @@ fun LargeTimelineItem(
     onShare: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val displayColor = itemWithFeed.displayColor(CardDefaults.cardColors().containerColor.toArgb())
+
     if (itemWithFeed.item.cleanDescription == null && !itemWithFeed.item.hasImage) {
         RegularTimelineItem(
             itemWithFeed = itemWithFeed,
@@ -171,7 +180,7 @@ fun LargeTimelineItem(
                     TimelineItemHeader(
                         feedName = itemWithFeed.feedName,
                         feedIconUrl = itemWithFeed.feedIconUrl,
-                        feedColor = itemWithFeed.color,
+                        feedColor = displayColor,
                         folderName = itemWithFeed.folder?.name,
                         date = itemWithFeed.item.pubDate!!,
                         duration = itemWithFeed.item.readTime,
@@ -185,7 +194,7 @@ fun LargeTimelineItem(
                     TimelineItemBadge(
                         date = itemWithFeed.item.pubDate!!,
                         duration = itemWithFeed.item.readTime,
-                        color = itemWithFeed.color
+                        color = displayColor
                     )
 
                     ShortSpacer()
@@ -259,7 +268,7 @@ fun TimelineItemContainer(
 fun TimelineItemHeader(
     feedName: String,
     feedIconUrl: String?,
-    feedColor: Int,
+    feedColor: Color,
     folderName: String?,
     date: LocalDateTime,
     duration: Double,
@@ -290,11 +299,7 @@ fun TimelineItemHeader(
                     style = MaterialTheme.typography.bodyMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = if (feedColor != 0) {
-                        Color(feedColor)
-                    } else {
-                        MaterialTheme.colorScheme.primary
-                    },
+                    color = feedColor,
                 )
 
                 if (!folderName.isNullOrEmpty()) {
@@ -373,13 +378,14 @@ fun TimelineItemTitle(
 fun TimelineItemBadge(
     date: LocalDateTime,
     duration: Double,
-    color: Int,
+    color: Color,
 ) {
-    val textColor = if (color != 0) Color.White else MaterialTheme.colorScheme.onPrimary
-
+    val onAccentColor =
+        if (Color.White.toArgb().canDisplayOnBackground(color.toArgb(), threshold = 2.5f))
+            Color.White else Color.Black
 
     Surface(
-        color = if (color != 0) Color(color) else MaterialTheme.colorScheme.primary,
+        color = color,
         shape = RoundedCornerShape(48.dp)
     ) {
         Row(
@@ -392,14 +398,14 @@ fun TimelineItemBadge(
             Text(
                 text = DateUtils.formattedDateByLocal(date),
                 style = MaterialTheme.typography.labelSmall,
-                color = textColor
+                color = onAccentColor
             )
 
             Text(
                 text = stringResource(id = R.string.interpoint),
                 style = MaterialTheme.typography.labelMedium,
                 modifier = Modifier.padding(horizontal = MaterialTheme.spacing.veryShortSpacing),
-                color = textColor
+                color = onAccentColor
             )
 
             Text(
@@ -409,7 +415,7 @@ fun TimelineItemBadge(
                     stringResource(id = R.string.read_time_lower_than_1)
                 },
                 style = MaterialTheme.typography.labelSmall,
-                color = textColor
+                color = onAccentColor
             )
         }
     }

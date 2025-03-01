@@ -32,11 +32,6 @@ fun BackgroundTitle(
     onClickBack: () -> Unit,
 ) {
     val onScrimColor = Color.White.copy(alpha = 0.85f)
-    val accentColor = if (itemWithFeed.color != 0) {
-        Color(itemWithFeed.color)
-    } else {
-        onScrimColor
-    }
 
     Surface(
         shape = RoundedCornerShape(
@@ -76,8 +71,7 @@ fun BackgroundTitle(
                 SimpleTitle(
                     itemWithFeed = itemWithFeed,
                     titleColor = onScrimColor,
-                    accentColor = accentColor,
-                    baseColor = onScrimColor,
+                    onBackgroundColor = onScrimColor,
                     bottomPadding = true
                 )
             }
