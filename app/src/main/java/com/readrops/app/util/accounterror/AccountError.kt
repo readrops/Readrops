@@ -64,7 +64,7 @@ abstract class AccountError(protected val context: Context) {
     companion object {
 
         fun from(account: Account, context: Context): AccountError = when (account.type) {
-            AccountType.FRESHRSS -> FreshRSSError(context)
+            AccountType.FRESHRSS, AccountType.GREADER -> GReaderError(context)
             AccountType.NEXTCLOUD_NEWS -> NextcloudNewsError(context)
             else -> DefaultAccountError(context)
         }

@@ -4,7 +4,7 @@ import android.content.Context
 import com.readrops.api.utils.exceptions.HttpException
 import com.readrops.app.R
 
-class FreshRSSError(context: Context) : AccountError(context) {
+class GReaderError(context: Context) : AccountError(context) {
 
     override fun newFeedMessage(exception: Exception): String = when (exception) {
         is HttpException -> {
