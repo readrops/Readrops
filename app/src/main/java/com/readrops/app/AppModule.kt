@@ -49,7 +49,7 @@ val appModule = module {
 
     factory { (url: String?) -> NewFeedScreenModel(get(), get(), androidContext(), url) }
 
-    factory { AccountSelectionScreenModel(get()) }
+    factory { AccountSelectionScreenModel(get(), get()) }
 
     factory { AccountScreenModel(get(), androidContext()) }
 

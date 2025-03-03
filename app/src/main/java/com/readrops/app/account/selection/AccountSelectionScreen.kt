@@ -45,7 +45,6 @@ import com.readrops.app.account.credentials.AccountCredentialsScreenMode
 import com.readrops.app.account.dialog.AccountWarningDialog
 import com.readrops.app.account.dialog.OPMLImportProgressDialog
 import com.readrops.app.home.HomeScreen
-import com.readrops.app.util.ErrorMessage
 import com.readrops.app.util.components.AndroidScreen
 import com.readrops.app.util.components.SelectableImageText
 import com.readrops.app.util.theme.LargeSpacer
@@ -78,9 +77,9 @@ class AccountSelectionScreen : AndroidScreen() {
             (context as MainActivity).ready = true
         }
 
-        LaunchedEffect(state.exception) {
-            if (state.exception != null) {
-                snackbarHostState.showSnackbar(ErrorMessage.get(state.exception!!, context))
+        LaunchedEffect(state.error) {
+            if (state.error != null) {
+                snackbarHostState.showSnackbar(state.error!!)
                 screenModel.resetException()
             }
         }

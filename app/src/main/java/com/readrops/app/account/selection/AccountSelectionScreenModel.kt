@@ -6,7 +6,9 @@ import androidx.core.net.toFile
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.readrops.api.opml.OPMLParser
+import com.readrops.app.R
 import com.readrops.app.repositories.BaseRepository
+import com.readrops.app.util.accounterror.AccountError
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
@@ -23,8 +25,11 @@ import org.koin.core.parameter.parametersOf
 
 class AccountSelectionScreenModel(
     private val database: Database,
+    context: Context,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : StateScreenModel<AccountSelectionState>(AccountSelectionState()), KoinComponent {
+
+    private val accountError = AccountError.Companion.DefaultAccountError(context)
 
     fun accountExists(): Boolean {
         val accountCount = runBlocking {
@@ -71,13 +76,18 @@ class AccountSelectionScreenModel(
             try {
                 val stream = context.contentResolver.openInputStream(uri)
                 if (stream == null) {
-                    mutableState.update { it.copy(exception = NoSuchFileException(uri.toFile())) }
+                    mutableState.update { it.copy(error = accountError.genericMessage(NoSuchFileException(uri.toFile()))) }
                     return@launch
                 }
 
                 foldersAndFeeds = OPMLParser.read(stream)
             } catch (e: Exception) {
-                mutableState.update { it.copy(exception = e) }
+                mutableState.update { it.copy(error = accountError.genericMessage(e)) }
+                return@launch
+            }
+
+            if (foldersAndFeeds.isEmpty()) {
+                mutableState.update { it.copy(error = context.getString(R.string.empty_file)) }
                 return@launch
             }
 
@@ -114,7 +124,7 @@ class AccountSelectionScreenModel(
         }
     }
 
-    fun resetException() = mutableState.update { it.copy(exception = null) }
+    fun resetException() = mutableState.update { it.copy(error = null) }
 
     fun openDialog(dialog: DialogState) = mutableState.update { it.copy(dialog = dialog) }
 
@@ -122,7 +132,7 @@ class AccountSelectionScreenModel(
 }
 
 data class AccountSelectionState(
-    val exception: Exception? = null,
+    val error: String? = null,
     val currentFeed: String? = null,
     val feedCount: Int = 0,
     val feedMax: Int = 0,
