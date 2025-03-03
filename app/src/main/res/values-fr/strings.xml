@@ -230,4 +230,5 @@
     <string name="swipe_to_left_action">Action de glisser à gauche</string>
     <string name="freshrss_delete_folder_question">Voulez-vous supprimer le dossier %1$s ? Tous les flux associés seront déplacés vers le dossier par défaut.</string>
     <string name="no_network">Aucune connexion internet disponible</string>
+    <string name="empty_file">Le fichier est vide</string>
 </resources>

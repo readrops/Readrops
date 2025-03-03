@@ -6,6 +6,7 @@ import androidx.compose.runtime.Stable
 import androidx.core.net.toFile
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.readrops.api.opml.OPMLParser
+import com.readrops.app.R
 import com.readrops.app.home.TabScreenModel
 import com.readrops.app.repositories.ErrorResult
 import com.readrops.app.repositories.GetFoldersWithFeeds
@@ -138,6 +139,11 @@ class AccountScreenModel(
                 foldersAndFeeds = OPMLParser.read(stream)
             } catch (e: Exception) {
                 _accountState.update { it.copy(error = accountError?.genericMessage(e)) }
+                return@launch
+            }
+
+            if (foldersAndFeeds.isEmpty()) {
+                _accountState.update { it.copy(error = context.getString(R.string.empty_file)) }
                 return@launch
             }
 

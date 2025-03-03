@@ -240,4 +240,5 @@
     <string name="swipe_to_left_action">Swipe to left action</string>
     <string name="freshrss_delete_folder_question">Do you want to delete folder %1$s? All linked feeds will be put in the default folder.</string>
     <string name="no_network">No network connection available</string>
+    <string name="empty_file">File is empty</string>
 </resources>
