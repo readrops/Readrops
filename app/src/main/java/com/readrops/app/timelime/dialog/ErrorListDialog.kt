@@ -14,7 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.readrops.app.R
 import com.readrops.app.repositories.ErrorResult
-import com.readrops.app.util.ErrorMessage
+import com.readrops.app.util.accounterror.AccountError
 import com.readrops.app.util.components.dialog.BaseDialog
 import com.readrops.app.util.theme.MediumSpacer
 import com.readrops.app.util.theme.ShortSpacer
@@ -25,6 +25,7 @@ fun ErrorListDialog(
     onDismiss: () -> Unit,
 ) {
     val scrollableState = rememberScrollState()
+    val accountError = AccountError.Companion.DefaultAccountError(LocalContext.current)
 
     BaseDialog(
         title = stringResource(R.string.synchronization_errors),
@@ -45,7 +46,7 @@ fun ErrorListDialog(
             modifier = Modifier.verticalScroll(scrollableState)
         ) {
             for (error in errorResult.entries) {
-                Text(text = "${error.key.name}: ${ErrorMessage.get(error.value, LocalContext.current)}")
+                Text(text = "${error.key.name}: ${accountError.genericMessage(error.value)}")
 
                 ShortSpacer()
             }

@@ -55,7 +55,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.readrops.app.R
 import com.readrops.app.account.selection.adaptiveIconPainterResource
 import com.readrops.app.home.HomeScreen
-import com.readrops.app.util.ErrorMessage
+import com.readrops.app.util.accounterror.AccountError
 import com.readrops.app.util.components.AndroidScreen
 import com.readrops.app.util.theme.LargeSpacer
 import com.readrops.app.util.theme.MediumSpacer
@@ -104,6 +104,7 @@ class AccountCredentialsScreen(
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
         val keyboardController = LocalSoftwareKeyboardController.current
+        val accountError = AccountError.from(account, LocalContext.current)
 
         val screenModel =
             koinScreenModel<AccountCredentialsScreenModel>(parameters = { parametersOf(account, mode) })
@@ -298,7 +299,7 @@ class AccountCredentialsScreen(
                         ShortSpacer()
 
                         Text(
-                            text = ErrorMessage.get(state.loginException!!, LocalContext.current),
+                            text = accountError.genericMessage(state.loginException!!),
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.error,
                             textAlign = TextAlign.Center
