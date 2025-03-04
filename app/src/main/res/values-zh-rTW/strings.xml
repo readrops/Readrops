@@ -170,4 +170,7 @@
     <string name="default_category">預設類別</string>
     <string name="example_item_title">好消息，各位！</string>
     <string name="example_item_author">令人驚嘆的內容創作者</string>
+    <string name="empty_file">檔案是空的</string>
+    <string name="no_network">沒有可用的網路連線</string>
+    <string name="render_template">查看結果</string>
 </resources>
