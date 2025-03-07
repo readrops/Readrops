@@ -187,7 +187,7 @@ class GReaderRepository(
         database.itemStateDao().deleteItemStates(account.id)
 
         database.itemStateDao().insert(unreadIds.map { id ->
-            val starred = starredIds.count { starredId -> starredId == id } == 1
+            val starred = starredIds.any { starredId -> starredId == id }
 
             if (starred) {
                 starredIds.remove(id)
@@ -203,7 +203,7 @@ class GReaderRepository(
         })
 
         database.itemStateDao().insert(readIds.map { id ->
-            val starred = starredIds.count { starredId -> starredId == id } == 1
+            val starred = starredIds.any { starredId -> starredId == id }
             if (starred) {
                 starredIds.remove(id)
             }
