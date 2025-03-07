@@ -34,12 +34,17 @@ data class ItemWithFeed(
         return item.id == other.item.id
                 && isRead == other.isRead
                 && isStarred == other.isStarred
+                && openInAsk == other.openInAsk
+                && openIn == other.openIn
     }
 
     override fun hashCode(): Int {
-        var result = item.id.hashCode()
-        result = 31 * result + isStarred.hashCode()
+        var result = isStarred.hashCode()
+
+        result = 31 * result + item.id.hashCode()
         result = 31 * result + isRead.hashCode()
+        result = 31 * result + (openIn?.hashCode() ?: 0)
+        result = 31 * result + openInAsk.hashCode()
         return result
     }
 }

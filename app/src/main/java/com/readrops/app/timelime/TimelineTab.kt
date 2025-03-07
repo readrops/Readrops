@@ -2,7 +2,6 @@ package com.readrops.app.timelime
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -46,7 +45,6 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
@@ -69,7 +67,6 @@ import com.readrops.app.util.extensions.openUrl
 import com.readrops.app.util.theme.spacing
 import com.readrops.db.entities.OpenIn
 import com.readrops.db.filters.MainFilter
-import com.readrops.db.filters.QueryFilters
 import com.readrops.db.pojo.ItemWithFeed
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.filter
@@ -115,6 +112,26 @@ object TimelineTab : Tab {
                 screenModel.disableDisplayNotificationsPermission()
             }
 
+        fun openItem(
+            itemWithFeed: ItemWithFeed,
+            itemIndex: Int,
+            openIn: OpenIn? = itemWithFeed.openIn
+        ) {
+            val url = itemWithFeed.item.link!!
+
+            if (openIn == OpenIn.LOCAL_VIEW) {
+                navigator.push(ItemScreen(itemWithFeed.item.id, itemIndex, state.filters))
+            } else {
+                screenModel.setItemRead(itemWithFeed.item)
+
+                if (preferences.openInExternalBrowser) {
+                    context.openUrl(url)
+                } else {
+                    context.openInCustomTab(url, preferences.theme, Color(itemWithFeed.color))
+                }
+            }
+        }
+
         LaunchedEffect(Unit) {
             openItemChannel.receiveAsFlow()
                 .collect { itemId ->
@@ -122,11 +139,8 @@ object TimelineTab : Tab {
                         ?.let {
                             openItem(
                                 itemWithFeed = it,
-                                itemIndex = items.itemSnapshotList.indexOfFirst { itemWithFeed -> itemWithFeed?.item?.id == itemId },
-                                queryFilters = state.filters,
-                                preferences = preferences,
-                                navigator = navigator,
-                                context = context
+                                itemIndex = items.itemSnapshotList
+                                    .indexOfFirst { itemWithFeed -> itemWithFeed?.item?.id == itemId },
                             )
                         }
                 }
@@ -221,11 +235,7 @@ object TimelineTab : Tab {
                 openItem(
                     itemWithFeed = itemWithFeed,
                     itemIndex = items.itemSnapshotList.indexOfFirst { it?.item?.id == itemWithFeed.item.id },
-                    queryFilters = state.filters,
                     openIn = openIn,
-                    preferences = preferences,
-                    navigator = navigator,
-                    context = context
                 )
             }
         )
@@ -331,10 +341,6 @@ object TimelineTab : Tab {
                                                             openItem(
                                                                 itemWithFeed = itemWithFeed,
                                                                 itemIndex = index,
-                                                                queryFilters = state.filters,
-                                                                preferences = preferences,
-                                                                navigator = navigator,
-                                                                context = context
                                                             )
                                                         }
                                                     },
@@ -372,28 +378,6 @@ object TimelineTab : Tab {
                         }
                     }
                 }
-            }
-        }
-    }
-
-    private fun openItem(
-        itemWithFeed: ItemWithFeed,
-        itemIndex: Int,
-        queryFilters: QueryFilters,
-        preferences: TimelinePreferences,
-        navigator: Navigator,
-        context: Context,
-        openIn: OpenIn? = itemWithFeed.openIn,
-    ) {
-        val url = itemWithFeed.item.link!!
-
-        if (openIn == OpenIn.LOCAL_VIEW) {
-            navigator.push(ItemScreen(itemWithFeed.item.id, itemIndex, queryFilters))
-        } else {
-            if (preferences.openInExternalBrowser) {
-                context.openUrl(url)
-            } else {
-                context.openInCustomTab(url, preferences.theme, Color(itemWithFeed.color))
             }
         }
     }
