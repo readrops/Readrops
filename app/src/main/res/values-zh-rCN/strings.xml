@@ -16,7 +16,7 @@
     <string name="cancel">取消</string>
     <string name="feed_insertion_network_failed">访问订阅 %1$s 时出现网络故障</string>
     <string name="feed_insertion_parse_failed">解析订阅 %1$s 时失败</string>
-    <string name="feed_insertion_wrong_format">订阅 %1$s 的格式错误</string>
+    <string name="feed_insertion_wrong_format">订阅 %1$s 格式错误</string>
     <string name="articles">文章</string>
     <string name="show_read_articles">显示已读文章</string>
     <string name="mark_unread">标记为未读</string>
@@ -25,7 +25,7 @@
     <string name="account_name">账号名称</string>
     <string name="login">登录</string>
     <string name="password">密码</string>
-    <string name="password_helper">这是您的 FreshRSS API 密码（配置 &gt; 配置文件）</string>
+    <string name="password_helper">这是您的 FreshRSS API 密码（设置 &gt; 账号）</string>
     <string name="add_account">添加账号</string>
     <string name="no_feed">无订阅</string>
     <string name="edit_folder">编辑文件夹</string>
@@ -43,12 +43,12 @@
     <string name="app_licence">应用根据 GPLv3 许可发布</string>
     <string name="get_feeds_colors">获取订阅颜色</string>
     <string name="global">全局</string>
-    <string name="open_items_in">打开项目</string>
+    <string name="open_items_in">打开内容</string>
     <string name="external_navigator">外部网络浏览器</string>
     <string name="share_url">分享 URL</string>
     <string name="opml_import_export">OPML 导入/导出</string>
-    <string name="opml_import">OPML 导入</string>
-    <string name="opml_export">OPML 导出</string>
+    <string name="opml_import">导入 OPML</string>
+    <string name="opml_export">导出 OPML</string>
     <string name="image_options">图片选项</string>
     <string name="download_image">下载图片</string>
     <string name="share_image">分享图片</string>
@@ -66,11 +66,11 @@
     <string name="back">返回</string>
     <string name="save">保存</string>
     <string name="synchronize">同步</string>
-    <string name="navigator_view">导航器视图</string>
+    <string name="navigator_view">应用内浏览器</string>
     <string name="favorites">收藏</string>
     <string name="system">系统主题</string>
-    <string name="hide_feeds">隐藏没有新项目的订阅</string>
-    <string name="mark_items_read_on_scroll">滚动时标记已读项目</string>
+    <string name="hide_feeds">隐藏没有新文章的订阅</string>
+    <string name="mark_items_read_on_scroll">滚动时自动将文章标记为已读‌</string>
     <string name="new_articles">新文章</string>
     <string name="filters">筛选器</string>
     <string name="details">详情</string>
@@ -93,7 +93,7 @@
     <string name="rename_account">重命名账号</string>
     <string name="preferences">首选项</string>
     <string name="timeline">时间线</string>
-    <string name="hide_feeds_subtitle">没有未读项目的订阅将隐藏在抽屉中</string>
+    <string name="hide_feeds_subtitle">没有未读文章的订阅将隐藏在抽屉中</string>
     <string name="compact">紧凑</string>
     <string name="regular">常规</string>
     <string name="large">大</string>
@@ -109,10 +109,10 @@
     <string name="delete_folder_question">是否要删除文件夹 %1$s？将会删除所有关联的订阅。</string>
     <string name="update_color">更新颜色</string>
     <string name="mark_all_articles_read">将所有文章标记为已读</string>
-    <string name="mark_all_articles_read_question">是否确定要将所有项目标记为已读？</string>
+    <string name="mark_all_articles_read_question">是否确定要将所有文章标记为已读？</string>
     <string name="readrops_crashed">Readrops 崩溃了。</string>
     <string name="report_error_github">在 GitHub 上报告错误</string>
-    <string name="copy_error_clipboard">复制错误到剪贴板</string>
+    <string name="copy_error_clipboard">将错误消息复制到剪贴板</string>
     <string name="copied">已复制！</string>
     <string name="bitcoin_copy_address">比特币（复制地址）</string>
     <string name="litecoin_copy_address">莱特币（复制地址）</string>
@@ -150,7 +150,7 @@
     <string name="add_feed">添加订阅</string>
     <string name="settings">设置</string>
     <string name="no_folder">无文件夹</string>
-    <string name="feed_insertion_successfull">已成功添加订阅 %1$s</string>
+    <string name="feed_insertion_successfull">订阅 %1$s 添加成功</string>
     <string name="edit_feed">编辑订阅</string>
     <string name="delete_feed">删除订阅？</string>
     <string name="account">账号</string>
@@ -177,7 +177,7 @@
     <string name="network_failure">网络故障：%1$s</string>
     <string name="http_error_403">HTTP 错误 403，禁止访问</string>
     <string name="http_error_4XX">HTTP 错误 %1$d，请检查您的字段</string>
-    <string name="item_size">项目大小</string>
+    <string name="item_size">文章大小</string>
     <string name="feed_url_read_only">此 API 不支持修改订阅 URL</string>
     <string name="updating_account">正在更新 %1$s 账号</string>
     <string name="enable_all">全部启用</string>
@@ -199,4 +199,29 @@
     <string name="feeds">订阅源</string>
     <string name="use_default_color">使用默认颜色</string>
     <string name="crash_message">您看见此消息意味着本应用遇到了意外错误。如果可以，请在 GitHub 上报告错误。</string>
+    <string name="understand">知道了</string>
+    <string name="api">API</string>
+    <string name="use_custom_share_intent_tpl">自定义分享到其他应用时的文本</string>
+    <string name="preview_shared_text">预览分享的文本</string>
+    <string name="edit_shared_text_template">编辑分享的文本模板</string>
+    <string name="example_item_title">各位，有个好消息！</string>
+    <string name="example_item_author">很棒的内容创建者</string>
+    <string name="example_item_content">上周在地球上发生了这件事。\n\n这是本周发生的最棒的事情。</string>
+    <string name="use_custom_share_intent_tpl_explenation">此选项允许您自定义与其他 Android 应用程序分享文章时文本，请&lt;a href=https://pebbletemplates.io/wiki/guide/basic-usage/#syntax-reference&gt;在此处查看可用的语法&lt;/a&gt;。</string>
+    <string name="example_item_explanation">上下文中可用的变量为 %s。除 %s 外，您还可以使用&lt;a href=https://pebbletemplates.io/wiki/&gt;此处记录&lt;/a&gt;的所有模板筛选器。</string>
+    <string name="fr_typo_documentation">当应用于任意变量时，将在 %s 前插入一个不间断空格</string>
+    <string name="try_the_default_template">使用默认模板填充</string>
+    <string name="render_template">查看结果</string>
+    <string name="edit_template">编辑模板</string>
+    <string name="localised_dict_item">%s：%s</string>
+    <string name="disabled">已禁用</string>
+    <string name="swipe_to_left_action">向左滑动操作</string>
+    <string name="freshrss_delete_folder_question">是否要删除文件夹 %1$s？所有关联的订阅将移至默认文件夹。</string>
+    <string name="no_network">没有可用的网络连接</string>
+    <string name="greader_warning">Google Reader 是非常古老的 API，且缺乏文档。在每个聚合器的实现方式可能不尽相同，因此可能无法很好地运行。\n\n如果遇到任何同步问题，请向 Readrops GitHub 仓库报告。</string>
+    <string name="fever_warning">Fever 是非常古老、有限和过时的 API。它不支持 Feed 和文件夹管理。此外，它的文档也不完善，在每个聚合器的实现方式可能不尽相同，因此可能无法很好地运行。\n\n如果遇到任何同步问题，请向 Readrops GitHub 仓库报告。</string>
+    <string name="remove_author_documentation">当应用于任意变量时，此筛选器将从中移除变量 <tt>author</tt> 的内容</string>
+    <string name="localised_quotes">“%s”</string>
+    <string name="swipe_to_right_action">向右滑动操作</string>
+    <string name="empty_file">文件为空</string>
 </resources>
