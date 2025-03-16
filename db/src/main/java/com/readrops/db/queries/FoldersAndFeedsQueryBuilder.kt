@@ -1,5 +1,6 @@
 package com.readrops.db.queries
 
+import androidx.room.util.newStringBuilder
 import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQueryBuilder
@@ -25,7 +26,9 @@ object FoldersAndFeedsQueryBuilder {
     )
 
     private val FEED_JOIN = """(Select * From Feed Where account_id = :accountId) Feed 
-        Left Join Folder On Folder.id = Feed.folder_id """.trimMargin()
+        Left Join Folder On Folder.id = Feed.folder_id""".trimMargin()
+
+    private val SEPARATE_STATE = " Left Join ItemState On ItemState.remote_id = Item.remote_id"
 
     private const val FOLDER_JOIN = "Folder Left Join Feed On Folder.id = Feed.folder_id "
 
@@ -35,12 +38,10 @@ object FoldersAndFeedsQueryBuilder {
 
     private const val FOLDER_SELECTION = "Feed.id is NULL And Folder.account_id = :accountId"
 
-    private const val ITEM_SELECTION = "And Item.read = 0"
-
-    fun build(accountId: Int, hideReadFeeds: Boolean = false): SupportSQLiteQuery {
-        return SimpleSQLiteQuery(
+    fun build(accountId: Int, hideReadFeeds: Boolean, useSeparateState: Boolean): SupportSQLiteQuery {
+        val result = SimpleSQLiteQuery(
             """
-            ${buildFeedQuery(accountId, hideReadFeeds).sql}
+            ${buildFeedQuery(accountId, hideReadFeeds, useSeparateState).sql}
             ${
                 if (!hideReadFeeds) {
                     """UNION ALL
@@ -51,11 +52,24 @@ object FoldersAndFeedsQueryBuilder {
                 }
             }""".trimIndent()
         )
+        return result
     }
 
-    private fun buildFeedQuery(accountId: Int, hideReadFeeds: Boolean): SupportSQLiteQuery {
-        val tables = if (hideReadFeeds) FEED_JOIN + ITEM_JOIN else FEED_JOIN
-        val selection = if (hideReadFeeds) FEED_SELECTION + ITEM_SELECTION else FEED_SELECTION
+    private fun buildFeedQuery(accountId: Int, hideReadFeeds: Boolean, useSeparateState: Boolean): SupportSQLiteQuery {
+        val tables = buildString {
+            append(FEED_JOIN)
+            if (hideReadFeeds) {
+                append(ITEM_JOIN)
+                if(useSeparateState) append(SEPARATE_STATE)
+            }
+        }
+        val selection = buildString {
+            append(FEED_SELECTION)
+            if (hideReadFeeds) {
+                if(useSeparateState) append("AND ItemState.read = 0")
+                else append("And Item.read = 0")
+            }
+        }
 
         return SupportSQLiteQueryBuilder.builder(tables.replace(":accountId", "$accountId")).run {
             columns(COLUMNS)
