@@ -28,6 +28,7 @@ import com.readrops.app.util.extensions.isLoading
 import com.readrops.app.util.extensions.openInCustomTab
 import com.readrops.app.util.extensions.openUrl
 import com.readrops.db.filters.QueryFilters
+import kotlinx.coroutines.flow.distinctUntilChanged
 import org.koin.core.parameter.parametersOf
 
 class ItemScreen(
@@ -95,11 +96,10 @@ class ItemScreen(
 
                 LaunchedEffect(pagerState.currentPage) {
                     snapshotFlow { pagerState.currentPage }
+                        .distinctUntilChanged { old, new -> old == new }
                         .collect { pageIndex ->
                             items[pageIndex]?.let {
-                                if (!it.isRead) {
-                                    screenModel.setItemReadState(it.item)
-                                }
+                                screenModel.setItemRead(it)
                             }
                         }
                 }

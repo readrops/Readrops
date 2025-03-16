@@ -163,8 +163,8 @@ class ItemScreenModel(
             .flow
             .map {
                 it.map { itemWithFeed ->
-                    val stateChange =
-                        state.value.stateChanges.firstOrNull { stateChange -> stateChange.itemId == itemWithFeed.item.id }
+                    val stateChange = state.value.stateChanges
+                        .firstOrNull { stateChange -> stateChange.itemId == itemWithFeed.item.id }
 
                     if (stateChange != null) {
                         itemWithFeed.copy(
@@ -232,6 +232,14 @@ class ItemScreenModel(
         }
     }
 
+    fun setItemRead(itemWithFeed: ItemWithFeed) {
+        val item = itemWithFeed.item
+
+        if (!itemWithFeed.isRead && !state.value.stateChanges.any { it.item.id == item.id }) {
+            setItemReadState(item)
+        }
+    }
+
     fun setItemReadState(item: Item) {
         if (useStateChanges) {
             updateStateChange(item, readChange = true)
@@ -249,8 +257,8 @@ class ItemScreenModel(
             pagingSource.invalidate()
         } else {
             screenModelScope.launch(dispatcher) {
-                 repository.setItemStarState(item.apply { isStarred = !isStarred })
-             }
+                repository.setItemStarState(item.apply { isStarred = !isStarred })
+            }
         }
     }
 
@@ -343,15 +351,19 @@ class ItemScreenModel(
     override fun onDispose() {
         screenModelScope.launch(dispatcher) {
             withContext(NonCancellable) {
-                for (stateChange in state.value.stateChanges) {
-                    if (stateChange.readChange) {
-                        repository.setItemReadState(stateChange.item.apply { isRead = !isRead })
-                    }
+                repository.setItemsRead(
+                    items = state.value.stateChanges
+                        .filter { it.readChange }
+                        .map { it.item }
+                )
 
-                    if (stateChange.starChange) {
-                        repository.setItemStarState(stateChange.item.apply { isStarred = !isStarred })
+                state.value.stateChanges
+                    .filter { it.starChange }
+                    .forEach {
+                        repository.setItemStarState(it.item.apply {
+                            isStarred = !isStarred
+                        })
                     }
-                }
             }
         }
     }

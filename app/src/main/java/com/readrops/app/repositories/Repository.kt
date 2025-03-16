@@ -1,5 +1,6 @@
 package com.readrops.app.repositories
 
+import androidx.room.withTransaction
 import com.readrops.api.services.fever.adapters.Favicon
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
@@ -70,49 +71,100 @@ abstract class BaseRepository(
     open suspend fun deleteFolder(folder: Folder) = database.folderDao().delete(folder)
 
     open suspend fun setItemReadState(item: Item) {
-        when {
-            account.config.useSeparateState -> {
-                database.itemStateChangeDao().upsertItemReadStateChange(item, account.id, true)
-                database.itemStateDao().upsertItemReadState(
-                    ItemState(
-                        id = 0,
-                        read = item.isRead,
-                        starred = item.isStarred,
-                        remoteId = item.remoteId!!,
-                        accountId = account.id
+        database.withTransaction {
+            when {
+                account.config.useSeparateState -> {
+                    database.itemStateChangeDao().upsertItemReadStateChange(item, account.id, true)
+                    database.itemStateDao().upsertItemReadState(
+                        ItemState(
+                            id = 0,
+                            read = item.isRead,
+                            starred = item.isStarred,
+                            remoteId = item.remoteId!!,
+                            accountId = account.id
+                        )
                     )
-                )
-            }
-            account.isLocal -> {
-                database.itemDao().updateReadState(item.id, item.isRead)
-            }
-            else -> {
-                database.itemStateChangeDao().upsertItemReadStateChange(item, account.id, false)
-                database.itemDao().updateReadState(item.id, item.isRead)
+                }
+
+                account.isLocal -> {
+                    database.itemDao().updateReadState(item.id, item.isRead)
+                }
+
+                else -> {
+                    database.itemStateChangeDao().upsertItemReadStateChange(item, account.id, false)
+                    database.itemDao().updateReadState(item.id, item.isRead)
+                }
             }
         }
     }
 
     open suspend fun setItemStarState(item: Item) {
-        when {
-            account.config.useSeparateState -> {
-                database.itemStateChangeDao().upsertItemStarStateChange(item, account.id, true)
-                database.itemStateDao().upsertItemStarState(
-                    ItemState(
-                        id = 0,
-                        read = item.isRead,
-                        starred = item.isStarred,
-                        remoteId = item.remoteId!!,
-                        accountId = account.id
+        database.withTransaction {
+            when {
+                account.config.useSeparateState -> {
+                    database.itemStateChangeDao().upsertItemStarStateChange(item, account.id, true)
+                    database.itemStateDao().upsertItemStarState(
+                        ItemState(
+                            id = 0,
+                            read = item.isRead,
+                            starred = item.isStarred,
+                            remoteId = item.remoteId!!,
+                            accountId = account.id
+                        )
                     )
-                )
+                }
+
+                account.isLocal -> {
+                    database.itemDao().updateStarState(item.id, item.isStarred)
+                }
+
+                else -> {
+                    database.itemStateChangeDao().upsertItemStarStateChange(item, account.id, false)
+                    database.itemDao().updateStarState(item.id, item.isStarred)
+                }
             }
-            account.isLocal -> {
-                database.itemDao().updateStarState(item.id, item.isStarred)
-            }
-            else -> {
-                database.itemStateChangeDao().upsertItemStarStateChange(item, account.id, false)
-                database.itemDao().updateStarState(item.id, item.isStarred)
+        }
+    }
+
+    open suspend fun setItemsRead(items: List<Item>) {
+        require(items.all { it.isRead == false }) {
+            "Do not add an item state change for an item which is already read"
+        }
+
+        val accountId = account.id
+        val ids = items.map { it.id }
+
+        database.withTransaction {
+            when {
+                account.config.useSeparateState -> {
+                    items.forEach {
+                        database.itemStateChangeDao().upsertItemReadStateChange(it, accountId, true)
+                    }
+
+                    database.itemStateDao().setItemsRead(
+                        ids = items.map { it.remoteId!! },
+                        itemStates = items.map {
+                            ItemState(
+                                read = true,
+                                remoteId = it.remoteId!!,
+                                accountId = accountId
+                            )
+                        },
+                        accountId = accountId
+                    )
+                }
+
+                account.isLocal -> {
+                    database.itemDao().setAllItemsRead(ids)
+                }
+
+                else -> {
+                    items.forEach {
+                        database.itemStateChangeDao()
+                            .upsertItemReadStateChange(it, accountId, false)
+                    }
+                    database.itemDao().setAllItemsRead(ids)
+                }
             }
         }
     }
@@ -120,17 +172,21 @@ abstract class BaseRepository(
     open suspend fun setAllItemsRead() {
         val accountId = account.id
 
-        when {
-            account.config.useSeparateState -> {
-                database.itemStateChangeDao().upsertAllItemsReadStateChanges(accountId)
-                database.itemStateDao().setAllItemsRead(accountId)
-            }
-            account.isLocal -> {
-                database.itemDao().setAllItemsRead(account.id)
-            }
-            else -> {
-                database.itemStateChangeDao().upsertAllItemsReadStateChanges(accountId)
-                database.itemDao().setAllItemsRead(accountId)
+        database.withTransaction {
+            when {
+                account.config.useSeparateState -> {
+                    database.itemStateChangeDao().upsertAllItemsReadStateChanges(accountId)
+                    database.itemStateDao().setAllItemsRead(accountId)
+                }
+
+                account.isLocal -> {
+                    database.itemDao().setAllItemsRead(account.id)
+                }
+
+                else -> {
+                    database.itemStateChangeDao().upsertAllItemsReadStateChanges(accountId)
+                    database.itemDao().setAllItemsRead(accountId)
+                }
             }
         }
     }
@@ -138,17 +194,21 @@ abstract class BaseRepository(
     open suspend fun setAllStarredItemsRead() {
         val accountId = account.id
 
-        when {
-            account.config.useSeparateState -> {
-                database.itemStateChangeDao().upsertStarredItemReadStateChanges(accountId)
-                database.itemStateDao().setAllStarredItemsRead(accountId)
-            }
-            account.isLocal -> {
-                database.itemDao().setAllStarredItemsRead(accountId)
-            }
-            else -> {
-                database.itemStateChangeDao().upsertStarredItemReadStateChanges(accountId)
-                database.itemDao().setAllStarredItemsRead(accountId)
+        database.withTransaction {
+            when {
+                account.config.useSeparateState -> {
+                    database.itemStateChangeDao().upsertStarredItemReadStateChanges(accountId)
+                    database.itemStateDao().setAllStarredItemsRead(accountId)
+                }
+
+                account.isLocal -> {
+                    database.itemDao().setAllStarredItemsRead(accountId)
+                }
+
+                else -> {
+                    database.itemStateChangeDao().upsertStarredItemReadStateChanges(accountId)
+                    database.itemDao().setAllStarredItemsRead(accountId)
+                }
             }
         }
     }
@@ -156,17 +216,21 @@ abstract class BaseRepository(
     open suspend fun setAllNewItemsRead() {
         val accountId = account.id
 
-        when {
-            account.config.useSeparateState -> {
-                database.itemStateChangeDao().upsertNewItemReadStateChanges(accountId)
-                database.itemStateDao().setAllNewItemsRead(accountId)
-            }
-            account.isLocal -> {
-                database.itemDao().setAllNewItemsRead(accountId)
-            }
-            else -> {
-                database.itemStateChangeDao().upsertNewItemReadStateChanges(accountId)
-                database.itemDao().setAllNewItemsRead(accountId)
+        database.withTransaction {
+            when {
+                account.config.useSeparateState -> {
+                    database.itemStateChangeDao().upsertNewItemReadStateChanges(accountId)
+                    database.itemStateDao().setAllNewItemsRead(accountId)
+                }
+
+                account.isLocal -> {
+                    database.itemDao().setAllNewItemsRead(accountId)
+                }
+
+                else -> {
+                    database.itemStateChangeDao().upsertNewItemReadStateChanges(accountId)
+                    database.itemDao().setAllNewItemsRead(accountId)
+                }
             }
         }
     }
@@ -174,18 +238,23 @@ abstract class BaseRepository(
     open suspend fun setAllItemsReadByFeed(feedId: Int) {
         val accountId = account.id
 
-        when {
-            account.config.useSeparateState -> {
-                database.itemStateChangeDao()
-                    .upsertItemReadStateChangesByFeed(feedId, accountId)
-                database.itemStateDao().setAllItemsReadByFeed(feedId, accountId)
-            }
-            account.isLocal -> {
-                database.itemDao().setAllItemsReadByFeed(feedId, accountId)
-            }
-            else -> {
-                database.itemStateChangeDao().upsertItemReadStateChangesByFeed(feedId, accountId)
-                database.itemDao().setAllItemsReadByFeed(feedId, accountId)
+        database.withTransaction {
+            when {
+                account.config.useSeparateState -> {
+                    database.itemStateChangeDao()
+                        .upsertItemReadStateChangesByFeed(feedId, accountId)
+                    database.itemStateDao().setAllItemsReadByFeed(feedId, accountId)
+                }
+
+                account.isLocal -> {
+                    database.itemDao().setAllItemsReadByFeed(feedId, accountId)
+                }
+
+                else -> {
+                    database.itemStateChangeDao()
+                        .upsertItemReadStateChangesByFeed(feedId, accountId)
+                    database.itemDao().setAllItemsReadByFeed(feedId, accountId)
+                }
             }
         }
     }
@@ -193,17 +262,23 @@ abstract class BaseRepository(
     open suspend fun setAllItemsReadByFolder(folderId: Int) {
         val accountId = account.id
 
-        when {
-            account.config.useSeparateState -> {
-                database.itemStateChangeDao().upsertItemReadStateChangesByFolder(folderId, accountId)
-                database.itemStateDao().setAllItemsReadByFolder(folderId, accountId)
-            }
-            account.isLocal -> {
-                database.itemDao().setAllItemsReadByFolder(folderId, accountId)
-            }
-            else -> {
-                database.itemStateChangeDao().upsertItemReadStateChangesByFolder(folderId, accountId)
-                database.itemDao().setAllItemsReadByFolder(folderId, accountId)
+        database.withTransaction {
+            when {
+                account.config.useSeparateState -> {
+                    database.itemStateChangeDao()
+                        .upsertItemReadStateChangesByFolder(folderId, accountId)
+                    database.itemStateDao().setAllItemsReadByFolder(folderId, accountId)
+                }
+
+                account.isLocal -> {
+                    database.itemDao().setAllItemsReadByFolder(folderId, accountId)
+                }
+
+                else -> {
+                    database.itemStateChangeDao()
+                        .upsertItemReadStateChangesByFolder(folderId, accountId)
+                    database.itemDao().setAllItemsReadByFolder(folderId, accountId)
+                }
             }
         }
     }

@@ -2,6 +2,7 @@ package com.readrops.db.dao
 
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.Transaction
 import com.readrops.db.entities.ItemState
 
 @Dao
@@ -43,8 +44,22 @@ interface ItemStateDao : BaseDao<ItemState> {
         Inner Join Feed On Feed.id = Item.feed_id Where account_id = :accountId And starred = 1)""")
     suspend fun setAllStarredItemsRead(accountId: Int)
 
+    //region items read by ids
+
+    @Transaction
+    suspend fun setItemsRead(ids: List<String>, itemStates: List<ItemState>, accountId: Int) {
+        setItemsReadByUpdate(ids, accountId)
+        insertIgnoreConflicts(itemStates)
+    }
+
+    @Query("""Update ItemState set read = 1 Where remote_id In (:ids) And account_id = :accountId""")
+    suspend fun setItemsReadByUpdate(ids: List<String>, accountId: Int)
+
+    //endregion
+
     //region all items read
 
+    @Transaction
     suspend fun setAllItemsRead(accountId: Int) {
         setAllItemsReadByUpdate(accountId)
         setAllItemsReadByInsert(accountId)
@@ -62,6 +77,7 @@ interface ItemStateDao : BaseDao<ItemState> {
 
     //region read by feed
 
+    @Transaction
     suspend fun setAllItemsReadByFeed(feedId: Int, accountId: Int) {
         setAllItemsReadByFeedByUpdate(feedId, accountId)
         setAllItemsReadByFeedByInsert(feedId, accountId)
@@ -80,6 +96,7 @@ interface ItemStateDao : BaseDao<ItemState> {
 
     //region read by folder
 
+    @Transaction
     suspend fun setAllItemsReadByFolder(folderId: Int, accountId: Int) {
         setAllItemsReadByFolderByUpdate(folderId, accountId)
         setAllItemsReadByFolderByInsert(folderId, accountId)
@@ -98,6 +115,7 @@ interface ItemStateDao : BaseDao<ItemState> {
 
     //region news items read
 
+    @Transaction
     suspend fun setAllNewItemsRead(accountId: Int) {
         setAllNewItemsReadByUpdate(accountId)
         setAllNewItemsReadByInsert(accountId)

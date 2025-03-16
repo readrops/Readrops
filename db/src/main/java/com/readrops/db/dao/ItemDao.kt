@@ -42,6 +42,9 @@ interface ItemDao : BaseDao<Item> {
     @Query("Update Item set read = 1 Where feed_id IN (Select id From Feed Where account_id = :accountId)")
     suspend fun setAllItemsRead(accountId: Int)
 
+    @Query("Update Item set read = 1 Where id IN (:ids)")
+    suspend fun setAllItemsRead(ids: List<Int>)
+
     @Query("Update Item set read = 1 Where starred = 1 And feed_id IN (Select id From Feed Where account_id = :accountId)")
     suspend fun setAllStarredItemsRead(accountId: Int)
 
