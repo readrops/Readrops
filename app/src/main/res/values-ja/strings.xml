@@ -13,7 +13,7 @@
     <string name="share_article">記事を共有</string>
     <string name="open_url">URL を開く</string>
     <string name="add_folder">フォルダーを追加</string>
-    <string name="no_folder">フォルダーがありません</string>
+    <string name="no_folder">フォルダーなし</string>
     <string name="cancel">キャンセル</string>
     <string name="settings">設定</string>
     <string name="validate">確認</string>
@@ -41,7 +41,7 @@
     <string name="delete_folder">フォルダーを削除しますか？</string>
     <string name="delete_account">アカウント削除</string>
     <string name="delete_account_question">本当にアカウントを削除しますか？</string>
-    <string name="feed_deleted">フィード %1$s が削除されました</string>
+    <string name="feed_deleted">フィード %1$s を削除しました</string>
     <string name="feed_insertion_parse_failed">フィード %1$s の解析中にエラーが発生しました</string>
     <string name="feed_insertion_wrong_format">フィード %1$s のフォーマットが間違っています</string>
     <string name="feed_insertion_unknown_error">フィード %1$s に未知のエラーが発生しました</string>
@@ -145,4 +145,19 @@
     <string name="copy_error_clipboard">クリップボードにエラーをコピー</string>
     <string name="copied">コピーしました！</string>
     <string name="report_error_github">Github でエラーを報告</string>
+    <string name="no_article">記事がありません</string>
+    <string name="show_notifications_background_sync">バックグラウンド同期後に通知を表示する</string>
+    <string name="background_sync_new_articles">バックグラウンド同期後に新着記事を通知します</string>
+    <string name="not_valid_rss_feed">入力した URL は有効な RSS フィードを提供していません</string>
+    <string name="freshrss_delete_folder_question">本当にフォルダー %1$s を削除しますか？リンクされているすべてのフィードは既定のフォルダーに移動されます。</string>
+    <string name="enable_auto_synchro_text">通知を表示するにはバックグラウンド同期が有効にする必要があります。\n設定を開きますか？</string>
+    <string name="save">保存</string>
+    <string name="delete_feed_question">本当にフィード %1$s を削除しますか？</string>
+    <string name="delete_folder_question">本当にフォルダー %1$s を削除しますか？リンクされているすべてのフィードも削除されます。</string>
+    <string name="no_rss_feed_found">RSS フィードが見つかりません</string>
+    <string name="mark_all_articles_read">すべての記事を既読にする</string>
+    <string name="mark_all_articles_read_question">本当にすべてのアイテムを既読にしますか？</string>
+    <string name="date">日付</string>
+    <string name="ascending">昇順</string>
+    <string name="descending">降順</string>
 </resources>
