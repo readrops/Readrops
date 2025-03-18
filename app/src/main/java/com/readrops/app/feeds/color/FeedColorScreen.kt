@@ -1,5 +1,6 @@
 package com.readrops.app.feeds.color
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,7 +17,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.koin.koinScreenModel
@@ -35,11 +34,9 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.readrops.app.R
 import com.readrops.app.util.components.AndroidScreen
-import com.readrops.app.util.components.FeedIcon
 import com.readrops.app.util.components.SelectableIconText
 import com.readrops.app.util.theme.LargeSpacer
-import com.readrops.app.util.theme.MediumSpacer
-import com.readrops.app.util.theme.ShortSpacer
+import com.readrops.app.util.theme.ReadropsTheme
 import com.readrops.app.util.theme.spacing
 import com.readrops.db.entities.Feed
 import org.koin.core.parameter.parametersOf
@@ -54,9 +51,7 @@ class FeedColorScreen(val feed: Feed) : AndroidScreen() {
         val screenModel = koinScreenModel<FeedColorScreenModel> { parametersOf(feed) }
 
         val state by screenModel.state.collectAsStateWithLifecycle()
-
         val snackbarHostState = remember { SnackbarHostState() }
-        val defaultColor = MaterialTheme.colorScheme.primary
 
         if (state.canExit) {
             navigator.pop()
@@ -103,51 +98,42 @@ class FeedColorScreen(val feed: Feed) : AndroidScreen() {
                     .padding(innerPadding)
                     .padding(vertical = MaterialTheme.spacing.shortSpacing)
             ) {
-                Text(
-                    text = stringResource(R.string.preview),
-                    style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier.padding(horizontal = MaterialTheme.spacing.mediumSpacing)
-                )
-
-                MediumSpacer()
-
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = MaterialTheme.spacing.mediumSpacing)
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.weight(1f)
+                    Text(
+                        text = stringResource(R.string.preview),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.secondary,
+                        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.mediumSpacing)
+                    )
+
+                    IconButton(
+                        onClick = { screenModel.resetColor() },
                     ) {
-                        FeedIcon(
-                            iconUrl = feed.iconUrl,
-                            name = feed.name.orEmpty(),
-                        )
-
-                        ShortSpacer()
-
-                        Text(
-                            text = feed.name!!,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = state.newColor ?: state.currentColor
-                            ?: MaterialTheme.colorScheme.primary,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    }
-
-                    if (state.newColor != null) {
-                        ShortSpacer()
-
-                        TextButton(
-                            onClick = { screenModel.resetColor() },
-                        ) {
-                            Text(text = stringResource(R.string.reset))
+                        if (state.canValidate) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_undo),
+                                contentDescription = null
+                            )
                         }
                     }
+                }
+
+                ReadropsTheme(useDarkTheme = isSystemInDarkTheme()) {
+                    ColorPreview(
+                        feed = feed,
+                        color = state.color,
+                    )
+                }
+
+                ReadropsTheme(useDarkTheme = !isSystemInDarkTheme()) {
+                    ColorPreview(
+                        feed = feed,
+                        color = state.color,
+                    )
                 }
 
                 LargeSpacer()
@@ -155,6 +141,7 @@ class FeedColorScreen(val feed: Feed) : AndroidScreen() {
                 Text(
                     text = stringResource(R.string.actions),
                     style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.padding(horizontal = MaterialTheme.spacing.mediumSpacing)
                 )
 
@@ -177,7 +164,7 @@ class FeedColorScreen(val feed: Feed) : AndroidScreen() {
                     spacing = MaterialTheme.spacing.mediumSpacing,
                     iconSize = 24.dp,
                     tint = MaterialTheme.colorScheme.primary,
-                    onClick = { screenModel.setNewColor(defaultColor) },
+                    onClick = { screenModel.removeColor() },
                 )
 
                 SelectableIconText(
@@ -191,22 +178,11 @@ class FeedColorScreen(val feed: Feed) : AndroidScreen() {
                     onClick = { screenModel.showColorPickerDialog() }
                 )
 
-                /*SelectableIconText(
-                    icon = painterResource(R.drawable.ic_download),
-                    text = stringResource(R.string.load_color_new_favicon),
-                    style = MaterialTheme.typography.titleSmall,
-                    padding = MaterialTheme.spacing.mediumSpacing,
-                    spacing = MaterialTheme.spacing.mediumSpacing,
-                    iconSize = 24.dp,
-                    tint = MaterialTheme.colorScheme.primary,
-                    onClick = { }
-                )*/
-
                 LargeSpacer()
 
                 Button(
                     onClick = { screenModel.validate() },
-                    enabled = state.newColor != null,
+                    enabled = state.canValidate,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = MaterialTheme.spacing.mediumSpacing)

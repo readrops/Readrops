@@ -231,4 +231,5 @@
     <string name="freshrss_delete_folder_question">Voulez-vous supprimer le dossier %1$s ? Tous les flux associés seront déplacés vers le dossier par défaut.</string>
     <string name="no_network">Aucune connexion internet disponible</string>
     <string name="empty_file">Le fichier est vide</string>
+    <string name="color_contrast_too_low">Le contraste avec l\'arrière-plan est trop faible. La couleur par défaut sera utilisée à la place avec ce thème.</string>
 </resources>

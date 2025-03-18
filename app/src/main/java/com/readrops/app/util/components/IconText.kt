@@ -21,8 +21,8 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
-import com.readrops.app.util.theme.spacing
 import com.readrops.app.util.extensions.toDp
+import com.readrops.app.util.theme.spacing
 
 @Composable
 fun BaseText(
@@ -63,6 +63,7 @@ fun IconText(
     color: Color = LocalContentColor.current,
     tint: Color = LocalContentColor.current,
     spacing: Dp = MaterialTheme.spacing.veryShortSpacing,
+    iconSize: Dp = style.toDp(),
     onClick: (() -> Unit)? = null,
 ) {
     BaseText(
@@ -78,7 +79,7 @@ fun IconText(
             painter = icon,
             tint = tint,
             contentDescription = null,
-            modifier = Modifier.size(style.toDp()),
+            modifier = Modifier.size(iconSize),
         )
     }
 }
