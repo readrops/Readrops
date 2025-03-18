@@ -81,10 +81,8 @@ class TimelineScreenModel(
 
     init {
         screenModelScope.launch(dispatcher) {
-            val mainFilter = MainFilter.valueOf(preferences.mainFilter.flow.first())
             var syncAtLaunch = preferences.synchAtLaunch.flow.first()
-
-            _timelineState.update { it.copy(filters = it.filters.copy(mainFilter = mainFilter)) }
+            filters.update { it.copy(mainFilter = MainFilter.valueOf(preferences.mainFilter.flow.first())) }
 
             combine(
                 accountEvent,
@@ -264,6 +262,7 @@ class TimelineScreenModel(
 
                         buildPager()
                     }
+
                     workInfo.outputData.getBoolean(SyncWorker.SYNC_FAILURE_KEY, false) -> {
                         val error =
                             workInfo.outputData.getSerializable(SyncWorker.SYNC_FAILURE_EXCEPTION_KEY) as Exception?
@@ -279,6 +278,7 @@ class TimelineScreenModel(
 
                         buildPager()
                     }
+
                     workInfo.progress.getString(SyncWorker.FEED_NAME_KEY) != null -> {
                         _timelineState.update {
                             it.copy(
@@ -385,7 +385,6 @@ class TimelineScreenModel(
     }
 
 
-
     fun setAllItemsRead() {
         screenModelScope.launch(dispatcher) {
             when (_timelineState.value.filters.subFilter) {
@@ -470,7 +469,8 @@ class TimelineScreenModel(
     }
 
     suspend fun selectItemWithFeed(itemId: Int): ItemWithFeed? {
-        val query = ItemSelectionQueryBuilder.buildQuery(itemId, currentAccount!!.config.useSeparateState)
+        val query =
+            ItemSelectionQueryBuilder.buildQuery(itemId, currentAccount!!.config.useSeparateState)
         return database.itemDao().selectItemById(query).firstOrNull()
     }
 
