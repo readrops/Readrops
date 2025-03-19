@@ -25,6 +25,7 @@ import com.readrops.app.util.components.CenteredProgressIndicator
 import com.readrops.app.util.components.Placeholder
 import com.readrops.app.util.extensions.isError
 import com.readrops.app.util.extensions.isLoading
+import com.readrops.app.util.extensions.isNotEmpty
 import com.readrops.app.util.extensions.openInCustomTab
 import com.readrops.app.util.extensions.openUrl
 import com.readrops.db.filters.QueryFilters
@@ -45,7 +46,7 @@ class ItemScreen(
         val screenModel =
             koinScreenModel<ItemScreenModel>(parameters = { parametersOf(itemId, itemIndex, queryFilters) })
         val state by screenModel.state.collectAsStateWithLifecycle()
-        val items = state.itemState.collectAsLazyPagingItems()
+        val items = screenModel.itemState.collectAsLazyPagingItems()
 
         val snackbarHostState = remember { SnackbarHostState() }
 
@@ -98,8 +99,10 @@ class ItemScreen(
                     snapshotFlow { pagerState.currentPage }
                         .distinctUntilChanged { old, new -> old == new }
                         .collect { pageIndex ->
-                            items[pageIndex]?.let {
-                                screenModel.setItemRead(it)
+                            if (items.isNotEmpty()) {
+                                items[pageIndex]?.let {
+                                    screenModel.setItemRead(it)
+                                }
                             }
                         }
                 }

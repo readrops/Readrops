@@ -81,7 +81,7 @@ object ItemsQueryBuilder {
         }
 
     private fun buildWhereClause(queryFilters: QueryFilters, separateState: Boolean): String =
-        StringBuilder(500).run {
+        buildString {
             append("Feed.account_id = ${queryFilters.accountId} ")
 
             if (!queryFilters.showReadItems) {

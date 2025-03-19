@@ -40,12 +40,11 @@ import com.readrops.db.queries.ItemsQueryBuilder
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -81,6 +80,10 @@ class ItemScreenModel(
     private val useStateChanges = itemIndex > -1 && (queryFilters.mainFilter != MainFilter.ALL
             || !queryFilters.showReadItems)
 
+    private val _itemState: MutableStateFlow<PagingData<ItemWithFeed>> =
+        MutableStateFlow(PagingData.empty())
+    var itemState: StateFlow<PagingData<ItemWithFeed>> = _itemState.asStateFlow()
+
     init {
         screenModelScope.launch(dispatcher) {
             database.accountDao().selectCurrentAccount()
@@ -99,7 +102,7 @@ class ItemScreenModel(
                     repository = get { parametersOf(account) }
 
                     if (itemIndex > -1) {
-                        mutableState.update { it.copy(itemState = buildPager()) }
+                        itemState = buildPager()
                     } else {
                         val query = ItemSelectionQueryBuilder.buildQuery(
                             itemId = itemId,
@@ -107,11 +110,8 @@ class ItemScreenModel(
                         )
 
                         database.itemDao().selectItemById(query)
-                            .distinctUntilChanged()
                             .collect { itemWithFeed ->
-                                mutableState.update {
-                                    it.copy(itemState = flowOf(PagingData.from(listOf(itemWithFeed))))
-                                }
+                                _itemState.update { PagingData.from(listOf(itemWithFeed)) }
                             }
                     }
                 }
@@ -148,7 +148,7 @@ class ItemScreenModel(
         }
     }
 
-    private fun buildPager(): Flow<PagingData<ItemWithFeed>> {
+    private suspend fun buildPager(): StateFlow<PagingData<ItemWithFeed>> {
         val pageNb = (((itemIndex + PAGING_PAGE_SIZE - 1) / PAGING_PAGE_SIZE) + 1)
             .coerceAtLeast(1)
 
@@ -185,6 +185,7 @@ class ItemScreenModel(
                 }
             }
             .cachedIn(screenModelScope)
+            .stateIn(screenModelScope)
     }
 
     // TODO this must be tested one way or another
@@ -371,7 +372,6 @@ class ItemScreenModel(
 
 @Stable
 data class ItemState(
-    val itemState: Flow<PagingData<ItemWithFeed>> = emptyFlow(),
     val imageDialogUrl: String? = null,
     val fileDownloadedEvent: Boolean = false,
     val openInExternalBrowser: Boolean = false,

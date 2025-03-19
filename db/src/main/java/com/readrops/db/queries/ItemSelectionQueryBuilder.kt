@@ -27,7 +27,9 @@ object ItemSelectionQueryBuilder {
     )
 
     private val SEPARATE_STATE_COLUMNS = arrayOf(
-        "case When ItemState.read = 1 Then 1 else 0 End read",
+        "case When ItemState.remote_id is NULL Or ItemState.read = 1 Then 1 else 0 End is_read",
+        "case When ItemState.remote_id is NULL Or ItemState.read = 1 Then 1 else 0 End read",
+        "case When ItemState.starred = 1 Then 1 else 0 End is_starred",
         "case When ItemState.starred = 1 Then 1 else 0 End starred"
     )
 
@@ -42,12 +44,16 @@ object ItemSelectionQueryBuilder {
      */
     @JvmStatic
     fun buildQuery(itemId: Int, separateState: Boolean): SupportSQLiteQuery {
-        val tables = if (separateState) JOIN + SEPARATE_STATE_JOIN else JOIN
-        val columns =
-            if (separateState) COLUMNS.plus(SEPARATE_STATE_COLUMNS) else COLUMNS + arrayOf(
-                "Item.read AS is_read",
-                "starred AS is_starred"
-            )
+        val tables = buildString {
+            append(JOIN)
+            if (separateState) append(SEPARATE_STATE_JOIN)
+        }
+
+        val columns = if (separateState) {
+            COLUMNS + SEPARATE_STATE_COLUMNS
+        } else {
+            COLUMNS + arrayOf("read AS is_read", "read", "starred AS is_starred", "starred")
+        }
 
         return SupportSQLiteQueryBuilder.builder(tables).run {
             columns(columns)

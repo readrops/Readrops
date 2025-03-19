@@ -1,6 +1,5 @@
 package com.readrops.db.queries
 
-import androidx.room.util.newStringBuilder
 import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQueryBuilder
@@ -28,7 +27,7 @@ object FoldersAndFeedsQueryBuilder {
     private val FEED_JOIN = """(Select * From Feed Where account_id = :accountId) Feed 
         Left Join Folder On Folder.id = Feed.folder_id""".trimMargin()
 
-    private val SEPARATE_STATE = " Left Join ItemState On ItemState.remote_id = Item.remote_id"
+    private const val SEPARATE_STATE = " Left Join ItemState On ItemState.remote_id = Item.remote_id"
 
     private const val FOLDER_JOIN = "Folder Left Join Feed On Folder.id = Feed.folder_id "
 
