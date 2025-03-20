@@ -7,6 +7,7 @@ import androidx.room.ForeignKey
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.readrops.db.entities.account.Account
+import java.io.Serializable
 
 enum class OpenIn {
     LOCAL_VIEW,
@@ -51,4 +52,4 @@ data class Feed(
     @ColumnInfo(name = "open_in_ask", defaultValue = "1") var openInAsk: Boolean = true,
     @Ignore var unreadCount: Int = 0,
     @Ignore var remoteFolderId: String? = null,
-)
+) : Serializable
