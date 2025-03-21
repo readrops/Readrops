@@ -10,6 +10,8 @@ import android.net.Uri
 import android.os.Environment
 import androidx.compose.runtime.Stable
 import androidx.core.content.FileProvider
+import androidx.paging.LoadState
+import androidx.paging.LoadStates
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -40,9 +42,9 @@ import com.readrops.db.queries.ItemsQueryBuilder
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -81,8 +83,18 @@ class ItemScreenModel(
             || !queryFilters.showReadItems)
 
     private val _itemState: MutableStateFlow<PagingData<ItemWithFeed>> =
-        MutableStateFlow(PagingData.empty())
-    var itemState: StateFlow<PagingData<ItemWithFeed>> = _itemState.asStateFlow()
+        MutableStateFlow(
+            PagingData.empty(
+                sourceLoadStates = LoadStates(
+                    refresh = LoadState.Loading,
+                    prepend = LoadState.Loading,
+                    append = LoadState.Loading
+                )
+            )
+        )
+    // based type is Flow because with StateFlow when coming back from process death, pager doesn't resume
+    // it might be due to stateIn() overlapping cachedIn(), but not sure
+    var itemState: Flow<PagingData<ItemWithFeed>> = _itemState.asStateFlow()
 
     init {
         screenModelScope.launch(dispatcher) {
@@ -148,7 +160,7 @@ class ItemScreenModel(
         }
     }
 
-    private suspend fun buildPager(): StateFlow<PagingData<ItemWithFeed>> {
+    private fun buildPager(): Flow<PagingData<ItemWithFeed>> {
         val pageNb = (((itemIndex + PAGING_PAGE_SIZE - 1) / PAGING_PAGE_SIZE) + 1)
             .coerceAtLeast(1)
 
@@ -185,7 +197,6 @@ class ItemScreenModel(
                 }
             }
             .cachedIn(screenModelScope)
-            .stateIn(screenModelScope)
     }
 
     // TODO this must be tested one way or another
