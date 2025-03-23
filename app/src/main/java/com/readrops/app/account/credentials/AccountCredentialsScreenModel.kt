@@ -4,11 +4,13 @@ import android.content.Context
 import android.content.SharedPreferences
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
+import com.readrops.app.R
 import com.readrops.app.repositories.BaseRepository
 import com.readrops.app.util.Utils
 import com.readrops.app.util.components.TextFieldError
 import com.readrops.db.Database
 import com.readrops.db.entities.account.Account
+import com.readrops.db.entities.account.AccountType
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.update
@@ -16,8 +18,6 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
-import com.readrops.app.R
-import com.readrops.db.entities.account.AccountType
 
 
 class AccountCredentialsScreenModel(
@@ -155,7 +155,7 @@ class AccountCredentialsScreenModel(
                 login = context.getString(R.string.debug_greader_login),
                 password = context.getString(R.string.debug_greader_password),
             )
-            null, AccountType.LOCAL -> AccountCredentialsState(
+            null, AccountType.FEEDLY, AccountType.LOCAL -> AccountCredentialsState(
                 url = context.getString(R.string.debug_local_url),
                 login = context.getString(R.string.debug_local_login),
                 password = context.getString(R.string.debug_local_password),
