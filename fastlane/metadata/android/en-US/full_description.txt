@@ -1,11 +1,15 @@
-<p>Readrops is a multi-services RSS feed client.<br></p>
-<p><b>Features:</b></p>
-<ul>
-  <li>Local RSS parsing</li>
-  <li>RSS 2.0, ATOM and JSON formats support</li>
-  <li>Multiple accounts</li>
-  <li>Feeds and folders management (create, update and delete feeds/folders if your service API supports it)</li>
-  <li>Nextcloud News support</li>
-  <li>FreshRSS support</li>
-</ul>
-<p>Other features will come in the near future.</p>
+Readrops is a multi-services RSS client for Android. Its name is composed of "Read" and "drops", where drops are articles in an ocean of news.
+
+Features :
+
+- Local RSS parsing (RSS1, RSS2, ATOM, JSONFeed)
+- External services:
+  - FreshRSS
+  - Nextcloud News
+  - Fever API
+  - Google Reader API
+- Multi-account
+- Feeds and folders management (create, update and delete feeds/folders if supported by the service API)
+- OPML import/export
+- Background synchronisation
+- Notifications

@@ -1,5 +1,5 @@
-import java.util.Properties
 import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     id("com.android.application")
@@ -21,8 +21,8 @@ android {
     defaultConfig {
         applicationId = "com.readrops.app"
 
-        versionCode = 20
-        versionName = "2.0.3"
+        versionCode = 21
+        versionName = "2.1.0"
     }
 
     buildTypes {

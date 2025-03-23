@@ -18,15 +18,12 @@
 
 # Features
 
-- Local RSS parsing:
-  - RSS2
-  - RSS1
-  - ATOM
-  - JSONFeed
+- Local RSS parsing (RSS1, RSS2, ATOM, JSONFeed)
 - External services:
   - FreshRSS
   - Nextcloud News
   - Fever API
+  - Google Reader API
 - Multi-account
 - Feeds and folders management (create, update and delete feeds/folders if supported by the service API)
 - OPML import/export
@@ -38,8 +35,6 @@
 <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_1.jpg" width=250> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_2.jpg" width=250> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_3.jpg" width=250> 
 
 <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_4.jpg" width=250> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_5.jpg" width=250> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_6.jpg" width=250>
-
-<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_7.jpg" width=250> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_8.jpg" width=250>
 
 # Licence
 

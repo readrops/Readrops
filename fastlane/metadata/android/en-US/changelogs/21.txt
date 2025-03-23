@@ -1,0 +1,5 @@
+- new: Pager in article screen. Swipe left or right to go to the previous or next article.
+- new: Add feed screen. A new screen replaces the add feed dialog with better options and more granular control.
+- new: Feed color screen. Customize your feed color in a new screen.
+
+See full changelog at https://github.com/readrops/Readrops/blob/develop/CHANGELOG.md
