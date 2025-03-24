@@ -23,6 +23,7 @@ fun AccountSelectionDialog(
         onDismiss = onDismiss
     ) {
         AccountType.entries
+            .filter { it != AccountType.FEEDLY }
             .forEach { type ->
                 SelectableImageText(
                     image = adaptiveIconPainterResource(id = type.iconRes),
