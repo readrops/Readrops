@@ -46,7 +46,7 @@ class FeverFaviconsAdapter {
             endObject()
             favicons
         } catch (e: Exception) {
-            throw ParseException(e.message)
+            throw ParseException("Fever favicons parsing failure", e)
         }
     }
 

@@ -1,7 +1,6 @@
 package com.readrops.api.localfeed.rss2
 
 import com.gitlab.mvysny.konsumexml.Konsumer
-import com.gitlab.mvysny.konsumexml.KonsumerException
 import com.gitlab.mvysny.konsumexml.Names
 import com.gitlab.mvysny.konsumexml.allChildrenAutoIgnore
 import com.readrops.api.localfeed.RSSMedia
@@ -21,33 +20,27 @@ class RSS2ItemAdapter : XmlAdapter<Item> {
     override fun fromXml(konsumer: Konsumer): Item {
         val item = Item()
 
-        return try {
-            val creators = arrayListOf<String?>()
+        val creators = arrayListOf<String?>()
 
-            item.apply {
-                konsumer.allChildrenAutoIgnore(names) {
-                    when (tagName) {
-                        "title" -> title = ApiUtils.cleanText(nonNullText())
-                        "link" -> link = nonNullText()
-                        "author" -> author = nullableText()
-                        "dc:creator" -> creators += nullableText()
-                        "pubDate" -> pubDate = DateUtils.parse(nullableText())
-                        "dc:date" -> pubDate = DateUtils.parse(nullableText())
-                        "guid" -> remoteId = nullableText()
-                        "description" -> description = nullableTextRecursively()
-                        "content:encoded" -> content = nullableTextRecursively()
-                        "enclosure" -> RSSMedia.parseMediaContent(this, item = this@apply)
-                        "media:content" -> RSSMedia.parseMediaContent(this, item = this@apply)
-                        "media:group" -> RSSMedia.parseMediaGroup(this, item = this@apply)
-                        else -> skipContents() // for example media:description
-                    }
+        return item.apply {
+            konsumer.allChildrenAutoIgnore(names) {
+                when (tagName) {
+                    "title" -> title = ApiUtils.cleanText(nonNullText())
+                    "link" -> link = nonNullText()
+                    "author" -> author = nullableText()
+                    "dc:creator" -> creators += nullableText()
+                    "pubDate" -> pubDate = DateUtils.parse(nullableText())
+                    "dc:date" -> pubDate = DateUtils.parse(nullableText())
+                    "guid" -> remoteId = nullableText()
+                    "description" -> description = nullableTextRecursively()
+                    "content:encoded" -> content = nullableTextRecursively()
+                    "enclosure" -> RSSMedia.parseMediaContent(this, item = this@apply)
+                    "media:content" -> RSSMedia.parseMediaContent(this, item = this@apply)
+                    "media:group" -> RSSMedia.parseMediaGroup(this, item = this@apply)
+                    else -> skipContents() // for example media:description
                 }
             }
-
-            finalizeItem(item, creators)
-            item
-        } catch (e: KonsumerException) {
-            throw ParseException(e.message)
+            finalizeItem(this, creators)
         }
     }
 
@@ -68,7 +61,9 @@ class RSS2ItemAdapter : XmlAdapter<Item> {
     }
 
     companion object {
-        val names = Names.of("title", "link", "author", "creator", "pubDate", "date",
-                "guid", "description", "encoded", "enclosure", "content", "group")
+        val names = Names.of(
+            "title", "link", "author", "creator", "pubDate", "date",
+            "guid", "description", "encoded", "enclosure", "content", "group"
+        )
     }
 }

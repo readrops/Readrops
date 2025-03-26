@@ -7,7 +7,6 @@ import com.readrops.api.localfeed.XmlAdapter
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
-import java.lang.Exception
 
 class OPMLAdapter : XmlAdapter<Map<Folder?, List<Feed>>> {
 
@@ -27,7 +26,7 @@ class OPMLAdapter : XmlAdapter<Map<Folder?, List<Feed>>> {
 
         opml!!
     } catch (e: Exception) {
-        throw ParseException(e.message)
+        throw ParseException(e)
     }
 
     /**

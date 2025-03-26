@@ -72,7 +72,7 @@ class RSS1AdapterTest {
             adapter.fromXml(stream.konsumeXml())
         }
 
-        assertTrue(exception.message!!.contains("Item title is required"))
+        assertTrue(exception.stackTraceToString().contains("Item title is required"))
     }
 
     @Test
@@ -83,6 +83,6 @@ class RSS1AdapterTest {
             adapter.fromXml(stream.konsumeXml())
         }
 
-        assertTrue(exception.message!!.contains("RSS1 link or about element is required"))
+        assertTrue(exception.stackTraceToString().contains("RSS1 link or about element is required"))
     }
 }

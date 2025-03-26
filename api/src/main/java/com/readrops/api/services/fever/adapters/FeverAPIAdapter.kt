@@ -31,7 +31,7 @@ class FeverAPIAdapter : JsonAdapter<Boolean>() {
             endObject()
             authenticated
         } catch (e: Exception) {
-            throw ParseException(e.message)
+            throw ParseException("Fever API parsing failure", e)
         }
     }
 }

@@ -46,7 +46,7 @@ class RSS2FeedAdapter : XmlAdapter<Pair<Feed, List<Item>>> {
             konsumer.close()
             Pair(feed, items)
         } catch (e: Exception) {
-            throw ParseException(e.message)
+            throw ParseException("RSS2 feed parsing failure", e)
         }
     }
 

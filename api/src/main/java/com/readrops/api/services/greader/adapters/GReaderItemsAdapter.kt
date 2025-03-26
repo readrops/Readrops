@@ -33,7 +33,7 @@ class GReaderItemsAdapter : JsonAdapter<List<Item>>() {
             endObject()
             items
         } catch (e: Exception) {
-            throw ParseException(e.message)
+            throw ParseException("GReader items parsing failure", e)
         }
     }
 

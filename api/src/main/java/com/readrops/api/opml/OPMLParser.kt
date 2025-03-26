@@ -20,7 +20,7 @@ object OPMLParser {
             stream.close()
             opml
         } catch (e: Exception) {
-            throw ParseException(e.message)
+            throw ParseException("OPML reading failure", e)
         }
     }
 

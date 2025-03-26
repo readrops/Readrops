@@ -28,7 +28,7 @@ class FeverItemsIdsAdapter {
             endObject()
             ids
         } catch (e: Exception) {
-            throw ParseException(e.message)
+            throw ParseException("Fever items ids parsing failure", e)
         }
     }
 }

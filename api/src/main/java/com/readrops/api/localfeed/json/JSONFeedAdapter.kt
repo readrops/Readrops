@@ -40,7 +40,7 @@ class JSONFeedAdapter : JsonAdapter<Pair<Feed, List<Item>>>() {
         reader.endObject()
         Pair(feed, items)
     } catch (e: Exception) {
-        throw ParseException(e.message)
+        throw ParseException("JSON feed parsing failure", e)
     }
 
     companion object {

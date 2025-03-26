@@ -32,7 +32,7 @@ class NextcloudNewsFeedsAdapter {
 
             feeds
         } catch (e: Exception) {
-            throw ParseException(e.message)
+            throw ParseException("Nextcloud News feeds parsing failure", e)
         }
     }
 

@@ -57,7 +57,7 @@ class ATOMAdapterTest {
             adapter.fromXml(stream.konsumeXml())
         }
 
-        assertTrue(exception.message!!.contains("Item title is required"))
+        assertTrue(exception.stackTraceToString().contains("Item title is required"))
     }
 
     @Test
@@ -68,7 +68,7 @@ class ATOMAdapterTest {
             adapter.fromXml(stream.konsumeXml())
         }
 
-        assertTrue(exception.message!!.contains("Item link is required"))
+        assertTrue(exception.stackTraceToString().contains("Item link is required"))
     }
 
     @Test

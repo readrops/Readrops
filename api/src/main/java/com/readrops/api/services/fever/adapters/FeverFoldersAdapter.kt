@@ -51,7 +51,7 @@ class FeverFoldersAdapter {
             endObject()
             folders
         } catch (e: Exception) {
-            throw ParseException(e.message)
+            throw ParseException("Fever folders parsing failure", e)
         }
     }
 

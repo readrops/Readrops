@@ -43,7 +43,7 @@ class GReaderFeedsAdapter {
             endObject()
             feeds
         } catch (e: Exception) {
-            throw ParseException(e.message)
+            throw ParseException("GReader feeds parsing failure", e)
         }
     }
 

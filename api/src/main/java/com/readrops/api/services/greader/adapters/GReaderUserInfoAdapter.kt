@@ -32,7 +32,7 @@ class FreshRSSUserInfoAdapter {
             endObject()
             FreshRSSUserInfo(userName)
         } catch (e: Exception) {
-            throw ParseException(e.message)
+            throw ParseException("GReader user info parsing failure", e)
         }
     }
 }

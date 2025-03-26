@@ -79,7 +79,7 @@ class NextcloudNewsItemsAdapter : JsonAdapter<List<Item>>() {
 
             items
         } catch (e: Exception) {
-            throw ParseException(e.message)
+            throw ParseException("Nextcloud News items parsing failure", e)
         }
     }
 

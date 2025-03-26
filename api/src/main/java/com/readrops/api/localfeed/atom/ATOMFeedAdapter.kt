@@ -39,7 +39,7 @@ class ATOMFeedAdapter : XmlAdapter<Pair<Feed, List<Item>>> {
             konsumer.close()
             Pair(feed, items)
         } catch (e: Exception) {
-            throw ParseException(e.message)
+            throw ParseException("ATOM feed parsing failure", e)
         }
     }
 

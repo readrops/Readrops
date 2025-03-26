@@ -16,39 +16,36 @@ import java.time.LocalDateTime
 class RSS1ItemAdapter : XmlAdapter<Item> {
 
     override fun fromXml(konsumer: Konsumer): Item {
-        val item= Item()
+        val item = Item()
 
-        return try {
-            val authors = arrayListOf<String?>()
-            val about = konsumer.attributes.getValueOrNull("about",
-                    namespace = "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+        val authors = arrayListOf<String?>()
+        val about = konsumer.attributes.getValueOrNull(
+            "about",
+            namespace = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+        )
 
-            item.apply {
-                konsumer.allChildrenAutoIgnore(names) {
-                    when (tagName) {
-                        "title" -> title = nonNullText()
-                        "link" -> link = nullableText()
-                        "dc:date" -> pubDate = DateUtils.parse(nullableText())
-                        "dc:creator" -> authors += nullableText()
-                        "description" -> description = nullableTextRecursively()
-                        "content:encoded" -> content = nullableTextRecursively()
-                        else -> skipContents()
-                    }
+        return item.apply {
+            konsumer.allChildrenAutoIgnore(names) {
+                when (tagName) {
+                    "title" -> title = nonNullText()
+                    "link" -> link = nullableText()
+                    "dc:date" -> pubDate = DateUtils.parse(nullableText())
+                    "dc:creator" -> authors += nullableText()
+                    "description" -> description = nullableTextRecursively()
+                    "content:encoded" -> content = nullableTextRecursively()
+                    else -> skipContents()
                 }
             }
 
-            if (item.pubDate == null) item.pubDate = LocalDateTime.now()
-            if (item.link == null) item.link = about
-                    ?: throw ParseException("RSS1 link or about element is required")
-            item.remoteId = item.link
+            validateItem(this)
 
-            if (authors.filterNotNull().isNotEmpty()) item.author = authors.filterNotNull()
-                    .joinToString(limit = AUTHORS_MAX)
+            if (pubDate == null) pubDate = LocalDateTime.now()
+            if (link == null) link = about
+                ?: throw ParseException("RSS1 link or about element is required")
+            remoteId = link
 
-            validateItem(item)
-            item
-        } catch (e: Exception) {
-            throw ParseException(e.message)
+            if (authors.filterNotNull().isNotEmpty()) author = authors.filterNotNull()
+                .joinToString(limit = AUTHORS_MAX)
         }
     }
 

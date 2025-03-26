@@ -50,7 +50,7 @@ class GReaderItemsIdsAdapter : JsonAdapter<List<String>>() {
             endObject()
             ids
         } catch (e: Exception) {
-            throw ParseException(e.message)
+            throw ParseException("GReader items ids parsing failure", e)
         }
     }
 }

@@ -34,9 +34,8 @@ class RSS1FeedAdapter : XmlAdapter<Pair<Feed, List<Item>>> {
             konsumer.close()
             Pair(feed, items)
         } catch (e: Exception) {
-            throw ParseException(e.message)
+            throw ParseException("RSS1 feed parsing failure", e)
         }
-
     }
 
     private fun parseChannel(konsumer: Konsumer, feed: Feed) = with(konsumer) {

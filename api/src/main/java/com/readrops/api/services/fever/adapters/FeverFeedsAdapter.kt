@@ -67,7 +67,7 @@ class FeverFeedsAdapter : JsonAdapter<FeverFeeds>() {
                 feedsGroups = feedsGroups
             )
         } catch (e: Exception) {
-            throw ParseException(e.message)
+            throw ParseException("Fever feeds parsing failure", e)
         }
     }
 

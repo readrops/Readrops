@@ -43,7 +43,7 @@ class FeverItemsAdapter {
             endObject()
             items
         } catch (e: Exception) {
-            throw ParseException(e.message)
+            throw ParseException("Fever items parsing failure", e)
         }
     }
 

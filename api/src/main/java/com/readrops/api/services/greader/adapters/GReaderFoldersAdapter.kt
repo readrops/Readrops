@@ -42,7 +42,7 @@ class GReaderFoldersAdapter {
             endObject()
             folders
         } catch (e: Exception) {
-            throw ParseException(e.message)
+            throw ParseException("GReader folders parsing failure", e)
         }
     }
 
