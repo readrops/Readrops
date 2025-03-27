@@ -20,7 +20,7 @@ class GetFoldersWithFeeds(
         useSeparateState: Boolean,
         hideReadFeeds: Boolean = false
     ): Flow<Map<Folder?, List<Feed>>> {
-        val foldersAndFeedsQuery = FoldersAndFeedsQueryBuilder.build(accountId, hideReadFeeds, useSeparateState)
+        val foldersAndFeedsQuery = FoldersAndFeedsQueryBuilder.build(accountId, mainFilter, hideReadFeeds, useSeparateState)
         val unreadItemsCountQuery = FeedUnreadCountQueryBuilder.build(accountId, mainFilter, useSeparateState)
 
         return combine(

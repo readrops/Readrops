@@ -14,9 +14,9 @@ import com.readrops.db.entities.account.AccountType
 import com.readrops.db.filters.MainFilter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import java.time.LocalDateTime
 import org.junit.Before
 import org.junit.Test
+import java.time.LocalDateTime
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -34,30 +34,41 @@ class GetFoldersWithFeedsTest {
         runTest {
             account.id = database.accountDao().insert(account).toInt()
 
-            // inserting 3 folders
+            // inserting 3 folders (folder 0, folder 1, folder 2)
             repeat(3) { time ->
                 database.folderDao()
                     .insert(Folder(name = "Folder $time", accountId = account.id))
             }
 
-            // inserting 2 feeds, not linked to any folder
+            // inserting 2 feeds, not linked to any folder (feed 0, feed 1)
             repeat(2) { time ->
                 database.feedDao().insert(Feed(name = "Feed $time", accountId = account.id))
             }
 
-            // inserting 2 feeds linked to first folder (Folder 0)
+            // inserting 2 feeds linked to folder 0
             repeat(2) { time ->
                 database.feedDao()
                     .insert(Feed(name = "Feed ${time + 2}", folderId = 1, accountId = account.id))
             }
 
-            // inserting 3 unread items linked to first feed (Feed 0)
+            // inserting 3 unread items linked to feed 0
             repeat(3) { time ->
                 database.itemDao()
-                    .insert(Item(title = "Item $time", feedId = 1, pubDate = LocalDateTime.now()))
+                    .insert(
+                        Item(
+                            title = "Item $time",
+                            feedId = 1,
+                            pubDate = if (time % 2 != 0) {
+                                LocalDateTime.now()
+                            } else {
+                                LocalDateTime.now().minusMonths(1L)
+                            },
+                            isStarred = time % 2 == 0
+                        )
+                    )
             }
 
-            // insert 3 read items items linked to second feed (feed 1)
+            // insert 3 read items items linked to feed 2
             repeat(3) { time ->
                 database.itemDao()
                     .insert(
@@ -70,43 +81,155 @@ class GetFoldersWithFeedsTest {
                     )
             }
 
-            // insert 4 read items items linked to second feed (feed 1)
+            // insert 4 unread items linked to feed 3
             repeat(4) { time ->
                 val item = Item(
                     title = "Item ${time + 3}",
                     feedId = 4,
                     isRead = true,
-                    pubDate = LocalDateTime.now(),
+                    pubDate = if (time % 2 == 0) {
+                        LocalDateTime.now()
+                    } else {
+                        LocalDateTime.now().minusMonths(1L)
+                    },
                     remoteId = "remote/$time"
                 )
                 database.itemDao().insert(item)
                 database.itemStateDao().insert(
                     ItemState(
                         read = false,
+                        starred = time % 2 == 0,
                         remoteId = "remote/$time",
                         accountId = account.id
                     )
                 )
-
             }
+
+            getFoldersWithFeeds = GetFoldersWithFeeds(database)
+
+            // folder 0 -> (feed 2, feed 3)
+            // folder 1 -> null
+            // folder 2 -> null
+            // null -> (feed 0, feed 1)
+
+            // feed 0 -> 3 unread items, 2 starred items, 1 new item
+            // feed 1 -> null
+            // feed 2 -> 3 read items
+            // feed 3 -> separate state: 4 unread items, 2 starred items, 2 new items
         }
     }
 
     @Test
-    fun getFoldersWithFeedsTest() = runTest {
-        getFoldersWithFeeds = GetFoldersWithFeeds(database)
-        var foldersAndFeeds =
-            getFoldersWithFeeds.get(account.id, MainFilter.ALL, false)
-                .first()
+    fun defaultCaseTest() = runTest {
+        var foldersAndFeeds = getFoldersWithFeeds.get(
+            accountId = account.id,
+            mainFilter = MainFilter.ALL,
+            useSeparateState = false,
+            hideReadFeeds = false
+        ).first()
 
         assertTrue { foldersAndFeeds.size == 4 }
         assertTrue { foldersAndFeeds.entries.first().value.size == 2 }
         assertTrue { foldersAndFeeds.entries.last().key == null }
         assertTrue { foldersAndFeeds[null]!!.size == 2 }
         assertTrue { foldersAndFeeds[null]!!.first().unreadCount == 3 }
+    }
 
-        foldersAndFeeds = getFoldersWithFeeds.get(account.id, MainFilter.ALL, true).first()
+    @Test
+    fun separateStateTest() = runTest {
+        val foldersAndFeeds = getFoldersWithFeeds.get(
+            accountId = account.id,
+            mainFilter = MainFilter.ALL,
+            useSeparateState = true,
+            hideReadFeeds = false
+        ).first()
         val feed = foldersAndFeeds.values.flatten().first { it.id == 4 }
+
         assertEquals(4, feed.unreadCount)
+    }
+
+
+    @Test
+    fun hideReadFeedsTest() = runTest {
+        val foldersAndFeeds = getFoldersWithFeeds.get(
+            accountId = account.id,
+            mainFilter = MainFilter.ALL,
+            useSeparateState = false,
+            hideReadFeeds = true
+        ).first()
+
+        assertTrue { foldersAndFeeds.size == 1 }
+        assertTrue { foldersAndFeeds.entries.first().key == null }
+        assertTrue { foldersAndFeeds.entries.first().value.size == 1 }
+        assertTrue { foldersAndFeeds.entries.first().value.first().unreadCount == 3 }
+    }
+
+    @Test
+    fun hideReadFeedsWithSeparateStateTest() = runTest {
+        val foldersAndFeeds = getFoldersWithFeeds.get(
+            accountId = account.id,
+            mainFilter = MainFilter.ALL,
+            useSeparateState = true,
+            hideReadFeeds = true
+        ).first()
+
+        val feed = foldersAndFeeds.values.flatten().first { it.id == 4 }
+
+        assertEquals(1, foldersAndFeeds.size)
+        assertEquals(1, foldersAndFeeds.values.flatten().size)
+        assertEquals(4, feed.unreadCount)
+    }
+
+    @Test
+    fun starsFilterTest() = runTest {
+        val foldersAndFeeds = getFoldersWithFeeds.get(
+            accountId = account.id,
+            mainFilter = MainFilter.STARS,
+            useSeparateState = false,
+            hideReadFeeds = true
+        ).first()
+
+        assertEquals(1, foldersAndFeeds.size)
+        assertEquals(2, foldersAndFeeds.values.flatten().sumOf { it.unreadCount })
+    }
+
+    @Test
+    fun starsFilterSeparateStateTest() = runTest {
+        val foldersAndFeeds = getFoldersWithFeeds.get(
+            accountId = account.id,
+            mainFilter = MainFilter.STARS,
+            useSeparateState = true,
+            hideReadFeeds = true
+        ).first()
+
+        assertEquals(1, foldersAndFeeds.size)
+        assertEquals(2, foldersAndFeeds.values.flatten().sumOf { it.unreadCount })
+    }
+
+    @Test
+    fun newFilterTest() = runTest {
+        val foldersAndFeeds = getFoldersWithFeeds.get(
+            accountId = account.id,
+            mainFilter = MainFilter.NEW,
+            useSeparateState = false,
+            hideReadFeeds = true
+        ).first()
+
+        assertEquals(1, foldersAndFeeds.size)
+        assertEquals(1, foldersAndFeeds.values.flatten().sumOf { it.unreadCount })
+    }
+
+    @Test
+    fun newItemsUnreadCountTest() = runTest {
+        val count = getFoldersWithFeeds.getNewItemsUnreadCount(1, useSeparateState = false).first()
+
+        assertEquals(1, count)
+    }
+
+    @Test
+    fun newItemsUnreadCountSeparateStateTest() = runTest {
+        val count = getFoldersWithFeeds.getNewItemsUnreadCount(1, useSeparateState = true).first()
+
+        assertEquals(2, count)
     }
 }

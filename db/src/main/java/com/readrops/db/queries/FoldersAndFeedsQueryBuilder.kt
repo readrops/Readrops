@@ -3,6 +3,7 @@ package com.readrops.db.queries
 import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQueryBuilder
+import com.readrops.db.filters.MainFilter
 
 object FoldersAndFeedsQueryBuilder {
 
@@ -27,7 +28,7 @@ object FoldersAndFeedsQueryBuilder {
     private val FEED_JOIN = """(Select * From Feed Where account_id = :accountId) Feed 
         Left Join Folder On Folder.id = Feed.folder_id""".trimMargin()
 
-    private const val SEPARATE_STATE = " Left Join ItemState On ItemState.remote_id = Item.remote_id"
+    private const val SEPARATE_STATE = " Inner Join ItemState On ItemState.remote_id = Item.remote_id"
 
     private const val FOLDER_JOIN = "Folder Left Join Feed On Folder.id = Feed.folder_id "
 
@@ -37,10 +38,10 @@ object FoldersAndFeedsQueryBuilder {
 
     private const val FOLDER_SELECTION = "Feed.id is NULL And Folder.account_id = :accountId"
 
-    fun build(accountId: Int, hideReadFeeds: Boolean, useSeparateState: Boolean): SupportSQLiteQuery {
-        val result = SimpleSQLiteQuery(
+    fun build(accountId: Int, mainFilter: MainFilter, hideReadFeeds: Boolean, useSeparateState: Boolean): SupportSQLiteQuery {
+        return SimpleSQLiteQuery(
             """
-            ${buildFeedQuery(accountId, hideReadFeeds, useSeparateState).sql}
+            ${buildFeedQuery(accountId, mainFilter, hideReadFeeds, useSeparateState).sql}
             ${
                 if (!hideReadFeeds) {
                     """UNION ALL
@@ -51,10 +52,9 @@ object FoldersAndFeedsQueryBuilder {
                 }
             }""".trimIndent()
         )
-        return result
     }
 
-    private fun buildFeedQuery(accountId: Int, hideReadFeeds: Boolean, useSeparateState: Boolean): SupportSQLiteQuery {
+    private fun buildFeedQuery(accountId: Int, mainFilter: MainFilter, hideReadFeeds: Boolean, useSeparateState: Boolean): SupportSQLiteQuery {
         val tables = buildString {
             append(FEED_JOIN)
             if (hideReadFeeds) {
@@ -65,8 +65,23 @@ object FoldersAndFeedsQueryBuilder {
         val selection = buildString {
             append(FEED_SELECTION)
             if (hideReadFeeds) {
-                if(useSeparateState) append("AND ItemState.read = 0")
-                else append("And Item.read = 0")
+                if(useSeparateState) append("AND ItemState.read = 0 ")
+                else append("And Item.read = 0 ")
+
+                when (mainFilter) {
+                    MainFilter.STARS -> {
+                        if (!useSeparateState) {
+                            append("And Item.starred = 1 ")
+                        } else {
+                            append("And ItemState.starred = 1 ")
+                        }
+                    }
+                    MainFilter.NEW -> {
+                        append("""And DateTime(Round(Item.pub_date / 1000), 'unixepoch') 
+                                Between DateTime(DateTime("now"), "-24 hour") And DateTime("now") """.trimMargin())
+                    }
+                    else -> {}
+                }
             }
         }
 
