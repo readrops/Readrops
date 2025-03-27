@@ -56,11 +56,13 @@ object ItemsQueryBuilder {
 
     private fun buildQuery(queryFilters: QueryFilters, separateState: Boolean): SupportSQLiteQuery =
         with(queryFilters) {
-            if (accountId == 0)
-                throw IllegalArgumentException("AccountId must be greater than 0")
+            require(accountId != 0) { "AccountId must be greater than 0" }
 
-            if (subFilter == SubFilter.FEED && feedId == 0)
-                throw IllegalArgumentException("FeedId must be greater than 0 if current filter is FEED_FILTER")
+            if (subFilter == SubFilter.FEED && feedId == 0) {
+                throw IllegalArgumentException("FeedId must be greater than 0 if subFilter is FEED")
+            } else if (subFilter == SubFilter.FOLDER && folderId == 0) {
+                throw IllegalArgumentException("FolderId must be greater than 0 if subFilter is FOLDER")
+            }
 
             val columns = if (separateState) {
                 COLUMNS.plus(SEPARATE_STATE_COLUMNS)
@@ -68,8 +70,11 @@ object ItemsQueryBuilder {
                 COLUMNS.plus(OTHER_COLUMNS)
             }
 
-            val selectAllJoin =
-                if (separateState) SELECT_ALL_JOIN + SEPARATE_STATE_JOIN else SELECT_ALL_JOIN
+            val selectAllJoin = if (separateState) {
+                SELECT_ALL_JOIN + SEPARATE_STATE_JOIN
+            } else {
+                SELECT_ALL_JOIN
+            }
 
             SupportSQLiteQueryBuilder.builder(selectAllJoin).run {
                 columns(columns)
@@ -85,10 +90,11 @@ object ItemsQueryBuilder {
             append("Feed.account_id = ${queryFilters.accountId} ")
 
             if (!queryFilters.showReadItems) {
-                if (separateState)
+                if (separateState) {
                     append("And ItemState.read = 0 ")
-                else
+                } else {
                     append("And Item.read = 0 ")
+                }
             }
 
             when (queryFilters.mainFilter) {
@@ -100,7 +106,8 @@ object ItemsQueryBuilder {
                     }
                 }
 
-                MainFilter.NEW -> append("And DateTime(Round(pub_date / 1000), 'unixepoch') Between DateTime(DateTime(\"now\"), \"-24 hour\") And DateTime(\"now\") ")
+                MainFilter.NEW -> append("""And DateTime(Round(pub_date / 1000), 'unixepoch') 
+                    Between DateTime(DateTime("now"), "-24 hour") And DateTime("now")""".trimMargin())
                 else -> {}
             }
 

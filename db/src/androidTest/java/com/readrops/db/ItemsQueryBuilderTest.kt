@@ -13,6 +13,7 @@ import com.readrops.db.queries.ItemsQueryBuilder
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import org.junit.After
+import org.junit.Assert.assertThrows
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -75,6 +76,16 @@ class ItemsQueryBuilderTest {
     }
 
     @Test
+    fun newFilterCaseTest() {
+        val queryFilters = QueryFilters(accountId = 1, mainFilter = MainFilter.NEW)
+
+        val query = ItemsQueryBuilder.buildItemsQuery(queryFilters)
+        database.query(query)
+
+        assertTrue(query.sql.contains("Between DateTime(DateTime(\"now\"), \"-24 hour\") And DateTime(\"now\")"))
+    }
+
+    @Test
     fun folderFilterCaseTest() {
         val queryFilters = QueryFilters(accountId = 1, subFilter = SubFilter.FOLDER, folderId = 1)
 
@@ -99,6 +110,22 @@ class ItemsQueryBuilderTest {
         with(query.sql) {
             assertTrue(contains("read = 0"))
             assertTrue(contains("pub_date ASC"))
+        }
+    }
+
+    @Test
+    fun newestSortCaseTest() {
+        val queryFilters = QueryFilters(
+            accountId = 1,
+            orderType = OrderType.DESC,
+            orderField = OrderField.ID
+        )
+
+        val query = ItemsQueryBuilder.buildItemsQuery(queryFilters)
+        database.query(query)
+
+        with(query.sql) {
+            assertTrue(contains("Item.id DESC"))
         }
     }
 
@@ -130,5 +157,13 @@ class ItemsQueryBuilderTest {
     fun filterFeedIdExceptionTest() {
         val queryFilters = QueryFilters(accountId = 1, subFilter = SubFilter.FEED)
         ItemsQueryBuilder.buildItemsQuery(queryFilters)
+    }
+
+    @Test
+    fun folderFilterExceptionTest() {
+        val queryFilters = QueryFilters(accountId = 1, subFilter = SubFilter.FOLDER)
+        assertThrows(IllegalArgumentException::class.java) {
+            ItemsQueryBuilder.buildItemsQuery(queryFilters)
+        }
     }
 }
