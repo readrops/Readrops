@@ -1,15 +1,15 @@
-package com.readrops.db
+package com.readrops.db.queries
 
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.readrops.db.Database
 import com.readrops.db.filters.MainFilter
 import com.readrops.db.filters.OrderField
 import com.readrops.db.filters.OrderType
 import com.readrops.db.filters.QueryFilters
 import com.readrops.db.filters.SubFilter
-import com.readrops.db.queries.ItemsQueryBuilder
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import org.junit.After
