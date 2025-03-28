@@ -2,6 +2,10 @@ package com.readrops.app
 
 import com.readrops.app.util.FrenchTypography
 import com.readrops.app.util.RemoveAuthorFilter
+import com.readrops.app.util.ShareIntentTextRenderer
+import com.readrops.db.entities.Item
+import com.readrops.db.entities.OpenIn
+import com.readrops.db.pojo.ItemWithFeed
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
@@ -32,5 +36,23 @@ class TemplateTest {
         assertEquals(" !?", FrenchTypography.filter("   !?"))
         assertEquals(" :", FrenchTypography.filter("  :"))
         assertEquals(" ;", FrenchTypography.filter("  ;"))
+    }
+
+    /** Asserts rendered won't HTML escape */
+    @Test
+    fun dontEscape() {
+        val renderer = ShareIntentTextRenderer(
+            ItemWithFeed(
+                Item(title = "\"Title\""),
+                "",
+                0,
+                0,
+                null,
+                null,
+                null,
+                openIn = OpenIn.EXTERNAL_VIEW
+            )
+        )
+        assertEquals("\"Title\"", renderer.render("{{ title }}"))
     }
 }

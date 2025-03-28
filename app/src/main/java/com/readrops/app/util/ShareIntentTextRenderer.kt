@@ -126,6 +126,7 @@ class ShareIntentTextRenderer(private val itemWithFeed: ItemWithFeed): KoinCompo
                 override fun getFilters(): Map<String, Filter> = this@Companion.filters
             })
             .newLineTrimming(false)
+            .autoEscaping(false)
             .build()
     }
 }
