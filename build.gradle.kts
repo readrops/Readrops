@@ -63,8 +63,6 @@ fun configure(extension: BaseExtension) = with(extension) {
         minSdk = 21
         targetSdk = 35
         buildToolsVersion = "35.0.1"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {
@@ -100,9 +98,9 @@ tasks.register<JacocoReport>("jacocoFullReport") {
     }
 
     dependsOn(":app:testDebugUnitTest")
+    dependsOn(":app:connectedAndroidTest")
     dependsOn(":api:testDebugUnitTest")
     dependsOn(":db:testDebugUnitTest")
-    dependsOn(":app:connectedAndroidTest")
     dependsOn(":db:connectedAndroidTest")
 
     val excludeFilter = listOf(

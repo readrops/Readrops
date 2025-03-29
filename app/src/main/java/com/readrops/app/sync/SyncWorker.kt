@@ -118,7 +118,7 @@ class SyncWorker(
     }
 
     private suspend fun displaySyncResults(syncResults: Map<Account, SyncResult>) {
-        val notificationContent = SyncAnalyzer(applicationContext, database)
+        val notificationContent = get<SyncAnalyzer>()
             .getNotificationContent(syncResults)
 
         if (notificationContent != null) {

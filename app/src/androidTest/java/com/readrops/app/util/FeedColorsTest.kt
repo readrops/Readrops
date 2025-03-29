@@ -1,36 +1,29 @@
-package com.readrops.app
+package com.readrops.app.util
 
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
-import com.readrops.api.apiModule
 import com.readrops.api.utils.ApiUtils
-import com.readrops.app.util.FeedColors
-import kotlinx.coroutines.runBlocking
+import com.readrops.app.testutil.ReadropsTestRule
+import com.readrops.app.testutil.TestUtils
+import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.koin.dsl.module
-import org.koin.test.KoinTestRule
+import org.koin.test.KoinTest
 import java.net.HttpURLConnection
 import kotlin.test.assertTrue
 
-class FeedColorsTest {
+class FeedColorsTest : KoinTest {
 
     private val mockServer = MockWebServer()
 
+    @get:Rule
+    val testRule = ReadropsTestRule()
+
     @Before
     fun before() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-
-        KoinTestRule.create {
-            modules(apiModule, module {
-                single { context }
-            })
-        }
-
         mockServer.start()
     }
 
@@ -40,7 +33,7 @@ class FeedColorsTest {
     }
 
     @Test
-    fun getFeedColorTest() = runBlocking {
+    fun getFeedColorTest() = runTest {
         val stream = TestUtils.loadResource("favicon.ico")
 
         mockServer.enqueue(

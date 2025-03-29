@@ -1,60 +1,43 @@
-package com.readrops.app
+package com.readrops.app.repositories
 
-import android.content.Context
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
-import com.readrops.api.apiModule
 import com.readrops.api.utils.ApiUtils
-import com.readrops.api.utils.AuthInterceptor
-import com.readrops.app.repositories.LocalRSSRepository
+import com.readrops.app.testutil.ReadropsTestRule
+import com.readrops.app.testutil.TestUtils
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
+import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.koin.dsl.module
+import org.koin.core.parameter.parametersOf
 import org.koin.test.KoinTest
-import org.koin.test.KoinTestRule
 import org.koin.test.get
+import org.koin.test.inject
 import java.net.HttpURLConnection
-import java.util.concurrent.TimeUnit
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-
 class LocalRSSRepositoryTest : KoinTest {
 
-    private val mockServer: MockWebServer = MockWebServer()
+    private val mockServer = MockWebServer()
+    private val database: Database by inject()
+
     private val account = Account(type = AccountType.LOCAL)
-    private lateinit var database: Database
     private lateinit var repository: LocalRSSRepository
     private lateinit var feeds: List<Feed>
 
+    @get:Rule
+    val koinTest = ReadropsTestRule()
+
     @Before
     fun before() = runTest {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        database = Room.inMemoryDatabaseBuilder(context, Database::class.java).build()
-
-        KoinTestRule.create {
-            modules(apiModule, module {
-                single { database }
-                single {
-                    OkHttpClient.Builder()
-                        .callTimeout(1, TimeUnit.MINUTES)
-                        .readTimeout(1, TimeUnit.HOURS)
-                        .addInterceptor(get<AuthInterceptor>())
-                        .build()
-                }
-            })
-        }
-
         mockServer.start()
         val url = mockServer.url("/rss")
 
@@ -71,7 +54,12 @@ class LocalRSSRepositoryTest : KoinTest {
             feeds.first().id = first().toInt()
         }
 
-        repository = LocalRSSRepository(get(), database, account)
+        repository = get<BaseRepository> { parametersOf(account) } as LocalRSSRepository
+    }
+
+    @After
+    fun after() {
+        mockServer.shutdown()
     }
 
     @Test

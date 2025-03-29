@@ -1,4 +1,4 @@
-package com.readrops.app
+package com.readrops.app.testutil
 
 import java.io.InputStream
 

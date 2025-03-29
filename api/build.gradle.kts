@@ -41,20 +41,15 @@ dependencies {
 
     coreLibraryDesugaring(libs.jdk.desugar)
 
-    testImplementation(libs.junit4)
-
     implementation(libs.coroutines.core)
-    testImplementation(libs.coroutines.test)
 
     implementation(platform(libs.koin.bom))
     implementation(libs.bundles.koin)
-    testImplementation(libs.bundles.kointest)
 
     implementation(libs.konsumexml)
     implementation(libs.kotlinxmlbuilder)
 
     implementation(libs.okhttp)
-    testImplementation(libs.okhttp.mockserver)
 
     implementation(libs.bundles.retrofit) {
         exclude("com.squareup.okhttp3", "okhttp3")
@@ -63,4 +58,9 @@ dependencies {
 
     implementation(libs.moshi)
     implementation(libs.jsoup)
+
+    testImplementation(libs.junit4)
+    testImplementation(libs.coroutines.test)
+    testImplementation(libs.bundles.kointest)
+    testImplementation(libs.okhttp.mockserver)
 }

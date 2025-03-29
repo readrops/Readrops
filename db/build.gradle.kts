@@ -22,6 +22,8 @@ android {
 
     defaultConfig {
         consumerProguardFiles("consumer-rules.pro")
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     sourceSets {
@@ -47,19 +49,19 @@ dependencies {
     implementation(libs.corektx)
     implementation(libs.appcompat)
 
-    testImplementation(libs.junit4)
-    androidTestImplementation(libs.bundles.test)
-
     implementation(libs.bundles.room)
     ksp(libs.room.compiler)
-    androidTestImplementation(libs.room.testing)
 
+    implementation(libs.bundles.coroutines)
     implementation(libs.bundles.paging)
 
     implementation(platform(libs.koin.bom))
     implementation(libs.bundles.koin)
-    androidTestImplementation(libs.bundles.kointest)
 
-    implementation(libs.bundles.coroutines)
+    testImplementation(libs.junit4)
+
+    androidTestImplementation(libs.bundles.test)
+    androidTestImplementation(libs.bundles.kointest)
+    androidTestImplementation(libs.room.testing)
     androidTestImplementation(libs.coroutines.test)
 }

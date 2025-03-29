@@ -2,11 +2,12 @@ package com.readrops.app
 
 import com.readrops.app.util.FrenchTypography
 import com.readrops.app.util.RemoveAuthorFilter
+import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
-import kotlin.test.assertEquals
 
 class TemplateTest {
+
     @Test
     fun testRemoveAuthorFilter() = runTest {
         assertEquals("My title", RemoveAuthorFilter.filter("My title - Author", "Author"))
