@@ -1,6 +1,9 @@
 package com.readrops.app.more.preferences
 
+import android.content.ClipData
 import android.content.Context
+import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.readrops.app.R
@@ -8,6 +11,8 @@ import com.readrops.app.util.Preference
 import com.readrops.app.util.Preferences
 import com.readrops.db.Database
 import com.readrops.db.entities.Item
+import com.readrops.db.pojo.ItemWithFeed
+import com.readrops.db.queries.ItemSelectionQueryBuilder
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
@@ -37,7 +42,7 @@ class PreferencesScreenModel(
                     useCustomShareIntentTpl.flow,
                     customShareIntentTpl.flow,
                     swipeToLeft.flow,
-                    swipeToRight.flow
+                    swipeToRight.flow,
                 )
 
                 combine(
@@ -56,16 +61,21 @@ class PreferencesScreenModel(
                         customShareIntentTpl = (list[9] as String) to customShareIntentTpl,
                         swipeToLeft = (list[10] as String) to swipeToLeft,
                         swipeToRight = (list[11] as String) to swipeToRight,
-                        exampleItem = if (database.itemDao().count() > 0) {
-                            database.itemDao().selectFirst()
-                        } else {
-                            Item(
+                        exampleItem = ItemWithFeed(
+                            item = Item(
                                 title = context.getString(R.string.example_item_title),
                                 author = context.getString(R.string.example_item_author),
                                 content = context.getString(R.string.example_item_content),
-                                link = "https://example.org"
-                            )
-                        }
+                                link = "https://example.org/feed1"
+                            ),
+                            feedName = "Example feed",
+                            feedId = -1,
+                            color = 0,
+                            feedIconUrl = "https://example.org/icon.webp",
+                            websiteUrl = "https://example.org",
+                            folder = null,
+                            openIn = null,
+                        )
                     )
                 }.collect { theme ->
                     mutableState.update { previous ->
@@ -106,7 +116,7 @@ sealed class PreferencesScreenState {
         val customShareIntentTpl: PreferenceState<String>,
         val swipeToLeft: PreferenceState<String>,
         val swipeToRight: PreferenceState<String>,
-        val exampleItem: Item,
+        val exampleItem: ItemWithFeed,
         val showDialog: Boolean = false
     ) : PreferencesScreenState()
 

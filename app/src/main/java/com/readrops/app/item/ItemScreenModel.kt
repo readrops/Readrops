@@ -356,8 +356,8 @@ class ItemScreenModel(
         return FileProvider.getUriForFile(context, context.packageName, image)
     }
 
-    fun shareItem(item: Item, context: Context) = Utils.shareItem(
-        item, context, useCustomShareIntentTpl.value, customShareIntentTpl.value
+    fun shareItem(itemWithFeed: ItemWithFeed, context: Context) = Utils.shareItem(
+        itemWithFeed, context, useCustomShareIntentTpl.value, customShareIntentTpl.value
     )
 
     override fun onDispose() {

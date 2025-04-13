@@ -3,12 +3,7 @@ package com.readrops.app.more.preferences.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.AlertDialogDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -25,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -38,14 +32,14 @@ import com.readrops.app.util.Preference
 import com.readrops.app.util.ShareIntentTextRenderer
 import com.readrops.app.util.theme.MediumSpacer
 import com.readrops.app.util.theme.ShortSpacer
-import com.readrops.db.entities.Item
+import com.readrops.db.pojo.ItemWithFeed
 import kotlinx.coroutines.launch
 
 @Composable
 fun CustomShareIntentTextWidget(
     preference: Preference<String>,
     template: String,
-    exampleItem: Item,
+    exampleItem: ItemWithFeed,
     onDismiss: () -> Unit,
 ) {
     var localTemplate by remember { mutableStateOf(template) }
@@ -100,7 +94,7 @@ fun CustomShareIntentTextWidget(
                     modifier = Modifier.weight(1f),
                     onClick = {
                         localTemplate = """
-                            {{ title|remove_author|capitalize }} — {{ author }}
+                            {{ title|remove_author|capitalize }} — {{ feedName }}
                             
                             {{ url }}
                         """.trimIndent()

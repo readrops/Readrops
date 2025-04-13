@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import androidx.annotation.ColorInt
-import com.readrops.db.entities.Item
+import com.readrops.db.pojo.ItemWithFeed
 import java.util.Locale
 
 object Utils {
@@ -41,14 +41,14 @@ object Utils {
     }
 
     fun shareItem(
-        item: Item,
+        itemWithFeed: ItemWithFeed,
         context: Context,
         useCustomShareIntentTpl: Boolean,
         customShareIntentTpl: String
     ) {
         val intentContent =
-            if(!useCustomShareIntentTpl || customShareIntentTpl.isBlank()) item.link
-            else ShareIntentTextRenderer(item).render(customShareIntentTpl)
+            if(!useCustomShareIntentTpl || customShareIntentTpl.isBlank()) itemWithFeed.item.link
+            else ShareIntentTextRenderer(itemWithFeed).render(customShareIntentTpl)
         Intent().apply {
             action = Intent.ACTION_SEND
             type = "text/plain"
