@@ -82,22 +82,27 @@ fun TimelineDrawerContent(
 ) {
     val scrollState = rememberScrollState()
 
-    ModalDrawerSheet(
-        modifier = Modifier
-            .fillMaxHeight()
-            .verticalScroll(scrollState)
-    ) {
-        Spacer(modifier = Modifier.size(MaterialTheme.spacing.drawerSpacing))
+    ModalDrawerSheet {
+        /*
+         * DO NOT REMOVE THIS LAYER!
+         * ModalDrawerSheet seems to have a problem with Modifier.verticalScroll
+         * causing some items at the bottom to be unclickable with long item lists.
+         */
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .verticalScroll(scrollState)
+        ){
+            Spacer(modifier = Modifier.size(MaterialTheme.spacing.drawerSpacing))
 
-        DrawerDefaultItems(
-            selectedItem = state.filters.mainFilter,
-            unreadNewItemsCount = state.unreadNewItemsCount,
-            onClick = { onClickDefaultItem(it) }
-        )
+            DrawerDefaultItems(
+                selectedItem = state.filters.mainFilter,
+                unreadNewItemsCount = state.unreadNewItemsCount,
+                onClick = { onClickDefaultItem(it) }
+            )
 
-        DrawerDivider()
+            DrawerDivider()
 
-        Column {
             for (folderEntry in state.foldersAndFeeds) {
                 val folder = folderEntry.key
 
@@ -153,6 +158,8 @@ fun TimelineDrawerContent(
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.size(MaterialTheme.spacing.drawerSpacing))
         }
     }
 }
