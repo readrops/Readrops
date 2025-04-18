@@ -4,6 +4,9 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.Composable
 
 private val lightScheme = lightColorScheme(
@@ -173,7 +176,14 @@ fun ReadropsTheme(
             } else {
                 BlackWhiteDarkScheme
             }
-        } else -> {
+        }
+	"material3" -> {
+	    if (!useDarkTheme) {
+		dynamicLightColorScheme(LocalContext.current)
+	    } else {
+		dynamicDarkColorScheme(LocalContext.current)
+	    }
+	} else -> {
             if (!useDarkTheme) {
                 lightScheme
             } else {

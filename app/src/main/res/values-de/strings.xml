@@ -27,6 +27,7 @@
     <string name="theme_color_scheme">Farbschema</string>
     <string name="theme_readrops">Readrops</string>
     <string name="theme_blackwhite">BlackWhite</string>
+    <string name="theme_material3">Material You</string>
     <string name="share_image">Bild teilen</string>
     <string name="download_image">Bild herunterladen</string>
     <string name="image_options">Bildoptionen</string>

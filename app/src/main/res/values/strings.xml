@@ -74,6 +74,7 @@
     <string name="theme_color_scheme">Color Scheme</string>
     <string name="theme_readrops">Readrops</string>
     <string name="theme_blackwhite">BlackWhite</string>
+    <string name="theme_material3">Material You</string>
     <string name="light">Light</string>
     <string name="dark">Dark</string>
     <string name="new_feed">New feed</string>
