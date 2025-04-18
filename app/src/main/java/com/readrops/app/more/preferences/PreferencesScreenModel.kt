@@ -22,6 +22,7 @@ class PreferencesScreenModel(
     preferences: Preferences,
     dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : StateScreenModel<PreferencesScreenState>(PreferencesScreenState.Loading) {
+
     init {
         screenModelScope.launch(dispatcher) {
             with(preferences) {
