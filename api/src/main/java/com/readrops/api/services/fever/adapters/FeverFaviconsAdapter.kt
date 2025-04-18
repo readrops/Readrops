@@ -2,7 +2,6 @@ package com.readrops.api.services.fever.adapters
 
 import android.annotation.SuppressLint
 import com.readrops.api.utils.exceptions.ParseException
-import com.readrops.api.utils.extensions.skipField
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.ToJson
@@ -19,7 +18,6 @@ class FeverFaviconsAdapter {
     @ToJson
     fun toJson(favicons: List<Favicon>) = ""
 
-    @OptIn(ExperimentalEncodingApi::class)
     @SuppressLint("CheckResult")
     @FromJson
     fun fromJson(reader: JsonReader): List<Favicon> = with(reader) {
@@ -27,44 +25,51 @@ class FeverFaviconsAdapter {
             val favicons = arrayListOf<Favicon>()
 
             beginObject()
-
-            repeat(3) {
-                skipField()
-            }
-
-            nextName() // beginning of favicon array
-            beginArray()
-
             while (hasNext()) {
-                beginObject()
+                when (nextName()) {
+                    "favicons" -> {
+                        beginArray()
 
-                var id = 0
-                var data: ByteArray? = null
+                        while (hasNext()) {
+                            beginObject()
+                            parseFavicon(reader)?.let { favicons += it }
 
-                while (hasNext()) {
-                    when (selectName(NAMES)) {
-                        0 -> id = nextInt()
-                        1 -> data = Base64.decode(nextString().substringAfter("base64,"))
-                        else -> skipValue()
+                            endObject()
+                        }
+
+                        endArray()
                     }
+                    else -> skipValue()
                 }
-
-                if (id > 0 && data != null) {
-                    favicons += Favicon(
-                        id = id,
-                        data = data,
-                    )
-                }
-
-                endObject()
             }
 
-            endArray()
             endObject()
-
             favicons
         } catch (e: Exception) {
-            throw ParseException(e.message)
+            throw ParseException("Fever favicons parsing failure", e)
+        }
+    }
+
+    @OptIn(ExperimentalEncodingApi::class)
+    private fun parseFavicon(reader: JsonReader): Favicon? = with(reader) {
+        var id = 0
+        var data: ByteArray? = null
+
+        while (hasNext()) {
+            when (selectName(NAMES)) {
+                0 -> id = nextInt()
+                1 -> data = Base64.decode(nextString().substringAfter("base64,"))
+                else -> skipValue()
+            }
+        }
+
+        if (id > 0 && data != null) {
+            return Favicon(
+                id = id,
+                data = data,
+            )
+        } else {
+            null
         }
     }
 

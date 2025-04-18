@@ -4,14 +4,20 @@ import com.readrops.api.localfeed.LocalRSSDataSource
 import com.readrops.api.services.Credentials
 import com.readrops.api.services.fever.FeverDataSource
 import com.readrops.api.services.fever.FeverService
-import com.readrops.api.services.fever.adapters.*
-import com.readrops.api.services.freshrss.FreshRSSDataSource
-import com.readrops.api.services.freshrss.FreshRSSService
-import com.readrops.api.services.freshrss.adapters.FreshRSSFeedsAdapter
-import com.readrops.api.services.freshrss.adapters.FreshRSSFoldersAdapter
-import com.readrops.api.services.freshrss.adapters.FreshRSSItemsAdapter
-import com.readrops.api.services.freshrss.adapters.FreshRSSItemsIdsAdapter
-import com.readrops.api.services.freshrss.adapters.FreshRSSUserInfoAdapter
+import com.readrops.api.services.fever.adapters.FeverAPIAdapter
+import com.readrops.api.services.fever.adapters.FeverFaviconsAdapter
+import com.readrops.api.services.fever.adapters.FeverFeeds
+import com.readrops.api.services.fever.adapters.FeverFeedsAdapter
+import com.readrops.api.services.fever.adapters.FeverFoldersAdapter
+import com.readrops.api.services.fever.adapters.FeverItemsAdapter
+import com.readrops.api.services.fever.adapters.FeverItemsIdsAdapter
+import com.readrops.api.services.greader.GReaderDataSource
+import com.readrops.api.services.greader.GReaderService
+import com.readrops.api.services.greader.adapters.FreshRSSUserInfoAdapter
+import com.readrops.api.services.greader.adapters.GReaderFeedsAdapter
+import com.readrops.api.services.greader.adapters.GReaderFoldersAdapter
+import com.readrops.api.services.greader.adapters.GReaderItemsAdapter
+import com.readrops.api.services.greader.adapters.GReaderItemsIdsAdapter
 import com.readrops.api.services.nextcloudnews.NextcloudNewsDataSource
 import com.readrops.api.services.nextcloudnews.NextcloudNewsService
 import com.readrops.api.services.nextcloudnews.adapters.NextcloudNewsFeedsAdapter
@@ -47,30 +53,30 @@ val apiModule = module {
 
     single { LocalRSSDataSource(get()) }
 
-    //region freshrss
+    //region greader/freshrss
 
-    factory { params -> FreshRSSDataSource(get(parameters = { params })) }
+    factory { params -> GReaderDataSource(get(parameters = { params })) }
 
     factory { (credentials: Credentials) ->
         Retrofit.Builder()
             .baseUrl(credentials.url)
             .client(get())
-            .addConverterFactory(MoshiConverterFactory.create(get(named("freshrssMoshi"))))
+            .addConverterFactory(MoshiConverterFactory.create(get(named("greaderMoshi"))))
             .build()
-            .create(FreshRSSService::class.java)
+            .create(GReaderService::class.java)
     }
 
-    single(named("freshrssMoshi")) {
+    single(named("greaderMoshi")) {
         Moshi.Builder()
-                .add(Types.newParameterizedType(List::class.java, Item::class.java), FreshRSSItemsAdapter())
-                .add(Types.newParameterizedType(List::class.java, String::class.java), FreshRSSItemsIdsAdapter())
-                .add(FreshRSSFeedsAdapter())
-                .add(FreshRSSFoldersAdapter())
+                .add(Types.newParameterizedType(List::class.java, Item::class.java), GReaderItemsAdapter())
+                .add(Types.newParameterizedType(List::class.java, String::class.java), GReaderItemsIdsAdapter())
+                .add(GReaderFeedsAdapter())
+                .add(GReaderFoldersAdapter())
                 .add(FreshRSSUserInfoAdapter())
                 .build()
     }
 
-    //endregion freshrss
+    //endregion greader/freshrss
 
     //region nextcloud news
 

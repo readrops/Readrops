@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -27,27 +28,40 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.autofill.AutofillNode
+import androidx.compose.ui.autofill.AutofillType
+import androidx.compose.ui.composed
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalAutofill
+import androidx.compose.ui.platform.LocalAutofillTree
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.readrops.app.R
 import com.readrops.app.account.selection.adaptiveIconPainterResource
 import com.readrops.app.home.HomeScreen
-import com.readrops.app.util.ErrorMessage
+import com.readrops.app.util.accounterror.AccountError
 import com.readrops.app.util.components.AndroidScreen
+import com.readrops.app.util.theme.LargeSpacer
 import com.readrops.app.util.theme.MediumSpacer
 import com.readrops.app.util.theme.ShortSpacer
 import com.readrops.app.util.theme.spacing
+import com.readrops.db.entities.account.ACCOUNT_APIS
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
 import org.koin.core.parameter.parametersOf
@@ -57,17 +71,43 @@ enum class AccountCredentialsScreenMode {
     EDIT_CREDENTIALS
 }
 
+
+@OptIn(ExperimentalComposeUiApi::class)
+fun Modifier.autofill(
+    autofillTypes: List<AutofillType>,
+    onFill: ((String) -> Unit),
+) = composed {
+    val autofill = LocalAutofill.current
+    val autofillNode = AutofillNode(onFill = onFill, autofillTypes = autofillTypes)
+    LocalAutofillTree.current += autofillNode
+
+    this.onGloballyPositioned {
+        autofillNode.boundingBox = it.boundsInWindow()
+    }.onFocusChanged { focusState ->
+        autofill?.run {
+            if (focusState.isFocused) {
+                requestAutofillForNode(autofillNode)
+            } else {
+                cancelAutofillForNode(autofillNode)
+            }
+        }
+    }
+}
+
 class AccountCredentialsScreen(
     private val account: Account,
     private val mode: AccountCredentialsScreenMode
 ) : AndroidScreen() {
 
-    @OptIn(ExperimentalMaterial3Api::class)
+    @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
+        val keyboardController = LocalSoftwareKeyboardController.current
+        val accountError = AccountError.from(account, LocalContext.current)
+
         val screenModel =
-            getScreenModel<AccountCredentialsScreenModel>(parameters = { parametersOf(account, mode) })
+            koinScreenModel<AccountCredentialsScreenModel>(parameters = { parametersOf(account, mode) })
 
         val state by screenModel.state.collectAsStateWithLifecycle()
 
@@ -117,7 +157,7 @@ class AccountCredentialsScreen(
                         .verticalScroll(rememberScrollState())
                 ) {
                     Image(
-                        painter = adaptiveIconPainterResource(id = account.accountType!!.iconRes),
+                        painter = adaptiveIconPainterResource(id = account.type!!.iconRes),
                         contentDescription = null,
                         modifier = Modifier.size(48.dp)
                     )
@@ -125,7 +165,7 @@ class AccountCredentialsScreen(
                     ShortSpacer()
 
                     Text(
-                        text = stringResource(id = account.accountType!!.typeName),
+                        text = stringResource(id = account.type!!.nameRes),
                         style = MaterialTheme.typography.headlineMedium
                     )
 
@@ -155,7 +195,7 @@ class AccountCredentialsScreen(
                                 state.urlError != null -> {
                                     Text(text = state.urlError!!.errorText())
                                 }
-                                account.accountType == AccountType.FEVER -> {
+                                ACCOUNT_APIS.any { it == account.type }  -> {
                                     Text(text = stringResource(R.string.provide_full_url))
                                 }
                                 else -> {
@@ -163,7 +203,10 @@ class AccountCredentialsScreen(
                                 }
                             }
                         },
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Uri,
+                            imeAction = ImeAction.Next
+                        ),
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -177,7 +220,10 @@ class AccountCredentialsScreen(
                         isError = state.isLoginError,
                         supportingText = { Text(text = state.loginError?.errorText().orEmpty()) },
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.autofill(
+                            listOf(AutofillType.Username),
+                            onFill = { screenModel.onEvent(Event.LoginEvent(it)) }
+                        ).fillMaxWidth()
                     )
 
                     ShortSpacer()
@@ -211,7 +257,7 @@ class AccountCredentialsScreen(
                                 state.passwordError != null -> {
                                     Text(text = state.passwordError!!.errorText())
                                 }
-                                account.accountType == AccountType.FRESHRSS -> {
+                                account.type == AccountType.FRESHRSS -> {
                                     Text(text = stringResource(id = R.string.password_helper))
                                 }
                             }
@@ -220,10 +266,19 @@ class AccountCredentialsScreen(
                             keyboardType = KeyboardType.Password,
                             imeAction = ImeAction.Done
                         ),
-                        modifier = Modifier.fillMaxWidth()
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                keyboardController?.hide()
+                                screenModel.login()
+                            }
+                        ),
+                        modifier = Modifier.autofill(
+                            autofillTypes = listOf(AutofillType.Password),
+                            onFill = { screenModel.onEvent(Event.PasswordEvent(it)) }
+                        ).fillMaxWidth()
                     )
 
-                    ShortSpacer()
+                    LargeSpacer()
 
                     Button(
                         onClick = { screenModel.login() },
@@ -244,9 +299,10 @@ class AccountCredentialsScreen(
                         ShortSpacer()
 
                         Text(
-                            text = ErrorMessage.get(state.loginException!!, LocalContext.current),
+                            text = accountError.genericMessage(state.loginException!!),
                             style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.error
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.Center
                         )
                     }
                 }

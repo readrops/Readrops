@@ -7,6 +7,10 @@ android {
     namespace = "com.readrops.api"
 
     buildTypes {
+        debug {
+            enableUnitTestCoverage = true
+        }
+
         create("beta") {
             initWith(getByName("release"))
 
@@ -26,6 +30,9 @@ android {
 
     lint {
         abortOnError = false
+
+        // disable lint rule which isn't supposed to be applied on a non compose module
+        disable.add("CoroutineCreationDuringComposition")
     }
 }
 
@@ -34,23 +41,15 @@ dependencies {
 
     coreLibraryDesugaring(libs.jdk.desugar)
 
-    testImplementation(libs.junit4)
-
     implementation(libs.coroutines.core)
-    testImplementation(libs.coroutines.test)
 
     implementation(platform(libs.koin.bom))
     implementation(libs.bundles.koin)
-    //testImplementation(libs.bundles.kointest)
-    // I don't know why but those dependencies are unreachable when accessed directly from version catalog
-    testImplementation("io.insert-koin:koin-test:${libs.versions.koin.bom.get()}")
-   testImplementation("io.insert-koin:koin-test-junit4:${libs.versions.koin.bom.get()}")
 
     implementation(libs.konsumexml)
     implementation(libs.kotlinxmlbuilder)
 
     implementation(libs.okhttp)
-    testImplementation(libs.okhttp.mockserver)
 
     implementation(libs.bundles.retrofit) {
         exclude("com.squareup.okhttp3", "okhttp3")
@@ -59,4 +58,9 @@ dependencies {
 
     implementation(libs.moshi)
     implementation(libs.jsoup)
+
+    testImplementation(libs.junit4)
+    testImplementation(libs.coroutines.test)
+    testImplementation(libs.bundles.kointest)
+    testImplementation(libs.okhttp.mockserver)
 }

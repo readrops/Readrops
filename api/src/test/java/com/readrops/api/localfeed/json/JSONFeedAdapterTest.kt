@@ -12,6 +12,7 @@ import junit.framework.TestCase.assertEquals
 import okio.Buffer
 import org.junit.Assert.assertThrows
 import org.junit.Test
+import kotlin.test.assertTrue
 
 class JSONFeedAdapterTest {
 
@@ -35,6 +36,7 @@ class JSONFeedAdapterTest {
             assertEquals(url, "http://flyingmeat.com/blog/feed.json")
             assertEquals(siteUrl, "http://flyingmeat.com/blog/")
             assertEquals(description, "News from your friends at Flying Meat.")
+            assertEquals(imageUrl, "https://secure.flyingmeat.com/favicon.ico")
         }
 
         with(items[0]) {
@@ -77,7 +79,7 @@ class JSONFeedAdapterTest {
             adapter.fromJson(Buffer().readFrom(stream))
         }
 
-        assertEquals("Item title is required", exception.message)
+        assertTrue(exception.stackTraceToString().contains("Item title is required"))
     }
 
     @Test
@@ -88,7 +90,7 @@ class JSONFeedAdapterTest {
             adapter.fromJson(Buffer().readFrom(stream))
         }
 
-        assertEquals("Item link is required", exception.message)
+        assertTrue(exception.stackTraceToString().contains("Item link is required"))
     }
 
 }

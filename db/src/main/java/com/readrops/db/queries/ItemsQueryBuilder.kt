@@ -2,8 +2,10 @@ package com.readrops.db.queries
 
 import androidx.sqlite.db.SupportSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQueryBuilder
-import com.readrops.db.filters.ListSortType
 import com.readrops.db.filters.MainFilter
+import com.readrops.db.filters.OrderField
+import com.readrops.db.filters.OrderType
+import com.readrops.db.filters.QueryFilters
 import com.readrops.db.filters.SubFilter
 
 object ItemsQueryBuilder {
@@ -12,7 +14,10 @@ object ItemsQueryBuilder {
         "Item.id",
         "Item.remote_id",
         "title",
+        "author",
         "clean_description",
+        "Item.description",
+        "content",
         "image_link",
         "pub_date",
         "link",
@@ -22,26 +27,26 @@ object ItemsQueryBuilder {
         "read_time",
         "Feed.id as feedId",
         "Feed.account_id",
+        "Feed.open_in",
+        "Feed.open_in_ask",
         "Folder.id as folder_id",
         "Folder.name as folder_name"
     )
 
     private val SEPARATE_STATE_COLUMNS = arrayOf(
+        "case When ItemState.remote_id is NULL Or ItemState.read = 1 Then 1 else 0 End is_read",
         "case When ItemState.remote_id is NULL Or ItemState.read = 1 Then 1 else 0 End read",
+        "case When ItemState.starred = 1 Then 1 else 0 End is_starred",
         "case When ItemState.starred = 1 Then 1 else 0 End starred"
     )
 
-    private val OTHER_COLUMNS = arrayOf("read", "starred")
+    private val OTHER_COLUMNS = arrayOf("read AS is_read", "read", "starred AS is_starred", "starred")
 
     private val SELECT_ALL_JOIN = """Item INNER JOIN Feed on Item.feed_id = Feed.id
             LEFT JOIN Folder on Feed.folder_id = Folder.id """.trimIndent()
 
     private const val SEPARATE_STATE_JOIN =
         "LEFT JOIN ItemState On Item.remote_id = ItemState.remote_id"
-
-    private const val ORDER_BY_ASC = "pub_date DESC"
-
-    private const val ORDER_BY_DESC = "pub_date ASC"
 
     fun buildItemsQuery(queryFilters: QueryFilters, separateState: Boolean): SupportSQLiteQuery =
         buildQuery(queryFilters, separateState)
@@ -51,38 +56,45 @@ object ItemsQueryBuilder {
 
     private fun buildQuery(queryFilters: QueryFilters, separateState: Boolean): SupportSQLiteQuery =
         with(queryFilters) {
-            if (accountId == 0)
-                throw IllegalArgumentException("AccountId must be greater than 0")
+            require(accountId != 0) { "AccountId must be greater than 0" }
 
-            if (queryFilters.subFilter == SubFilter.FEED && filterFeedId == 0)
-                throw IllegalArgumentException("FeedId must be greater than 0 if current filter is FEED_FILTER")
+            if (subFilter == SubFilter.FEED && feedId == 0) {
+                throw IllegalArgumentException("FeedId must be greater than 0 if subFilter is FEED")
+            } else if (subFilter == SubFilter.FOLDER && folderId == 0) {
+                throw IllegalArgumentException("FolderId must be greater than 0 if subFilter is FOLDER")
+            }
 
-            val columns = if (separateState)
+            val columns = if (separateState) {
                 COLUMNS.plus(SEPARATE_STATE_COLUMNS)
-            else
+            } else {
                 COLUMNS.plus(OTHER_COLUMNS)
+            }
 
-            val selectAllJoin =
-                if (separateState) SELECT_ALL_JOIN + SEPARATE_STATE_JOIN else SELECT_ALL_JOIN
+            val selectAllJoin = if (separateState) {
+                SELECT_ALL_JOIN + SEPARATE_STATE_JOIN
+            } else {
+                SELECT_ALL_JOIN
+            }
 
             SupportSQLiteQueryBuilder.builder(selectAllJoin).run {
                 columns(columns)
                 selection(buildWhereClause(this@with, separateState), null)
-                orderBy(if (sortType == ListSortType.NEWEST_TO_OLDEST) ORDER_BY_ASC else ORDER_BY_DESC)
+                orderBy(buildOrderByClause(orderField, orderType))
 
                 create()
             }
         }
 
     private fun buildWhereClause(queryFilters: QueryFilters, separateState: Boolean): String =
-        StringBuilder(500).run {
+        buildString {
             append("Feed.account_id = ${queryFilters.accountId} ")
 
             if (!queryFilters.showReadItems) {
-                if (separateState)
+                if (separateState) {
                     append("And ItemState.read = 0 ")
-                else
+                } else {
                     append("And Item.read = 0 ")
+                }
             }
 
             when (queryFilters.mainFilter) {
@@ -94,27 +106,32 @@ object ItemsQueryBuilder {
                     }
                 }
 
-                MainFilter.NEW -> append("And DateTime(Round(pub_date / 1000), 'unixepoch') Between DateTime(DateTime(\"now\"), \"-24 hour\") And DateTime(\"now\") ")
+                MainFilter.NEW -> append("""And DateTime(Round(pub_date / 1000), 'unixepoch') 
+                    Between DateTime(DateTime("now"), "-24 hour") And DateTime("now")""".trimMargin())
                 else -> {}
             }
 
             when (queryFilters.subFilter) {
-                SubFilter.FEED -> append("And feed_id = ${queryFilters.filterFeedId} ")
-                SubFilter.FOLDER -> append("And folder_id = ${queryFilters.filterFolderId} ")
+                SubFilter.FEED -> append("And feed_id = ${queryFilters.feedId} ")
+                SubFilter.FOLDER -> append("And folder_id = ${queryFilters.folderId} ")
                 else -> {}
             }
 
             toString()
         }
 
+    private fun buildOrderByClause(orderField: OrderField, orderType: OrderType): String {
+        return buildString {
+            when (orderField) {
+                OrderField.ID -> append("Item.id ")
+                else -> append("pub_date ")
+            }
+
+            when (orderType) {
+                OrderType.DESC -> append("DESC")
+                else -> append("ASC")
+            }
+        }
+    }
 }
 
-data class QueryFilters(
-    val showReadItems: Boolean = true,
-    val filterFeedId: Int = 0,
-    val filterFolderId: Int = 0,
-    val accountId: Int = 0,
-    val mainFilter: MainFilter = MainFilter.ALL,
-    val subFilter: SubFilter = SubFilter.ALL,
-    val sortType: ListSortType = ListSortType.NEWEST_TO_OLDEST,
-)

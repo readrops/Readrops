@@ -27,6 +27,7 @@ class RSS2AdapterTest {
             assertEquals(url, "https://news.ycombinator.com/feed/")
             assertEquals(siteUrl, "https://news.ycombinator.com/")
             assertEquals(description, "Links for the intellectually curious, ranked by readers.")
+            assertEquals(imageUrl, "https://news.ycombinator.com/y18.svg")
         }
 
         with(items[0]) {
@@ -77,7 +78,7 @@ class RSS2AdapterTest {
             adapter.fromXml(stream.konsumeXml())
         }
 
-        assertTrue(exception.message!!.contains("Item title is required"))
+        assertTrue(exception.stackTraceToString().contains("Item title is required"))
     }
 
     @Test
@@ -88,15 +89,15 @@ class RSS2AdapterTest {
             adapter.fromXml(stream.konsumeXml())
         }
 
-        assertTrue(exception.message!!.contains("Item link is required"))
+        assertTrue(exception.stackTraceToString().contains("Item link is required"))
     }
 
     @Test
     fun enclosureTest() {
         val stream = TestUtils.loadResource("localfeed/rss2/rss_items_enclosure.xml")
-        val item = adapter.fromXml(stream.konsumeXml()).second[0]
+        val item = adapter.fromXml(stream.konsumeXml()).second.first()
 
-        assertEquals(item.imageLink, "https://image1.jpg")
+        assertEquals("https://image1.jpg", item.imageLink)
     }
 
     @Test
@@ -111,8 +112,8 @@ class RSS2AdapterTest {
     @Test
     fun mediaGroupTest() {
         val stream = TestUtils.loadResource("localfeed/rss2/rss_items_media_group.xml")
-        val item = adapter.fromXml(stream.konsumeXml()).second[0]
+        val item = adapter.fromXml(stream.konsumeXml()).second.first()
 
-        assertEquals(item.imageLink, "https://image1.jpg")
+        assertEquals("https://image1.jpg", item.imageLink)
     }
 }

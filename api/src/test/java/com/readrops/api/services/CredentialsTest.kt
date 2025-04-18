@@ -1,6 +1,6 @@
 package com.readrops.api.services
 
-import com.readrops.api.services.freshrss.FreshRSSCredentials
+import com.readrops.api.services.greader.GReaderCredentials
 import com.readrops.api.services.nextcloudnews.NextcloudNewsCredentials
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -9,7 +9,7 @@ class CredentialsTest {
 
     @Test
     fun credentialsTest() {
-        val credentials = FreshRSSCredentials("token", "https://freshrss.org")
+        val credentials = GReaderCredentials("token", "https://freshrss.org")
 
         assertEquals(credentials.authorization!!, "GoogleLogin auth=token")
         assertEquals(credentials.url, "https://freshrss.org")

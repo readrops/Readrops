@@ -94,8 +94,12 @@ class NextcloudNewsRepository(
             onUpdate(newFeed)
 
             try {
-                val feeds = dataSource.createFeed(newFeed.url!!, null)
-                insertFeeds(feeds)
+                dataSource.createFeed(newFeed.url!!, newFeed.remoteFolderId?.toInt())
+                    .onEach {
+                        it.accountId = account.id
+                        it.folderId = newFeed.folderId
+                    }
+                    .run { database.feedDao().insert(this) }
             } catch (e: Exception) {
                 errors[newFeed] = e
             }
@@ -162,7 +166,7 @@ class NextcloudNewsRepository(
                 itemsFeedsIds[item.feedRemoteId] = feedId
             }
 
-            if (!initialSync && feedId > 0 && database.itemDao().itemExists(item.remoteId!!, feedId)) {
+            if (!initialSync && feedId > 0 && database.itemDao().itemExists(item.remoteId!!, account.id)) {
                 database.itemDao()
                     .updateReadAndStarState(item.remoteId!!, item.isRead, item.isStarred)
                 continue

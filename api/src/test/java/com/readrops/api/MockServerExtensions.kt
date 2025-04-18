@@ -12,7 +12,7 @@ fun MockWebServer.enqueueOK() {
     )
 }
 
-fun MockWebServer.enqueueStream(stream: InputStream) {
+fun MockWebServer.enqueueOKStream(stream: InputStream) {
     enqueue(MockResponse()
         .setResponseCode(HttpURLConnection.HTTP_OK)
         .setBody(Buffer().readFrom(stream)))

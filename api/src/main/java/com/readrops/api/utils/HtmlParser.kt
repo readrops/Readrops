@@ -2,10 +2,14 @@ package com.readrops.api.utils
 
 import android.nfc.FormatException
 import com.readrops.api.localfeed.LocalRSSHelper
+import com.readrops.api.utils.ApiUtils.isHtml
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.jsoup.nodes.Element
 
 data class ParsingResult(
     val url: String,
@@ -14,75 +18,103 @@ data class ParsingResult(
 
 object HtmlParser {
 
-    suspend fun getFaviconLink(url: String, client: OkHttpClient): String? {
-        val document = getHTMLHeadFromUrl(url, client)
-        val elements = document.select("link")
-
-        for (element in elements) {
-            if (element.attributes()["rel"].lowercase().contains("icon")) {
-                return element.absUrl("href")
-            }
-        }
-
-        return null
-    }
-
+    @Throws(FormatException::class)
     suspend fun getFeedLink(url: String, client: OkHttpClient): List<ParsingResult> {
-        val results = mutableListOf<ParsingResult>()
-
         val document = getHTMLHeadFromUrl(url, client)
-        val elements = document.select("link")
 
-        for (element in elements) {
-            val type = element.attributes()["type"]
-
-            if (LocalRSSHelper.isRSSType(type)) {
-                results += ParsingResult(
-                    url = element.absUrl("href"),
-                    label = element.attributes()["title"]
+        return document.select("link")
+            .filter { element ->
+                val type = element.attributes()["type"]
+                LocalRSSHelper.isRSSType(type)
+            }.map {
+                ParsingResult(
+                    url = it.absUrl("href"),
+                    label = it.attributes()["title"]
                 )
             }
-        }
-
-        return results
     }
 
-    private fun getHTMLHeadFromUrl(url: String, client: OkHttpClient): Document {
-        client.newCall(Request.Builder().url(url).build()).execute().use { response ->
-            if (response.header(ApiUtils.CONTENT_TYPE_HEADER)!!.contains(ApiUtils.HTML_CONTENT_TYPE)
-            ) {
-                val body = response.body!!.source()
+    fun getFaviconLink(document: Document): String? {
+        val links = document.select("link")
+            .filter { element -> element.attributes()["rel"].contains("icon") }
+            .sortedWith(compareByDescending<Element> {
+                it.attributes()["rel"] == "apple-touch-icon"
+            }.thenByDescending { element ->
+                val sizes = element.attr("sizes")
 
-                val stringBuilder = StringBuilder()
-                var collectionStarted = false
+                if (sizes.isNotEmpty()) {
+                    try {
+                        sizes.filter { it.isDigit() }
+                            .toInt()
+                    } catch (e: Exception) {
+                        0
+                    }
+                } else {
+                    0
+                }
+            })
 
-                while (!body.exhausted()) {
-                    val currentLine = body.readUtf8LineStrict()
+        return links.firstOrNull()
+            ?.absUrl("href")
+    }
 
-                    when {
-                        currentLine.contains("<head>") -> {
-                            stringBuilder.append(currentLine)
-                            collectionStarted = true
+    fun getFeedImage(document: Document): String? {
+        return document.select("meta")
+            .firstOrNull { element ->
+                val property = element.attr("property")
+                listOf("og:image", "twitter:image").any { it == property }
+            }
+            ?.absUrl("content")
+    }
+
+    fun getFeedDescription(document: Document): String? {
+        return document.select("meta")
+            .firstOrNull { element ->
+                val property = element.attr("property")
+                listOf("og:title", "twitter:title").any { it == property }
+            }
+            ?.attr("content")
+    }
+
+    suspend fun getHTMLHeadFromUrl(url: String, client: OkHttpClient): Document =
+        withContext(Dispatchers.IO) {
+            client.newCall(
+                Request.Builder()
+                    .url(url)
+                    .build()
+            ).execute()
+                .use { response ->
+                    val body = response.body
+                    if (body?.contentType()?.isHtml == true) {
+                        val stringBuilder = StringBuilder()
+                        var collectionStarted = false
+
+                        for (currentLine in body.charStream().buffered().lineSequence()) {
+                            when {
+                                currentLine.contains("<head>", ignoreCase = true) -> {
+                                    stringBuilder.append(currentLine)
+                                    collectionStarted = true
+                                }
+
+                                currentLine.contains("</head>", ignoreCase = true) -> {
+                                    stringBuilder.append(currentLine)
+                                    break
+                                }
+
+                                collectionStarted -> {
+                                    stringBuilder.append(currentLine)
+                                }
+                            }
                         }
-                        currentLine.contains("</head>") -> {
-                            stringBuilder.append(currentLine)
-                            break
+
+                        if (!stringBuilder.contains("<head>", ignoreCase = true) || !stringBuilder.contains("</head>", ignoreCase = true)) {
+                            throw FormatException("Failed to get HTML head from $url")
                         }
-                        collectionStarted -> {
-                            stringBuilder.append(currentLine)
-                        }
+
+                        Jsoup.parse(stringBuilder.toString(), url)
+                    } else {
+                        throw FormatException("Response from $url is not a html file")
                     }
                 }
-
-                if (!stringBuilder.contains("<head>") || !stringBuilder.contains("</head>"))
-                    throw FormatException("Failed to get HTML head")
-
-                body.close()
-                return Jsoup.parse(stringBuilder.toString(), url)
-            } else {
-                throw FormatException("The response is not a html file")
-            }
         }
-    }
-
 }

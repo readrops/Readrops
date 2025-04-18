@@ -21,7 +21,7 @@ class FeverFeedsAdapterTest {
 
         assertEquals(feverFeeds.feeds.size, 1)
 
-        with(feverFeeds.feeds[0]) {
+        with(feverFeeds.feeds.first()) {
             assertEquals(name, "xda-developers")
             assertEquals(url, "https://www.xda-developers.com/feed/")
             assertEquals(siteUrl, "https://www.xda-developers.com/")

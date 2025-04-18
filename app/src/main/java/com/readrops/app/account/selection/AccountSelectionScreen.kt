@@ -33,23 +33,25 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.readrops.api.utils.ApiUtils
 import com.readrops.app.BuildConfig
+import com.readrops.app.MainActivity
 import com.readrops.app.R
-import com.readrops.app.account.OPMLImportProgressDialog
 import com.readrops.app.account.credentials.AccountCredentialsScreen
 import com.readrops.app.account.credentials.AccountCredentialsScreenMode
+import com.readrops.app.account.dialog.AccountWarningDialog
+import com.readrops.app.account.dialog.OPMLImportProgressDialog
 import com.readrops.app.home.HomeScreen
-import com.readrops.app.util.ErrorMessage
 import com.readrops.app.util.components.AndroidScreen
 import com.readrops.app.util.components.SelectableImageText
 import com.readrops.app.util.theme.LargeSpacer
 import com.readrops.app.util.theme.MediumSpacer
 import com.readrops.app.util.theme.ShortSpacer
 import com.readrops.app.util.theme.spacing
+import com.readrops.db.entities.account.ACCOUNT_APIS
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
 
@@ -60,7 +62,7 @@ class AccountSelectionScreen : AndroidScreen() {
         val navigator = LocalNavigator.currentOrThrow
         val context = LocalContext.current
 
-        val screenModel = getScreenModel<AccountSelectionScreenModel>()
+        val screenModel = koinScreenModel<AccountSelectionScreenModel>()
         val state by screenModel.state.collectAsStateWithLifecycle()
 
         val opmlImportLauncher =
@@ -70,39 +72,58 @@ class AccountSelectionScreen : AndroidScreen() {
 
         val snackbarHostState = remember { SnackbarHostState() }
 
-        if (state.showOPMLImportDialog) {
-            OPMLImportProgressDialog(
-                currentFeed = state.currentFeed,
-                feedCount = state.feedCount,
-                feedMax = state.feedMax
-            )
+        // remove splash screen when opening the app with no account available
+        LaunchedEffect(Unit) {
+            (context as MainActivity).ready = true
         }
 
-        LaunchedEffect(state.exception) {
-            if (state.exception != null) {
-                snackbarHostState.showSnackbar(ErrorMessage.get(state.exception!!, context))
+        LaunchedEffect(state.error) {
+            if (state.error != null) {
+                snackbarHostState.showSnackbar(state.error!!)
                 screenModel.resetException()
             }
         }
 
-        when (state.navState) {
-            is NavState.GoToHomeScreen -> {
+        when (state.navigation) {
+            is Navigation.HomeScreen -> {
                 // using replace makes the app crash due to a screen key conflict
                 navigator.replaceAll(HomeScreen)
             }
 
-            is NavState.GoToAccountCredentialsScreen -> {
-                val accountType =
-                    (state.navState as NavState.GoToAccountCredentialsScreen).accountType
+            is Navigation.AccountCredentialsScreen -> {
+                val type = (state.navigation as Navigation.AccountCredentialsScreen).type
                 val account = Account(
-                    accountType = accountType,
-                    accountName = stringResource(id = accountType.typeName)
+                    type = type,
+                    name = stringResource(id = type.nameRes)
                 )
 
                 navigator.push(
                     AccountCredentialsScreen(account, AccountCredentialsScreenMode.NEW_CREDENTIALS)
                 )
-                screenModel.resetNavState()
+                screenModel.resetNavigation()
+            }
+
+            else -> {}
+        }
+
+        when (val dialog = state.dialog) {
+            is DialogState.AccountWarning -> {
+                AccountWarningDialog(
+                    type = dialog.type,
+                    onConfirm = {
+                        screenModel.createAccount(dialog.type)
+                        screenModel.closeDialog()
+                    },
+                    onDismiss = { screenModel.closeDialog() }
+                )
+            }
+
+            is DialogState.OPMLImport -> {
+                OPMLImportProgressDialog(
+                    currentFeed = state.currentFeed,
+                    feedCount = state.feedCount,
+                    feedMax = state.feedMax
+                )
             }
 
             else -> {}
@@ -159,7 +180,7 @@ class AccountSelectionScreen : AndroidScreen() {
 
                             SelectableImageText(
                                 image = adaptiveIconPainterResource(id = R.mipmap.ic_launcher),
-                                text = stringResource(id = AccountType.LOCAL.typeName),
+                                text = stringResource(id = AccountType.LOCAL.nameRes),
                                 style = MaterialTheme.typography.bodyLarge,
                                 spacing = MaterialTheme.spacing.mediumSpacing,
                                 padding = MaterialTheme.spacing.mediumSpacing,
@@ -185,11 +206,11 @@ class AccountSelectionScreen : AndroidScreen() {
                                 modifier = Modifier.padding(start = MaterialTheme.spacing.mediumSpacing)
                             )
 
-                            AccountType.entries.filter { it != AccountType.LOCAL }
+                            listOf(AccountType.FRESHRSS, AccountType.NEXTCLOUD_NEWS)
                                 .forEach { accountType ->
                                     SelectableImageText(
                                         image = adaptiveIconPainterResource(id = accountType.iconRes),
-                                        text = stringResource(id = accountType.typeName),
+                                        text = stringResource(id = accountType.nameRes),
                                         style = MaterialTheme.typography.bodyLarge,
                                         imageSize = 24.dp,
                                         spacing = MaterialTheme.spacing.mediumSpacing,
@@ -198,7 +219,29 @@ class AccountSelectionScreen : AndroidScreen() {
                                     )
                                 }
 
+                            MediumSpacer()
 
+                            Text(
+                                text = stringResource(R.string.api),
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(start = MaterialTheme.spacing.mediumSpacing)
+                            )
+
+                            ACCOUNT_APIS.forEach { accountType ->
+                                    SelectableImageText(
+                                        image = adaptiveIconPainterResource(id = accountType.iconRes),
+                                        text = stringResource(id = accountType.nameRes),
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        imageSize = 24.dp,
+                                        spacing = MaterialTheme.spacing.mediumSpacing,
+                                        padding = MaterialTheme.spacing.mediumSpacing,
+                                        onClick = {
+                                            screenModel.openDialog(
+                                                DialogState.AccountWarning(accountType)
+                                            )
+                                        }
+                                    )
+                                }
                         }
                     }
                 }

@@ -3,6 +3,7 @@ package com.readrops.app.repositories
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
+import com.readrops.db.entities.OpenIn
 import com.readrops.db.filters.MainFilter
 import com.readrops.db.queries.FeedUnreadCountQueryBuilder
 import com.readrops.db.queries.FoldersAndFeedsQueryBuilder
@@ -19,7 +20,7 @@ class GetFoldersWithFeeds(
         useSeparateState: Boolean,
         hideReadFeeds: Boolean = false
     ): Flow<Map<Folder?, List<Feed>>> {
-        val foldersAndFeedsQuery = FoldersAndFeedsQueryBuilder.build(accountId, hideReadFeeds)
+        val foldersAndFeedsQuery = FoldersAndFeedsQueryBuilder.build(accountId, mainFilter, hideReadFeeds, useSeparateState)
         val unreadItemsCountQuery = FeedUnreadCountQueryBuilder.build(accountId, mainFilter, useSeparateState)
 
         return combine(
@@ -44,9 +45,17 @@ class GetFoldersWithFeeds(
                         id = it.feedId,
                         name = it.feedName,
                         iconUrl = it.feedIcon,
+                        color = it.feedColor,
+                        imageUrl = it.feedImage,
                         url = it.feedUrl,
                         siteUrl = it.feedSiteUrl,
                         description = it.feedDescription,
+                        isNotificationEnabled = it.feedNotificationsEnabled,
+                        openIn = if (it.feedOpenIn != null) {
+                            it.feedOpenIn!!
+                        } else {
+                            OpenIn.LOCAL_VIEW
+                        },
                         remoteId = it.feedRemoteId,
                         unreadCount = itemCounts[it.feedId] ?: 0
                     )
@@ -60,7 +69,13 @@ class GetFoldersWithFeeds(
                 }
             }
 
-            foldersWithFeeds.toSortedMap(nullsLast(Folder::compareTo))
+            // Nextcloud News case, no need to add a config parameter
+            val comparator = compareByDescending<Folder?> {
+                it?.name?.startsWith("_")
+            }
+                .then(nullsLast(Folder::compareTo))
+
+            foldersWithFeeds.toSortedMap(comparator)
         }
     }
 

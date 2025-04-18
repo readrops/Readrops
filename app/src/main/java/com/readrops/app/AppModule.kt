@@ -15,20 +15,26 @@ import com.readrops.app.account.credentials.AccountCredentialsScreenMode
 import com.readrops.app.account.credentials.AccountCredentialsScreenModel
 import com.readrops.app.account.selection.AccountSelectionScreenModel
 import com.readrops.app.feeds.FeedScreenModel
+import com.readrops.app.feeds.color.FeedColorScreenModel
+import com.readrops.app.feeds.newfeed.NewFeedScreenModel
 import com.readrops.app.item.ItemScreenModel
 import com.readrops.app.more.preferences.PreferencesScreenModel
 import com.readrops.app.notifications.NotificationsScreenModel
 import com.readrops.app.repositories.BaseRepository
 import com.readrops.app.repositories.FeverRepository
-import com.readrops.app.repositories.FreshRSSRepository
+import com.readrops.app.repositories.GReaderRepository
 import com.readrops.app.repositories.GetFoldersWithFeeds
 import com.readrops.app.repositories.LocalRSSRepository
 import com.readrops.app.repositories.NextcloudNewsRepository
+import com.readrops.app.sync.SyncAnalyzer
+import com.readrops.app.sync.Synchronizer
 import com.readrops.app.timelime.TimelineScreenModel
 import com.readrops.app.util.DataStorePreferences
 import com.readrops.app.util.Preferences
+import com.readrops.db.entities.Feed
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
+import com.readrops.db.filters.QueryFilters
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -38,30 +44,42 @@ import org.koin.dsl.module
 
 val appModule = module {
 
-    factory { TimelineScreenModel(get(), get(), get()) }
+    factory { TimelineScreenModel(get(), get(), get(), androidContext()) }
 
-    factory { FeedScreenModel(get(), get(), get(), androidContext()) }
+    factory { FeedScreenModel(get(), get(), androidContext()) }
 
-    factory { AccountSelectionScreenModel(get()) }
+    factory { (url: String?) -> NewFeedScreenModel(get(), get(), androidContext(), url) }
 
-    factory { AccountScreenModel(get()) }
+    factory { AccountSelectionScreenModel(get(), get()) }
 
-    factory { (itemId: Int) -> ItemScreenModel(get(), itemId, get()) }
+    factory { AccountScreenModel(get(), androidContext()) }
+
+    factory { (itemId: Int, itemIndex: Int, queryFilters: QueryFilters) ->
+        ItemScreenModel(
+            itemId = itemId,
+            itemIndex = itemIndex,
+            queryFilters = queryFilters,
+            database = get(),
+            preferences = get()
+        )
+    }
 
     factory { (accountType: Account, mode: AccountCredentialsScreenMode) ->
-        AccountCredentialsScreenModel(accountType, mode, get())
+        AccountCredentialsScreenModel(accountType, mode, get(), context = androidContext())
     }
 
     factory { (account: Account) -> NotificationsScreenModel(account, get(), get(), get()) }
 
-    factory { PreferencesScreenModel(get()) }
+    factory { PreferencesScreenModel(get(), get(), get()) }
+
+    factory { (feed: Feed) -> FeedColorScreenModel(feed, get()) }
 
     single { GetFoldersWithFeeds(get()) }
 
     factory<BaseRepository> { (account: Account) ->
-        when (account.accountType) {
+        when (account.type) {
             AccountType.LOCAL -> LocalRSSRepository(get(), get(), account)
-            AccountType.FRESHRSS -> FreshRSSRepository(
+            AccountType.FRESHRSS, AccountType.GREADER -> GReaderRepository(
                 database = get(),
                 account = account,
                 dataSource = get(parameters = { parametersOf(Credentials.toCredentials(account)) })
@@ -113,4 +131,8 @@ val appModule = module {
     single { Preferences(get()) }
 
     single { NotificationManagerCompat.from(get()) }
+
+    single { Synchronizer(get(), get(), get(), get()) }
+
+    single { SyncAnalyzer(get(), get()) }
 }

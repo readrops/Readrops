@@ -3,7 +3,6 @@ package com.readrops.api.localfeed
 import com.gitlab.mvysny.konsumexml.Konsumer
 import com.gitlab.mvysny.konsumexml.Names
 import com.readrops.api.utils.extensions.checkRoot
-import java.io.InputStream
 
 object LocalRSSHelper {
 
@@ -26,12 +25,11 @@ object LocalRSSHelper {
             RSS_1_CONTENT_TYPE -> RSSType.RSS_1
             RSS_2_CONTENT_TYPE -> RSSType.RSS_2
             ATOM_CONTENT_TYPE -> RSSType.ATOM
-            JSON_CONTENT_TYPE, JSONFEED_CONTENT_TYPE -> RSSType.JSONFEED
+            JSONFEED_CONTENT_TYPE -> RSSType.JSONFEED
             else -> RSSType.UNKNOWN
         }
     }
 
-    @JvmStatic
     fun isRSSType(type: String?): Boolean =
             if (type != null) getRSSType(type) != RSSType.UNKNOWN else false
 

@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -22,7 +23,8 @@ fun BasePreference(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
-    rightComponent: (@Composable () -> Unit)? = null
+    rightComponent: (@Composable () -> Unit)? = null,
+    paddingValues: PaddingValues = PaddingValues(MaterialTheme.spacing.mediumSpacing)
 ) {
     Box(
         modifier = modifier.clickable { onClick() }
@@ -30,7 +32,7 @@ fun BasePreference(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(MaterialTheme.spacing.mediumSpacing)
+            modifier = Modifier.padding(paddingValues)
         ) {
             Column(
                 modifier = Modifier.weight(1f)

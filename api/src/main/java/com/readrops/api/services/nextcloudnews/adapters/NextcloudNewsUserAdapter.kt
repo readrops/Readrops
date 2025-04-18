@@ -23,7 +23,7 @@ class NextcloudNewsUserAdapter : XmlAdapter<String> {
             konsumer.close()
             displayName!!
         } catch (e: Exception) {
-            throw ParseException(e.message)
+            throw ParseException("Nextcloud News user parsing failure", e)
         }
     }
 }

@@ -2,6 +2,7 @@ package com.readrops.db.dao
 
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.Transaction
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.ItemStateChange
 import com.readrops.db.pojo.ItemReadStarState
@@ -14,8 +15,8 @@ interface ItemStateChangeDao: BaseDao<ItemStateChange> {
 
     @Query("""Select case When ItemState.remote_id is NULL Or ItemState.read = 1 Then 1 else 0 End read, 
         case When ItemState.remote_id is NULL Or ItemState.starred = 1 Then 1 else 0 End starred, 
-        ItemStateChange.id as id, ItemStateChange.read_change, ItemStateChange.star_change, Item.remote_id From ItemStateChange 
-        Inner Join Item On ItemStateChange.id = Item.id Left Join ItemState On ItemState.remote_id = Item.remote_id
+        ItemStateChange.id as id, ItemStateChange.read_change, ItemStateChange.star_change, Item.remote_id 
+        From ItemStateChange Inner Join Item On ItemStateChange.id = Item.id Left Join ItemState On ItemState.remote_id = Item.remote_id
         Where ItemStateChange.account_id = :accountId""")
     suspend fun selectItemStateChanges(accountId: Int): List<ItemReadStarState>
 
@@ -25,12 +26,14 @@ interface ItemStateChangeDao: BaseDao<ItemStateChange> {
     @Query("Select Case When :itemId In (Select id From ItemStateChange Where star_change = 1) Then 1 Else 0 End")
     suspend fun starStateChangeExists(itemId: Int): Boolean
 
+    @Transaction
     suspend fun upsertItemReadStateChange(item: Item, accountId: Int, useSeparateState: Boolean) {
         if (itemStateChangeExists(item.id, accountId)) {
-            val oldItemReadState = if (useSeparateState)
-                selectItemReadState(item.remoteId!!, accountId)
-            else
-                selectStandardItemReadState(item.remoteId!!, accountId)
+            val oldItemReadState = if (useSeparateState) {
+                selectItemSeparateReadState(item.remoteId!!, accountId)
+            } else {
+                selectItemRegularReadState(item.remoteId!!, accountId)
+            }
 
             val readChange = item.isRead != oldItemReadState
 
@@ -49,6 +52,7 @@ interface ItemStateChangeDao: BaseDao<ItemStateChange> {
         }
     }
 
+    @Transaction
     suspend fun upsertItemStarStateChange(item: Item, accountId: Int, useSeparateState: Boolean) {
         if (itemStateChangeExists(item.id, accountId)) {
             val oldItemStarState = if (useSeparateState)
@@ -80,10 +84,10 @@ interface ItemStateChangeDao: BaseDao<ItemStateChange> {
     suspend fun itemStateChangeExists(id: Int, accountId: Int): Boolean
 
     @Query("Select read From ItemState Where remote_id = :remoteId And account_id = :accountId")
-    suspend fun selectItemReadState(remoteId: String, accountId: Int): Boolean
+    suspend fun selectItemSeparateReadState(remoteId: String, accountId: Int): Boolean
 
     @Query("Select read From Item Inner Join Feed On Item.feed_id = Feed.id Where Item.remote_id = :remoteId And account_id = :accountId")
-    suspend fun selectStandardItemReadState(remoteId: String, accountId: Int): Boolean
+    suspend fun selectItemRegularReadState(remoteId: String, accountId: Int): Boolean
 
     @Query("Select starred From ItemState Where remote_id = :remoteId And account_id = :accountId")
     suspend fun selectItemStarState(remoteId: String, accountId: Int): Boolean
@@ -97,6 +101,9 @@ interface ItemStateChangeDao: BaseDao<ItemStateChange> {
     @Query("Update ItemStateChange set star_change = :starChange Where id = :id")
     suspend fun updateItemStarStateChange(starChange: Boolean, id: Int)
 
+    //region all items
+
+    @Transaction
     suspend fun upsertAllItemsReadStateChanges(accountId: Int) {
         upsertAllItemsReadStateChangesByUpdate(accountId)
         upsertAllItemsReadStateChangesByInsert(accountId)
@@ -111,6 +118,11 @@ interface ItemStateChangeDao: BaseDao<ItemStateChange> {
         From Item Inner Join Feed On Feed.id = Item.feed_id Where account_id = :accountId""")
     suspend fun upsertAllItemsReadStateChangesByInsert(accountId: Int)
 
+    //endregion
+
+    //region upsert by feed
+
+    @Transaction
     suspend fun upsertItemReadStateChangesByFeed(feedId: Int, accountId: Int) {
         upsertItemReadStateChangesByFeedByUpdate(feedId, accountId)
         upsertItemReadStateChangesByFeedByInsert(feedId, accountId)
@@ -125,6 +137,11 @@ interface ItemStateChangeDao: BaseDao<ItemStateChange> {
         From Item Inner Join Feed On Feed.id = Item.feed_id Where account_id = :accountId And feed_id = :feedId""")
     suspend fun upsertItemReadStateChangesByFeedByInsert(feedId: Int, accountId: Int)
 
+    // endregion
+
+    //region upsert by folder
+
+    @Transaction
     suspend fun upsertItemReadStateChangesByFolder(folderId: Int, accountId: Int) {
         upsertItemReadStateChangesByFolderByUpdate(folderId, accountId)
         upsertItemReadStateChangesByFolderByInsert(folderId, accountId)
@@ -139,6 +156,11 @@ interface ItemStateChangeDao: BaseDao<ItemStateChange> {
         From Item Inner Join Feed On Feed.id = Item.feed_id Where account_id = :accountId And folder_id = :folderId""")
     suspend fun upsertItemReadStateChangesByFolderByInsert(folderId: Int, accountId: Int)
 
+    //endregion
+
+    //region upsert by starred items
+
+    @Transaction
     suspend fun upsertStarredItemReadStateChanges(accountId: Int) {
         upsertStarredItemReadStateChangesByUpdate(accountId)
         upsertStarredItemReadStateChangesByInsert(accountId)
@@ -153,6 +175,11 @@ interface ItemStateChangeDao: BaseDao<ItemStateChange> {
         From Item Inner Join Feed On Feed.id = Item.feed_id Where account_id = :accountId And starred = 1""")
     suspend fun upsertStarredItemReadStateChangesByInsert(accountId: Int)
 
+    //endregion
+
+    //region upsert by new items
+
+    @Transaction
     suspend fun upsertNewItemReadStateChanges(accountId: Int) {
         upsertNewItemReadStateChangesByUpdate(accountId)
         upsertNewItemReadStateChangesByInsert(accountId)
@@ -170,4 +197,6 @@ interface ItemStateChangeDao: BaseDao<ItemStateChange> {
         And DateTime(Round(Item.pub_date / 1000), 'unixepoch') 
         Between DateTime(DateTime("now"), "-24 hour") And DateTime("now")""")
     suspend fun upsertNewItemReadStateChangesByInsert(accountId: Int)
+
+    //endregion
 }

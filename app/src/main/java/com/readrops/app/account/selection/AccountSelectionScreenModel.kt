@@ -6,7 +6,9 @@ import androidx.core.net.toFile
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.readrops.api.opml.OPMLParser
+import com.readrops.app.R
 import com.readrops.app.repositories.BaseRepository
+import com.readrops.app.util.accounterror.AccountError
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Folder
@@ -23,8 +25,11 @@ import org.koin.core.parameter.parametersOf
 
 class AccountSelectionScreenModel(
     private val database: Database,
+    context: Context,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : StateScreenModel<AccountSelectionState>(AccountSelectionState()), KoinComponent {
+
+    private val accountError = AccountError.Companion.DefaultAccountError(context)
 
     fun accountExists(): Boolean {
         val accountCount = runBlocking {
@@ -38,25 +43,25 @@ class AccountSelectionScreenModel(
         if (accountType == AccountType.LOCAL) {
             screenModelScope.launch(dispatcher) {
                 createLocalAccount()
-                mutableState.update { it.copy(navState = NavState.GoToHomeScreen) }
+                mutableState.update { it.copy(navigation = Navigation.HomeScreen) }
             }
         } else {
             mutableState.update {
-                it.copy(navState = NavState.GoToAccountCredentialsScreen(accountType))
+                it.copy(navigation = Navigation.AccountCredentialsScreen(accountType))
             }
         }
     }
 
-    fun resetNavState() {
-        mutableState.update { it.copy(navState = NavState.Idle) }
+    fun resetNavigation() {
+        mutableState.update { it.copy(navigation = null) }
     }
 
     private suspend fun createLocalAccount(): Account {
         val context = get<Context>()
         val account = Account(
             url = null,
-            accountName = context.getString(AccountType.LOCAL.typeName),
-            accountType = AccountType.LOCAL,
+            name = context.getString(AccountType.LOCAL.nameRes),
+            type = AccountType.LOCAL,
             isCurrentAccount = true
         )
 
@@ -71,19 +76,24 @@ class AccountSelectionScreenModel(
             try {
                 val stream = context.contentResolver.openInputStream(uri)
                 if (stream == null) {
-                    mutableState.update { it.copy(exception = NoSuchFileException(uri.toFile())) }
+                    mutableState.update { it.copy(error = accountError.genericMessage(NoSuchFileException(uri.toFile()))) }
                     return@launch
                 }
 
                 foldersAndFeeds = OPMLParser.read(stream)
             } catch (e: Exception) {
-                mutableState.update { it.copy(exception = e) }
+                mutableState.update { it.copy(error = accountError.genericMessage(e)) }
+                return@launch
+            }
+
+            if (foldersAndFeeds.isEmpty()) {
+                mutableState.update { it.copy(error = context.getString(R.string.empty_file)) }
                 return@launch
             }
 
             mutableState.update {
                 it.copy(
-                    showOPMLImportDialog = true,
+                    dialog = DialogState.OPMLImport,
                     currentFeed = foldersAndFeeds.values.first().first().name,
                     feedCount = 0,
                     feedMax = foldersAndFeeds.values.flatten().size
@@ -107,27 +117,35 @@ class AccountSelectionScreenModel(
 
             mutableState.update {
                 it.copy(
-                    showOPMLImportDialog = false,
-                    navState = NavState.GoToHomeScreen
+                    dialog = null,
+                    navigation = Navigation.HomeScreen
                 )
             }
         }
     }
 
-    fun resetException() = mutableState.update { it.copy(exception = null) }
+    fun resetException() = mutableState.update { it.copy(error = null) }
+
+    fun openDialog(dialog: DialogState) = mutableState.update { it.copy(dialog = dialog) }
+
+    fun closeDialog() = mutableState.update { it.copy(dialog = null) }
 }
 
 data class AccountSelectionState(
-    val showOPMLImportDialog: Boolean = false,
-    val navState: NavState = NavState.Idle,
-    val exception: Exception? = null,
+    val error: String? = null,
     val currentFeed: String? = null,
     val feedCount: Int = 0,
-    val feedMax: Int = 0
+    val feedMax: Int = 0,
+    val dialog: DialogState? = null,
+    val navigation: Navigation? = null
 )
 
-sealed class NavState {
-    data object Idle : NavState()
-    data object GoToHomeScreen : NavState()
-    class GoToAccountCredentialsScreen(val accountType: AccountType) : NavState()
+sealed class Navigation {
+    data object HomeScreen : Navigation()
+    data class AccountCredentialsScreen(val type: AccountType) : Navigation()
+}
+
+sealed interface DialogState {
+    data object OPMLImport : DialogState
+    data class AccountWarning(val type: AccountType) : DialogState
 }

@@ -6,6 +6,11 @@
       <atom:link href="https://news.ycombinator.com/feed/" rel="self" />
       <link>https://news.ycombinator.com/</link>
       <description>Links for the intellectually curious, ranked by readers.</description>
+      <image>
+         <title>Hacker News</title>
+         <url>https://news.ycombinator.com/y18.svg</url>
+         <link>https://news.ycombinator.com/</link>
+      </image>
       <item>
          <title>Africa declared free of wild polio</title>
          <link>https://www.bbc.com/news/world-africa-53887947</link>

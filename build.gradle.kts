@@ -1,4 +1,3 @@
-
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryExtension
@@ -24,11 +23,10 @@ buildscript {
 plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.compose.compiler) apply false
+    jacoco
 }
 
 allprojects {
-    //apply("jacoco")
-
     repositories {
         google()
         mavenCentral()
@@ -59,14 +57,12 @@ subprojects {
 }
 
 fun configure(extension: BaseExtension) = with(extension) {
-    compileSdkVersion(34)
+    compileSdkVersion(35)
 
     defaultConfig {
         minSdk = 21
-        targetSdk = 34
-        buildToolsVersion = "34.0.0"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        targetSdk = 35
+        buildToolsVersion = "35.0.1"
     }
 
     compileOptions {
@@ -87,54 +83,62 @@ tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
 
-/*jacoco {
+jacoco {
     toolVersion = "0.8.7"
 }
 
 
-tasks.register("jacocoFullReport", JacocoReport) {
+tasks.register<JacocoReport>("jacocoFullReport") {
     group = "Reporting"
     description = "Generate Jacoco coverage reports for the debug build"
 
     reports {
-        html {
-            enabled true
-            destination file("build/reports/jacoco/html")
-        }
-        xml {
-            enabled true
-            destination file("build/reports/jacoco/jacocoFullReport.xml")
-        }
+        xml.required.set(true)
+        html.required.set(true)
     }
 
-    //dependsOn ":app:testDebugUnitTest"
-    dependsOn ":api:testDebugUnitTest"
-    dependsOn ":db:testDebugUnitTest"
-    //dependsOn ":app:connectedAndroidTest"
-    dependsOn ":db:connectedAndroidTest"*/
+    dependsOn(":app:testDebugUnitTest")
+    dependsOn(":app:connectedAndroidTest")
+    dependsOn(":api:testDebugUnitTest")
+    dependsOn(":db:testDebugUnitTest")
+    dependsOn(":db:connectedAndroidTest")
 
-//final fileFilter = ["**/R.class", "**/R\$*.class", "**/BuildConfig.*", "**/Manifest*.*", "android/**/*.*"]
+    val excludeFilter = listOf(
+        "**/R.class",
+        "**/R\$*.class",
+        "**/BuildConfig.*",
+        "**/Manifest*.*",
+        "android/**/*.*"
+    )
 
-/*    classDirectories.setFrom files([
-            //fileTree(dir: "$project.rootDir/app/build/intermediates/javac/debug", excludes: fileFilter),
-            //fileTree(dir: "$project.rootDir/app/build/tmp/kotlin-classes/debug", excludes: fileFilter),
-            fileTree(dir: "$project.rootDir/api/build/intermediates/javac/debug", excludes: fileFilter),
-            fileTree(dir: "$project.rootDir/api/build/tmp/kotlin-classes/debug", excludes: fileFilter),
-            fileTree(dir: "$project.rootDir/db/build/tmp/kotlin-classes/debug", excludes: fileFilter),
-    ])
-    def coverageSourceDirs = [
-            "$project.rootDir/app/src/main/java",
-            "$project.rootDir/api/src/main/java",
-            "$project.rootDir/db/src/main/java",
-    ]
+    classDirectories.setFrom(
+        files(
+            fileTree("${project.rootDir}/app/build/intermediates/javac/debug") { exclude(excludeFilter) },
+            fileTree("${project.rootDir}/app/build/tmp/kotlin-classes/debug") { exclude(excludeFilter) }
+        ),
+        fileTree("${project.rootDir}/api/build/tmp/kotlin-classes/debug")  { exclude(excludeFilter) },
+        fileTree("${project.rootDir}/db/build/tmp/kotlin-classes/debug")  { exclude(excludeFilter) },
+    )
 
-    additionalSourceDirs.setFrom files(coverageSourceDirs)
-    sourceDirectories.setFrom files(coverageSourceDirs)
-    executionData.setFrom fileTree(dir: project.rootDir, includes: [
-            "app/jacoco.exec",
-            "db/jacoco.exec",
-            "api/jacoco.exec",
-            "app/build/outputs/code_coverage/debugAndroidTest/connected/*-coverage.ec",
-            "db/build/outputs/code_coverage/debugAndroidTest/connected/*-coverage.ec"
-    ])
-}*/
+    val coverageSourceDirs = listOf(
+        "${project.rootDir}/app/src/main/java",
+        "${project.rootDir}/api/src/main/java",
+        "${project.rootDir}/db/src/main/java",
+    )
+
+    additionalSourceDirs.setFrom(files(coverageSourceDirs))
+    sourceDirectories.setFrom(files(coverageSourceDirs))
+
+    executionData.setFrom(
+        fileTree(project.rootDir) {
+            include(
+                listOf(
+                    "api/build/outputs/unit_test_code_coverage/**/*.exec",
+                    "db/build/outputs/unit_test_code_coverage/**/*.exec",
+                    "app/build/outputs/code_coverage/debugAndroidTest/connected/**/*.ec",
+                    "db/build/outputs/code_coverage/debugAndroidTest/connected/**/*.ec"
+                )
+            )
+        }
+    )
+}

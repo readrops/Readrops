@@ -1,7 +1,10 @@
 package com.readrops.app.util
 
+import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import androidx.annotation.ColorInt
+import com.readrops.db.entities.Item
 import java.util.Locale
 
 object Utils {
@@ -21,5 +24,38 @@ object Utils {
             Color.blue(color),
             Color.alpha(color) / 255.0
         )
+    }
+
+    fun normalizeUrl(url: String): String {
+        return buildString {
+            if (!url.contains("https://") && !url.contains("http://")) {
+                append("https://$url")
+            } else {
+                append(url)
+            }
+
+            if (!url.endsWith("/")) {
+                append("/")
+            }
+        }
+    }
+
+    fun shareItem(
+        item: Item,
+        context: Context,
+        useCustomShareIntentTpl: Boolean,
+        customShareIntentTpl: String
+    ) {
+        val intentContent =
+            if(!useCustomShareIntentTpl || customShareIntentTpl.isBlank()) item.link
+            else ShareIntentTextRenderer(item).render(customShareIntentTpl)
+        Intent().apply {
+            action = Intent.ACTION_SEND
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, intentContent)
+            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+        }.also {
+            context.startActivity(Intent.createChooser(it, null))
+        }
     }
 }

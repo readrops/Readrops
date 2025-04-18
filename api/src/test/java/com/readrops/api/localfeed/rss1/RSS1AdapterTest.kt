@@ -4,9 +4,9 @@ import com.gitlab.mvysny.konsumexml.konsumeXml
 import com.readrops.api.TestUtils
 import com.readrops.api.utils.exceptions.ParseException
 import com.readrops.db.util.DateUtils
-import junit.framework.Assert.assertEquals
-import junit.framework.Assert.assertNotNull
 import junit.framework.TestCase
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -28,6 +28,7 @@ class RSS1AdapterTest {
             assertEquals(url, "https://slashdot.org/")
             assertEquals(siteUrl, "https://slashdot.org/")
             assertEquals(description, "News for nerds, stuff that matters")
+            assertEquals(imageUrl, "https://a.fsdn.com/sd/topics/topicslashdot.gif")
         }
 
         with(items[0]) {
@@ -71,7 +72,7 @@ class RSS1AdapterTest {
             adapter.fromXml(stream.konsumeXml())
         }
 
-        assertTrue(exception.message!!.contains("Item title is required"))
+        assertTrue(exception.stackTraceToString().contains("Item title is required"))
     }
 
     @Test
@@ -82,6 +83,6 @@ class RSS1AdapterTest {
             adapter.fromXml(stream.konsumeXml())
         }
 
-        assertTrue(exception.message!!.contains("RSS1 link or about element is required"))
+        assertTrue(exception.stackTraceToString().contains("RSS1 link or about element is required"))
     }
 }

@@ -14,25 +14,25 @@ fun SwitchPreferenceWidget(
     title: String,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
+    onValueChanged: ((Boolean) -> Unit)? = null
 ) {
     val coroutineScope = rememberCoroutineScope()
+
+    fun changeValue(newValue: Boolean) {
+        coroutineScope.launch {
+            preference.write(newValue)
+            onValueChanged?.let { it(newValue) }
+        }
+    }
 
     BasePreference(
         title = title,
         subtitle = subtitle,
-        onClick = {
-            coroutineScope.launch {
-                preference.write(!isChecked)
-            }
-        },
+        onClick = { changeValue(!isChecked) },
         rightComponent = {
             Switch(
                 checked = isChecked,
-                onCheckedChange = {
-                    coroutineScope.launch {
-                        preference.write(!isChecked)
-                    }
-                }
+                onCheckedChange = ::changeValue
             )
         },
         modifier = modifier

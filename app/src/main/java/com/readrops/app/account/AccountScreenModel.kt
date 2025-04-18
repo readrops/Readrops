@@ -6,7 +6,8 @@ import androidx.compose.runtime.Stable
 import androidx.core.net.toFile
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.readrops.api.opml.OPMLParser
-import com.readrops.app.base.TabScreenModel
+import com.readrops.app.R
+import com.readrops.app.home.TabScreenModel
 import com.readrops.app.repositories.ErrorResult
 import com.readrops.app.repositories.GetFoldersWithFeeds
 import com.readrops.app.util.components.TextFieldError
@@ -29,8 +30,9 @@ import org.koin.core.component.get
 
 class AccountScreenModel(
     private val database: Database,
+    context: Context,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : TabScreenModel(database) {
+) : TabScreenModel(database, context) {
 
     private val _closeHome = MutableStateFlow(false)
     val closeHome = _closeHome.asStateFlow()
@@ -93,7 +95,11 @@ class AccountScreenModel(
         screenModelScope.launch(dispatcher) {
             val stream = context.contentResolver.openOutputStream(uri)
             if (stream == null) {
-                _accountState.update { it.copy(error = NoSuchFileException(uri.toFile())) }
+                _accountState.update {
+                    it.copy(
+                        error = accountError?.genericMessage(NoSuchFileException(uri.toFile()))
+                    )
+                }
                 return@launch
             }
 
@@ -122,13 +128,22 @@ class AccountScreenModel(
             try {
                 val stream = context.contentResolver.openInputStream(uri)
                 if (stream == null) {
-                    _accountState.update { it.copy(error = NoSuchFileException(uri.toFile())) }
+                    _accountState.update {
+                        it.copy(
+                            error = accountError?.genericMessage(NoSuchFileException(uri.toFile()))
+                        )
+                    }
                     return@launch
                 }
 
                 foldersAndFeeds = OPMLParser.read(stream)
             } catch (e: Exception) {
-                _accountState.update { it.copy(error = e) }
+                _accountState.update { it.copy(error = accountError?.genericMessage(e)) }
+                return@launch
+            }
+
+            if (foldersAndFeeds.isEmpty()) {
+                _accountState.update { it.copy(error = context.getString(R.string.empty_file)) }
                 return@launch
             }
 
@@ -178,8 +193,8 @@ class AccountScreenModel(
     fun createLocalAccount() {
         val context = get<Context>()
         val account = Account(
-            accountName = context.getString(AccountType.LOCAL.typeName),
-            accountType = AccountType.LOCAL,
+            name = context.getString(AccountType.LOCAL.nameRes),
+            type = AccountType.LOCAL,
             isCurrentAccount = true
         )
 
@@ -212,10 +227,10 @@ class AccountScreenModel(
 
 @Stable
 data class AccountState(
-    val account: Account = Account(accountName = "account", accountType = AccountType.LOCAL),
+    val account: Account = Account(name = "account", type = AccountType.LOCAL),
     val dialog: DialogState? = null,
     val synchronizationErrors: ErrorResult? = null,
-    val error: Exception? = null,
+    val error: String? = null,
     val opmlExportSuccess: Boolean = false,
     val opmlExportUri: Uri? = null,
     val accounts: List<Account> = emptyList(),
@@ -225,11 +240,12 @@ data class AccountState(
 sealed interface DialogState {
     data object DeleteAccount : DialogState
     data object NewAccount : DialogState
+    data class AccountWarning(val type: AccountType) : DialogState
     data class OPMLImport(val currentFeed: String?, val feedCount: Int, val feedMax: Int) :
         DialogState
 
     data class ErrorList(val errorResult: ErrorResult) : DialogState
-    data class Error(val exception: Exception) : DialogState
+    data class Error(val error: String) : DialogState
 
     data object OPMLChoice : DialogState
 

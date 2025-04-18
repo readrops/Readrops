@@ -1,5 +1,7 @@
 package com.readrops.db.filters
 
+import java.io.Serializable
+
 enum class MainFilter {
     STARS,
     NEW,
@@ -11,3 +13,24 @@ enum class SubFilter {
     FOLDER,
     ALL
 }
+
+enum class OrderField {
+    DATE,
+    ID
+}
+
+enum class OrderType {
+    DESC,
+    ASC
+}
+
+data class QueryFilters(
+    val showReadItems: Boolean = true,
+    val feedId: Int = 0,
+    val folderId: Int = 0,
+    val accountId: Int = 0,
+    val mainFilter: MainFilter = MainFilter.ALL,
+    val subFilter: SubFilter = SubFilter.ALL,
+    val orderField: OrderField = OrderField.DATE,
+    val orderType: OrderType = OrderType.DESC,
+) : Serializable

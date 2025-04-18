@@ -7,7 +7,7 @@ import com.readrops.api.localfeed.rss2.RSS2FeedAdapter
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Item
 
-interface XmlAdapter<T> {
+fun interface XmlAdapter<T> {
 
     fun fromXml(konsumer: Konsumer): T
 

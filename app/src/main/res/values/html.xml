@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <!--
+        %1$s: accent color
+        %2$s: text color
+        %3$s: background color
+        %4$s: text direction (ltr or rtl)
+        %5$s: content
+    -->
     <string name="webview_html_template" translatable="false"><![CDATA[
 <!DOCTYPE html>
 <html>
@@ -8,14 +14,6 @@
         <meta charset=\"UTF-8\">
         <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
         <style type=\"text/css\">
-
-        /*
-            %1$s: accent color
-            %2$s: text color
-            %3$s: background color
-            %4$s: text direction (ltr or rtl)
-            %5$s: content
-        */
 
         @font-face {
             font-family: Inter;
@@ -69,6 +67,8 @@
             padding: 6px;
             overflow: auto;
             border-radius: 4px;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
         }
 
         code {

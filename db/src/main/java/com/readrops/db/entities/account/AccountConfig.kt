@@ -5,12 +5,13 @@ data class AccountConfig(
     val addNoFolder: Boolean, // Add a "No folder" option when modifying a feed's folder
     val useSeparateState: Boolean, // Let know if it uses ItemState table to synchronize read/star state
     val canCreateFolder: Boolean, // Enable or disable folder creation in Feed Tab
-    val canCreateFeed: Boolean =  true,
+    val canCreateFeed: Boolean = true,
     val canUpdateFolder: Boolean = true,
     val canUpdateFeed: Boolean = true,
     val canDeleteFeed: Boolean = true,
     val canDeleteFolder: Boolean = true,
-    val canMarkAllItemsAsRead: Boolean = true
+    val canMarkAllItemsAsRead: Boolean = true,
+    val showCustomFolderDeleteMessage: Boolean = false
 ) {
 
     companion object {
@@ -28,11 +29,15 @@ data class AccountConfig(
             useSeparateState = false,
         )
 
-        val FRESHRSS = AccountConfig(
+        val GREADER = AccountConfig(
             isFeedUrlReadOnly = true,
             canCreateFolder = false,
             addNoFolder = false,
             useSeparateState = true,
+        )
+
+        val FRESHRSS = GREADER.copy(
+            showCustomFolderDeleteMessage = true
         )
 
         val FEVER = AccountConfig(

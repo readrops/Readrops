@@ -28,7 +28,7 @@ class FeedDaoTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         database = Room.inMemoryDatabaseBuilder(context, Database::class.java).build()
 
-        account = Account(accountType = AccountType.LOCAL).apply {
+        account = Account(type = AccountType.LOCAL).apply {
             id = database.accountDao().insert(this).toInt()
         }
 

@@ -3,13 +3,14 @@ package com.readrops.api.services.nextcloudnews.adapters
 import android.annotation.SuppressLint
 import com.readrops.api.utils.ApiUtils
 import com.readrops.api.utils.exceptions.ParseException
-import com.readrops.api.utils.extensions.nextNonEmptyString
+import com.readrops.api.utils.extensions.nextNullableLong
 import com.readrops.api.utils.extensions.nextNullableString
 import com.readrops.db.entities.Item
 import com.readrops.db.util.DateUtils
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
+import java.time.LocalDateTime
 
 class NextcloudNewsItemsAdapter : JsonAdapter<List<Item>>() {
 
@@ -39,9 +40,18 @@ class NextcloudNewsItemsAdapter : JsonAdapter<List<Item>>() {
                         when (reader.selectName(NAMES)) {
                             0 -> remoteId = reader.nextInt().toString()
                             1 -> link = reader.nextNullableString()
-                            2 -> title = reader.nextNonEmptyString()
+                            2 -> title = reader.nextNullableString()
                             3 -> author = reader.nextNullableString()
-                            4 -> pubDate = DateUtils.fromEpochSeconds(reader.nextLong())
+                            4 -> {
+                                val value = reader.nextNullableLong()
+
+                                pubDate = if (value != null) {
+                                    DateUtils.fromEpochSeconds(value)
+                                } else {
+                                    LocalDateTime.now()
+                                }
+                            }
+
                             5 -> content = reader.nextNullableString()
                             6 -> enclosureMime = reader.nextNullableString()
                             7 -> enclosureLink = reader.nextNullableString()
@@ -53,10 +63,14 @@ class NextcloudNewsItemsAdapter : JsonAdapter<List<Item>>() {
                     }
                 }
 
-                if (enclosureMime != null && ApiUtils.isMimeImage(enclosureMime!!))
+                if (enclosureMime != null && ApiUtils.isMimeImage(enclosureMime!!)) {
                     item.imageLink = enclosureLink
+                }
 
-                items += item
+                if (item.title != null) {
+                    items += item
+                }
+
                 reader.endObject()
             }
 
@@ -65,12 +79,14 @@ class NextcloudNewsItemsAdapter : JsonAdapter<List<Item>>() {
 
             items
         } catch (e: Exception) {
-            throw ParseException(e.message)
+            throw ParseException("Nextcloud News items parsing failure", e)
         }
     }
 
     companion object {
-        val NAMES: JsonReader.Options = JsonReader.Options.of("id", "url", "title", "author",
-                "pubDate", "body", "enclosureMime", "enclosureLink", "feedId", "unread", "starred")
+        val NAMES: JsonReader.Options = JsonReader.Options.of(
+            "id", "url", "title", "author",
+            "pubDate", "body", "enclosureMime", "enclosureLink", "feedId", "unread", "starred"
+        )
     }
 }

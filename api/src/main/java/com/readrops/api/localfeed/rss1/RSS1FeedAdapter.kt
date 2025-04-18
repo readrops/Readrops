@@ -34,14 +34,15 @@ class RSS1FeedAdapter : XmlAdapter<Pair<Feed, List<Item>>> {
             konsumer.close()
             Pair(feed, items)
         } catch (e: Exception) {
-            throw ParseException(e.message)
+            throw ParseException("RSS1 feed parsing failure", e)
         }
-
     }
 
     private fun parseChannel(konsumer: Konsumer, feed: Feed) = with(konsumer) {
-        feed.url = attributes.getValueOrNull("about",
-                namespace = "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+        feed.url = attributes.getValueOrNull(
+            localName = "about",
+            namespace = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+        )
 
         allChildrenAutoIgnore(names) {
             with(feed) {
@@ -49,12 +50,16 @@ class RSS1FeedAdapter : XmlAdapter<Pair<Feed, List<Item>>> {
                     "title" -> name = nonNullText()
                     "link" -> siteUrl = nonNullText()
                     "description" -> description = nullableText()
+                    "image" -> imageUrl = attributes.getValueOrNull(
+                        localName = "resource",
+                        namespace = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                    )
                 }
             }
         }
     }
 
     companion object {
-        val names = Names.of("title", "link", "description")
+        val names = Names.of("title", "link", "description", "image")
     }
 }

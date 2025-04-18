@@ -1,3 +1,101 @@
+# v2.1.0
+
+This release focuses mainly on QOL improvements. You will find among them long time requested features. I hope in the future to be able to deliver new releases in less than six months.
+
+## New features
+
+- 🆕 Pager in article screen: You can now swipe left/ right to go to the previous/next article without going back to the main list #62
+- 🆕 New feed screen. A new screen replaces the dialog to add a feed.
+  - All declared RSS resources in a website will appear in a list. You will be able to select only the ones you would like to add
+  - You can now directly choose a folder for each feed to add
+- 🆕 Feed color screen: You can now change each feed color in a new screen. #104
+- 🆕 Per feed open parameter: you can now choose for each feed to open its articles in the article screen or directly in the external view. #105, #125
+- 🆕 Initial tablet mode: left navigation bar and permanent navigation drawer in Timeline tab. More improvements will come for a 100% big screen support
+- 🆕 Parameter to launch synchronization at startup #158
+- 🆕 Parameter to set the default drawer filter at launch
+- 🆕 Two parameters to customize left and right swipe actions in Timeline tab #117
+- 🆕 Google Reader API which powers FreshRSS support can now be used as a standalone API
+- 🆕 Modify shared article text with a custom template
+- 🆕 Android 15 support
+
+## Improvements
+
+- Local account:
+  - Synchronization speed improvements
+  - Icons quality improved (currently only new icons will have better quality, a global option to reload all icons will come in the future)
+  - Display feed banner in feed bottom sheet (currently new feeds only)
+  - Improve media support for RSS2 and ATOM (Youtube...)
+  - Date parsing improvements
+- OPML import speed improvements
+- Display feed notifications parameter in feed bottom sheet
+- Make login checks less restrictive #193
+- Move Folders beginning with \_ on top #78
+- Improve feed color handling #172
+- Autofill managers are now usable in login screen #253
+- Translation updates
+
+## Fixes
+
+- Downloaded image now appears in media gallery #226
+- Various image share/download fixes in article screen
+- Fix scroll jump in article screen when touching the screen for the first time #184
+- Fix a rare case where local parsing could fail #246
+- Fix Nextcloud News feed creation where all local feeds could be deleted
+- Fix crash when opening empty OPML file #244, #245
+- Fix hide feeds without new items parameter for some accounts #255
+- Fix crash when no item link was provided #247
+
+## Contributions
+
+- Thanks to all translators who worked on Weblate! #283, #274, #256, #241
+- FreshRSS casing #230 by @Alkarex
+- Fix endpoint slash #231 by @Alkarex
+- Fix formatting of plain text items #236 by @equeim
+- Two minor improvements for the German localization #237 by @BorisBrock
+- Integrate login screen with autofill managers (#253) by @christophehenry
+- UX: increase DrawerFolderItem's expand button to avoid missclicks (#257) by @christophehenry
+- Corrects a gramatical form (#248) by @StuntsPT
+- Customize shared text using template setting (#254) by @christophehenry
+- Fix gap above bottom navigation bar (#266) by @equeim
+- Fix colors on More tab (#270) by @equeim
+- Fix HTML parsing (#273) by @equeim
+- Share Intent template: Add french typography filter + improve template dialog (#269) by @christophehenry
+- Add mecanism to deduce feeds location in special cases (#272) by @christophehenry
+- Add managed punctuation marks to fr_typo (#279) by @christophehenry
+- Allow sourcing account credentials from local.properties during development (#275) by @christophehenry
+- Fix unread feed selection in FoldersAndFeedsQueryBuilder (#276) by @christophehenry
+
+# v2.0.3
+- Fix Fever API compatibility with TinyTiny RSS and yarr, should also fix other providers (#228 + #229) 
+- Fix Nextcloud News item duplicates when syncing which would made the app unusable
+- Fix Nextcloud News item parsing: items with no title will be ignored
+
+# v2.0.2
+- Fix crash when opening app from a notification (#223)
+- Fix Fever API synchronization error (#228)
+
+# v2.0.1
+
+- Make Timeline tab filters persistent (#138)
+- Change Timeline tab order field default value (#202)
+- Fix crash when adding a Fever API account (#200)
+- Be less strict with feed and folder names (#206)
+
+# v2.0
+
+- Restore swipe to mark as read (#188)
+- Restore Ordering by article id in Timeline tab
+- Improve OPML file picker filtering (#195)
+- Translation updates
+- See previous beta versions to get full changelog since v1.3
+
+# v2.0-beta02
+
+- Fix migration issues from v1.3 and older (especially for F-Droid builds)
+- Make Preferences screen scrollable (#190)
+- Fix wrong translation in RadioButtonPreferenceDialog (#185)
+- Translation updates
+
 # v2.0-beta01
 
 ## General
@@ -40,6 +138,7 @@
 - Migrate to Nextcloud News API 1.3 
 - 🆕 Follow system theme option (default)
 - 🆕 Option to disable battery optimization for background synchronization
+- Add support for new Android versions until Android 14 (API 34)
 
 ## Technical
 

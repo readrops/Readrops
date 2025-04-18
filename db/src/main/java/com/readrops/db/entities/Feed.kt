@@ -7,6 +7,12 @@ import androidx.room.ForeignKey
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.readrops.db.entities.account.Account
+import java.io.Serializable
+
+enum class OpenIn {
+    LOCAL_VIEW,
+    EXTERNAL_VIEW
+}
 
 @Entity(
     foreignKeys = [
@@ -28,6 +34,7 @@ data class Feed(
     var name: String? = null,
     var description: String? = null,
     var url: String? = null,
+    @ColumnInfo("image_url") var imageUrl: String? = null,
     var siteUrl: String? = null,
     @ColumnInfo("last_updated") var lastUpdated: String? = null,
     @ColorInt var color: Int = 0,
@@ -41,6 +48,8 @@ data class Feed(
         name = "notification_enabled",
         defaultValue = "1"
     ) var isNotificationEnabled: Boolean = true,
+    @ColumnInfo(name = "open_in") var openIn: OpenIn = OpenIn.LOCAL_VIEW,
+    @ColumnInfo(name = "open_in_ask", defaultValue = "1") var openInAsk: Boolean = true,
     @Ignore var unreadCount: Int = 0,
     @Ignore var remoteFolderId: String? = null,
-)
+) : Serializable

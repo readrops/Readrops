@@ -46,7 +46,7 @@ class NextcloudNewsFoldersAdapter {
 
             folders
         } catch (e: Exception) {
-            throw ParseException(e.message)
+            throw ParseException("Nextcloud News folders parsing failure", e)
         }
     }
 

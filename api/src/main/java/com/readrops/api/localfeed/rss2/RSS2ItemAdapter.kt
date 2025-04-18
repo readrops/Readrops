@@ -1,9 +1,9 @@
 package com.readrops.api.localfeed.rss2
 
 import com.gitlab.mvysny.konsumexml.Konsumer
-import com.gitlab.mvysny.konsumexml.KonsumerException
 import com.gitlab.mvysny.konsumexml.Names
 import com.gitlab.mvysny.konsumexml.allChildrenAutoIgnore
+import com.readrops.api.localfeed.RSSMedia
 import com.readrops.api.localfeed.XmlAdapter
 import com.readrops.api.localfeed.XmlAdapter.Companion.AUTHORS_MAX
 import com.readrops.api.utils.ApiUtils
@@ -20,64 +20,27 @@ class RSS2ItemAdapter : XmlAdapter<Item> {
     override fun fromXml(konsumer: Konsumer): Item {
         val item = Item()
 
-        return try {
-            //konsumer.checkCurrent("item")
-            val creators = arrayListOf<String?>()
+        val creators = arrayListOf<String?>()
 
-            item.apply {
-                konsumer.allChildrenAutoIgnore(names) {
-                    when (tagName) {
-                        "title" -> title = ApiUtils.cleanText(nonNullText())
-                        "link" -> link = nonNullText()
-                        "author" -> author = nullableText()
-                        "dc:creator" -> creators += nullableText()
-                        "pubDate" -> pubDate = DateUtils.parse(nullableText())
-                        "dc:date" -> pubDate = DateUtils.parse(nullableText())
-                        "guid" -> remoteId = nullableText()
-                        "description" -> description = nullableTextRecursively()
-                        "content:encoded" -> content = nullableTextRecursively()
-                        "enclosure" -> parseEnclosure(this, item = this@apply)
-                        "media:content" -> parseMediaContent(this, item = this@apply)
-                        "media:group" -> parseMediaGroup(this, item = this@apply)
-                        else -> skipContents() // for example media:description
-                    }
+        return item.apply {
+            konsumer.allChildrenAutoIgnore(names) {
+                when (tagName) {
+                    "title" -> title = ApiUtils.cleanText(nonNullText())
+                    "link" -> link = nonNullText()
+                    "author" -> author = nullableText()
+                    "dc:creator" -> creators += nullableText()
+                    "pubDate" -> pubDate = DateUtils.parse(nullableText())
+                    "dc:date" -> pubDate = DateUtils.parse(nullableText())
+                    "guid" -> remoteId = nullableText()
+                    "description" -> description = nullableTextRecursively()
+                    "content:encoded" -> content = nullableTextRecursively()
+                    "enclosure" -> RSSMedia.parseMediaContent(this, item = this@apply)
+                    "media:content" -> RSSMedia.parseMediaContent(this, item = this@apply)
+                    "media:group" -> RSSMedia.parseMediaGroup(this, item = this@apply)
+                    else -> skipContents() // for example media:description
                 }
             }
-
-            finalizeItem(item, creators)
-            item
-        } catch (e: KonsumerException) {
-            throw ParseException(e.message)
-        }
-    }
-
-    private fun parseEnclosure(konsumer: Konsumer, item: Item) = with(konsumer) {
-        if (attributes.getValueOrNull("type") != null
-                && ApiUtils.isMimeImage(attributes["type"]) && item.imageLink == null)
-            item.imageLink = attributes.getValueOrNull("url")
-    }
-
-    private fun isMediumImage(konsumer: Konsumer) = with(konsumer) {
-        attributes.getValueOrNull("medium") != null && ApiUtils.isMimeImage(attributes["medium"])
-    }
-
-    private fun isTypeImage(konsumer: Konsumer) = with(konsumer) {
-        attributes.getValueOrNull("type") != null && ApiUtils.isMimeImage(attributes["type"])
-    }
-
-    private fun parseMediaContent(konsumer: Konsumer, item: Item) = with(konsumer) {
-        if ((isMediumImage(konsumer) || isTypeImage(konsumer)) && item.imageLink == null)
-            item.imageLink = konsumer.attributes.getValueOrNull("url")
-
-        konsumer.skipContents() // ignore media content sub elements
-    }
-
-    private fun parseMediaGroup(konsumer: Konsumer, item: Item) = with(konsumer) {
-        allChildrenAutoIgnore("content") {
-            when (tagName) {
-                "media:content" -> parseMediaContent(this, item)
-                else -> skipContents()
-            }
+            finalizeItem(this, creators)
         }
     }
 
@@ -98,7 +61,9 @@ class RSS2ItemAdapter : XmlAdapter<Item> {
     }
 
     companion object {
-        val names = Names.of("title", "link", "author", "creator", "pubDate", "date",
-                "guid", "description", "encoded", "enclosure", "content", "group")
+        val names = Names.of(
+            "title", "link", "author", "creator", "pubDate", "date",
+            "guid", "description", "encoded", "enclosure", "content", "group"
+        )
     }
 }

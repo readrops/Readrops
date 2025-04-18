@@ -28,6 +28,7 @@ class ATOMFeedAdapter : XmlAdapter<Pair<Feed, List<Item>>> {
                             "title" -> name = nonNullText()
                             "link" -> parseLink(this@allChildrenAutoIgnore, feed)
                             "subtitle" -> description = nullableText()
+                            "logo" -> imageUrl = nullableText()
                             "entry" -> items += itemAdapter.fromXml(this@allChildrenAutoIgnore)
                             else -> skipContents()
                         }
@@ -38,7 +39,7 @@ class ATOMFeedAdapter : XmlAdapter<Pair<Feed, List<Item>>> {
             konsumer.close()
             Pair(feed, items)
         } catch (e: Exception) {
-            throw ParseException(e.message)
+            throw ParseException("ATOM feed parsing failure", e)
         }
     }
 
@@ -52,6 +53,6 @@ class ATOMFeedAdapter : XmlAdapter<Pair<Feed, List<Item>>> {
     }
 
     companion object {
-        val names = Names.of("title", "link", "subtitle", "entry")
+        val names = Names.of("title", "link", "subtitle", "logo", "entry")
     }
 }

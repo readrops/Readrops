@@ -1,5 +1,6 @@
 package com.readrops.app.account
 
+import android.content.Context
 import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -39,8 +40,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
@@ -48,12 +50,16 @@ import com.readrops.api.utils.ApiUtils
 import com.readrops.app.R
 import com.readrops.app.account.credentials.AccountCredentialsScreen
 import com.readrops.app.account.credentials.AccountCredentialsScreenMode
-import com.readrops.app.account.selection.AccountSelectionDialog
+import com.readrops.app.account.dialog.AccountSelectionDialog
+import com.readrops.app.account.dialog.AccountWarningDialog
+import com.readrops.app.account.dialog.OPML
+import com.readrops.app.account.dialog.OPMLChoiceDialog
+import com.readrops.app.account.dialog.OPMLImportProgressDialog
 import com.readrops.app.account.selection.AccountSelectionScreen
 import com.readrops.app.account.selection.adaptiveIconPainterResource
 import com.readrops.app.notifications.NotificationsScreen
 import com.readrops.app.repositories.ErrorResult
-import com.readrops.app.timelime.ErrorListDialog
+import com.readrops.app.timelime.dialog.ErrorListDialog
 import com.readrops.app.util.components.SelectableIconText
 import com.readrops.app.util.components.SelectableImageText
 import com.readrops.app.util.components.ThreeDotsMenu
@@ -64,6 +70,7 @@ import com.readrops.app.util.theme.LargeSpacer
 import com.readrops.app.util.theme.MediumSpacer
 import com.readrops.app.util.theme.VeryShortSpacer
 import com.readrops.app.util.theme.spacing
+import com.readrops.db.entities.account.ACCOUNT_APIS
 import com.readrops.db.entities.account.Account
 import com.readrops.db.entities.account.AccountType
 
@@ -81,7 +88,7 @@ object AccountTab : Tab {
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
         val context = LocalContext.current
-        val screenModel = getScreenModel<AccountScreenModel>()
+        val screenModel = koinScreenModel<AccountScreenModel>()
 
         val closeHome by screenModel.closeHome.collectAsStateWithLifecycle()
         val state by screenModel.accountState.collectAsStateWithLifecycle()
@@ -134,7 +141,7 @@ object AccountTab : Tab {
         LaunchedEffect(state.opmlExportSuccess) {
             if (state.opmlExportSuccess) {
                 val action = snackbarHostState.showSnackbar(
-                    message = context.getString(R.string.opml_export_success), 
+                    message = context.getString(R.string.opml_export_success),
                     actionLabel = context.resources.getString(R.string.open)
                 )
 
@@ -192,7 +199,7 @@ object AccountTab : Tab {
                         modifier = Modifier.weight(1f)
                     ) {
                         Image(
-                            painter = adaptiveIconPainterResource(id = state.account.accountType!!.iconRes),
+                            painter = adaptiveIconPainterResource(id = state.account.type!!.iconRes),
                             contentDescription = null,
                             modifier = Modifier.size(48.dp)
                         )
@@ -201,7 +208,7 @@ object AccountTab : Tab {
 
                         Column {
                             Text(
-                                text = state.account.accountName!!,
+                                text = state.account.name!!,
                                 style = MaterialTheme.typography.titleLarge,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
@@ -224,7 +231,7 @@ object AccountTab : Tab {
                         ThreeDotsMenu(
                             items = mapOf(1 to stringResource(id = R.string.rename_account)),
                             onItemClick = {
-                                screenModel.openDialog(DialogState.RenameAccount(state.account.accountName!!))
+                                screenModel.openDialog(DialogState.RenameAccount(state.account.name!!))
                             },
                         )
                     }
@@ -303,8 +310,8 @@ object AccountTab : Tab {
 
                     for (account in state.accounts) {
                         SelectableImageText(
-                            image = adaptiveIconPainterResource(id = account.accountType!!.iconRes),
-                            text = account.accountName!!,
+                            image = adaptiveIconPainterResource(id = account.type!!.iconRes),
+                            text = account.name!!,
                             style = MaterialTheme.typography.titleMedium,
                             padding = MaterialTheme.spacing.mediumSpacing,
                             spacing = MaterialTheme.spacing.mediumSpacing,
@@ -357,19 +364,32 @@ object AccountTab : Tab {
                         if (accountType == AccountType.LOCAL) {
                             screenModel.createLocalAccount()
                         } else {
-                            val account = Account(
-                                accountType = accountType,
-                                accountName = context.resources.getString(accountType.typeName)
-                            )
-                            navigator.push(
-                                AccountCredentialsScreen(
-                                    account,
-                                    AccountCredentialsScreenMode.NEW_CREDENTIALS
+                            if (ACCOUNT_APIS.any { it == accountType }) {
+                                screenModel.openDialog(DialogState.AccountWarning(accountType))
+                            } else {
+                                pushAccount(
+                                    type = accountType,
+                                    context = context,
+                                    navigator = navigator
                                 )
-                            )
+                            }
                         }
-
                     }
+                )
+            }
+
+            is DialogState.AccountWarning -> {
+                AccountWarningDialog(
+                    type = dialog.type,
+                    onConfirm = {
+                        screenModel.closeDialog()
+                        pushAccount(
+                            type = dialog.type,
+                            context = context,
+                            navigator = navigator
+                        )
+                    },
+                    onDismiss = { screenModel.closeDialog(dialog) }
                 )
             }
 
@@ -390,7 +410,7 @@ object AccountTab : Tab {
 
             is DialogState.Error -> {
                 ErrorDialog(
-                    exception = dialog.exception,
+                    error = dialog.error,
                     onDismiss = { screenModel.closeDialog(dialog) }
                 )
             }
@@ -424,5 +444,19 @@ object AccountTab : Tab {
 
             else -> {}
         }
+    }
+
+    private fun pushAccount(type: AccountType, context: Context, navigator: Navigator) {
+        val account = Account(
+            type = type,
+            name = context.resources.getString(type.nameRes)
+        )
+
+        navigator.push(
+            AccountCredentialsScreen(
+                account = account,
+                mode = AccountCredentialsScreenMode.NEW_CREDENTIALS
+            )
+        )
     }
 }

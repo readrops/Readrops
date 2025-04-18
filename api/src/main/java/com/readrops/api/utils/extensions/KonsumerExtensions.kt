@@ -19,7 +19,7 @@ fun Konsumer.nullableText(): String? {
 }
 
 fun Konsumer.nullableTextRecursively(): String? {
-    val text = textRecursively()
+    val text = textRecursively(whitespace = Whitespace.preserve)
     return if (text.isNotEmpty()) text.trim() else null
 }
 

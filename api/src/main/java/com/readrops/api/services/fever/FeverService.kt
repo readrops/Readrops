@@ -39,7 +39,7 @@ interface FeverService {
                                 @Query("id") id: String)
 
     companion object {
-        const val END_POINT = "/api/fever.php/"
+        const val END_POINT = "api/fever.php/"
     }
 
 }

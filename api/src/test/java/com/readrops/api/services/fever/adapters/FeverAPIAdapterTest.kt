@@ -4,8 +4,8 @@ import com.readrops.api.TestUtils
 import com.squareup.moshi.Moshi
 import okio.Buffer
 import org.junit.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class FeverAPIAdapterTest {
 
@@ -18,15 +18,13 @@ class FeverAPIAdapterTest {
     fun authenticatedTest() {
         val stream = TestUtils.loadResource("services/fever/successful_auth.json")
 
-        val value = adapter.fromJson(Buffer().readFrom(stream))!!
-        assertEquals(value, true)
+        assertTrue { adapter.fromJson(Buffer().readFrom(stream))!! }
     }
 
     @Test
     fun unauthenticatedTest() {
         val stream = TestUtils.loadResource("services/fever/unsuccessful_auth.json")
 
-        val value = adapter.fromJson(Buffer().readFrom(stream))!!
-        assertFalse { value }
+        assertFalse { adapter.fromJson(Buffer().readFrom(stream))!! }
     }
 }

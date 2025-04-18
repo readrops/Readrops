@@ -14,6 +14,9 @@ fun JsonReader.nextNonEmptyString(): String {
 fun JsonReader.nextNullableInt(): Int? =
         if (peek() != JsonReader.Token.NULL) nextInt() else nextNull()
 
+fun JsonReader.nextNullableLong(): Long? =
+    if (peek() != JsonReader.Token.NULL) nextLong() else nextNull()
+
 fun JsonReader.skipField() {
     skipName()
     skipValue()

@@ -21,8 +21,8 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import com.readrops.app.util.extensions.toDp
 import com.readrops.app.util.theme.spacing
-import com.readrops.app.util.toDp
 
 @Composable
 fun BaseText(
@@ -31,6 +31,7 @@ fun BaseText(
     modifier: Modifier = Modifier,
     color: Color = LocalContentColor.current,
     spacing: Dp = MaterialTheme.spacing.veryShortSpacing,
+    maxLines: Int = 1,
     onClick: (() -> Unit)? = null,
     leftContent: @Composable () -> Unit
 ) {
@@ -46,7 +47,7 @@ fun BaseText(
             text = text,
             style = style,
             color = color,
-            maxLines = 1,
+            maxLines = maxLines,
             overflow = TextOverflow.Ellipsis
         )
     }
@@ -58,9 +59,11 @@ fun IconText(
     text: String,
     style: TextStyle,
     modifier: Modifier = Modifier,
+    maxLines: Int = 1,
     color: Color = LocalContentColor.current,
     tint: Color = LocalContentColor.current,
     spacing: Dp = MaterialTheme.spacing.veryShortSpacing,
+    iconSize: Dp = style.toDp(),
     onClick: (() -> Unit)? = null,
 ) {
     BaseText(
@@ -69,13 +72,14 @@ fun IconText(
         color = color,
         spacing = spacing,
         modifier = modifier,
+        maxLines = maxLines,
         onClick = onClick
     ) {
         Icon(
             painter = icon,
             tint = tint,
             contentDescription = null,
-            modifier = Modifier.size(style.toDp()),
+            modifier = Modifier.size(iconSize),
         )
     }
 }

@@ -7,32 +7,24 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -40,41 +32,50 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
+import com.readrops.app.MainActivity
 import com.readrops.app.R
 import com.readrops.app.item.ItemScreen
+import com.readrops.app.timelime.components.TimelineAppBar
+import com.readrops.app.timelime.components.TimelineItem
+import com.readrops.app.timelime.components.TimelineItemSize
+import com.readrops.app.timelime.dialog.TimelineDialogs
 import com.readrops.app.timelime.drawer.TimelineDrawer
-import com.readrops.app.util.ErrorMessage
-import com.readrops.app.util.components.CenteredProgressIndicator
+import com.readrops.app.util.components.LoadingScreen
 import com.readrops.app.util.components.Placeholder
 import com.readrops.app.util.components.RefreshScreen
-import com.readrops.app.util.components.dialog.TwoChoicesDialog
+import com.readrops.app.util.extensions.isError
+import com.readrops.app.util.extensions.isLoading
+import com.readrops.app.util.extensions.isNotEmpty
+import com.readrops.app.util.extensions.openInCustomTab
+import com.readrops.app.util.extensions.openUrl
 import com.readrops.app.util.theme.spacing
-import com.readrops.db.filters.ListSortType
+import com.readrops.db.entities.OpenIn
 import com.readrops.db.filters.MainFilter
-import com.readrops.db.filters.SubFilter
 import com.readrops.db.pojo.ItemWithFeed
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.receiveAsFlow
 
 
 object TimelineTab : Tab {
+
+    private val openItemChannel = Channel<Int>()
 
     override val options: TabOptions
         @Composable
@@ -90,41 +91,66 @@ object TimelineTab : Tab {
         val navigator = LocalNavigator.currentOrThrow
         val context = LocalContext.current
 
-        val screenModel = getScreenModel<TimelineScreenModel>()
+        val screenModel = koinScreenModel<TimelineScreenModel>()
         val state by screenModel.timelineState.collectAsStateWithLifecycle()
+        val preferences = state.preferences
         val items = state.itemState.collectAsLazyPagingItems()
 
         val lazyListState = rememberLazyListState()
-        val pullToRefreshState = rememberPullToRefreshState()
         val snackbarHostState = remember { SnackbarHostState() }
         val topAppBarState = rememberTopAppBarState()
         val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(topAppBarState)
 
-        val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {
-            screenModel.disableDisplayNotificationsPermission()
+        val lazyColumnPadding = if (preferences.itemSize == TimelineItemSize.COMPACT) {
+            0.dp
+        } else {
+            MaterialTheme.spacing.shortSpacing
         }
 
-        LaunchedEffect(state.displayNotificationsPermission) {
+        val launcher =
+            rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {
+                screenModel.disableDisplayNotificationsPermission()
+            }
+
+        fun openItem(
+            itemWithFeed: ItemWithFeed,
+            itemIndex: Int,
+            openIn: OpenIn? = itemWithFeed.openIn
+        ) {
+            val url = itemWithFeed.item.link!!
+
+            if (openIn == OpenIn.LOCAL_VIEW) {
+                navigator.push(ItemScreen(itemWithFeed.item.id, itemIndex, state.filters))
+            } else {
+                screenModel.setItemRead(itemWithFeed.item)
+
+                if (preferences.openInExternalBrowser) {
+                    context.openUrl(url)
+                } else {
+                    context.openInCustomTab(url, preferences.theme, Color(itemWithFeed.color))
+                }
+            }
+        }
+
+        LaunchedEffect(Unit) {
+            openItemChannel.receiveAsFlow()
+                .collect { itemId ->
+                    screenModel.selectItemWithFeed(itemId)
+                        ?.let {
+                            openItem(
+                                itemWithFeed = it,
+                                itemIndex = items.itemSnapshotList
+                                    .indexOfFirst { itemWithFeed -> itemWithFeed?.item?.id == itemId },
+                            )
+                        }
+                }
+        }
+
+        LaunchedEffect(preferences.displayNotificationsPermission) {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU
-                && state.displayNotificationsPermission
+                && preferences.displayNotificationsPermission
             ) {
                 launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
-            }
-        }
-
-        LaunchedEffect(state.isRefreshing) {
-            if (state.isRefreshing) {
-                pullToRefreshState.startRefresh()
-            } else {
-                pullToRefreshState.endRefresh()
-            }
-        }
-
-        // Material3 pull to refresh doesn't have a onRefresh callback,
-        // so we need to listen to the internal state change to trigger the refresh
-        LaunchedEffect(pullToRefreshState.isRefreshing) {
-            if (pullToRefreshState.isRefreshing && !state.isRefreshing) {
-                screenModel.refreshTimeline(context)
             }
         }
 
@@ -133,6 +159,19 @@ object TimelineTab : Tab {
                 lazyListState.scrollToItem(0)
                 screenModel.resetScrollToTop()
                 topAppBarState.contentOffset = 0f
+            }
+        }
+
+        // remove splash screen when opening the app
+        LaunchedEffect(items.isLoading(), preferences.syncAtLaunch) {
+            val activity = (context as MainActivity)
+
+            if (preferences.syncAtLaunch) {
+                activity.ready = true
+            } else {
+                if (!items.isLoading() && !activity.ready) {
+                    activity.ready = true
+                }
             }
         }
 
@@ -184,131 +223,38 @@ object TimelineTab : Tab {
 
         LaunchedEffect(state.syncError) {
             if (state.syncError != null) {
-                snackbarHostState.showSnackbar(ErrorMessage.get(state.syncError!!, context))
+                snackbarHostState.showSnackbar(state.syncError!!)
                 screenModel.resetSyncError()
             }
         }
 
-        when (val dialog = state.dialog) {
-            is DialogState.ConfirmDialog -> {
-                TwoChoicesDialog(
-                    title = stringResource(R.string.mark_all_articles_read),
-                    text = stringResource(R.string.mark_all_articles_read_question),
-                    icon = painterResource(id = R.drawable.ic_rss_feed_grey),
-                    confirmText = stringResource(id = R.string.validate),
-                    dismissText = stringResource(id = R.string.cancel),
-                    onDismiss = { screenModel.closeDialog() },
-                    onConfirm = {
-                        screenModel.closeDialog()
-                        screenModel.setAllItemsRead()
-                    }
+        TimelineDialogs(
+            state = state,
+            screenModel = screenModel,
+            onOpenItem = { itemWithFeed, openIn ->
+                openItem(
+                    itemWithFeed = itemWithFeed,
+                    itemIndex = items.itemSnapshotList.indexOfFirst { it?.item?.id == itemWithFeed.item.id },
+                    openIn = openIn,
                 )
             }
+        )
 
-            is DialogState.FilterSheet -> {
-                FilterBottomSheet(
-                    filters = state.filters,
-                    onSetShowReadItemsState = {
-                        screenModel.setShowReadItemsState(!state.filters.showReadItems)
-                    },
-                    onSetSortTypeState = {
-                        screenModel.setSortTypeState(
-                            if (state.filters.sortType == ListSortType.NEWEST_TO_OLDEST)
-                                ListSortType.OLDEST_TO_NEWEST
-                            else
-                                ListSortType.NEWEST_TO_OLDEST
-                        )
-                    },
-                    onDismiss = { screenModel.closeDialog() }
-                )
-            }
-
-            is DialogState.ErrorList -> {
-                ErrorListDialog(
-                    errorResult = dialog.errorResult,
-                    onDismiss = { screenModel.closeDialog(dialog) }
-                )
-            }
-
-            null -> {}
-        }
-
-        ModalNavigationDrawer(
+        TimelineDrawer(
+            state = state,
             drawerState = drawerState,
-            drawerContent = {
-                TimelineDrawer(
-                    state = state,
-                    onClickDefaultItem = {
-                        screenModel.updateDrawerDefaultItem(it)
-                    },
-                    onFolderClick = {
-                        screenModel.updateDrawerFolderSelection(it)
-                    },
-                    onFeedClick = {
-                        screenModel.updateDrawerFeedSelection(it)
-                    }
-                )
-            }
+            onClickDefaultItem = { screenModel.updateDrawerDefaultItem(it) },
+            onFolderClick = { screenModel.updateDrawerFolderSelection(it) },
+            onFeedClick = { screenModel.updateDrawerFeedSelection(it) }
         ) {
             Scaffold(
                 topBar = {
-                    TopAppBar(
-                        title = {
-                            Column {
-                                Text(
-                                    text = when (state.filters.mainFilter) {
-                                        MainFilter.STARS -> stringResource(R.string.favorites)
-                                        MainFilter.ALL -> stringResource(R.string.articles)
-                                        MainFilter.NEW -> stringResource(R.string.new_articles)
-                                    },
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-
-                                if (state.showSubtitle) {
-                                    Text(
-                                        text = when (state.filters.subFilter) {
-                                            SubFilter.FEED -> state.filterFeedName
-                                            SubFilter.FOLDER -> state.filterFolderName
-                                            else -> ""
-                                        },
-                                        style = MaterialTheme.typography.labelLarge,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                }
-                            }
-                        },
-                        navigationIcon = {
-                            IconButton(
-                                onClick = { screenModel.openDrawer() }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Menu,
-                                    contentDescription = null
-                                )
-                            }
-                        },
-                        actions = {
-                            IconButton(
-                                onClick = { screenModel.openDialog(DialogState.FilterSheet) }
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_filter_list),
-                                    contentDescription = null
-                                )
-                            }
-
-                            IconButton(
-                                onClick = { screenModel.refreshTimeline(context) }
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_sync),
-                                    contentDescription = null
-                                )
-                            }
-                        },
-                        scrollBehavior = topAppBarScrollBehavior
+                    TimelineAppBar(
+                        state = state,
+                        topAppBarScrollBehavior = topAppBarScrollBehavior,
+                        onOpenDrawer = { screenModel.openDrawer() },
+                        onOpenFilterSheet = { screenModel.openDialog(DialogState.FilterSheet) },
+                        onRefreshTimeline = { screenModel.refreshTimeline() }
                     )
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -335,7 +281,6 @@ object TimelineTab : Tab {
                     modifier = Modifier
                         .padding(paddingValues)
                         .fillMaxSize()
-                        .nestedScroll(pullToRefreshState.nestedScrollConnection)
                         .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
                 ) {
                     when {
@@ -346,7 +291,7 @@ object TimelineTab : Tab {
                         )
 
                         items.isLoading() -> {
-                            CenteredProgressIndicator()
+                            LoadingScreen(isRefreshing = state.isRefreshing)
                         }
 
                         items.isError() -> {
@@ -357,79 +302,78 @@ object TimelineTab : Tab {
                         }
 
                         else -> {
-                            if (items.itemCount > 0) {
-                                MarkItemsRead(
-                                    lazyListState = lazyListState,
-                                    items = items,
-                                    markReadOnScroll = state.markReadOnScroll,
-                                    screenModel = screenModel
-                                )
-
-                                LazyColumn(
-                                    state = lazyListState,
-                                    contentPadding = PaddingValues(
-                                        vertical = if (state.itemSize == TimelineItemSize.COMPACT) {
-                                            0.dp
-                                        } else {
-                                            MaterialTheme.spacing.shortSpacing
-                                        }
-                                    ),
-                                    verticalArrangement = Arrangement.spacedBy(
-                                        if (state.itemSize == TimelineItemSize.COMPACT) {
-                                            0.dp
-                                        } else
-                                            MaterialTheme.spacing.shortSpacing
+                            PullToRefreshBox(
+                                isRefreshing = state.isRefreshing,
+                                onRefresh = { screenModel.refreshTimeline() },
+                            ) {
+                                if (items.isNotEmpty()) {
+                                    MarkItemsRead(
+                                        lazyListState = lazyListState,
+                                        items = items,
+                                        markReadOnScroll = preferences.markReadOnScroll,
+                                        screenModel = screenModel
                                     )
-                                ) {
-                                    items(
-                                        count = items.itemCount,
-                                        key = items.itemKey { it.item.id },
-                                    ) { itemCount ->
-                                        val itemWithFeed = items[itemCount]
 
-                                        if (itemWithFeed != null) {
-                                            TimelineItem(
-                                                itemWithFeed = itemWithFeed,
-                                                onClick = {
-                                                    screenModel.setItemRead(itemWithFeed.item)
-                                                    navigator.push(ItemScreen(itemWithFeed.item.id))
-                                                },
-                                                onFavorite = {
-                                                    screenModel.updateStarState(itemWithFeed.item)
-                                                },
-                                                onShare = {
-                                                    screenModel.shareItem(
-                                                        itemWithFeed.item,
-                                                        context
-                                                    )
-                                                },
-                                                size = state.itemSize
-                                            )
+                                    LazyColumn(
+                                        state = lazyListState,
+                                        contentPadding = PaddingValues(vertical = lazyColumnPadding),
+                                        verticalArrangement = Arrangement.spacedBy(lazyColumnPadding)
+                                    ) {
+                                        items(
+                                            count = items.itemCount,
+                                            key = items.itemKey { it.item.id },
+                                        ) { index ->
+                                            val itemWithFeed = items[index]
 
+                                            if (itemWithFeed != null) {
+                                                TimelineItem(
+                                                    itemWithFeed = itemWithFeed,
+                                                    swipeToLeft = state.preferences.swipeToLeft,
+                                                    swipeToRight = state.preferences.swipeToRight,
+                                                    onClick = {
+                                                        if (itemWithFeed.openInAsk && preferences.openInAsk) {
+                                                            screenModel.openDialog(
+                                                                DialogState.OpenIn(
+                                                                    itemWithFeed
+                                                                )
+                                                            )
+                                                        } else {
+                                                            openItem(
+                                                                itemWithFeed = itemWithFeed,
+                                                                itemIndex = index,
+                                                            )
+                                                        }
+                                                    },
+                                                    onFavorite = {
+                                                        screenModel.updateStarState(itemWithFeed.item)
+                                                    },
+                                                    onShare = {
+                                                        screenModel.shareItem(
+                                                            itemWithFeed.item,
+                                                            context
+                                                        )
+                                                    },
+                                                    onSetReadState = {
+                                                        screenModel.updateItemReadState(itemWithFeed.item)
+                                                    },
+                                                    size = preferences.itemSize,
+                                                    modifier = Modifier.animateItem()
+                                                )
+                                            }
                                         }
                                     }
+                                } else {
+                                    // Empty lazyColumn to let the pull to refresh be usable
+                                    // when no items are displayed
+                                    LazyColumn(
+                                        modifier = Modifier.fillMaxSize()
+                                    ) {}
+
+                                    Placeholder(
+                                        text = stringResource(R.string.no_article),
+                                        painter = painterResource(R.drawable.ic_timeline),
+                                    )
                                 }
-
-                                PullToRefreshContainer(
-                                    state = pullToRefreshState,
-                                    modifier = Modifier.align(Alignment.TopCenter)
-                                )
-                            } else {
-                                // Empty lazyColumn to let the pull to refresh be usable
-                                // when the no item placeholder is displayed
-                                LazyColumn(
-                                    modifier = Modifier.fillMaxSize()
-                                ) {}
-
-                                PullToRefreshContainer(
-                                    state = pullToRefreshState,
-                                    modifier = Modifier.align(Alignment.TopCenter)
-                                )
-
-                                Placeholder(
-                                    text = stringResource(R.string.no_article),
-                                    painter = painterResource(R.drawable.ic_timeline),
-                                )
                             }
                         }
                     }
@@ -479,13 +423,8 @@ object TimelineTab : Tab {
                 }
         }
     }
-}
 
-
-fun <T : Any> LazyPagingItems<T>.isLoading(): Boolean {
-    return loadState.refresh is LoadState.Loading && itemCount == 0
-}
-
-fun <T : Any> LazyPagingItems<T>.isError(): Boolean {
-    return loadState.append is LoadState.Error //|| loadState.refresh is LoadState.Error
+    suspend fun openItem(itemId: Int) {
+        openItemChannel.send(itemId)
+    }
 }

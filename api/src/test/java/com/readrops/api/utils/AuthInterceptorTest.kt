@@ -1,6 +1,6 @@
 package com.readrops.api.utils
 
-import com.readrops.api.services.freshrss.FreshRSSCredentials
+import com.readrops.api.services.greader.GReaderCredentials
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
 import okhttp3.OkHttpClient
@@ -31,7 +31,7 @@ class AuthInterceptorTest {
     @Test
     fun credentialsUrlTest() {
         mockServer.enqueue(MockResponse())
-        interceptor.credentials = FreshRSSCredentials("token", "http://localhost:8080/rss")
+        interceptor.credentials = GReaderCredentials("token", "http://localhost:8080/rss")
 
         okHttpClient.newCall(Request.Builder().url(mockServer.url("/url")).build()).execute()
         val request = mockServer.takeRequest()

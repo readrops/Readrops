@@ -20,8 +20,11 @@ object DateUtils {
      * Examples :
      * Fri, 04 Jan 2019 22:21:46 GMT
      * Fri, 04 Jan 2019 22:21:46 +0000
+     *
+     * Base pattern is "EEE, dd MMM yyyy HH:mm:ss" but as java.time android desugaring is very strict,
+     * using the date to guess the day of week prevents some parsing failures
      */
-    private const val RSS_2_BASE_PATTERN = "EEE, dd MMM yyyy HH:mm:ss"
+    private const val RSS_2_BASE_PATTERN = "dd MMM yyyy HH:mm:ss"
 
     private const val GMT_PATTERN = "ZZZ"
 
@@ -40,7 +43,7 @@ object DateUtils {
 
     val defaultOffset: ZoneOffset
         get() = OffsetDateTime.now(TimeZone.getDefault().toZoneId())
-        .offset
+            .offset
 
     /**
      * Attempts to parse a date string representation.
@@ -50,9 +53,19 @@ object DateUtils {
     @SuppressLint("NewApi") // works with API 21+ so the lint might be buggy
     @JvmStatic
     fun parse(value: String?): LocalDateTime {
-        return if (value == null) {
-            LocalDateTime.now()
-        } else try {
+        if (value == null) {
+            return LocalDateTime.now()
+        }
+
+        // RSS2 base pattern, we remove the day of week to avoid some parsing failures
+        // from java.time android desugaring version
+        val formattedValue = if (value.contains(",") == true) {
+            value.removeRange(0..4)
+        } else {
+            value
+        }
+
+        return try {
             val formatter = DateTimeFormatterBuilder()
                 .appendOptional(DateTimeFormatter.ofPattern("$RSS_2_BASE_PATTERN ")) // with timezone
                 .appendOptional(DateTimeFormatter.ofPattern(RSS_2_BASE_PATTERN)) // no timezone, important order here
@@ -65,9 +78,9 @@ object DateUtils {
                 .toFormatter()
                 .withLocale(Locale.ENGLISH)
 
-            LocalDateTime.from(formatter.parse(value))
+            LocalDateTime.from(formatter.parse(formattedValue))
         } catch (e: Exception) {
-            Log.d(TAG, "Unable to parse $value: ${e.message}")
+            Log.e(TAG, "Unable to parse $formattedValue: ${e.message}")
             LocalDateTime.now()
         }
     }
@@ -76,27 +89,12 @@ object DateUtils {
      * Be aware of giving a second epoch value and not a millisecond one!
      */
     fun fromEpochSeconds(epoch: Long): LocalDateTime {
-        return LocalDateTime.ofEpochSecond(
-            epoch,
-            0,
-            defaultOffset
-        )
+        return LocalDateTime.ofEpochSecond(epoch, 0, defaultOffset)
     }
 
     fun formattedDateByLocal(dateTime: LocalDateTime): String {
         return DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
             .withLocale(Locale.getDefault())
-            .format(dateTime)
-    }
-
-    fun formattedDate(dateTime: LocalDateTime): String {
-        val pattern = if (dateTime.year != LocalDateTime.now().year) {
-            "dd MMMM yyyy"
-        } else {
-            "dd MMMM"
-        }
-
-        return DateTimeFormatter.ofPattern(pattern)
             .format(dateTime)
     }
 }

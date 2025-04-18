@@ -4,6 +4,7 @@
   "home_page_url": "http://flyingmeat.com/blog/",
   "feed_url": "http://flyingmeat.com/blog/feed.json",
   "description": "News from your friends at Flying Meat.",
+  "icon": "https://secure.flyingmeat.com/favicon.ico",
   "author": {
     "name": "Gus Mueller"
   },

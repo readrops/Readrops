@@ -3,6 +3,7 @@ package com.readrops.db.pojo
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import com.readrops.db.entities.Feed
+import com.readrops.db.entities.OpenIn
 
 data class FeedWithFolder(
     @Embedded val feed: Feed,
@@ -16,9 +17,13 @@ data class FolderWithFeed(
     val feedId: Int = 0,
     val feedName: String? = null,
     val feedIcon: String? = null,
+    val feedColor: Int = 0,
+    val feedImage: String? = null,
     val feedUrl: String? = null,
     val feedDescription: String? = null,
     val feedSiteUrl: String? = null,
+    val feedNotificationsEnabled: Boolean = true,
+    val feedOpenIn: OpenIn? = null,
     val feedRemoteId: String? = null,
     val accountId: Int = 0
 )

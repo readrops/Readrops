@@ -36,7 +36,7 @@ class NextcloudNewsDataSource(private val service: NextcloudNewsService) {
         with(CoroutineScope(Dispatchers.IO)) {
             return if (syncType == SyncType.INITIAL_SYNC) {
                 DataSourceResult().apply {
-                    listOf(
+                    awaitAll(
                         async { folders = getFolders() },
                         async { feeds = getFeeds() },
                         async { items = getItems(ItemQueryType.ALL.value, false, MAX_ITEMS) },
@@ -44,20 +44,20 @@ class NextcloudNewsDataSource(private val service: NextcloudNewsService) {
                             starredItems =
                                 getItems(ItemQueryType.STARRED.value, true, MAX_STARRED_ITEMS)
                         }
-                    ).awaitAll()
+                    )
                 }
             } else {
-                listOf(
+                awaitAll(
                     async { setItemsReadState(syncData) },
                     async { setItemsStarState(syncData) },
-                ).awaitAll()
+                )
 
                 DataSourceResult().apply {
-                    listOf(
+                    awaitAll(
                         async { folders = getFolders() },
                         async { feeds = getFeeds() },
                         async { items = getNewItems(syncData.lastModified, ItemQueryType.ALL) }
-                    ).awaitAll()
+                    )
                 }
             }
         }

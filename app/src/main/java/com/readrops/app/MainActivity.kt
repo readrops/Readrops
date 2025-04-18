@@ -8,12 +8,20 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBarDefaults
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
@@ -24,6 +32,7 @@ import cafe.adriel.voyager.transitions.SlideTransition
 import com.readrops.app.account.selection.AccountSelectionScreen
 import com.readrops.app.account.selection.AccountSelectionScreenModel
 import com.readrops.app.home.HomeScreen
+import com.readrops.app.repositories.BaseRepository
 import com.readrops.app.sync.SyncWorker
 import com.readrops.app.timelime.TimelineTab
 import com.readrops.app.util.Preferences
@@ -34,17 +43,23 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.KoinAndroidContext
-import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
+import org.koin.core.parameter.parametersOf
 
 class MainActivity : ComponentActivity(), KoinComponent {
 
-    @OptIn(KoinExperimentalAPI::class, ExperimentalVoyagerApi::class)
+    var ready = false
+
+    @OptIn(ExperimentalVoyagerApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+
+        // Disable waiting for timeline tab list to be populated before removing splash screen
+        //splashScreen.setKeepOnScreenCondition { !ready }
 
         val screenModel = get<AccountSelectionScreenModel>()
         val accountExists = screenModel.accountExists()
@@ -55,8 +70,8 @@ class MainActivity : ComponentActivity(), KoinComponent {
         val initialUseDarkTheme = runBlocking {
             useDarkTheme(preferences.theme.flow.first(), darkFlag)
         }
-        val initialColourScheme = runBlocking {
-            preferences.themeColourScheme.flow.first()
+        val initialColorScheme = runBlocking {
+            preferences.themeColorScheme.flow.first()
         }
 
         setContent {
@@ -64,22 +79,22 @@ class MainActivity : ComponentActivity(), KoinComponent {
                 val useDarkTheme by preferences.theme.flow
                     .map { mode -> useDarkTheme(mode, darkFlag) }
                     .collectAsState(initial = initialUseDarkTheme)
-                val themeColourScheme by preferences.themeColourScheme.flow
-                    .collectAsState(initial = initialColourScheme)
+                val themeColorScheme by preferences.themeColorScheme.flow
+                    .collectAsState(initial = initialColorScheme)
 
                 ReadropsTheme(
                     useDarkTheme = useDarkTheme,
-                    themeColourScheme = themeColourScheme
+                    themeColorScheme = themeColorScheme
                 ) {
-                    val navigationBarElevation = NavigationBarDefaults.Elevation
-
                     enableEdgeToEdge(
-                        statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
+                        statusBarStyle = SystemBarStyle.auto(
+                            lightScrim = Color.TRANSPARENT,
+                            darkScrim = Color.TRANSPARENT,
+                            detectDarkMode = { useDarkTheme }
+                        ),
                         navigationBarStyle = SystemBarStyle.light(
-                            MaterialTheme.colorScheme.surfaceColorAtElevation(navigationBarElevation)
-                                .toArgb(),
-                            MaterialTheme.colorScheme.surfaceColorAtElevation(navigationBarElevation)
-                                .toArgb()
+                            scrim = BottomAppBarDefaults.containerColor.toArgb(),
+                            darkScrim = BottomAppBarDefaults.containerColor.toArgb()
                         )
                     )
 
@@ -95,10 +110,22 @@ class MainActivity : ComponentActivity(), KoinComponent {
                             handleIntent(intent)
                         }
 
-                        SlideTransition(
-                            navigator = navigator,
-                            disposeScreenAfterTransitionEnd = true
-                        )
+                        Box(
+                            modifier = Modifier
+                                .background(MaterialTheme.colorScheme.background)
+                                // custom safe drawing to be able to draw behind the status bar
+                                .windowInsetsPadding(
+                                    WindowInsets.safeDrawing.only(
+                                        WindowInsetsSides.Start + WindowInsetsSides.End
+                                    )
+                                )
+                        ) {
+                            SlideTransition(
+                                navigator = navigator,
+                                modifier = Modifier.imePadding(),
+                                disposeScreenAfterTransitionEnd = true
+                            )
+                        }
                     }
                 }
             }
@@ -108,23 +135,31 @@ class MainActivity : ComponentActivity(), KoinComponent {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
 
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch {
             handleIntent(intent)
         }
     }
 
-    private suspend fun handleIntent(intent: Intent) {
+    private suspend fun handleIntent(intent: Intent) = withContext(Dispatchers.IO) {
         when {
             intent.hasExtra(SyncWorker.ACCOUNT_ID_KEY) -> {
                 val accountId = intent.getIntExtra(SyncWorker.ACCOUNT_ID_KEY, -1)
-                get<Database>().accountDao()
-                    .updateCurrentAccount(accountId)
+                val database = get<Database>().also {
+                    it.accountDao()
+                        .updateCurrentAccount(accountId)
+                }
 
                 HomeScreen.openTab(TimelineTab)
 
                 if (intent.hasExtra(SyncWorker.ITEM_ID_KEY)) {
                     val itemId = intent.getIntExtra(SyncWorker.ITEM_ID_KEY, -1)
-                    HomeScreen.openItemScreen(itemId)
+                    val account = database.accountDao().select(accountId)
+                    val item = database.itemDao().select(itemId)
+                        .apply { isRead = true }
+
+                    get<BaseRepository>(parameters = { parametersOf(account) })
+                        .setItemReadState(item)
+                    HomeScreen.openItem(itemId)
                 }
             }
 

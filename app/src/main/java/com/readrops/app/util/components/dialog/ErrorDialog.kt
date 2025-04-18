@@ -3,15 +3,13 @@ package com.readrops.app.util.components.dialog
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.readrops.app.R
-import com.readrops.app.util.ErrorMessage
 
 @Composable
 fun ErrorDialog(
-    exception: Exception,
+    error: String,
     onDismiss: () -> Unit
 ) {
     BaseDialog(
@@ -20,7 +18,7 @@ fun ErrorDialog(
         onDismiss = onDismiss
     ) {
         Text(
-            text = ErrorMessage.get(exception, LocalContext.current),
+            text = error,
             color = AlertDialogDefaults.textContentColor
         )
     }

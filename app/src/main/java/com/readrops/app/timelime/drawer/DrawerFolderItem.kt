@@ -8,13 +8,18 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Surface
@@ -77,34 +82,39 @@ fun DrawerFolderItem(
                     )
                 )
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(start = 16.dp, end = 24.dp)
-            ) {
-                val iconColor = colors.iconColor(selected).value
-                CompositionLocalProvider(LocalContentColor provides iconColor, content = icon)
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(0.dp)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(start = 16.dp, end = 24.dp).weight(1f),
+                ) {
+                    val iconColor = colors.iconColor(selected).value
+                    CompositionLocalProvider(LocalContentColor provides iconColor, content = icon)
 
-                DrawerSpacing()
+                    DrawerSpacing()
 
-                Box(Modifier.weight(1f)) {
-                    val labelColor = colors.textColor(selected).value
-                    CompositionLocalProvider(LocalContentColor provides labelColor, content = label)
+                    Box(Modifier.weight(1f)) {
+                        val labelColor = colors.textColor(selected).value
+                        CompositionLocalProvider(
+                            LocalContentColor provides labelColor,
+                            content = label
+                        )
+                    }
+
+                    DrawerSpacing()
+
+                    val badgeColor = colors.badgeColor(selected).value
+                    CompositionLocalProvider(LocalContentColor provides badgeColor, content = badge)
                 }
-
-                DrawerSpacing()
-
-                val badgeColor = colors.badgeColor(selected).value
-                CompositionLocalProvider(LocalContentColor provides badgeColor, content = badge)
-
-                DrawerSpacing()
-
-                Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .clickable { isExpanded = isExpanded.not() }
-                        .rotate(rotationState),
-                )
+                IconButton(
+                    onClick = { isExpanded = isExpanded.not() },
+                    modifier = Modifier.fillMaxHeight().aspectRatio(1f)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize().padding(12.dp).rotate(rotationState),
+                    )
+                }
             }
         }
 
@@ -113,7 +123,7 @@ fun DrawerFolderItem(
                 DrawerFeedItem(
                     label = {
                         Text(
-                            text = feed.name!!,
+                            text = feed.name.orEmpty(),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -121,7 +131,7 @@ fun DrawerFolderItem(
                     icon = {
                         FeedIcon(
                             iconUrl = feed.iconUrl,
-                            name = feed.name!!
+                            name = feed.name.orEmpty()
                         )
                     },
                     badge = { Text(feed.unreadCount.toString()) },

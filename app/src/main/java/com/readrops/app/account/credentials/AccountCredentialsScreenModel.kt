@@ -1,13 +1,16 @@
 package com.readrops.app.account.credentials
 
+import android.content.Context
 import android.content.SharedPreferences
-import android.util.Patterns
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
+import com.readrops.app.R
 import com.readrops.app.repositories.BaseRepository
+import com.readrops.app.util.Utils
 import com.readrops.app.util.components.TextFieldError
 import com.readrops.db.Database
 import com.readrops.db.entities.account.Account
+import com.readrops.db.entities.account.AccountType
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.update
@@ -16,25 +19,28 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
 
+
 class AccountCredentialsScreenModel(
     private val account: Account,
     private val mode: AccountCredentialsScreenMode,
     private val database: Database,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : StateScreenModel<AccountCredentialsState>(AccountCredentialsState()), KoinComponent {
-
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    context: Context,
+) : StateScreenModel<AccountCredentialsState>(
+    initAccountCredentialsState(account, context)
+), KoinComponent {
     init {
         if (mode == AccountCredentialsScreenMode.EDIT_CREDENTIALS) {
             mutableState.update {
                 it.copy(
-                    name = account.accountName!!,
+                    name = account.name!!,
                     url = account.url!!,
                     login = account.login!!,
                     password = account.password!!
                 )
             }
         } else {
-            mutableState.update { it.copy(name = account.accountName!!) }
+            mutableState.update { it.copy(name = account.name!!) }
         }
     }
 
@@ -52,30 +58,25 @@ class AccountCredentialsScreenModel(
     }
 
     fun login() {
-        if (validateFields()) {
-            mutableState.update { it.copy(isLoginOnGoing = true) }
+        screenModelScope.launch(dispatcher) {
+            if (validateFields()) {
+                mutableState.update { it.copy(isLoginOnGoing = true) }
 
-            with(state.value) {
-                val normalizedUrl = if (!url.contains("https://") && !url.contains("http://")) {
-                    "https://$url"
-                } else {
-                    url
-                }
+                with(state.value) {
+                    val normalizedUrl = Utils.normalizeUrl(url)
 
-                val newAccount = account.copy(
-                    url = normalizedUrl,
-                    accountName = name,
-                    login = login,
-                    password = password,
-                    accountType = account.accountType,
-                    isCurrentAccount = true
-                )
+                    val newAccount = account.copy(
+                        url = normalizedUrl,
+                        name = name,
+                        login = login,
+                        password = password,
+                        type = account.type,
+                        isCurrentAccount = true
+                    )
 
-                val repository = get<BaseRepository> { parametersOf(newAccount) }
-
-                screenModelScope.launch(dispatcher) {
                     try {
-                        repository.login(newAccount)
+                        get<BaseRepository> { parametersOf(newAccount) }
+                            .login(newAccount)
                     } catch (e: Exception) {
                         mutableState.update {
                             it.copy(
@@ -105,6 +106,8 @@ class AccountCredentialsScreenModel(
     }
 
     private fun validateFields(): Boolean = with(mutableState.value) {
+        mutableState.update { it.copy(loginException = null) }
+
         var validate = true
 
         if (url.isEmpty()) {
@@ -127,12 +130,37 @@ class AccountCredentialsScreenModel(
             validate = false
         }
 
-        if (url.isNotEmpty() && !Patterns.WEB_URL.matcher(url).matches()) {
-            mutableState.update { it.copy(urlError = TextFieldError.BadUrl) }
-            validate = false
-        }
-
         return validate
+    }
+
+    companion object {
+        fun initAccountCredentialsState(account: Account, context: Context): AccountCredentialsState = when(account.type) {
+            AccountType.NEXTCLOUD_NEWS -> AccountCredentialsState(
+                url = context.getString(R.string.debug_nextcloud_news_url),
+                login = context.getString(R.string.debug_nextcloud_news_login),
+                password = context.getString(R.string.debug_nextcloud_news_password),
+            )
+            AccountType.FRESHRSS -> AccountCredentialsState(
+                url = context.getString(R.string.debug_freshrss_url),
+                login = context.getString(R.string.debug_freshrss_login),
+                password = context.getString(R.string.debug_freshrss_password),
+            )
+            AccountType.FEVER -> AccountCredentialsState(
+                url = context.getString(R.string.debug_fever_url),
+                login = context.getString(R.string.debug_fever_login),
+                password = context.getString(R.string.debug_fever_password),
+            )
+            AccountType.GREADER -> AccountCredentialsState(
+                url = context.getString(R.string.debug_greader_url),
+                login = context.getString(R.string.debug_greader_login),
+                password = context.getString(R.string.debug_greader_password),
+            )
+            null, AccountType.FEEDLY, AccountType.LOCAL -> AccountCredentialsState(
+                url = context.getString(R.string.debug_local_url),
+                login = context.getString(R.string.debug_local_login),
+                password = context.getString(R.string.debug_local_password),
+            )
+        }
     }
 }
 

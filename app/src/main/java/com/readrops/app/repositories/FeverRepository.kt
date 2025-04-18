@@ -25,7 +25,7 @@ class FeverRepository(
         val authenticated = feverDataSource.login(account.login!!, account.password!!)
 
         if (authenticated) {
-            account.displayedName = account.accountType!!.name
+            account.displayedName = account.type!!.name
         } else {
             throw LoginFailedException()
         }

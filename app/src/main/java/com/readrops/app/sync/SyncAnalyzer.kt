@@ -4,15 +4,15 @@ import android.content.Context
 import android.graphics.Bitmap
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
-import coil.imageLoader
-import coil.request.ImageRequest
+import coil3.imageLoader
+import coil3.request.ImageRequest
+import coil3.toBitmap
 import com.readrops.app.R
 import com.readrops.app.repositories.SyncResult
 import com.readrops.db.Database
 import com.readrops.db.entities.Feed
 import com.readrops.db.entities.Item
 import com.readrops.db.entities.account.Account
-import org.koin.core.component.KoinComponent
 
 data class NotificationContent(
     val title: String? = null,
@@ -26,17 +26,14 @@ data class NotificationContent(
 class SyncAnalyzer(
     val context: Context,
     val database: Database
-) : KoinComponent {
+) {
 
     suspend fun getNotificationContent(syncResults: Map<Account, SyncResult>): NotificationContent? {
         return if (newItemsInMultipleAccounts(syncResults)) { // new items from several accounts
-            val feeds = database.feedDao().selectFromIds(getFeedsIdsForNewItems(syncResults))
+            val feeds = database.feedDao().selectFromIds(getNewItemsFeedIds(syncResults))
 
-            var itemCount = 0
-            for (syncResult in syncResults.values) {
-                itemCount += syncResult.items.filter {
-                    isFeedNotificationEnabledForItem(feeds, it)
-                }.size
+            val itemCount = syncResults.values.sumOf {
+                it.items.count { isFeedNotificationEnabledForItem(feeds, it) }
             }
 
             NotificationContent(title = context.getString(R.string.new_items, "$itemCount"))
@@ -54,31 +51,28 @@ class SyncAnalyzer(
         account: Account,
         syncResult: SyncResult
     ): NotificationContent? {
-        val feedsIdsForNewItems = getFeedsIdsForNewItems(syncResult)
-
         if (account.isNotificationsEnabled) {
-            val feeds = database.feedDao().selectFromIds(feedsIdsForNewItems)
+            val feedIds = getNewItemsFeedIds(syncResult)
+            val feeds = database.feedDao().selectFromIds(feedIds)
 
-            val items =
-                syncResult.items.filter { isFeedNotificationEnabledForItem(feeds, it) }
+            val items = syncResult.items.filter { isFeedNotificationEnabledForItem(feeds, it) }
             val itemCount = items.size
 
             return when {
                 // multiple new items from several feeds
-                feedsIdsForNewItems.size > 1 && itemCount > 1 -> {
+                feedIds.size > 1 && itemCount > 1 -> {
                     NotificationContent(
-                        title = account.accountName!!,
+                        title = account.name!!,
                         text = context.getString(R.string.new_items, itemCount.toString()),
                         largeIcon = ContextCompat.getDrawable(
                             context,
-                            account.accountType!!.iconRes
+                            account.type!!.iconRes
                         )!!.toBitmap(),
                         accountId = account.id
                     )
                 }
                 // multiple new items from a single feed
-                feedsIdsForNewItems.size == 1 ->
-                    singleFeedCase(feedsIdsForNewItems.first(), syncResult.items, account)
+                feedIds.size == 1 -> singleFeedCase(feedIds.first(), syncResult.items, account)
                 // only one new item from a single feed
                 itemCount == 1 -> singleFeedCase(items.first().feedId, items, account)
                 else -> null
@@ -95,7 +89,7 @@ class SyncAnalyzer(
     ): NotificationContent? {
         val feed = database.feedDao().selectFeed(feedId)
 
-        if (feed.isNotificationEnabled) {
+        return if (feed.isNotificationEnabled) {
             val icon = feed.iconUrl?.let {
                 val target = context.imageLoader
                     .execute(
@@ -104,7 +98,7 @@ class SyncAnalyzer(
                             .build()
                     )
 
-                target.drawable?.toBitmap()
+                target.image?.toBitmap()
             }
 
             val (item, text) = if (items.size == 1) {
@@ -114,7 +108,7 @@ class SyncAnalyzer(
                 null to context.getString(R.string.new_items, items.size.toString())
             }
 
-            return NotificationContent(
+            NotificationContent(
                 title = feed.name,
                 text = text,
                 largeIcon = icon,
@@ -122,41 +116,28 @@ class SyncAnalyzer(
                 color = feed.color,
                 accountId = account.id
             )
+        } else {
+            null
         }
-
-        return null
     }
 
+    /**
+     * Return true if at least two accounts have new items and notifications enabled
+     */
     private fun newItemsInMultipleAccounts(syncResults: Map<Account, SyncResult>): Boolean {
-        val itemsNotEmptyByAccount = mutableListOf<Boolean>()
-
-        for ((account, syncResult) in syncResults) {
-            if (account.isNotificationsEnabled) {
-                itemsNotEmptyByAccount += syncResult.items.isNotEmpty()
-            }
-        }
-
-        // return true it there is at least two true in the list
-        return (itemsNotEmptyByAccount.groupingBy { it }.eachCount()[true] ?: 0) > 1
+        return (syncResults.filter { it.key.isNotificationsEnabled }
+            .map { it.value.items.isNotEmpty() }
+            .groupingBy { it }
+            .eachCount()[true] ?: 0) > 1
     }
 
-    private fun getFeedsIdsForNewItems(syncResult: SyncResult): List<Int> {
-        val feedsIds = mutableListOf<Int>()
+    private fun getNewItemsFeedIds(syncResult: SyncResult): List<Int> =
+        syncResult.items.map { it.feedId }
+            .distinct()
 
-        syncResult.items.forEach {
-            if (it.feedId !in feedsIds)
-                feedsIds += it.feedId
-        }
-
-        return feedsIds
-    }
-
-    private fun getFeedsIdsForNewItems(syncResults: Map<Account, SyncResult>): List<Int> {
-        val feedsIds = mutableListOf<Int>()
-
-        syncResults.values.forEach { feedsIds += getFeedsIdsForNewItems(it) }
-        return feedsIds
-    }
+    private fun getNewItemsFeedIds(syncResults: Map<Account, SyncResult>): List<Int> =
+        syncResults.values.map { getNewItemsFeedIds(it) }
+            .flatten()
 
     private fun isFeedNotificationEnabledForItem(feeds: List<Feed>, item: Item): Boolean =
         feeds.find { it.id == item.feedId }?.isNotificationEnabled!!

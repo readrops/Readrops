@@ -111,8 +111,7 @@ class LocalRSSDataSource(private val httpClient: OkHttpClient) : KoinComponent {
         // if we can't guess type based on content-type header, we use the content
         if (type == LocalRSSHelper.RSSType.UNKNOWN) {
             try {
-                konsumer = response.body!!.byteStream().konsumeXml()
-                rootKonsumer = konsumer.nextElement(LocalRSSHelper.RSS_ROOT_NAMES)
+                rootKonsumer = konsumer?.nextElement(LocalRSSHelper.RSS_ROOT_NAMES)
 
                 if (rootKonsumer != null) {
                     type = LocalRSSHelper.guessRSSType(rootKonsumer)

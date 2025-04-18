@@ -2,9 +2,10 @@ package com.readrops.api.localfeed
 
 import com.gitlab.mvysny.konsumexml.Names
 import com.gitlab.mvysny.konsumexml.konsumeXml
-import junit.framework.TestCase.*
+import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertFalse
+import junit.framework.TestCase.assertTrue
 import org.junit.Test
-import java.io.ByteArrayInputStream
 
 class LocalRSSHelperTest {
 
@@ -16,8 +17,6 @@ class LocalRSSHelperTest {
                 LocalRSSHelper.RSSType.RSS_2)
         assertEquals(LocalRSSHelper.getRSSType("application/atom+xml"),
                 LocalRSSHelper.RSSType.ATOM)
-        assertEquals(LocalRSSHelper.getRSSType("application/json"),
-                LocalRSSHelper.RSSType.JSONFEED)
         assertEquals(LocalRSSHelper.getRSSType("application/feed+json"),
                 LocalRSSHelper.RSSType.JSONFEED)
     }

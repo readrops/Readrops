@@ -26,12 +26,13 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
       - name: Android Emulator Runner
-        uses: ReactiveCircus/android-emulator-runner@v2.30.1
+        uses: ReactiveCircus/android-emulator-runner@v2.33.0
         with:
           api-level: 29
-          script: ./gradlew clean build connectedCheck
-      - uses: codecov/codecov-action@v2.1.0
+          script: ./gradlew clean build connectedCheck jacocoFullReport
+      - uses: codecov/codecov-action@v4
         with:
-          files: ./build/reports/jacoco/jacocoFullReport.xml
-          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./build/reports/jacoco/jacocoFullReport/jacocoFullReport.xml
+          fail_ci_if_error: true
           verbose: true
