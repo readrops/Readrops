@@ -9,6 +9,7 @@
     <string name="theme_color_scheme">Fargevalg</string>
     <string name="theme_readrops">Readrops</string>
     <string name="theme_blackwhite">BlackWhite</string>
+    <string name="theme_material3">Material You</string>
     <string name="share_image">Del bilde</string>
     <string name="download_image">Last ned bilde</string>
     <string name="image_options">Bildevalg</string>

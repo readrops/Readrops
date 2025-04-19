@@ -70,6 +70,7 @@
     <string name="theme_color_scheme">Schéma de couleurs</string>
     <string name="theme_readrops">Readrops</string>
     <string name="theme_blackwhite">BlackWhite</string>
+    <string name="theme_material3">Material You</string>
     <string name="light">Clair</string>
     <string name="dark">Sombre</string>
     <string name="new_feed">Nouveau flux</string>

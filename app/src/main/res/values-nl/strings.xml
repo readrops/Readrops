@@ -64,6 +64,7 @@
     <string name="theme_color_scheme">Kleurenschema</string>
     <string name="theme_readrops">Readrops</string>
     <string name="theme_blackwhite">BlackWhite</string>
+    <string name="theme_material3">Material You</string>
     <string name="opml_import">Opml-bestand importeren</string>
     <string name="opml_export">Opml-bestand exporteren</string>
     <string name="image_options">Afbeeldingsopties</string>
