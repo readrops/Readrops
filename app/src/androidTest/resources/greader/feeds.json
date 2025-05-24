@@ -1,0 +1,17 @@
+{
+  "subscriptions": [
+    {
+      "id": "feed/2",
+      "title": "FreshRSS @ GitHub",
+      "categories": [
+        {
+          "id": "user/-/label/Blogs",
+          "label": "Blogs"
+        }
+      ],
+      "url": "https://github.com/FreshRSS/FreshRSS/releases.atom",
+      "htmlUrl": "https://github.com/FreshRSS/FreshRSS/",
+      "iconUrl": "iconUrl"
+    }
+  ]
+}

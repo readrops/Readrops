@@ -24,6 +24,9 @@ interface ItemDao : BaseDao<Item> {
     @Query("Select * From Item Limit 1")
     suspend fun selectFirst(): Item
 
+    @Query("Select * From Item Where feed_id = :feedId")
+    suspend fun selectItems(feedId: Int): List<Item>
+
     @RawQuery(observedEntities = [Item::class, Feed::class, Folder::class, ItemState::class])
     fun selectAll(query: SupportSQLiteQuery): PagingSource<Int, ItemWithFeed>
 

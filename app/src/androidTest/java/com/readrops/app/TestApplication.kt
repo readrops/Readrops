@@ -8,6 +8,8 @@ import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
 import coil3.annotation.ExperimentalCoilApi
+import coil3.disk.DiskCache
+import coil3.disk.directory
 import coil3.test.FakeImageLoaderEngine
 import coil3.util.DebugLogger
 import coil3.util.Logger
@@ -42,6 +44,11 @@ class TestApplication : Application(), SingletonImageLoader.Factory {
         return ImageLoader.Builder(this)
             .logger(DebugLogger(minLevel = Logger.Level.Debug))
             .components { add(fakeEngine) }
+            .diskCache {
+                DiskCache.Builder()
+                    .directory(this.cacheDir.resolve("image_cache"))
+                    .build()
+            }
             .build()
     }
 }
