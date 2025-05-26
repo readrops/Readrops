@@ -25,17 +25,20 @@ jobs:
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
+      - name: Build app
+        run: ./gradlew clean build
+      - name: Prepare app for instrumented tests
+        run: |
+          adb install -r -t app/build/outputs/apk/debug/app-debug.apk
+          adb shell am start -n com.readrops.app.debug/com.readrops.app.MainActivity
+          adb shell settings put global zen_mode 0
+          adb shell pm grant com.readrops.app.debug android.permission.POST_NOTIFICATIONS
+          adb shell pm grant com.readrops.app android.permission.POST_NOTIFICATIONS
       - name: Android Emulator Runner
         uses: ReactiveCircus/android-emulator-runner@v2.33.0
         with:
-          api-level: 29
-          pre-emulator-launch-script: |
-              adb shell settings put global zen_mode 0
-              adb shell pm grant com.readrops.app android.permission.POST_NOTIFICATIONS
-              adb shell input keyevent KEYCODE_WAKEUP
-              adb shell wm dismiss-keyguard
-              adb shell input keyevent KEYCODE_MENU
-          script: ./gradlew clean build connectedCheck jacocoFullReport
+          api-level: 34
+          script: ./gradlew connectedCheck jacocoFullReport
       - uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
