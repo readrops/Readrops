@@ -14,6 +14,7 @@ paging = "3.3.6"
 okhttp = "4.12.0"
 retrofit = "3.0.0"
 about_libraries = "12.1.2"
+work-manager = "2.10.1"
 
 [plugins]
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
@@ -73,6 +74,9 @@ koin-test-junit4 = { module = "io.insert-koin:koin-test-junit4", version.ref = "
 paging-runtime = { module = "androidx.paging:paging-runtime-ktx", version.ref = "paging" }
 paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging" }
 
+workmanager = { module = "androidx.work:work-runtime-ktx", version.ref = "work-manager" }
+workmanager-test = { module = "androidx.work:work-testing", version.ref = "work-manager" }
+
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-mockserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
 
@@ -98,7 +102,6 @@ corektx = "androidx.core:core-ktx:1.16.0"
 appcompat = "androidx.appcompat:appcompat:1.7.0"
 material = "com.google.android.material:material:1.12.0"
 palette = "androidx.palette:palette-ktx:1.0.0"
-workmanager = "androidx.work:work-runtime-ktx:2.10.1"
 encrypted-preferences = "androidx.security:security-crypto:1.1.0-alpha07"
 datastore = "androidx.datastore:datastore-preferences:1.1.6"
 browser = "androidx.browser:browser:1.8.0"

@@ -26,7 +26,6 @@ import com.readrops.app.R
 import com.readrops.app.ReadropsApp
 import com.readrops.app.repositories.SyncResult
 import com.readrops.app.util.extensions.putSerializable
-import com.readrops.db.Database
 import com.readrops.db.entities.account.Account
 import kotlinx.coroutines.flow.first
 import org.koin.core.component.KoinComponent
@@ -41,7 +40,6 @@ class SyncWorker(
 ) : CoroutineWorker(appContext, params), KoinComponent {
 
     private val notificationManager by inject<NotificationManagerCompat>()
-    private val database by inject<Database>()
 
     override suspend fun doWork(): Result {
         val isManual = tags.contains(WORK_MANUAL)
@@ -209,10 +207,10 @@ class SyncWorker(
     }
 
     companion object {
-        private val TAG: String = SyncWorker::class.java.simpleName
+        val TAG: String = SyncWorker::class.java.simpleName
 
-        private val WORK_AUTO = "$TAG-auto"
-        private val WORK_MANUAL = "$TAG-manual"
+        val WORK_AUTO = "$TAG-auto"
+        val WORK_MANUAL = "$TAG-manual"
 
         const val SYNC_NOTIFICATION_ID = 2
         const val SYNC_RESULT_NOTIFICATION_ID = 3

@@ -130,4 +130,5 @@ dependencies {
     androidTestImplementation(libs.bundles.kointest)
     androidTestImplementation(libs.okhttp.mockserver)
     androidTestImplementation(libs.coil.test)
+    androidTestImplementation(libs.workmanager.test)
 }

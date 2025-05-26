@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/1999/xhtml" xmlns:media="http://search.yahoo.com/mrss/"
+    version="2.0">
+    <channel>
+        <title>Hacker News</title>
+        <atom:link href="https://news.ycombinator.com/feed/" rel="self" />
+        <link>https://news.ycombinator.com/</link>
+        <description>Links for the intellectually curious, ranked by readers.</description>
+        <item>
+            <title>Africa declared free of wild polio</title>
+            <link>https://www.bbc.com/news/world-africa-53887947</link>
+            <pubDate>Tue, 25 Aug 2020 17:15:49 +0000</pubDate>
+            <comments>https://news.ycombinator.com/item?id=24273602</comments>
+            <author>Author 1</author>
+            <description>
+                <![CDATA[<a href="https://news.ycombinator.com/item?id=24273602">Comments</a>]]></description>
+            <media:description>media description</media:description>
+        </item>
+    </channel>
+</rss>
