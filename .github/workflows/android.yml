@@ -29,6 +29,12 @@ jobs:
         uses: ReactiveCircus/android-emulator-runner@v2.33.0
         with:
           api-level: 29
+          pre-emulator-launch-script: |
+              adb shell settings put global zen_mode 0
+              adb shell pm grant com.readrops.app android.permission.POST_NOTIFICATIONS
+              adb shell input keyevent KEYCODE_WAKEUP
+              adb shell wm dismiss-keyguard
+              adb shell input keyevent KEYCODE_MENU
           script: ./gradlew clean build connectedCheck jacocoFullReport
       - uses: codecov/codecov-action@v4
         with:
