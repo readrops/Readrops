@@ -32,7 +32,8 @@ jobs:
       - name: Run instrumented tests in emulator
         uses: ReactiveCircus/android-emulator-runner@v2.33.0
         with:
-          api-level: 34-ext10
+          api-level: 34
+          arch: x86_64
           script: |
             adb install -r -t app/build/outputs/apk/debug/app-debug.apk
             adb shell am start -n com.readrops.app.debug/com.readrops.app.MainActivity
