@@ -37,7 +37,7 @@ jobs:
           script: |
             adb install -r -t app/build/outputs/apk/debug/app-debug.apk
             adb shell am start -n com.readrops.app.debug/com.readrops.app.MainActivity
-            adb shell settings pu t global zen_mode 0
+            adb shell settings put global zen_mode 0
             adb shell pm grant com.readrops.app.debug android.permission.POST_NOTIFICATIONS
             adb shell pm grant com.readrops.app android.permission.POST_NOTIFICATIONS
             ./gradlew connectedCheck jacocoFullReport
