@@ -348,10 +348,7 @@ object TimelineTab : Tab {
                                                         screenModel.updateStarState(itemWithFeed.item)
                                                     },
                                                     onShare = {
-                                                        screenModel.shareItem(
-                                                            itemWithFeed.item,
-                                                            context
-                                                        )
+                                                        screenModel.shareItem(itemWithFeed, context)
                                                     },
                                                     onSetReadState = {
                                                         screenModel.updateItemReadState(itemWithFeed.item)

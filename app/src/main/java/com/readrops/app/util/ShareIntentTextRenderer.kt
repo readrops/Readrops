@@ -2,8 +2,6 @@ package com.readrops.app.util
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
-import androidx.compose.ui.util.fastJoinToString
-import com.readrops.db.entities.Item
 import io.pebbletemplates.pebble.PebbleEngine
 import io.pebbletemplates.pebble.extension.AbstractExtension
 import io.pebbletemplates.pebble.extension.Filter
@@ -13,6 +11,7 @@ import io.pebbletemplates.pebble.template.PebbleTemplate
 import org.koin.core.component.KoinComponent
 import java.io.StringWriter
 import com.readrops.app.R
+import com.readrops.db.pojo.ItemWithFeed
 import org.koin.core.component.get
 
 
@@ -84,7 +83,7 @@ class FrenchTypography : DocumentedFilter() {
     }
 }
 
-class ShareIntentTextRenderer(private val item: Item): KoinComponent {
+class ShareIntentTextRenderer(private val itemWithFeed: ItemWithFeed): KoinComponent {
     val documentation by lazy {
         filters.entries.joinToString(prefix = "<br/>", separator = ",<br/>") { (key, filter) ->
             val str = get<Context>().getString(
@@ -98,10 +97,11 @@ class ShareIntentTextRenderer(private val item: Item): KoinComponent {
 
     val context
         get() = mapOf(
-            "title" to item.title,
-            "author" to item.author,
-            "url" to item.link,
-            "content" to item.content
+            "title" to itemWithFeed.item.title,
+            "author" to itemWithFeed.item.author,
+            "url" to itemWithFeed.item.link,
+            "content" to itemWithFeed.item.content,
+            "feedName" to itemWithFeed.feedName,
         )
 
     private fun renderSafe(template: String) = runCatching {
@@ -111,7 +111,7 @@ class ShareIntentTextRenderer(private val item: Item): KoinComponent {
     }
 
     fun renderOrError(template: String) = renderSafe(template).getOrElse { it.toString() }
-    fun render(template: String) = renderSafe(template).getOrDefault(item.link)
+    fun render(template: String) = renderSafe(template).getOrDefault(itemWithFeed.item.link)
 
     companion object {
         private val filters: Map<String, DocumentedFilter> = mapOf(

@@ -133,7 +133,7 @@ class ItemScreen(
                                     context.openInCustomTab(url, state.theme, accentColor)
                                 }
                             },
-                            onShareItem = { screenModel.shareItem(item, context) },
+                            onShareItem = { screenModel.shareItem(itemWithFeed, context) },
                             onSetReadState = { screenModel.setItemReadState(item) },
                             onSetStarState = { screenModel.setItemStarState(item) },
                             onOpenImageDialog = { screenModel.openImageDialog(it) },
