@@ -32,6 +32,12 @@ class Preferences(
         default = "system"
     )
 
+    val themeColorScheme = Preference(
+        dataStore = dataStore,
+        key = stringPreferencesKey("theme_color_scheme"),
+        default = "readrops"
+    )
+
     val backgroundSynchronization = Preference(
         dataStore = dataStore,
         key = stringPreferencesKey("synchro"),

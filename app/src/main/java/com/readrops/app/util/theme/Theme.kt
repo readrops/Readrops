@@ -4,8 +4,10 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.Composable
-
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -83,15 +85,111 @@ private val darkScheme = darkColorScheme(
     surfaceContainerHighest = surfaceContainerHighestDark,
 )
 
+private val BlackWhiteLightScheme = lightColorScheme(
+    primary = primaryBlackWhiteLight,
+    onPrimary = onPrimaryBlackWhiteLight,
+    primaryContainer = primaryContainerBlackWhiteLight,
+    onPrimaryContainer = onPrimaryContainerBlackWhiteLight,
+    secondary = secondaryBlackWhiteLight,
+    onSecondary = onSecondaryBlackWhiteLight,
+    secondaryContainer = secondaryContainerBlackWhiteLight,
+    onSecondaryContainer = onSecondaryContainerBlackWhiteLight,
+    tertiary = tertiaryBlackWhiteLight,
+    onTertiary = onTertiaryBlackWhiteLight,
+    tertiaryContainer = tertiaryContainerBlackWhiteLight,
+    onTertiaryContainer = onTertiaryContainerBlackWhiteLight,
+    error = errorBlackWhiteLight,
+    onError = onErrorBlackWhiteLight,
+    errorContainer = errorContainerBlackWhiteLight,
+    onErrorContainer = onErrorContainerBlackWhiteLight,
+    background = backgroundBlackWhiteLight,
+    onBackground = onBackgroundBlackWhiteLight,
+    surface = surfaceBlackWhiteLight,
+    onSurface = onSurfaceBlackWhiteLight,
+    surfaceVariant = surfaceVariantBlackWhiteLight,
+    onSurfaceVariant = onSurfaceVariantBlackWhiteLight,
+    outline = outlineBlackWhiteLight,
+    outlineVariant = outlineVariantBlackWhiteLight,
+    scrim = scrimBlackWhiteLight,
+    inverseSurface = inverseSurfaceBlackWhiteLight,
+    inverseOnSurface = inverseOnSurfaceBlackWhiteLight,
+    inversePrimary = inversePrimaryBlackWhiteLight,
+    surfaceDim = surfaceDimBlackWhiteLight,
+    surfaceBright = surfaceBrightBlackWhiteLight,
+    surfaceContainerLowest = surfaceContainerLowestBlackWhiteLight,
+    surfaceContainerLow = surfaceContainerLowBlackWhiteLight,
+    surfaceContainer = surfaceContainerBlackWhiteLight,
+    surfaceContainerHigh = surfaceContainerHighBlackWhiteLight,
+    surfaceContainerHighest = surfaceContainerHighestBlackWhiteLight,
+)
+
+private val BlackWhiteDarkScheme = lightColorScheme(
+    primary = primaryBlackWhiteDark,
+    onPrimary = onPrimaryBlackWhiteDark,
+    primaryContainer = primaryContainerBlackWhiteDark,
+    onPrimaryContainer = onPrimaryContainerBlackWhiteDark,
+    secondary = secondaryBlackWhiteDark,
+    onSecondary = onSecondaryBlackWhiteDark,
+    secondaryContainer = secondaryContainerBlackWhiteDark,
+    onSecondaryContainer = onSecondaryContainerBlackWhiteDark,
+    tertiary = tertiaryBlackWhiteDark,
+    onTertiary = onTertiaryBlackWhiteDark,
+    tertiaryContainer = tertiaryContainerBlackWhiteDark,
+    onTertiaryContainer = onTertiaryContainerBlackWhiteDark,
+    error = errorBlackWhiteDark,
+    onError = onErrorBlackWhiteDark,
+    errorContainer = errorContainerBlackWhiteDark,
+    onErrorContainer = onErrorContainerBlackWhiteDark,
+    background = backgroundBlackWhiteDark,
+    onBackground = onBackgroundBlackWhiteDark,
+    surface = surfaceBlackWhiteDark,
+    onSurface = onSurfaceBlackWhiteDark,
+    surfaceVariant = surfaceVariantBlackWhiteDark,
+    onSurfaceVariant = onSurfaceVariantBlackWhiteDark,
+    outline = outlineBlackWhiteDark,
+    outlineVariant = outlineVariantBlackWhiteDark,
+    scrim = scrimBlackWhiteDark,
+    inverseSurface = inverseSurfaceBlackWhiteDark,
+    inverseOnSurface = inverseOnSurfaceBlackWhiteDark,
+    inversePrimary = inversePrimaryBlackWhiteDark,
+    surfaceDim = surfaceDimBlackWhiteDark,
+    surfaceBright = surfaceBrightBlackWhiteDark,
+    surfaceContainerLowest = surfaceContainerLowestBlackWhiteDark,
+    surfaceContainerLow = surfaceContainerLowBlackWhiteDark,
+    surfaceContainer = surfaceContainerBlackWhiteDark,
+    surfaceContainerHigh = surfaceContainerHighBlackWhiteDark,
+    surfaceContainerHighest = surfaceContainerHighestBlackWhiteDark,
+)
+
 @Composable
 fun ReadropsTheme(
     useDarkTheme: Boolean = isSystemInDarkTheme(),
+    themeColorScheme: String = "readrops",
     content: @Composable () -> Unit
 ) {
-    val colors = if (!useDarkTheme) {
-        lightScheme
-    } else {
-        darkScheme
+
+
+    val colors = when(themeColorScheme) {
+        "blackwhite" -> {
+            if (!useDarkTheme) {
+                BlackWhiteLightScheme
+            } else {
+                BlackWhiteDarkScheme
+            }
+        }
+	"material3" -> {
+	    if (!useDarkTheme) {
+		dynamicLightColorScheme(LocalContext.current)
+	    } else {
+		dynamicDarkColorScheme(LocalContext.current)
+	    }
+	} else -> {
+            if (!useDarkTheme) {
+                lightScheme
+            } else {
+                darkScheme
+            }
+        }
     }
 
     MaterialTheme(

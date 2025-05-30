@@ -70,15 +70,21 @@ class MainActivity : ComponentActivity(), KoinComponent {
         val initialUseDarkTheme = runBlocking {
             useDarkTheme(preferences.theme.flow.first(), darkFlag)
         }
+        val initialColorScheme = runBlocking {
+            preferences.themeColorScheme.flow.first()
+        }
 
         setContent {
             KoinAndroidContext {
                 val useDarkTheme by preferences.theme.flow
                     .map { mode -> useDarkTheme(mode, darkFlag) }
                     .collectAsState(initial = initialUseDarkTheme)
+                val themeColorScheme by preferences.themeColorScheme.flow
+                    .collectAsState(initial = initialColorScheme)
 
                 ReadropsTheme(
-                    useDarkTheme = useDarkTheme
+                    useDarkTheme = useDarkTheme,
+                    themeColorScheme = themeColorScheme
                 ) {
                     enableEdgeToEdge(
                         statusBarStyle = SystemBarStyle.auto(

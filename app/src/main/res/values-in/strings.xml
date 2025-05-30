@@ -68,6 +68,10 @@
     <string name="download_image">Unduh gambar</string>
     <string name="share_image">Bagikan gambar</string>
     <string name="theme">Tema</string>
+    <string name="theme_color_scheme">Skema Warna</string>
+    <string name="theme_readrops">Readrops</string>
+    <string name="theme_blackwhite">BlackWhite</string>
+    <string name="theme_material3">Material You</string>
     <string name="light">Terang</string>
     <string name="dark">Gelap</string>
     <string name="new_feed">Feed baru</string>

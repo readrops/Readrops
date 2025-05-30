@@ -34,6 +34,10 @@
     <string name="download_image">Baixar a imagem</string>
     <string name="share_image">Compartilhar a imagem</string>
     <string name="theme">Tema</string>
+    <string name="theme_color_scheme">Esquema de cores</string>
+    <string name="theme_readrops">Readrops</string>
+    <string name="theme_blackwhite">BlackWhite</string>
+    <string name="theme_material3">Material You</string>
     <string name="light">Claro</string>
     <string name="dark">Escuro</string>
     <string name="new_feed">Novo Feed</string>

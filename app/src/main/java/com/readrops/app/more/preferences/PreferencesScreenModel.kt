@@ -22,6 +22,7 @@ class PreferencesScreenModel(
     preferences: Preferences,
     dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : StateScreenModel<PreferencesScreenState>(PreferencesScreenState.Loading) {
+
     init {
         screenModelScope.launch(dispatcher) {
             with(preferences) {
@@ -37,7 +38,8 @@ class PreferencesScreenModel(
                     useCustomShareIntentTpl.flow,
                     customShareIntentTpl.flow,
                     swipeToLeft.flow,
-                    swipeToRight.flow
+                    swipeToRight.flow,
+                    themeColorScheme.flow
                 )
 
                 combine(
@@ -56,6 +58,7 @@ class PreferencesScreenModel(
                         customShareIntentTpl = (list[9] as String) to customShareIntentTpl,
                         swipeToLeft = (list[10] as String) to swipeToLeft,
                         swipeToRight = (list[11] as String) to swipeToRight,
+                        themeColorScheme = (list[12] as String) to themeColorScheme,
                         exampleItem = if (database.itemDao().count() > 0) {
                             database.itemDao().selectFirst()
                         } else {
@@ -106,6 +109,7 @@ sealed class PreferencesScreenState {
         val customShareIntentTpl: PreferenceState<String>,
         val swipeToLeft: PreferenceState<String>,
         val swipeToRight: PreferenceState<String>,
+        val themeColorScheme: PreferenceState<String>,
         val exampleItem: Item,
         val showDialog: Boolean = false
     ) : PreferencesScreenState()
