@@ -81,9 +81,9 @@ fun TimelineItem(
     fun getSwipeIcon(swipeAction: SwipeAction): Int {
         return if (swipeAction == SwipeAction.READ) {
             if (itemWithFeed.isRead) {
-                R.drawable.ic_remove_done
+                R.drawable.ic_state_unread
             } else {
-                R.drawable.ic_done_all
+                R.drawable.ic_state_read
             }
         } else {
             if (itemWithFeed.isStarred) {
