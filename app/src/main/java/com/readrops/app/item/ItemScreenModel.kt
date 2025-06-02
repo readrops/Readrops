@@ -40,8 +40,9 @@ import com.readrops.db.pojo.ItemWithFeed
 import com.readrops.db.queries.ItemSelectionQueryBuilder
 import com.readrops.db.queries.ItemsQueryBuilder
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -51,7 +52,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
@@ -92,6 +92,7 @@ class ItemScreenModel(
                 )
             )
         )
+
     // based type is Flow because with StateFlow when coming back from process death, pager doesn't resume
     // it might be due to stateIn() overlapping cachedIn(), but not sure
     var itemState: Flow<PagingData<ItemWithFeed>> = _itemState.asStateFlow()
@@ -360,23 +361,29 @@ class ItemScreenModel(
         item, context, useCustomShareIntentTpl.value, customShareIntentTpl.value
     )
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onDispose() {
-        screenModelScope.launch(dispatcher) {
-            withContext(NonCancellable) {
-                repository.setItemsRead(
-                    items = state.value.stateChanges
-                        .filter { it.readChange }
-                        .map { it.item }
-                )
+        // Use GlobalScope instead of NonCancellable
+        // It seems that NonCancellable is not is sufficiently non cancellable
+        // I ran multiple times into very frustrating situations where items were not set read
+        // The risk of leak here is mitigated by the fact that only one shot operations are performed
+        // If the coroutine is cancelled for whatever reason, only items state will be lost, which is not a big deal
+        // and should happen very rarely
+        GlobalScope.launch(dispatcher) {
+            repository.setItemsRead(
+                items = state.value.stateChanges
+                    .filter { it.readChange }
+                    .map { it.item }
+            )
 
-                state.value.stateChanges
-                    .filter { it.starChange }
-                    .forEach {
-                        repository.setItemStarState(it.item.apply {
-                            isStarred = !isStarred
-                        })
-                    }
-            }
+            state.value.stateChanges
+                .filter { it.starChange }
+                .forEach {
+                    repository.setItemStarState(it.item.apply {
+                        isStarred = !isStarred
+                    })
+                }
+
         }
     }
 }
