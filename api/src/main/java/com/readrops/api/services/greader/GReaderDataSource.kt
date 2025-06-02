@@ -45,11 +45,11 @@ class GReaderDataSource(private val service: GReaderService) {
                     async { folders = getFolders() },
                     async { feeds = getFeeds() },
                     async {
-                        items = getItems(listOf(GOOGLE_READ, GOOGLE_STARRED), MAX_ITEMS, null)
+                        items = getItems(listOf(GOOGLE_READ, GOOGLE_STARRED), Int.MAX_VALUE, null)
                     },
-                    async { starredItems = getStarredItems(MAX_STARRED_ITEMS) },
-                    async { unreadIds = getItemsIds(GOOGLE_READ, GOOGLE_READING_LIST, MAX_ITEMS) },
-                    async { starredIds = getItemsIds(null, GOOGLE_STARRED, MAX_STARRED_ITEMS) }
+                    async { starredItems = getStarredItems(Int.MAX_VALUE) },
+                    async { unreadIds = getItemsIds(GOOGLE_READ, GOOGLE_READING_LIST, Int.MAX_VALUE) },
+                    async { starredIds = getItemsIds(null, GOOGLE_STARRED, Int.MAX_VALUE) }
                 )
 
             }
