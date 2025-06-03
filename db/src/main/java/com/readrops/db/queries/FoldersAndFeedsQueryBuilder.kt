@@ -20,7 +20,7 @@ object FoldersAndFeedsQueryBuilder {
         "Feed.remote_id as feedRemoteId",
         "Folder.id As folderId",
         "Folder.name As folderName",
-        "Feed.account_id as accountId",
+        "Folder.account_id as accountId",
         "Folder.remoteId as folderRemoteId"
     )
 
