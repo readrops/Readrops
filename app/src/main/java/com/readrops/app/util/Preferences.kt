@@ -133,6 +133,12 @@ class Preferences(
         key = stringPreferencesKey("swipe_to_left_action"),
         default = "READ"
     )
+
+    val swipeGesturePager = Preference(
+        dataStore = dataStore,
+        key = booleanPreferencesKey("swipe_gesture_pager"),
+        default = true
+    )
 }
 
 

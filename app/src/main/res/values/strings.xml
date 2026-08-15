@@ -242,4 +242,6 @@
     <string name="no_network">No network connection available</string>
     <string name="empty_file">File is empty</string>
     <string name="color_contrast_too_low">Contrast with background is too low. The default color will be used instead when using this theme.</string>
+    <string name="swipe_gesture_pager">Swipe between articles</string>
+    <string name="swipe_gesture_pager_subtitle">Swipe horizontally to navigate to previous or next articles</string>
 </resources>

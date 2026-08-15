@@ -133,17 +133,19 @@ class ItemScreenModel(
         screenModelScope.launch(dispatcher) {
             combine(
                 preferences.openLinksWith.flow,
-                preferences.theme.flow
-            ) { openLinksWith, theme ->
-                openLinksWith to theme
-            }.collect { (openLinksWith, theme) ->
+                preferences.theme.flow,
+                preferences.swipeGesturePager.flow
+            ) { openLinksWith, theme, swipeGesturePager ->
+                Triple(openLinksWith, theme, swipeGesturePager)
+            }.collect { (openLinksWith, theme, swipeGesturePager) ->
                 mutableState.update {
                     it.copy(
                         openInExternalBrowser = when (openLinksWith) {
                             "external_navigator" -> true
                             else -> false
                         },
-                        theme = theme
+                        theme = theme,
+                        swipeGesturePager = swipeGesturePager
                     )
                 }
             }
@@ -397,7 +399,8 @@ data class ItemState(
     val openInExternalBrowser: Boolean = false,
     val theme: String? = "",
     val error: String? = null,
-    val stateChanges: List<StateChange> = listOf()
+    val stateChanges: List<StateChange> = listOf(),
+    val swipeGesturePager: Boolean = true
 )
 
 @Stable

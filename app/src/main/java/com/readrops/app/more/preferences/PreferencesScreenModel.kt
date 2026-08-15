@@ -43,6 +43,7 @@ class PreferencesScreenModel(
                     customShareIntentTpl.flow,
                     swipeToLeft.flow,
                     swipeToRight.flow,
+                    swipeGesturePager.flow,
                 )
 
                 combine(
@@ -61,6 +62,7 @@ class PreferencesScreenModel(
                         customShareIntentTpl = (list[9] as String) to customShareIntentTpl,
                         swipeToLeft = (list[10] as String) to swipeToLeft,
                         swipeToRight = (list[11] as String) to swipeToRight,
+                        swipeGesturePager = (list[12] as Boolean) to swipeGesturePager,
                         exampleItem = ItemWithFeed(
                             item = Item(
                                 title = context.getString(R.string.example_item_title),
@@ -116,6 +118,7 @@ sealed class PreferencesScreenState {
         val customShareIntentTpl: PreferenceState<String>,
         val swipeToLeft: PreferenceState<String>,
         val swipeToRight: PreferenceState<String>,
+        val swipeGesturePager: PreferenceState<Boolean>,
         val exampleItem: ItemWithFeed,
         val showDialog: Boolean = false
     ) : PreferencesScreenState()
