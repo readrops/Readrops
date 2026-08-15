@@ -110,7 +110,8 @@ class ItemScreen(
                 HorizontalPager(
                     state = pagerState,
                     beyondViewportPageCount = 2,
-                    key = items.itemKey { it.item.id }
+                    key = items.itemKey { it.item.id },
+                    userScrollEnabled = state.swipeGesturePager
                 ) { page ->
                     val itemWithFeed = items[page]
 

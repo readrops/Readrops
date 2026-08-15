@@ -226,6 +226,13 @@ class PreferencesScreen : AndroidScreen() {
 
                             PreferenceHeader(text = stringResource(id = R.string.item_view))
 
+                            SwitchPreferenceWidget(
+                                preference = loadedState.swipeGesturePager.second,
+                                isChecked = loadedState.swipeGesturePager.first,
+                                title = stringResource(id = R.string.swipe_gesture_pager),
+                                subtitle = stringResource(id = R.string.swipe_gesture_pager_subtitle)
+                            )
+
                             ListPreferenceWidget(
                                 preference = loadedState.openLinksWith.second,
                                 selectedKey = loadedState.openLinksWith.first,
