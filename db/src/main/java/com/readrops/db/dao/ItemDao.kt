@@ -81,4 +81,8 @@ interface ItemDao : BaseDao<Item> {
     @Query("""Select case When Exists(Select 1 From Item Inner Join Feed on Item.feed_id = Feed.id
         Where Item.remote_id = :remoteId And account_id = :accountId) Then 1 else 0 end""")
     suspend fun itemExists(remoteId: String, accountId: Int): Boolean
+
+    @Query("""Select Item.id From Item Inner Join Feed on Item.feed_id = Feed.id
+        Where Item.remote_id = :remoteId And account_id = :accountId""")
+    suspend fun selectItemId(remoteId: String, accountId: Int): Int?
 }

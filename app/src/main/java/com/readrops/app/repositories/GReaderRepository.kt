@@ -167,6 +167,14 @@ class GReaderRepository(
                 item.readTime = Utils.readTimeFromString(item.text!!)
             }
 
+            // since FreshRSS 1.29.0, modified items are returned again with the same id
+            val itemId = database.itemDao().selectItemId(item.remoteId!!, account.id)
+            if (itemId != null) {
+                item.id = itemId
+                database.itemDao().update(item)
+                continue
+            }
+
             // workaround to avoid inserting starred items coming from the main item call
             // as the API exclusion filter doesn't seem to work
             if (!starredItems) {
